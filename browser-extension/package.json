@@ -1,0 +1,24 @@
+{
+  "name": "Moon",
+  "version": "0.1.0",
+  "description": "Shop and pay with crypto at the lowest rates. Works on Amazon.com and many more!",
+  "main": "src/app/index.js",
+  "scripts": {
+    "build": "del /q build\\* && npm run build-src-app && npm run build-src-background && npm run build-assets && npm run build-manifest",
+    "build-src-app": "parcel build src/app/index.js -d build/ -o app.js",
+    "build-src-background": "parcel build src/background/index.js -d build/ -o background.js",
+    "build-assets": "xcopy /E /Y ..\\assets build\\assets",
+    "build-manifest":"copy /Y manifest.json build\\manifest.json",
+    "watch": "npm run watch-app && npm run watch-background",
+    "watch-app": "parcel watch src/app/index.js -d build/ -o app.js",
+    "watch-background": "parcel watch src/background/index.js -d build/ -o background.js"
+  },
+  "author": "Moon",
+  "dependencies": {
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "parcel-bundler": "^1.6.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  }
+}
