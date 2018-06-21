@@ -2,8 +2,47 @@
  * Copyright (c) 2018 moon
  */
 
-chrome.browserAction.onClicked.addListener(function(tab) {
-    alert('icon clicked');
+import {REQUEST_INJECT_APP, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events";
+import supportedSites from "../../supportedSites.json";
+import logo from "../../../assets/icons/logo_128.png";
+import logoDisabled from "../../../assets/icons/logo_disabled_128.png";
+
+chrome.browserAction.setIcon({path: chrome.extension.getURL(logoDisabled)});
+
+const isValidSite = (url) => {
+    for (let i = 0; i < supportedSites.length; i++) {
+        if (url.toLowerCase().search(supportedSites[i].noncheckoutURL.toLowerCase()) > 0) return true;
+    }
+    return false;
+};
+
+const setInvalidBrowserActionIcon = (tabId) => {
+    chrome.browserAction.setIcon({path: chrome.extension.getURL(logoDisabled), tabId});
+};
+
+const setValidBrowserActionIcon = (tabId) => {
+    chrome.browserAction.setIcon({path: chrome.extension.getURL(logo), tabId});
+};
+
+const onTabUpdate = (tab) => {
+    if (!tab.url) {
+        // URL does not exist yet
+        setInvalidBrowserActionIcon();
+        doInjectAppEvent(SOURCE_NONE);
+
+    } else if (isValidSite(tab.url)) {
+        // URL that is on the current tab exists and is valid
+        setValidBrowserActionIcon(tab.id);
+        doInjectAppEvent(tab.url);
+
+    } else {
+        // URL that is on the current tab exists but is not valid
+        setInvalidBrowserActionIcon(tab.id);
+        doInjectAppEvent(SOURCE_NONE);
+    }
+};
+
+const doInjectAppEvent = (source) => {
     chrome.tabs.query({
         active: true,
         currentWindow: true,
@@ -11,8 +50,21 @@ chrome.browserAction.onClicked.addListener(function(tab) {
         // Send message to script file
         chrome.tabs.sendMessage(
             tabs[0].id,
-            { injectApp: true },
-            response => window.close()
+            {
+                type: REQUEST_INJECT_APP,
+                source: source
+            },
+            response => null
         );
+    });
+};
+
+chrome.browserAction.onClicked.addListener(() => doInjectAppEvent(SOURCE_MANUAL));
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    onTabUpdate(tab);
+});
+chrome.tabs.onActivated.addListener(activeInfo => {
+    chrome.tabs.get(activeInfo.tabId, (tab) => {
+        onTabUpdate(tab);
     });
 });
