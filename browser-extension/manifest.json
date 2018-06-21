@@ -8,9 +8,9 @@
   "homepage_url": "https://paywithmoon.com/",
 
   "icons": {
-    "16": "assets/icons/logo_128.png",
-    "32": "assets/icons/logo_128.png",
-    "128": "assets/icons/logo_128.png"
+    "16": "logo_128.png",
+    "32": "logo_128.png",
+    "128": "logo_128.png"
   },
 
   "web_accessible_resources":[
@@ -18,15 +18,15 @@
   ],
 
   "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "http://*/*",
+    "https://*/*",
     "activeTab",
     "tabs"
   ],
 
   "browser_action": {
-    "default_icon": {
-      "24": "assets/icons/logo_disabled_128.png",
-      "32": "assets/icons/logo_disabled_128.png"
-    },
     "default_title": "Moon"
   },
 
