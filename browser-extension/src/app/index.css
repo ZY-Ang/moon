@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+
+#moon-div {
+    display:-webkit-box;
+    display:-webkit-flex;
+    display:-moz-flex;
+    display:-ms-flexbox;
+    display:flex;
+    /*height:624px;*/
+    width:360px;
+    -webkit-font-smoothing:initial;
+    position:fixed;
+    line-height:normal;
+    letter-spacing:normal;
+    font-size:14px;
+    top:15px;
+    right:25px;
+    border: solid 1px cornflowerblue !important;
+    box-shadow: 0 5px 15px -8px rgba(0, 114, 198, 0.24), 0 8px 10px -5px rgba(88, 171, 255, 0.2);
+    border-radius:5px;
+    background-color:#091225;
+    box-sizing:border-box;
+    color:white;
+    z-index:2147483648 !important;
+}
+
+#moon-navbar {
+    height: 46.8px;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: justify;
+    -webkit-box-align: center;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 16px 0px;
+    margin-bottom: 3px;
+}
+
+#moon-header-img {
+    vertical-align: middle;
+    width: auto;
+    height: 48px;
+    border-style: none;
+}
+
+#moon-navbar-buttons-div {
+    float: right;
+    font-size: 14px;
+    font-weight: 400;
+    min-height: unset;
+    box-sizing: border-box !important;
+}
