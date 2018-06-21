@@ -1,10 +1,13 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import logo from '../logo.svg';
-import '../index.css';
-
-import Button from './components/Button';
+import './index.css';
+import App from "./components/App";
 import {MOON_DIV_ID} from "../constants/dom";
+import {REQUEST_INJECT_APP, SOURCE_NONE} from "../constants/events";
 
 // try {
 //     var promoInput = document.getElementById('spc-gcpromoinput');
@@ -18,40 +21,44 @@ import {MOON_DIV_ID} from "../constants/dom";
 //     console.error(e);
 // }
 
-class App extends React.Component {
-    constructor() {
-        super();
-        this.state = {
-            logoUrl: chrome.extension.getURL(logo)
-        };
-    }
+const injectApp = (source) => {
+    // Only inject if the source is not {@code SOURCE_NONE}
+    if (source !== SOURCE_NONE) {
+        // Destroy any existing elements and it's trees with {@code MOON_DIV_ID} if they exist
+        let moonDiv = document.getElementById(MOON_DIV_ID);
+        if (!!moonDiv) {
+            moonDiv.remove();
+        } else {
+            console.log("injectApp request received, rendering...", source);
 
-    render() {
-        return (
-            <div>
-                {this.state.logoUrl && <img src={this.state.logoUrl} alt="Moon Logo"/>}
-                Welcome to moon!
-                <Button />
-            </div>
-        )
+            // Create a new Moon Div
+            moonDiv = document.createElement("div");
+            document.body.appendChild(moonDiv);
+            moonDiv.setAttribute("id", MOON_DIV_ID);
+            ReactDOM.render(<App source={source} />, moonDiv);
+        }
     }
-}
+};
 
-// Message Listener function
+// Listen to requests from the background script
 chrome.runtime.onMessage.addListener((request, sender, response) => {
     // If message is injectApp
-    if(request.injectApp) {
-        // Inject our app to DOM and send response
-        injectApp();
-        response({
-            startedExtension: true,
-        });
+    switch (request.type) {
+        case REQUEST_INJECT_APP:
+            // Inject our app to DOM and send response
+            try {
+                injectApp(request.source);
+                response({startedExtension: true});
+            } catch (e) {
+                response({startedExtension: false});
+            }
+            return;
+        default:
+            console.log("Received message but not a known one.");
+            console.log("Request:", request);
+            console.log("Sender:", sender);
+            console.log("Response:", response);
+            response({startedExtension: false});
+            return;
     }
 });
-
-function injectApp() {
-    const newDiv = document.createElement("div");
-    newDiv.setAttribute("id", MOON_DIV_ID);
-    document.body.appendChild(newDiv);
-    ReactDOM.render(<App />, newDiv);
-}
