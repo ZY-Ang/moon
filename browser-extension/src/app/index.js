@@ -17,9 +17,6 @@ import {REQUEST_INJECT_APP, SOURCE_NONE} from "../constants/events";
 //     var submitButton = document.getElementById('gcApplyButtonId');
 //     submitButton.click();
 //     // todo: check for message "You successfully redeemed your gift card"
-// } catch (e) {
-//     console.error(e);
-// }
 
 const injectApp = (source) => {
     // Only inject if the source is not {@code SOURCE_NONE}
@@ -27,9 +24,11 @@ const injectApp = (source) => {
         // Destroy any existing elements and it's trees with {@code MOON_DIV_ID} if they exist
         let moonDiv = document.getElementById(MOON_DIV_ID);
         if (!!moonDiv) {
+            console.log("removing existing moonDiv... Source: ", source);
             moonDiv.remove();
         } else {
-            console.log("injectApp request received, rendering...", source);
+            console.log("injectApp request received, rendering... Source: ", source);
+            console.log(MOON_DIV_ID);
 
             // Create a new Moon Div
             moonDiv = document.createElement("div");
@@ -57,7 +56,6 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
             console.log("Received message but not a known one.");
             console.log("Request:", request);
             console.log("Sender:", sender);
-            console.log("Response:", response);
             response({startedExtension: false});
             return;
     }

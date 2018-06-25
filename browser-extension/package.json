@@ -2,30 +2,35 @@
   "name": "Moon",
   "version": "0.1.0",
   "description": "Shop and pay with crypto at the lowest rates. Works on Amazon.com and many more!",
+  "author": "Moon",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paywithmoon/moon.git"
+  },
+  "license": "UNLICENSED",
   "main": "src/app/index.js",
   "scripts": {
-    "build": "del /q build\\* && npm run build-src-app && npm run build-src-background && npm run build-assets && npm run build-manifest",
-    "build-src-app": "parcel build src/app/index.js -d build/ -o app.js",
-    "build-src-background": "parcel build src/background/index.js -d build/ -o background.js",
-    "build-assets": "copy /Y ..\\assets\\icons\\logo_128.png build\\logo_128.png",
-    "build-manifest": "copy /Y manifest.json build\\manifest.json",
-    "watch-src-app": "parcel watch src/app/index.js -d build/ -o app.js",
-    "watch-src-background": "parcel watch src/background/index.js -d build/ -o background.js"
-  },
-  "author": "Moon",
-  "respository": {
-    "type": "git",
-    "url": "https://github.com/paywithmoon/moon.git"
+    "build": "node build.js",
+    "watch-content": "node watchContent.js",
+    "watch-background": "node watchBackground.js"
   },
   "dependencies": {
+    "fs": "0.0.1-security",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "react-swipeable-views": "^0.12.14"
   },
   "devDependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "babel-plugin-transform-imports": "^1.5.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "parcel-bundler": "^1.6.2"
+    "parcel-bundler": "^1.6.2",
+    "shelljs": "^0.8.2",
+    "shx": "^0.3.0"
   }
 }

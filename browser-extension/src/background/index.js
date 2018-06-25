@@ -2,10 +2,10 @@
  * Copyright (c) 2018 moon
  */
 
-import {REQUEST_INJECT_APP, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events";
-import supportedSites from "../../supportedSites.json";
 import logo from "../../../assets/icons/logo_128.png";
 import logoDisabled from "../../../assets/icons/logo_disabled_128.png";
+import supportedSites from "../../supportedSites.json";
+import {REQUEST_INJECT_APP, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events";
 
 chrome.browserAction.setIcon({path: chrome.extension.getURL(logoDisabled)});
 
@@ -48,20 +48,23 @@ const doInjectAppEvent = (source) => {
         currentWindow: true,
     }, (tabs) => {
         // Send message to script file
-        chrome.tabs.sendMessage(
-            tabs[0].id,
-            {
-                type: REQUEST_INJECT_APP,
-                source: source
-            },
-            response => null
+        const message = {
+            source: source,
+            type: REQUEST_INJECT_APP
+        };
+        console.log("Sending message: ", message);
+        chrome.tabs.sendMessage(tabs[0].id, message, null,
+            response => console.log("response: ", response)
         );
     });
 };
 
 chrome.browserAction.onClicked.addListener(() => doInjectAppEvent(SOURCE_MANUAL));
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    onTabUpdate(tab);
+    console.log("onUpdated changeInfo:", changeInfo);
+    if (changeInfo.status === "complete") {
+        onTabUpdate(tab);
+    }
 });
 chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.get(activeInfo.tabId, (tab) => {

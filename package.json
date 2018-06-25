@@ -1,0 +1,20 @@
+{
+  "name": "moon",
+  "version": "0.0.1",
+  "description": "The world's first cryptocurrency e-commerce platform",
+  "private": true,
+  "scripts": {
+    "build-extension": "cd browser-extension && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paywithmoon/moon.git"
+  },
+  "author": "Moon",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/paywithmoon/moon/issues"
+  },
+  "homepage": "https://paywithmoon.com"
+}

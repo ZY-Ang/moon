@@ -2,14 +2,21 @@
  * Copyright (c) 2018 moon
  */
 import React, {Component} from 'react';
+import SwipeableViews from 'react-swipeable-views';
 import logo from '../../../../assets/icons/logo_300_text.png';
 import {MOON_DIV_ID} from "../../constants/dom";
+import Navbar from "./nav/Navbar";
+
+const INITIAL_STATE = {
+    isMaximized: true,
+    currentTab: null // TODO: Map to an integer index that can be used to switch tabs on swipeable views
+};
 
 class App extends Component {
     constructor() {
         super();
         this.state = {
-            isMaximized: true
+            ...INITIAL_STATE
         };
     }
 
@@ -28,7 +35,12 @@ class App extends Component {
         }
     };
 
+    changeTab = (tab) => {
+        this.setState(() => ({currentTab: tab}));
+    };
+
     render() {
+        // TODO: Use react swipeable views to animate height content on different pages
         return (
             <div>
                 <div id="moon-navbar">
@@ -42,15 +54,31 @@ class App extends Component {
                         </button>
                     </div>
                 </div>
+                <SwipeableViews
+                    ref={c => (this.swiper = c)}
+                    disabled
+                    className="bg-transparent"
+                    animateHeight
+                    index={this.state.currentTab}
+                >
+                    {
+
+                    }
+                </SwipeableViews>
                 <div>
                     {
                         this.state.isMaximized &&
                         <p>Welcome to {this.props.source}!</p>
                     }
                 </div>
+                <Navbar changeTab={this.changeTab}/>
             </div>
         );
     }
 }
 
-export default App
+const mapStateToProps = () => {
+
+};
+
+export default App;

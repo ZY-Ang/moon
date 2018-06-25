@@ -125,8 +125,14 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/macos,windows,webstorm,visualstudiocode
 
+node_modules/
+\.cache/
+
 browser-extension/build/
 
 browser-extension/node_modules/
 
 browser-extension/\.cache/
+
+browser-extension/build.crx
+browser-extension/build.pem
