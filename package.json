@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "build-extension": "cd browser-extension && npm run build",
+    "clean-extension": "cd browser-extension && npm run clean",
+    "clean-and-build-extension": "cd browser-extension && npm run clean && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

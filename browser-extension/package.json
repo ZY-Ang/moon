@@ -11,6 +11,7 @@
   "main": "src/app/index.js",
   "scripts": {
     "build": "node build.js",
+    "clean": "node clean.js",
     "watch-content": "node watchContent.js",
     "watch-background": "node watchBackground.js"
   },
