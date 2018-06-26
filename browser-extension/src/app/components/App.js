@@ -21,7 +21,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        console.log("Component Mounted");
+        console.log("Main App Mounted");
     }
 
     onToggleMaximize = () => {

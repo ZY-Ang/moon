@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from "./components/App";
 import {MOON_DIV_ID} from "../constants/dom";
-import {REQUEST_INJECT_APP, SOURCE_NONE} from "../constants/events";
+import {REQUEST_INJECT_APP, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events";
 
 // try {
 //     var promoInput = document.getElementById('spc-gcpromoinput');
@@ -19,23 +19,25 @@ import {REQUEST_INJECT_APP, SOURCE_NONE} from "../constants/events";
 //     // todo: check for message "You successfully redeemed your gift card"
 
 const injectApp = (source) => {
-    // Only inject if the source is not {@code SOURCE_NONE}
-    if (source !== SOURCE_NONE) {
-        // Destroy any existing elements and it's trees with {@code MOON_DIV_ID} if they exist
-        let moonDiv = document.getElementById(MOON_DIV_ID);
-        if (!!moonDiv) {
-            console.log("removing existing moonDiv... Source: ", source);
-            moonDiv.remove();
-        } else {
-            console.log("injectApp request received, rendering... Source: ", source);
-            console.log(MOON_DIV_ID);
+    console.log("injectApp request received from ", source);
+    // Attempt to get the wrapper div
+    let moonDiv = document.getElementById(MOON_DIV_ID);
 
-            // Create a new Moon Div
-            moonDiv = document.createElement("div");
-            document.body.appendChild(moonDiv);
-            moonDiv.setAttribute("id", MOON_DIV_ID);
-            ReactDOM.render(<App source={source} />, moonDiv);
-        }
+    if (source === SOURCE_MANUAL && !!moonDiv) {
+        // If the source of the injection came from a manual click of the
+        // browserAction icon and a div already exists, destroy the div.
+        console.log("Removing existing moonDiv...");
+        moonDiv.remove();
+    } else if (source !== SOURCE_NONE && !moonDiv) {
+        // If the source of the injection came from a source other than
+        // {@code SOURCE_NONE}, and no div exists yet, create the new div
+        console.log("Rendering...");
+
+        // Create a new Moon Div
+        moonDiv = document.createElement("div");
+        document.body.appendChild(moonDiv);
+        moonDiv.setAttribute("id", MOON_DIV_ID);
+        ReactDOM.render(<App source={source} />, moonDiv);
     }
 };
 
@@ -44,19 +46,18 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
     // If message is injectApp
     switch (request.type) {
         case REQUEST_INJECT_APP:
+
             // Inject our app to DOM and send response
             try {
                 injectApp(request.source);
-                response({startedExtension: true});
+                response({success: true});
             } catch (e) {
-                response({startedExtension: false});
+                response({error: e});
             }
             return;
         default:
-            console.log("Received message but not a known one.");
-            console.log("Request:", request);
-            console.log("Sender:", sender);
-            response({startedExtension: false});
+            console.error("Received message but not a known one.\nRequest: ", request, "\nSender: ", sender);
+            response({error: new Error("Received message but not a known one.")});
             return;
     }
 });
