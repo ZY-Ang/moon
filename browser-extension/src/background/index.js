@@ -59,13 +59,27 @@ const doInjectAppEvent = (source) => {
     });
 };
 
+/**
+ * Fired when a browser action icon is clicked.
+ * @see {@link https://developer.chrome.com/extensions/browserAction#event-onClicked}
+ */
 chrome.browserAction.onClicked.addListener(() => doInjectAppEvent(SOURCE_MANUAL));
+
+/**
+ * Fired when a tab is updated.
+ * @see {@link https://developer.chrome.com/extensions/tabs#event-onUpdated}
+ */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     console.log("onUpdated changeInfo:", changeInfo);
     if (changeInfo.status === "complete") {
         onTabUpdate(tab);
     }
 });
+
+/**
+ * Fired when the active tab is changed in a window.
+ * @see {@link https://developer.chrome.com/extensions/tabs#event-onActivated}
+ */
 chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.get(activeInfo.tabId, (tab) => {
         onTabUpdate(tab);
