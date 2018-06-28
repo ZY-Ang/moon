@@ -2,15 +2,22 @@
  * Copyright (c) 2018 moon
  */
 import React, {Component} from 'react';
+import './misc/fontawesome/library';
+import './App.css';
+import ReactTooltip from 'react-tooltip';
 import SwipeableViews from 'react-swipeable-views';
 import logo from '../../../../assets/icons/logo_300_text.png';
 import {MOON_DIV_ID} from "../../constants/dom";
 import Navbar from "./nav/Navbar";
+import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
 const INITIAL_STATE = {
     isMaximized: true,
-    currentTab: null // TODO: Map to an integer index that can be used to switch tabs on swipeable views
+    currentTabIndex: TAB_GROUP_AUTH[TAB_PAY].index
 };
+
+const TOOLTIP_ID_HEADER_BUTTONS = 'tipBtnHeaderControls';
 
 class App extends Component {
     constructor() {
@@ -35,50 +42,64 @@ class App extends Component {
         }
     };
 
-    changeTab = (tab) => {
-        this.setState(() => ({currentTab: tab}));
+    changeTab = (tabIndex) => {
+        this.setState(() => ({currentTabIndex: tabIndex}));
     };
 
     render() {
         // TODO: Use react swipeable views to animate height content on different pages
         return (
-            <div>
-                <div id="moon-navbar">
+            <div id="moon-wrapper">
+                <div id="moon-header">
                     <img id="moon-header-img" src={chrome.extension.getURL(logo)} alt="Moon"/>
-                    <div id="moon-navbar-buttons-div">
-                        <button onClick={this.onToggleMaximize}>
-                            +
-                        </button>
-                        <button onClick={this.onClose}>
-                            X
-                        </button>
+                    <div id="moon-header-buttons-div">
+                        <div
+                            id="moon-header-toggle-button"
+                            className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
+                            data-tip="Toggle Size"
+                            data-for={TOOLTIP_ID_HEADER_BUTTONS}
+                            onClick={this.onToggleMaximize}
+                        >
+                                {
+                                    this.state.isMaximized
+                                        ? <FontAwesomeIcon icon="minus-circle"/>
+                                        : <FontAwesomeIcon icon="plus-circle"/>
+                                }
+                        </div>
+                        <div
+                            id="moon-header-close-button"
+                            className="moon-header-button"
+                            data-tip="Close"
+                            data-for={TOOLTIP_ID_HEADER_BUTTONS}
+                            onClick={this.onClose}
+                        >
+                            <FontAwesomeIcon icon="times-circle"/>
+                        </div>
+                        <ReactTooltip place="bottom" effect="solid" id={TOOLTIP_ID_HEADER_BUTTONS}/>
                     </div>
                 </div>
-                <SwipeableViews
-                    ref={c => (this.swiper = c)}
-                    disabled
-                    className="bg-transparent"
-                    animateHeight
-                    index={this.state.currentTab}
-                >
-                    {
-
-                    }
-                </SwipeableViews>
-                <div>
-                    {
-                        this.state.isMaximized &&
-                        <p>Welcome to {this.props.source}!</p>
-                    }
+                {
+                    // Redux check if signed in?
+                }
+                <div id={"moon-body"} className={(this.state.isMaximized ? "moon-body-maximized" : "moon-body-minimized")}>
+                    <SwipeableViews
+                        ref={c => (this.swiper = c)}
+                        disabled
+                        className="bg-transparent"
+                        animateHeight
+                        index={this.state.currentTabIndex}
+                    >
+                        {TAB_GROUP_AUTH.components.map(AuthTab => <AuthTab/>)}
+                    </SwipeableViews>
+                    <Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>
                 </div>
-                <Navbar changeTab={this.changeTab}/>
             </div>
         );
     }
 }
 
-const mapStateToProps = () => {
+const mapStateToProps = (state) => ({
 
-};
+});
 
 export default App;

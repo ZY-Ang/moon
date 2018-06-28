@@ -1,0 +1,113 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+
+#moon-wrapper {
+    width: 100%;
+}
+
+#moon-wrapper * {
+    font-family: Raleway, Bellefair, sans-serif !important;
+}
+
+#moon-body {
+    /*-webkit-transition: all 1s;*/
+    /*-moz-transition: all 1s;*/
+    /*-ms-transition: all 1s;*/
+    /*-o-transition: all 1s;*/
+    /*transition: all 1s;*/
+}
+
+#moon-body.moon-body-maximized {
+    max-height: 577px;
+    height: 577px;
+    opacity: 100%;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+#moon-body.moon-body-minimized {
+    max-height: 0;
+    height: 0;
+    opacity: 0;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.moon-tab {
+    padding: 5px 16px 5px;
+}
+
+#moon-header {
+    height: auto;
+    width: auto;
+    -webkit-box-direction: normal;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: justify;
+    -webkit-box-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    padding: 5px 16px 5px;
+}
+
+#moon-header-img {
+    align-self: center;
+    width: auto;
+    height: 48px !important;
+    border-style: none;
+}
+
+#moon-header-buttons-div {
+    box-sizing: border-box !important;
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+.moon-header-button {
+    cursor: pointer;
+}
+
+.moon-header-button:hover {
+    opacity: 0.75 !important;
+}
+
+.moon-header-button:active {
+    opacity: 0.5 !important;
+}
+
+.moon-header-button:focus {
+    border: none;
+    outline: none;
+}
+
+#moon-header-toggle-button {
+    margin-left: auto;
+    font-size: 24px;
+    background: transparent;
+    border: none;
+}
+
+#moon-header-toggle-button.minimized {
+    color: #74cd00;
+}
+
+#moon-header-toggle-button.maximized {
+    color: #ffa300;
+}
+
+#moon-header-close-button {
+    margin-left: 8px;
+    font-size: 24px;
+    background: transparent;
+    border: none;
+    color: #d30000;
+}

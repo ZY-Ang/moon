@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+#moon-navbar {
+    position: absolute;
+    bottom: 0;
+    height: auto;
+    width: 100%;
+}
+
+.moon-navbar-item {
+    border-top: cornflowerblue solid 1px;
+    cursor: pointer;
+    float: left;
+    width: 25%;
+    text-align: center;
+}
+
+.moon-navbar-item:hover {
+    border-top: cornflowerblue solid 3px;
+    background-color: cornflowerblue;
+    color: #091225;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.moon-navbar-item:active {
+    background-color: #4f72b6;
+}
+
+.moon-navbar-item.active {
+    border-top: cornflowerblue solid 3px;
+}
+
+.moon-body-maximized .moon-navbar-item {
+    padding: 10px 0;
+}
+
+.moon-body-minimized .moon-navbar-item {
+    height: 0;
+    display: none;
+}
