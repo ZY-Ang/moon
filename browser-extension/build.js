@@ -9,10 +9,12 @@ const build = () => {
     const DIR_BUILD = `build/`;
     const DIR_SOURCE = `src/`;
 
+    console.log(`Building for ${shell.env.BUILD_ENV} environment`);
+
 // 1. Delete all build files in the build folder of the browser extension
-    console.log("Deleting build folder...");
+    console.log("Clearing build folder...");
     shell.rm('-f', `${DIR_BUILD}*`);
-    console.log("Recreating build folder...");
+    console.log("Force recreating build folder...");
     shell.mkdir('-p', DIR_BUILD);
 
 // 2. Build react app content script

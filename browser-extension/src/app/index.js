@@ -2,13 +2,26 @@
  * Copyright (c) 2018 moon
  */
 
+if (process.env.BUILD_ENV === 'production') {
+    // TODO: Log to Cloud Service
+    console.log("Pay with moon by clicking the moon icon!");
+    console.log = () => {};
+    console.info = () => {};
+    console.warn = () => {};
+    console.error = () => {};
+} else {
+    console.log(`Running in ${process.env.BUILD_ENV} environment`);
+}
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import WebFont from 'webfontloader';
 import App from "./components/App";
 import {MOON_DIV_ID} from "../constants/dom";
-import {REQUEST_INJECT_APP, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events";
+import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events";
+import {Provider} from "react-redux";
+import store from "./redux/store";
 
 /**
  * Load required font families from the appropriate libraries.
@@ -51,10 +64,24 @@ const injectApp = (source) => {
 
         // Create a new Moon Div
         moonDiv = document.createElement("div");
-        document.body.appendChild(moonDiv);
         moonDiv.setAttribute("id", MOON_DIV_ID);
-        ReactDOM.render(<App/>, moonDiv);
+        document.body.appendChild(moonDiv);
+        const moonShadow = moonDiv.attachShadow({mode: 'open'});
+
+        ReactDOM.render((
+            <Provider store={store}>
+                <App />
+            </Provider>
+        ), moonShadow);
+        const moonStyles = document.createElement('style');
+        moonStyles.innerHTML = `@import url("${chrome.extension.getURL('app.css')}")`;
+        console.log("Appending styles to shadow...");
+        moonShadow.appendChild(moonStyles);
     }
+};
+
+const updateAuthUser = (authUser) => {
+    // TODO: Update redux store with new user
 };
 
 /**
@@ -71,10 +98,18 @@ chrome.runtime.onMessage.addListener((request, sender, response) => {
             } catch (e) {
                 response({error: e});
             }
-            return;
+            break;
+        case REQUEST_UPDATE_AUTH_USER:
+            try {
+                updateAuthUser(request.authUser);
+                response({success: true});
+            } catch (e) {
+                response({error: e});
+            }
+            break;
         default:
-            console.error("Received message but not a known one.\nRequest: ", request, "\nSender: ", sender);
+            console.error("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
             response({error: new Error("Received message but not a known one.")});
-            return;
+            break;
     }
 });

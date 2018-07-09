@@ -18,17 +18,18 @@ class Navbar extends Component {
         return (
             <div id="moon-navbar">
                 {
-                    TAB_GROUP_AUTH.navTabs.map(tab => {
+                    TAB_GROUP_AUTH.navTabs.map((tab, index) => {
                         const tabObject = TAB_GROUP_AUTH[tab];
                         return (
                             <div
+                                key={index}
                                 onClick={this.changeTab(tabObject.index)}
                                 className={`moon-navbar-item${(this.props.activeTab === tabObject.index) ? ' active' : ''}`}
                             >
-                                <div style={{width: '100%', fontSize: 18}}>
+                                <div>
                                     <FontAwesomeIcon icon={tabObject.icon}/>
                                 </div>
-                                <div style={{paddingTop: 4, width: '100%'}}>
+                                <div className="moon-navbar-item-text">
                                     {tabObject.name}
                                 </div>
                             </div>

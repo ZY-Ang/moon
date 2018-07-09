@@ -17,12 +17,28 @@
     font-size:14px;
     top:15px;
     right:25px;
-    border: solid 1px cornflowerblue !important;
-    box-shadow: 0 5px 15px -8px rgba(0, 114, 198, 0.24), 0 8px 10px -5px rgba(88, 171, 255, 0.2);
+    z-index:2147483648 !important;
+}
+
+#moon-div-shadow {
+    display:-webkit-box;
+    display:-webkit-flex;
+    display:-moz-flex;
+    display:-ms-flexbox;
+    display:flex;
+    width:360px;
+    -webkit-font-smoothing:initial;
+    position:fixed;
+    line-height:normal;
+    letter-spacing:normal;
+    font-size:14px;
+    top:15px;
+    right:25px;
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
     border-radius:10px;
-    background-color:#091225;
+    background-color: #ffffff;
     box-sizing:border-box;
-    color:white;
+    color: #21304d;
     z-index:2147483648 !important;
 }
 
@@ -36,4 +52,12 @@
 
 .text-black {
     color: black !important;
+}
+
+.react-swipeable-view-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+}
+.react-swipeable-view-container > div {
+    -ms-flex-negative: 0;
 }

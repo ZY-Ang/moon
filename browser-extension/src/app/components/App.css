@@ -21,7 +21,7 @@
 #moon-body.moon-body-maximized {
     max-height: 577px;
     height: 577px;
-    opacity: 100%;
+    opacity: 1.0;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
     -ms-transition: all 0.2s ease;
@@ -38,6 +38,11 @@
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
+}
+
+#moon-body.moon-body-minimized * {
+    opacity: 0;
+    display: none;
 }
 
 .moon-tab {
@@ -96,11 +101,15 @@
     border: none;
 }
 
-#moon-header-toggle-button.minimized {
+#moon-header-toggle-button svg {
+    height: 24px;
+}
+
+#moon-header-toggle-button.minimized path {
     color: #74cd00;
 }
 
-#moon-header-toggle-button.maximized {
+#moon-header-toggle-button.maximized path {
     color: #ffa300;
 }
 
@@ -109,5 +118,12 @@
     font-size: 24px;
     background: transparent;
     border: none;
+}
+
+#moon-header-close-button svg {
+    height: 24px;
+}
+
+#moon-header-close-button path {
     color: #d30000;
 }

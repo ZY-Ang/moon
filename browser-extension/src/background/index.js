@@ -2,6 +2,17 @@
  * Copyright (c) 2018 moon
  */
 
+if (process.env.BUILD_ENV === 'production') {
+    // TODO: Log to Cloud Service
+    console.log("Pay with moon by clicking the moon icon!");
+    console.log = () => {};
+    console.info = () => {};
+    console.warn = () => {};
+    console.error = () => {};
+} else {
+    console.log(`Running in ${process.env.BUILD_ENV} environment`);
+}
+
 import logo from "../../../assets/icons/logo_128.png";
 import logoDisabled from "../../../assets/icons/logo_disabled_128.png";
 import supportedSites from "../../supportedSites.json";

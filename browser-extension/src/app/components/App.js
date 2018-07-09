@@ -2,22 +2,25 @@
  * Copyright (c) 2018 moon
  */
 import React, {Component} from 'react';
+import 'antd/dist/antd.css';
 import './misc/fontawesome/library';
 import './App.css';
-import ReactTooltip from 'react-tooltip';
-import SwipeableViews from 'react-swipeable-views';
-import logo from '../../../../assets/icons/logo_300_text.png';
+import logo from '../../../../assets/icons/logo_300_text_dark.png';
 import {MOON_DIV_ID} from "../../constants/dom";
-import Navbar from "./nav/Navbar";
 import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {connect} from "react-redux";
+import AuthFlow from "./auth/AuthFlow";
+import {Tabs} from "antd";
+import Navbar from "./nav/Navbar";
+import SwipeableViews from "react-swipeable-views";
+
+const TabPane = Tabs.TabPane;
 
 const INITIAL_STATE = {
     isMaximized: true,
     currentTabIndex: TAB_GROUP_AUTH[TAB_PAY].index
 };
-
-const TOOLTIP_ID_HEADER_BUTTONS = 'tipBtnHeaderControls';
 
 class App extends Component {
     constructor() {
@@ -29,6 +32,15 @@ class App extends Component {
 
     componentDidMount() {
         console.log("Main App Mounted");
+        // if (this.tabSwiper) {
+        //     setTimeout(this.tabSwiper.updateHeight, 500);
+        // }
+    }
+
+    componentDidUpdate() {
+        // if (this.tabSwiper) {
+        //     this.tabSwiper.updateHeight();
+        // }
     }
 
     onToggleMaximize = () => {
@@ -43,55 +55,70 @@ class App extends Component {
     };
 
     changeTab = (tabIndex) => {
-        this.setState(() => ({currentTabIndex: tabIndex}));
+        const currentTabIndex = this.state.currentTabIndex;
+        if (tabIndex === currentTabIndex) {
+            // TODO: Pop inner stack for the currentTabIndex
+            console.log("Pop", currentTabIndex);
+        }
+        this.setState(() => ({
+            currentTabIndex: tabIndex
+        }));
     };
 
     render() {
-        // TODO: Use react swipeable views to animate height content on different pages
+        const CLASS_MOON_BODY = this.state.isMaximized ? "moon-body-maximized" : "moon-body-minimized";
         return (
-            <div id="moon-wrapper">
-                <div id="moon-header">
-                    <img id="moon-header-img" src={chrome.extension.getURL(logo)} alt="Moon"/>
-                    <div id="moon-header-buttons-div">
-                        <div
-                            id="moon-header-toggle-button"
-                            className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
-                            data-tip="Toggle Size"
-                            data-for={TOOLTIP_ID_HEADER_BUTTONS}
-                            onClick={this.onToggleMaximize}
-                        >
+            <div id="moon-div-shadow">
+                <div id="moon-wrapper">
+                    <div id="moon-header">
+                        <img id="moon-header-img" src={chrome.extension.getURL(logo)} alt="Moon"/>
+                        <div id="moon-header-buttons-div">
+                            <div
+                                id="moon-header-toggle-button"
+                                className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
+                                // data-tip="Toggle Size"
+                                onClick={this.onToggleMaximize}
+                            >
                                 {
                                     this.state.isMaximized
                                         ? <FontAwesomeIcon icon="minus-circle"/>
                                         : <FontAwesomeIcon icon="plus-circle"/>
                                 }
+                            </div>
+                            <div
+                                id="moon-header-close-button"
+                                className="moon-header-button"
+                                // data-tip="Close"
+                                onClick={this.onClose}
+                            >
+                                <FontAwesomeIcon icon="times-circle"/>
+                            </div>
                         </div>
-                        <div
-                            id="moon-header-close-button"
-                            className="moon-header-button"
-                            data-tip="Close"
-                            data-for={TOOLTIP_ID_HEADER_BUTTONS}
-                            onClick={this.onClose}
-                        >
-                            <FontAwesomeIcon icon="times-circle"/>
-                        </div>
-                        <ReactTooltip place="bottom" effect="solid" id={TOOLTIP_ID_HEADER_BUTTONS}/>
                     </div>
-                </div>
-                {
-                    // Redux check if signed in?
-                }
-                <div id={"moon-body"} className={(this.state.isMaximized ? "moon-body-maximized" : "moon-body-minimized")}>
-                    <SwipeableViews
-                        ref={c => (this.swiper = c)}
-                        disabled
-                        className="bg-transparent"
-                        animateHeight
-                        index={this.state.currentTabIndex}
-                    >
-                        {TAB_GROUP_AUTH.components.map(AuthTab => <AuthTab/>)}
-                    </SwipeableViews>
-                    <Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>
+                    {
+                        !!this.props.authUser
+                            ? (
+                                <div id="moon-body" className={CLASS_MOON_BODY}>
+                                    <SwipeableViews
+                                        ref={c => (this.tabSwiper = c)}
+                                        disabled
+                                        style={{height: 'calc(100% - 66px)', overflowY: 'auto !important'}}
+                                        index={this.state.currentTabIndex}
+                                    >
+                                        {
+                                            TAB_GROUP_AUTH.components.map((AuthTab, index) =>
+                                                <AuthTab key={index}/>
+                                            )
+                                        }
+                                    </SwipeableViews>
+                                    <Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>
+                                </div>
+                            ) : (
+                                <div id="moon-body" className={CLASS_MOON_BODY}>
+                                    <AuthFlow/>
+                                </div>
+                            )
+                    }
                 </div>
             </div>
         );
@@ -99,7 +126,7 @@ class App extends Component {
 }
 
 const mapStateToProps = (state) => ({
-
+    authUser: state.sessionState.authUser
 });
 
-export default App;
+export default connect(mapStateToProps)(App);

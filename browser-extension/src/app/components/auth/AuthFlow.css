@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+
+.login-form {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+.login-form-remember {
+    float: left;
+}
+.login-form-forgot {
+    float: right;
+}
+.login-form-button {
+    width: 100%;
+}
+
+.ant-input-prefix svg {
+    height: 14px !important;
+    color: rgba(0,0,0,.25);
+}

@@ -4,7 +4,7 @@
 
 import PayTab from "../pay/PayTab";
 import WalletsTab from "../wallets/WalletsTab";
-import OrdersTab from "../orders/OrdersTab";
+import RewardsTab from "../rewards/RewardsTab";
 import SettingsTab from "../settings/SettingsTab";
 
 /** Tabs that can only be shown when user is NOT signed in */
@@ -17,56 +17,47 @@ export const TAB_PAY = 'TAB_PAY';
 export const TAB_WALLETS = 'TAB_WALLETS';
 
 /** Tab that shows the sites that we support and links to them. Yay integrations! */
-export const TAB_ORDERS = 'TAB_ORDERS';
+export const TAB_REWARDS = 'TAB_REWARDS';
 
 /** The settings tab that allows user to change  */
 export const TAB_SETTINGS = 'TAB_SETTINGS';
 
 /** Tab groups and orderings that are displayed depending on auth, browser and other state */
-// export const TAB_GROUP_NON_AUTH = {
-//     componentOrder: [TAB_AUTH, TAB_SITES],
-//     [TAB_AUTH]: { // TODO: Onboarding flow
-//         index: 0,
-//         icon: null,
-//         name: 'Sign In'
-//     },
-//     [TAB_SITES]: {
-//         index: 1,
-//         icon: null,
-//         name: 'Sites'
-//     }
-// };
 export const TAB_GROUP_AUTH = {
     components: [
         PayTab,
         WalletsTab,
-        OrdersTab,
+        RewardsTab,
         SettingsTab
     ],
     navTabs: [
         TAB_PAY,
         TAB_WALLETS,
-        TAB_ORDERS,
+        TAB_REWARDS,
         TAB_SETTINGS
     ],
     [TAB_PAY]: {
         index: 0,
         icon: "moon",
-        name: 'Pay'
+        name: 'Pay',
+        component: PayTab
     },
     [TAB_WALLETS]: {
         index: 1,
         icon: "wallet",
-        name: 'Wallets'
+        name: 'Wallets',
+        component: WalletsTab
     },
-    [TAB_ORDERS]: {
+    [TAB_REWARDS]: {
         index: 2,
-        icon: "list",
-        name: 'Orders'
+        icon: "rocket",
+        name: 'Rewards',
+        component: RewardsTab
     },
     [TAB_SETTINGS]: {
         index: 3,
         icon: "cog",
-        name: 'Settings'
+        name: 'Settings',
+        component: SettingsTab
     }
 };

@@ -10,3 +10,6 @@ export const SOURCE_NONE = "MOON_SOURCE_NONE";
 
 /** Used to request an injection of the moon extension onto the page */
 export const REQUEST_INJECT_APP = "MOON_REQUEST_INJECT_APP";
+
+/** Used to notify of an update to the current authenticated user on the background script */
+export const REQUEST_UPDATE_AUTH_USER = "MOON_REQUEST_UPDATE_AUTH_USER";
