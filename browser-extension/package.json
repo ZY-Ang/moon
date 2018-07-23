@@ -23,6 +23,7 @@
     "amazon-cognito-identity-js": "^2.0.12",
     "antd": "^3.6.4",
     "fs": "0.0.1-security",
+    "query-string": "^6.1.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",
