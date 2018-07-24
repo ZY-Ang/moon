@@ -35,12 +35,12 @@ const isCheckoutPage = (url) => {
 
 /**
  * @returns {boolean} {@code true} if
- * {@param url} matches a {@code noncheckoutURL}
+ * {@param url} matches a {@code nonCheckoutURL}
  * of a supported site.
  */
 const isSupportedSite = (url) => {
     for (let i = 0; i < supportedSites.length; i++) {
-        if (url.toLowerCase().search(supportedSites[i].noncheckoutURL.toLowerCase()) > 0) return true;
+        if (url.toLowerCase().search(supportedSites[i].nonCheckoutURL.toLowerCase()) > 0) return true;
     }
     return false;
 };
