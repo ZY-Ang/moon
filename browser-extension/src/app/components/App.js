@@ -11,11 +11,8 @@ import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {connect} from "react-redux";
 import AuthFlow from "./auth/AuthFlow";
-import {Tabs} from "antd";
 import Navbar from "./nav/Navbar";
 import SwipeableViews from "react-swipeable-views";
-
-const TabPane = Tabs.TabPane;
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -38,9 +35,9 @@ class App extends Component {
     }
 
     componentDidUpdate() {
-        // if (this.tabSwiper) {
-        //     this.tabSwiper.updateHeight();
-        // }
+        if (this.tabSwiper) {
+            this.tabSwiper.updateHeight();
+        }
     }
 
     onToggleMaximize = () => {
