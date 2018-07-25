@@ -2,7 +2,6 @@
  * Copyright (c) 2018 moon
  */
 import React, {Component} from 'react';
-import 'antd/dist/antd.css';
 import './misc/fontawesome/library';
 import './App.css';
 import logo from '../../../../assets/icons/logo_300_text_dark.png';
