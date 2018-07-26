@@ -31,25 +31,25 @@
         "name": "Amazon-Billing-Address-Select"
       }
     ],
-    "noncheckoutURL": "amazon.com",
+    "nonCheckoutURL": "amazon.com",
     "baseURL": "https://amazon.com",
     "name": "Amazon"
   },
   {
     "regexCheckoutURL": "amazon.cn/gp/buy/spc/handlers",
-    "noncheckoutURL": "amazon.cn",
+    "nonCheckoutURL": "amazon.cn",
     "baseURL": "https://amazon.cn",
     "name": "Amazon-CN"
   },
   {
     "regexCheckoutURL": "amazon.co.jp/gp/buy/spc/handlers",
-    "noncheckoutURL": "amazon.co.jp",
+    "nonCheckoutURL": "amazon.co.jp",
     "baseURL": "https://amazon.co.jp",
     "name": "Amazon-JP"
   },
   {
     "regexCheckoutURL": "amazon.co.uk/gp/buy/spc/handlers",
-    "noncheckoutURL": "amazon.co.uk",
+    "nonCheckoutURL": "amazon.co.uk",
     "baseURL": "https://amazon.co.uk",
     "name": "Amazon-UK"
   }

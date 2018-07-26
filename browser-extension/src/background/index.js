@@ -2,21 +2,13 @@
  * Copyright (c) 2018 moon
  */
 
-if (process.env.BUILD_ENV === 'production') {
-    // TODO: Log to Cloud Service
-    console.log("Pay with moon by clicking the moon icon!");
-    console.log = () => {};
-    console.info = () => {};
-    console.warn = () => {};
-    console.error = () => {};
-} else {
-    console.log(`Running in ${process.env.BUILD_ENV} environment`);
-}
-
+import '../utils/logger.js';
 import logo from "../../../assets/icons/logo_128.png";
 import logoDisabled from "../../../assets/icons/logo_disabled_128.png";
 import supportedSites from "../../supportedSites.json";
-import {REQUEST_INJECT_APP, SOURCE_MANUAL} from "../constants/events";
+import {REQUEST_INJECT_APP, SOURCE_MANUAL} from "../constants/events/background.js";
+import {REQUEST_LAUNCH_SIGN_IN_FLOW} from "../constants/events/app.js";
+import {doLaunchWebAuthFlow} from "./auth";
 
 // Set the default browser action icon to be {@code logoDisabled}
 chrome.browserAction.setIcon({path: chrome.extension.getURL(logoDisabled)});
@@ -35,12 +27,12 @@ const isCheckoutPage = (url) => {
 
 /**
  * @returns {boolean} {@code true} if
- * {@param url} matches a {@code noncheckoutURL}
+ * {@param url} matches a {@code nonCheckoutURL}
  * of a supported site.
  */
 const isSupportedSite = (url) => {
     for (let i = 0; i < supportedSites.length; i++) {
-        if (url.toLowerCase().search(supportedSites[i].noncheckoutURL.toLowerCase()) > 0) return true;
+        if (url.toLowerCase().search(supportedSites[i].nonCheckoutURL.toLowerCase()) > 0) return true;
     }
     return false;
 };
@@ -97,7 +89,7 @@ const doInjectAppEvent = (source) =>
         // Send message to script file
         const message = {
             source: source,
-            type: REQUEST_INJECT_APP
+            message: REQUEST_INJECT_APP
         };
         console.log("Sending message: ", message);
         chrome.tabs.sendMessage(tabs[0].id, message, null,
@@ -130,4 +122,26 @@ chrome.tabs.onActivated.addListener(activeInfo => {
     chrome.tabs.get(activeInfo.tabId, (tab) => {
         handleTabUpdate(tab);
     });
+});
+
+/**
+ * Fired when the background script receives a new message.
+ *
+ * Note: Code looks the same for both content and background scripts.
+ *
+ * @see {@link https://developer.chrome.com/extensions/runtime#event-onMessage}
+ */
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    const {message, type} = request;
+    console.log("Received message: ", message, "\nType: ", type);
+    switch (message) {
+        case REQUEST_LAUNCH_SIGN_IN_FLOW:
+            console.log("Launching web auth flow...");
+            doLaunchWebAuthFlow(type);
+            sendResponse("doLaunchWebAuthFlow started");
+            break;
+        default:
+            console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+            break;
+    }
 });
