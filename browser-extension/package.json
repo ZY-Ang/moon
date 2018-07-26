@@ -10,19 +10,16 @@
   "license": "UNLICENSED",
   "main": "src/app/index.js",
   "scripts": {
-    "build": "node build.js",
+    "build": "node ./dev/build.js",
     "build-production": "cross-env BUILD_ENV=\"production\" npm run build",
-    "clean": "node clean.js",
-    "watch-content": "node watchContent.js",
-    "watch-background": "node watchBackground.js"
+    "clean": "node ./dev/clean.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.0-14",
     "@fortawesome/free-solid-svg-icons": "^5.1.0-11",
     "@fortawesome/react-fontawesome": "0.1.0-11",
     "amazon-cognito-identity-js": "^2.0.12",
-    "antd": "^3.6.4",
-    "fs": "0.0.1-security",
+    "axios": "^0.18.0",
     "query-string": "^6.1.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
@@ -35,12 +32,8 @@
     "babel-plugin-transform-class-properties": "6.24.1",
     "babel-plugin-transform-es2015-arrow-functions": "6.22.0",
     "babel-plugin-transform-es2015-modules-commonjs": "6.26.2",
-    "babel-plugin-transform-imports": "1.5.0",
-    "babel-plugin-transform-object-rest-spread": "6.26.0",
-    "babel-preset-env": "1.6.1",
-    "babel-preset-react": "6.24.1",
-    "babel-preset-stage-3": "6.24.1",
-    "parcel-bundler": "^1.6.2",
+    "babel-preset-react-app": "^3.1.2",
+    "parcel-bundler": "1.9.7",
     "shelljs": "^0.8.2",
     "shx": "^0.3.0"
   }

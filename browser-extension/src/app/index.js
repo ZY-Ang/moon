@@ -2,16 +2,17 @@
  * Copyright (c) 2018 moon
  */
 
-import '../utils/logger.js';
+import '../utils/preload.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import WebFont from 'webfontloader';
 import App from "./components/App";
 import {MOON_DIV_ID} from "../constants/dom";
-import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/background.js";
+import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/background";
 import {Provider} from "react-redux";
 import store from "./redux/store";
+import {ACTION_SET_AUTH_USER} from "./redux/reducers/constants";
 
 /**
  * Load required font families from the appropriate libraries.
@@ -70,9 +71,11 @@ const injectApp = (source) => {
     }
 };
 
-const updateAuthUser = (authUser) => {
-    // TODO: Update redux store with new user
-};
+const updateAuthUser = (authUser) =>
+    store.dispatch({
+        type: ACTION_SET_AUTH_USER,
+        authUser
+    });
 
 /**
  * Listen to requests from the background script

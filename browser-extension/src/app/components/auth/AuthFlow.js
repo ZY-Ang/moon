@@ -7,16 +7,16 @@ import './AuthFlow.css';
 import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {connect} from "react-redux";
 import {
-    REQUEST_LAUNCH_SIGN_IN_FLOW, TYPE_AMAZON,
+    REQUEST_LAUNCH_WEB_AUTH_FLOW, TYPE_AMAZON,
     TYPE_COGNITO_SIGN_IN,
     TYPE_COGNITO_SIGN_UP,
     TYPE_FACEBOOK, TYPE_GOOGLE
-} from "../../../constants/events/app.js";
+} from "../../../constants/events/app";
 
 class AuthFlow extends Component {
     signIn = (event) => {
         chrome.runtime.sendMessage(null, {
-            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
             type: TYPE_COGNITO_SIGN_IN
         });
         if (event) {
@@ -26,7 +26,7 @@ class AuthFlow extends Component {
 
     signUp = (event) => {
         chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
             type: TYPE_COGNITO_SIGN_UP
         });
         if (event) {
@@ -36,7 +36,7 @@ class AuthFlow extends Component {
 
     signInWithFacebook = (event) => {
         chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
             type: TYPE_FACEBOOK
         });
         if (event) {
@@ -46,7 +46,7 @@ class AuthFlow extends Component {
 
     signInWithGoogle = (event) => {
         chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
             type: TYPE_GOOGLE
         });
         if (event) {
@@ -56,7 +56,7 @@ class AuthFlow extends Component {
 
     signInWithAmazon = (event) => {
         chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
             type: TYPE_AMAZON
         });
         if (event) {

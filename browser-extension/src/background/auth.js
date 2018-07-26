@@ -8,7 +8,7 @@ import {
     TYPE_COGNITO_SIGN_UP,
     TYPE_FACEBOOK,
     TYPE_GOOGLE
-} from "../constants/events/app.js";
+} from "../constants/events/app";
 import {
     URL_REDIRECT,
     URL_AMAZON_AUTH,
@@ -20,6 +20,23 @@ import {
 import axios from "axios";
 import {parseUrl, stringify} from "query-string";
 import {COGNITO_CLIENT_ID} from "./config/aws/cognito/userpool";
+import {REQUEST_UPDATE_AUTH_USER} from "../constants/events/background";
+
+const doSignInEvent = (data) =>
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+    }, (tabs) => {
+        // Send message to script file
+        const message = {
+            message: REQUEST_UPDATE_AUTH_USER,
+            authUser: data
+        };
+        console.log("Sending message: ", message);
+        chrome.tabs.sendMessage(tabs[0].id, message, null,
+            response => console.log("response: ", response)
+        );
+    });
 
 /**
  * Callback for when OAuth via {@code chrome.identity.launchWebAuthFlow} completes.
@@ -28,7 +45,7 @@ import {COGNITO_CLIENT_ID} from "./config/aws/cognito/userpool";
  */
 const onWebAuthFlowResponse = (responseUrl) => {
     console.log(`Received web auth flow response ${responseUrl}`);
-    const code = parseUrl(responseUrl).query.code;
+    const code = parseUrl(responseUrl).query.code.split("#")[0];
 
     const config = {
         headers: {
@@ -43,13 +60,16 @@ const onWebAuthFlowResponse = (responseUrl) => {
         client_id: COGNITO_CLIENT_ID,
         code: code
     });
+    console.log(`Posting to ${URL_TOKEN_FLOW} with config ${config} and body ${body}`);
     axios.post(URL_TOKEN_FLOW, body, config)
         .then(({data}) => {
             console.log("Successfully retrieved OAuth Tokens: ", data);
             // TODO: Store tokens in storage and send a new message to update authUser
+            doSignInEvent(data);
         })
         .catch(err => {
             console.error("Unable to retrieve tokens from Moon OAuth server", err);
+            console.error("Error response: ", err.response);
         });
 };
 
@@ -61,19 +81,19 @@ export const doLaunchWebAuthFlow = (type) => {
     console.log(`Launching web auth flow for type ${type}`);
     switch (type) {
         case TYPE_COGNITO_SIGN_IN:
-            chrome.identity.launchWebAuthFlow({url: URL_COGNITO_SIGN_IN}, onWebAuthFlowResponse);
+            chrome.identity.launchWebAuthFlow({interactive: true, url: URL_COGNITO_SIGN_IN}, onWebAuthFlowResponse);
             break;
         case TYPE_COGNITO_SIGN_UP:
-            chrome.identity.launchWebAuthFlow({url: URL_COGNITO_SIGN_UP}, onWebAuthFlowResponse);
+            chrome.identity.launchWebAuthFlow({interactive: true, url: URL_COGNITO_SIGN_UP}, onWebAuthFlowResponse);
             break;
         case TYPE_FACEBOOK:
-            chrome.identity.launchWebAuthFlow({url: URL_FACEBOOK_AUTH}, onWebAuthFlowResponse);
+            chrome.identity.launchWebAuthFlow({interactive: true, url: URL_FACEBOOK_AUTH}, onWebAuthFlowResponse);
             break;
         case TYPE_GOOGLE:
-            chrome.identity.launchWebAuthFlow({url: URL_GOOGLE_AUTH}, onWebAuthFlowResponse);
+            chrome.identity.launchWebAuthFlow({interactive: true, url: URL_GOOGLE_AUTH}, onWebAuthFlowResponse);
             break;
         case TYPE_AMAZON:
-            chrome.identity.launchWebAuthFlow({url: URL_AMAZON_AUTH}, onWebAuthFlowResponse);
+            chrome.identity.launchWebAuthFlow({interactive: true, url: URL_AMAZON_AUTH}, onWebAuthFlowResponse);
             break;
         default:
             console.error(`${type} is not a recognized web auth flow.`);

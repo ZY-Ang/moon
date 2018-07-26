@@ -18,17 +18,17 @@ class SettingsTab extends Component {
 
     render() {
         return (
-            <div className="moon-tab">
+            <div className="moon-tab moon-settings-menu">
                 <div>
                     <FontAwesomeIcon icon="question"/> How it works
                 </div>
                 <div>
-                    <h1><FontAwesomeIcon icon="user"/> User</h1>
+                    <span><FontAwesomeIcon icon="user"/> User</span>
                     <span>Update Email</span>
                     <span>Change Password</span>
                 </div>
                 <div>
-                    <h1><FontAwesomeIcon icon="wallet" /> Wallets</h1>
+                    <span><FontAwesomeIcon icon="wallet" /> Wallets</span>
                     <span>Coinbase</span>
                     <span>Kraken</span>
                     <div>
@@ -39,14 +39,14 @@ class SettingsTab extends Component {
                     </div>
                 </div>
                 <div>
-                    <h1><FontAwesomeIcon icon="info" /> Info</h1>
+                    <span><FontAwesomeIcon icon="info" /> Info</span>
                     <span>About</span>
                     <span>Support</span>
                     <span>Terms & Conditions</span>
                     <span>Privacy Policy</span>
                 </div>
-                <div onClick={this.onSignOutClick}>
-                    <h1><FontAwesomeIcon icon="sign-out-alt"/> Sign Out</h1>
+                <div>
+                    <button onClick={this.onSignOutClick}><FontAwesomeIcon icon="sign-out-alt"/> Sign Out</button>
                 </div>
             </div>
         );

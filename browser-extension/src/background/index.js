@@ -2,13 +2,13 @@
  * Copyright (c) 2018 moon
  */
 
-import '../utils/logger.js';
+import '../utils/preload.js';
+import supportedSites from "../../supportedSites.json";
+import {REQUEST_LAUNCH_WEB_AUTH_FLOW} from "../constants/events/app";
+import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL} from "../constants/events/background";
+import {doLaunchWebAuthFlow} from "./auth";
 import logo from "../../../assets/icons/logo_128.png";
 import logoDisabled from "../../../assets/icons/logo_disabled_128.png";
-import supportedSites from "../../supportedSites.json";
-import {REQUEST_INJECT_APP, SOURCE_MANUAL} from "../constants/events/background.js";
-import {REQUEST_LAUNCH_SIGN_IN_FLOW} from "../constants/events/app.js";
-import {doLaunchWebAuthFlow} from "./auth";
 
 // Set the default browser action icon to be {@code logoDisabled}
 chrome.browserAction.setIcon({path: chrome.extension.getURL(logoDisabled)});
@@ -134,8 +134,9 @@ chrome.tabs.onActivated.addListener(activeInfo => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const {message, type} = request;
     console.log("Received message: ", message, "\nType: ", type);
+    console.log("REQUEST_LAUNCH_WEB_AUTH_FLOW: ", REQUEST_LAUNCH_WEB_AUTH_FLOW);
     switch (message) {
-        case REQUEST_LAUNCH_SIGN_IN_FLOW:
+        case REQUEST_LAUNCH_WEB_AUTH_FLOW:
             console.log("Launching web auth flow...");
             doLaunchWebAuthFlow(type);
             sendResponse("doLaunchWebAuthFlow started");

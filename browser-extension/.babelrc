@@ -1,13 +1,10 @@
 {
   "presets": [
-    "env",
-    "react"
+    "react-app"
   ],
   "plugins": [
-    "transform-es2015-arrow-functions",
-    "transform-es2015-modules-commonjs",
     "transform-class-properties",
-    "transform-imports",
-    "transform-object-rest-spread"
+    "transform-es2015-arrow-functions",
+    "transform-es2015-modules-commonjs"
   ]
 }
