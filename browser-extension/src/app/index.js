@@ -2,25 +2,14 @@
  * Copyright (c) 2018 moon
  */
 
-if (process.env.BUILD_ENV === 'production') {
-    // Disable client logging on production
-    console.log("Pay with moon by clicking the moon icon!");
-    console.log = () => {};
-    console.info = () => {};
-    console.warn = () => {};
-    console.error = () => {};
-    // TODO: Log to Cloud Service
-} else {
-    console.log(`Running in ${process.env.BUILD_ENV} environment`);
-}
-
+import '../utils/logger.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import WebFont from 'webfontloader';
 import App from "./components/App";
 import {MOON_DIV_ID} from "../constants/dom";
-import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events";
+import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/background.js";
 import {Provider} from "react-redux";
 import store from "./redux/store";
 
@@ -88,29 +77,29 @@ const updateAuthUser = (authUser) => {
 /**
  * Listen to requests from the background script
  */
-chrome.runtime.onMessage.addListener((request, sender, response) => {
-    // If message is injectApp
-    switch (request.type) {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    const {message, authUser, source} = request;
+    switch (message) {
+        // If message is injectApp,
         case REQUEST_INJECT_APP:
             // Attempt to inject our app to DOM and send appropriate response
             try {
-                injectApp(request.source);
-                response({success: true});
+                injectApp(source);
+                sendResponse({success: true});
             } catch (e) {
-                response({error: e});
+                sendResponse({error: e});
             }
             break;
         case REQUEST_UPDATE_AUTH_USER:
             try {
-                updateAuthUser(request.authUser);
-                response({success: true});
+                updateAuthUser(authUser);
+                sendResponse({success: true});
             } catch (e) {
-                response({error: e});
+                sendResponse({error: e});
             }
             break;
         default:
-            console.error("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
-            response({error: new Error("Received message but not a known one.")});
+            console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
             break;
     }
 });

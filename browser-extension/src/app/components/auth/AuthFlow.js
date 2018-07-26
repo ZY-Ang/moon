@@ -4,85 +4,74 @@
 
 import React, {Component} from 'react';
 import './AuthFlow.css';
-import {Form, Input, Button, Checkbox} from 'antd';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
-import {compose} from "redux";
 import {connect} from "react-redux";
-
-const FormItem = Form.Item;
+import {
+    REQUEST_LAUNCH_SIGN_IN_FLOW, TYPE_AMAZON,
+    TYPE_COGNITO_SIGN_IN,
+    TYPE_COGNITO_SIGN_UP,
+    TYPE_FACEBOOK, TYPE_GOOGLE
+} from "../../../constants/events/app.js";
 
 class AuthFlow extends Component {
-    handleSubmit = (event) => {
+    signIn = (event) => {
+        chrome.runtime.sendMessage(null, {
+            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            type: TYPE_COGNITO_SIGN_IN
+        });
         if (event) {
             event.preventDefault();
         }
-        this.props.form.validateFields((err, values) => {
-            if (!!err) {
-                console.error('Failed to login: ', err);
-            } else {
-                console.log("Logging in: ", values);
-                this.props.onSetAuthUser(true);
-            }
+    };
+
+    signUp = (event) => {
+        chrome.runtime.sendMessage({
+            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            type: TYPE_COGNITO_SIGN_UP
         });
+        if (event) {
+            event.preventDefault();
+        }
+    };
+
+    signInWithFacebook = (event) => {
+        chrome.runtime.sendMessage({
+            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            type: TYPE_FACEBOOK
+        });
+        if (event) {
+            event.preventDefault();
+        }
+    };
+
+    signInWithGoogle = (event) => {
+        chrome.runtime.sendMessage({
+            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            type: TYPE_GOOGLE
+        });
+        if (event) {
+            event.preventDefault();
+        }
+    };
+
+    signInWithAmazon = (event) => {
+        chrome.runtime.sendMessage({
+            message: REQUEST_LAUNCH_SIGN_IN_FLOW,
+            type: TYPE_AMAZON
+        });
+        if (event) {
+            event.preventDefault();
+        }
     };
 
     render() {
-        const {getFieldDecorator} = this.props.form;
         return (
             <div className="moon-tab" style={{paddingTop: '35%'}}>
-
-                <Form onSubmit={this.handleSubmit} className="login-form">
-                    <FormItem>
-                        {
-                            getFieldDecorator('email', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input your email!'
-                                }],
-                            })(
-                                <Input
-                                    prefix={<FontAwesomeIcon icon="user" />}
-                                    type="email"
-                                    placeholder="Email"
-                                />
-                            )
-                        }
-                    </FormItem>
-                    <FormItem>
-                        {
-                            getFieldDecorator('password', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input your Password!'
-                                }],
-                            })(
-                                <Input
-                                    prefix={<FontAwesomeIcon icon="lock" />}
-                                    type="password"
-                                    placeholder="Password"
-                                />
-                            )
-                        }
-                    </FormItem>
-                    <FormItem>
-                        {
-                            getFieldDecorator('remember', {
-                                valuePropName: 'checked',
-                                initialValue: true,
-                            })(
-                                <Checkbox className="login-form-remember">
-                                    Remember me
-                                </Checkbox>
-                            )
-                        }
-                        <a className="login-form-forgot" href="">Forgot password</a>
-                        <Button type="primary" htmlType="submit" className="login-form-button">
-                            Log in
-                        </Button>
-                        Or <a href="">register now!</a>
-                    </FormItem>
-                </Form>
+                <button onClick={this.signIn}>Sign In</button>
+                <button onClick={this.signUp}>Sign Up</button>
+                <button onClick={this.signInWithFacebook}>Facebook</button>
+                <button onClick={this.signInWithGoogle}>Google</button>
+                <button onClick={this.signInWithAmazon}>Amazon</button>
             </div>
         );
     }
@@ -92,7 +81,4 @@ const mapDispatchToProps = (dispatch) => ({
     onSetAuthUser: (authUser) => dispatch({type: ACTION_SET_AUTH_USER, authUser}),
 });
 
-export default compose(
-    Form.create(),
-    connect(null, mapDispatchToProps)
-)(AuthFlow);
+export default connect(null, mapDispatchToProps)(AuthFlow);

@@ -9,7 +9,7 @@ const COGNITO_USER_POOL_ID = 'us-east-1_yXMQEe6Uf';
 // TODO: Configure staging and dev user pools
 
 /* ------------ Cognito Client ID ------------ */
-const COGNITO_CLIENT_ID = '277g8p0hbeeieuril3mnmv0ej8';
+export const COGNITO_CLIENT_ID = '277g8p0hbeeieuril3mnmv0ej8';
 
 const poolData = {
     UserPoolId : COGNITO_USER_POOL_ID,
