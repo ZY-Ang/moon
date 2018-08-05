@@ -13,6 +13,7 @@ import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL, SOURCE_NONE
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import {ACTION_SET_AUTH_USER} from "./redux/reducers/constants";
+import {extensionId} from "../constants/extension";
 
 /**
  * Load required font families from the appropriate libraries.
@@ -81,7 +82,12 @@ const updateAuthUser = (authUser) =>
  * Listen to requests from the background script
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Always ensure message extension sender is our own
+    if (sender.id !== extensionId) {
+        return;
+    }
     const {message, authUser, source} = request;
+    console.log("Sender as opposed to source for validity: ", sender);
     switch (message) {
         // If message is injectApp,
         case REQUEST_INJECT_APP:

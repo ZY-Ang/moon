@@ -3,61 +3,29 @@
  */
 
 import '../utils/preload.js';
-import supportedSites from "../../supportedSites.json";
-import {REQUEST_LAUNCH_WEB_AUTH_FLOW} from "../constants/events/app";
+import {REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_SIGN_OUT} from "../constants/events/app";
 import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL} from "../constants/events/background";
-import {doLaunchWebAuthFlow} from "./auth";
-import logo from "../../../assets/icons/logo_128.png";
-import logoDisabled from "../../../assets/icons/logo_disabled_128.png";
-
-// Set the default browser action icon to be {@code logoDisabled}
-chrome.browserAction.setIcon({path: chrome.extension.getURL(logoDisabled)});
-
-/**
- * @returns {boolean} {@code true} if
- * {@param url} matches a {@code regexCheckoutURL}
- * of a supported site.
- */
-const isCheckoutPage = (url) => {
-    for (let i = 0; i < supportedSites.length; i++) {
-        if (url.toLowerCase().search(supportedSites[i].regexCheckoutURL.toLowerCase()) > 0) return true;
-    }
-    return false;
-};
-
-/**
- * @returns {boolean} {@code true} if
- * {@param url} matches a {@code nonCheckoutURL}
- * of a supported site.
- */
-const isSupportedSite = (url) => {
-    for (let i = 0; i < supportedSites.length; i++) {
-        if (url.toLowerCase().search(supportedSites[i].nonCheckoutURL.toLowerCase()) > 0) return true;
-    }
-    return false;
-};
-
-/**
- * Sets the browser action icon to {@code logoDisabled}
- * for a particular {@param tabId}
- */
-const setInvalidBrowserActionIcon = (tabId) =>
-    chrome.browserAction.setIcon({path: chrome.extension.getURL(logoDisabled), tabId});
-
-/**
- * Sets the browser action icon to the active {@code logo}
- * for a particular {@param tabId}
- */
-const setValidBrowserActionIcon = (tabId) =>
-    chrome.browserAction.setIcon({path: chrome.extension.getURL(logo), tabId});
+import {doLaunchWebAuthFlow, doOnAuthFlowResponse, doSignOut, getTrimmedAuthUser} from "./auth";
+import {extensionId} from "../constants/extension";
+import {isCheckoutPage, isClearCacheUrl, isOAuthUrl, isSupportedSite} from "../utils/url";
+import {setInvalidBrowserActionIcon, setValidBrowserActionIcon} from "./icon";
+import {URL_EXTENSION_INSTALLED, URL_EXTENSION_UNINSTALLED} from "../constants/url";
 
 /**
  * Handler for when a {@param tab} is updated.
  */
 const handleTabUpdate = (tab) => {
-    if (!tab.url) {
-        // URL does not exist yet - ignore and let the next call deal with it.
-        return setInvalidBrowserActionIcon();
+    if (!tab || !tab.url) {
+        // URL or tab does not exist yet - ignore and let the next call deal with it.
+        setInvalidBrowserActionIcon();
+
+    } else if (isOAuthUrl(tab.url)) {
+        // URL on the current tab is a OAuth redirect URL - retrieve tokens from code grant and store in storage
+        doOnAuthFlowResponse(tab.url, tab.id)
+        // TODO: Let webapp domain manually handle closing so as to store tokens in localStorage as well, for dashboard purposes.
+
+    } else if (isClearCacheUrl(tab.url)) {
+        chrome.tabs.remove(tab.id);
 
     } else if (isSupportedSite(tab.url)) {
         // URL on the current tab is a supported site - set to valid browser icon.
@@ -70,7 +38,9 @@ const handleTabUpdate = (tab) => {
     } else {
         // URL that is on the current tab exists but is not valid
         setInvalidBrowserActionIcon(tab.id);
+
     }
+    doUpdateAuthUserEvent();
 };
 
 /**
@@ -85,7 +55,7 @@ const doInjectAppEvent = (source) =>
     chrome.tabs.query({
         active: true,
         currentWindow: true,
-    }, (tabs) => {
+    }, tabs => {
         // Send message to script file
         const message = {
             source: source,
@@ -95,6 +65,30 @@ const doInjectAppEvent = (source) =>
         chrome.tabs.sendMessage(tabs[0].id, message, null,
             response => console.log("response: ", response)
         );
+    });
+
+/**
+ * Sends an authUser update request to the
+ * content-script (app) to be rendered.
+ */
+const doUpdateAuthUserEvent = () =>
+    chrome.storage.local.get("authUser", ({authUser}) => {
+        if (!!authUser) {
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true,
+            }, (tabs) => {
+                // Send message to script file
+                const message = {
+                    message: REQUEST_UPDATE_AUTH_USER,
+                    authUser: getTrimmedAuthUser(authUser)
+                };
+                console.log("Sending message: ", message);
+                chrome.tabs.sendMessage(tabs[0].id, message, null,
+                    response => console.log("response: ", response)
+                );
+            });
+        }
     });
 
 /**
@@ -118,11 +112,20 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
  * Fired when the active tab is changed in a window.
  * @see {@link https://developer.chrome.com/extensions/tabs#event-onActivated}
  */
-chrome.tabs.onActivated.addListener(activeInfo => {
-    chrome.tabs.get(activeInfo.tabId, (tab) => {
-        handleTabUpdate(tab);
-    });
-});
+chrome.tabs.onActivated.addListener(activeInfo =>
+    chrome.tabs.get(activeInfo.tabId, (tab) => handleTabUpdate(tab))
+);
+
+/**
+ * Fired when the currently focused window changes.
+ * @see {@link https://developer.chrome.com/extensions/windows#event-onFocusChanged}
+ */
+chrome.windows.onFocusChanged.addListener(() =>
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, tabs => handleTabUpdate(tabs[0]))
+);
 
 /**
  * Fired when the background script receives a new message.
@@ -132,17 +135,56 @@ chrome.tabs.onActivated.addListener(activeInfo => {
  * @see {@link https://developer.chrome.com/extensions/runtime#event-onMessage}
  */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Always ensure message extension sender is our own
+    if (sender.id !== extensionId) {
+        return;
+    }
     const {message, type} = request;
-    console.log("Received message: ", message, "\nType: ", type);
-    console.log("REQUEST_LAUNCH_WEB_AUTH_FLOW: ", REQUEST_LAUNCH_WEB_AUTH_FLOW);
     switch (message) {
         case REQUEST_LAUNCH_WEB_AUTH_FLOW:
-            console.log("Launching web auth flow...");
             doLaunchWebAuthFlow(type);
-            sendResponse("doLaunchWebAuthFlow started");
+            break;
+        case REQUEST_SIGN_OUT:
+            console.log("Signing out...");
+            doSignOut();
+            sendResponse("Signing out...");
             break;
         default:
             console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
             break;
     }
 });
+
+/**
+ * Fired when the extension is installed, updated, or when chrome is updated.
+ *
+ * @see {@link https://developer.chrome.com/apps/runtime#event-onInstalled}
+ */
+chrome.runtime.onInstalled.addListener(details => {
+    console.log("chrome.runtime.onInstalled details: ", details);
+    if (details.reason === 'install') {
+        chrome.tabs.create({url: URL_EXTENSION_INSTALLED}, (tab) => {
+            // TODO: Referral code
+        });
+    } else if (details.reason === 'update') {
+        // Reboot all content scripts in all tabs in all windows
+        const manifest = chrome.runtime.getManifest();
+        const contentScripts = manifest.content_scripts[0].js;
+        contentScripts.forEach(contentScript => {
+            chrome.tabs.query({}, tabs => {
+                tabs.forEach(tab => {
+                    if (!!tab && !!tab.id) {
+                        chrome.tabs.executeScript(tab.id, {file: contentScript});
+                    }
+                });
+            });
+        });
+    }
+});
+
+/**
+ * Set the URL to be opened when the extension is uninstalled
+ *
+ * @see {@link https://developer.chrome.com/extensions/runtime#method-setUninstallURL}
+ */
+chrome.runtime.setUninstallURL(URL_EXTENSION_UNINSTALLED);

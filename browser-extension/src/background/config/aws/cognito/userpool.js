@@ -11,9 +11,8 @@ const COGNITO_USER_POOL_ID = 'us-east-1_yXMQEe6Uf';
 /* ------------ Cognito Client ID ------------ */
 export const COGNITO_CLIENT_ID = '277g8p0hbeeieuril3mnmv0ej8';
 
-const poolData = {
+const userPool = new CognitoUserPool({
     UserPoolId : COGNITO_USER_POOL_ID,
     ClientId : COGNITO_CLIENT_ID
-};
-const userPool = new CognitoUserPool(poolData);
+});
 export default userPool;

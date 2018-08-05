@@ -18,3 +18,6 @@ export const TYPE_FACEBOOK = "Facebook";
 export const TYPE_GOOGLE = "Google";
 /** Used to notify of authentication via Login With Amazon */
 export const TYPE_AMAZON = "Amazon";
+
+// --------------------- Sign Out ---------------------
+export const REQUEST_SIGN_OUT = "MOON_SIGN_OUT";
