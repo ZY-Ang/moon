@@ -8,6 +8,7 @@ const shell = require("shelljs");
 const build = () => {
     const DIR_BUILD = `build/`;
     const DIR_SOURCE = `src/`;
+    const DIR_FILES = `files/`;
 
     console.log(`Building for ${shell.env.BUILD_ENV} environment`);
 
@@ -64,6 +65,10 @@ const build = () => {
             }
         })
     });
+
+// 5. Copy all other unhashed assets
+    console.log("Copying unhashed assets");
+    shell.cp('-r', `${DIR_FILES}.`, DIR_BUILD);
 };
 
 module.exports = build;
