@@ -13,52 +13,43 @@ import {
     TYPE_FACEBOOK, TYPE_GOOGLE
 } from "../../../constants/events/app";
 
+const doLaunchWebAuthFlow = (type) =>
+    chrome.runtime.sendMessage({
+        message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
+        type: type
+    });
+
 class AuthFlow extends Component {
     signIn = (event) => {
-        chrome.runtime.sendMessage(null, {
-            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
-            type: TYPE_COGNITO_SIGN_IN
-        });
+        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_IN);
         if (event) {
             event.preventDefault();
         }
     };
 
     signUp = (event) => {
-        chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
-            type: TYPE_COGNITO_SIGN_UP
-        });
+        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_UP);
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithFacebook = (event) => {
-        chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
-            type: TYPE_FACEBOOK
-        });
+        doLaunchWebAuthFlow(TYPE_FACEBOOK);
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithGoogle = (event) => {
-        chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
-            type: TYPE_GOOGLE
-        });
+        doLaunchWebAuthFlow(TYPE_GOOGLE);
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithAmazon = (event) => {
-        chrome.runtime.sendMessage({
-            message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
-            type: TYPE_AMAZON
-        });
+        doLaunchWebAuthFlow(TYPE_AMAZON);
         if (event) {
             event.preventDefault();
         }
