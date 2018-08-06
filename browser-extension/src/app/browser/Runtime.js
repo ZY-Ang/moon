@@ -2,10 +2,13 @@
  * Copyright (c) 2018 moon
  */
 
-import BackgroundRuntime from "../../background/browser/Runtime";
+import SuperRuntime from "../../browser/Runtime";
 import messageCenter from "../messageCenter";
 
-class Runtime extends BackgroundRuntime {
+/**
+ * Utility Class for interaction with the browser's runtime API
+ */
+class Runtime extends SuperRuntime {
     /**
      * Sends a {@param message {object}} to the background script.
      *

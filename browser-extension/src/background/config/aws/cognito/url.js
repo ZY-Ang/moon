@@ -5,7 +5,7 @@
 import {COGNITO_CLIENT_ID} from "./userpool";
 import {stringify} from "query-string";
 import {DOMAIN} from "../../../../constants/url";
-import {extensionId} from "../../../../constants/extension";
+import Runtime from "../../../browser/Runtime";
 
 /**
  * The URL where the AWS Cognito hosted UI is located
@@ -15,7 +15,7 @@ const URL_OAUTH_SERVER = `https://auth.${DOMAIN}/`;
 /**
  * The URL that AWS Cognito hosted UI should redirect to let chrome handle OAuth
  */
-export const URL_OAUTH_REDIRECT = `chrome-extension://${extensionId}/oauth`;
+export const URL_OAUTH_REDIRECT = `chrome-extension://${Runtime.id}/oauth`;
 
 /**
  * The default OAuth spec parameters to be sent to the AWS Cognito hosted UI
@@ -81,7 +81,7 @@ export const URL_TOKEN_FLOW = `${URL_OAUTH_SERVER}oauth2/token`;
 /**
  * The final redirect URL to be supplied to the Cognito sign out endpoint
  */
-export const URL_SIGN_OUT_REDIRECT = `chrome-extension://${extensionId}/logout`;
+export const URL_SIGN_OUT_REDIRECT = `chrome-extension://${Runtime.id}/logout`;
 /**
  * The logout URI of Cognito
  */

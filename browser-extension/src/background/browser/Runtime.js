@@ -2,36 +2,16 @@
  * Copyright (c) 2018 moon
  */
 
+import SuperRuntime from "../../browser/Runtime";
 import {URL_EXTENSION_INSTALLED, URL_EXTENSION_UNINSTALLED} from "../../constants/url";
 import {isValidWebUrl} from "../../utils/url";
 import messageCenter from "../messageCenter";
 import Tabs from "./Tabs";
 
 /**
- * Interface for interaction with the browser's runtime API
+ * Utility Class for interaction with the browser's runtime API
  */
-class Runtime {
-    /**
-     * Returns details about the app or extension from the manifest.
-     * The object returned is a serialization of the full manifest file.
-     * @returns {object}
-     *
-     * @see {@link https://developer.chrome.com/extensions/runtime#method-getManifest}
-     */
-    static getManifest = () => {
-        return chrome.runtime.getManifest();
-    };
-
-    /**
-     * Converts a {@param relativePath} within an app/extension
-     * install directory to a fully-qualified URL.
-     *
-     * @return {string}
-     */
-    static getUrl = (relativePath) => {
-        return chrome.runtime.getURL(relativePath);
-    };
-
+class Runtime extends SuperRuntime {
     /**
      * Initializer script to be "run" when the script starts
      */

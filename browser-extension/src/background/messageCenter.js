@@ -2,9 +2,9 @@
  * Copyright (c) 2018 moon
  */
 
-import {extensionId} from "../constants/extension";
 import {REQUEST_GLOBAL_SIGN_OUT, REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_SIGN_OUT} from "../constants/events/app";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth";
+import Runtime from "./browser/Runtime";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -14,7 +14,7 @@ import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth";
  */
 const messageCenter = (request, sender, sendResponse) => {
     // Always ensure message extension sender is our own
-    if (sender.id !== extensionId) {
+    if (sender.id !== Runtime.id) {
         return;
     }
     switch (request.message) {

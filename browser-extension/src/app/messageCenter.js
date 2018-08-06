@@ -2,9 +2,9 @@
  * Copyright (c) 2018 moon
  */
 
-import {extensionId} from "../constants/extension";
 import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER} from "../constants/events/background";
 import {injectApp, updateAuthUser} from "./index";
+import Runtime from "./browser/Runtime";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -14,7 +14,7 @@ import {injectApp, updateAuthUser} from "./index";
  */
 const messageCenter = (request, sender, sendResponse) => {
     // Always ensure message extension sender is our own
-    if (sender.id !== extensionId) {
+    if (sender.id !== Runtime.id) {
         return;
     }
     const {message, authUser, source} = request;
