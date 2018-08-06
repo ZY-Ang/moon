@@ -9,11 +9,11 @@ import './index.css';
 import WebFont from 'webfontloader';
 import App from "./components/App";
 import {MOON_DIV_ID} from "../constants/dom";
-import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER, SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/background";
+import {SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/background";
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import {ACTION_SET_AUTH_USER} from "./redux/reducers/constants";
-import {extensionId} from "../constants/extension";
+import Runtime from "./browser/Runtime";
 
 /**
  * Load required font families from the appropriate libraries.
@@ -54,7 +54,7 @@ const reRenderApp = () => {
  * the given {@param source} to handle the
  * appropriate render logic.
  */
-const injectApp = (source) => {
+export const injectApp = (source) => {
     console.log("injectApp request received from ", source);
     // Attempt to get the wrapper div
     let moonDiv = document.getElementById(MOON_DIV_ID);
@@ -81,50 +81,17 @@ const injectApp = (source) => {
             </Provider>
         ), moonShadow);
         const moonStyles = document.createElement('style');
-        moonStyles.innerHTML = `@import url("${chrome.runtime.getURL('app.css')}")`;
+        moonStyles.innerHTML = `@import url("${Runtime.getURL('app.css')}")`;
         console.log("Appending styles to shadow...");
         moonShadow.appendChild(moonStyles);
     }
 };
 
-const updateAuthUser = (authUser) =>
+export const updateAuthUser = (authUser) =>
     store.dispatch({
         type: ACTION_SET_AUTH_USER,
         authUser
     });
 
 reRenderApp();
-
-/**
- * Listen to requests from the background script
- */
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    // Always ensure message extension sender is our own
-    if (sender.id !== extensionId) {
-        return;
-    }
-    const {message, authUser, source} = request;
-    switch (message) {
-        // If message is injectApp,
-        case REQUEST_INJECT_APP:
-            // Attempt to inject our app to DOM and send appropriate response
-            try {
-                injectApp(source);
-                sendResponse({success: true});
-            } catch (e) {
-                sendResponse({error: e});
-            }
-            break;
-        case REQUEST_UPDATE_AUTH_USER:
-            try {
-                updateAuthUser(authUser);
-                sendResponse({success: true});
-            } catch (e) {
-                sendResponse({error: e});
-            }
-            break;
-        default:
-            console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
-            break;
-    }
-});
+Runtime.run();

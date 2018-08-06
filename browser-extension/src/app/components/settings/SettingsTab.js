@@ -7,10 +7,11 @@ import {connect} from "react-redux";
 import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {REQUEST_SIGN_OUT} from "../../../constants/events/app";
+import Runtime from "../../browser/Runtime";
 
 class SettingsTab extends Component {
     onSignOutClick = (event) => {
-        chrome.runtime.sendMessage({
+        Runtime.sendMessage({
             message: REQUEST_SIGN_OUT
         });
         this.props.onSetAuthUser(null);

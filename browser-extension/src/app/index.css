@@ -46,6 +46,10 @@
     text-align: center !important;
 }
 
+.text-danger {
+    color: #d30000 !important;
+}
+
 .text-white {
     color: white !important;
 }

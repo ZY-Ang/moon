@@ -12,19 +12,12 @@ import {
     TYPE_COGNITO_SIGN_UP,
     TYPE_FACEBOOK, TYPE_GOOGLE
 } from "../../../constants/events/app";
+import Runtime from "../../browser/Runtime";
 
-const doLaunchWebAuthFlow = (type) => new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({
+const doLaunchWebAuthFlow = (type) => Runtime.sendMessage({
         message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
-        type: type
-    }, response => {
-        if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
-        } else {
-            resolve(response);
-        }
+        type
     });
-});
 
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
 
@@ -85,6 +78,7 @@ class AuthFlow extends Component {
                 <button onClick={this.signInWithFacebook}>Facebook</button>
                 <button onClick={this.signInWithGoogle}>Google</button>
                 <button onClick={this.signInWithAmazon}>Amazon</button>
+                <p className="text-center text-danger">{this.state.error}</p>
             </div>
         );
     }
