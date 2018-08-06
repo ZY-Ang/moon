@@ -25,6 +25,21 @@ WebFont.load({
     }
 });
 
+/**
+ * Re-renders app if div already exists.
+ * This function should be executed on install or update.
+ * If content window already exists, re-render a new version of it or do nothing.
+ * NOTE: This is not the same as {@code injectApp} where the render is toggled.
+ */
+const reRenderApp = () => {
+    const moonDiv = document.getElementById(MOON_DIV_ID);
+    if (!!moonDiv) {
+        console.log("moonDiv found, re-rendering app");
+        moonDiv.remove();
+        injectApp(SOURCE_MANUAL);
+    }
+};
+
 // try {
 //     var promoInput = document.getElementById('spc-gcpromoinput');
 //     promoInput.value = "95UF-HDQQAT-3N62";
@@ -66,7 +81,7 @@ const injectApp = (source) => {
             </Provider>
         ), moonShadow);
         const moonStyles = document.createElement('style');
-        moonStyles.innerHTML = `@import url("${chrome.extension.getURL('app.css')}")`;
+        moonStyles.innerHTML = `@import url("${chrome.runtime.getURL('app.css')}")`;
         console.log("Appending styles to shadow...");
         moonShadow.appendChild(moonStyles);
     }
@@ -78,6 +93,8 @@ const updateAuthUser = (authUser) =>
         authUser
     });
 
+reRenderApp();
+
 /**
  * Listen to requests from the background script
  */
@@ -87,7 +104,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return;
     }
     const {message, authUser, source} = request;
-    console.log("Sender as opposed to source for validity: ", sender);
     switch (message) {
         // If message is injectApp,
         case REQUEST_INJECT_APP:

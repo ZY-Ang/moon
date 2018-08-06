@@ -4,8 +4,8 @@
 
 import {COGNITO_CLIENT_ID} from "./userpool";
 import {stringify} from "query-string";
-import {extensionId} from "../../../../constants/extension";
 import {DOMAIN} from "../../../../constants/url";
+import {extensionId} from "../../../../constants/extension";
 
 /**
  * The URL where the AWS Cognito hosted UI is located

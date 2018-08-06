@@ -7,6 +7,15 @@ import supportedSites from "../../supportedSites";
 
 /**
  * @return {boolean} {@code true} if
+ * {@param url} matches a valid URL schema
+ * where the extension can run. I.e. not
+ * local files or extension background pages
+ */
+export const isValidWebUrl = (url) =>
+    (url.startsWith('http://') || url.startsWith('https://'));
+
+/**
+ * @return {boolean} {@code true} if
  * {@param url} matches a redirect URL from
  * the OAuth flow
  */

@@ -67,7 +67,7 @@ class App extends Component {
             <div id="moon-div-shadow">
                 <div id="moon-wrapper">
                     <div id="moon-header">
-                        <img id="moon-header-img" src={chrome.extension.getURL(logo)} alt="Moon"/>
+                        <img id="moon-header-img" src={chrome.runtime.getURL(logo)} alt="Moon"/>
                         <div id="moon-header-buttons-div">
                             <div
                                 id="moon-header-toggle-button"

@@ -4,6 +4,9 @@
 
 /**
  * The id of the extension tied to the private key as defined in manifest.json.
- * Note: This is similar for both dev and prod.
+ * Note: This should be similar for both dev and prod on chrome. Firefox auto
+ * generates the key so new id has to be dynamically generated every time.
  */
-export const extensionId = 'ehmpejjklcibliopgbghpgfinhbjopnn';
+export const extensionId =
+    (process.env.BROWSER === 'firefox' && !!browser && !!browser.runtime) ? browser.runtime.id :
+    ((!!chrome && !!chrome.runtime && chrome.runtime.id) || 'ehmpejjklcibliopgbghpgfinhbjopnn');

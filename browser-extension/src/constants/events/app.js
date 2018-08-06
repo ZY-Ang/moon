@@ -21,3 +21,6 @@ export const TYPE_AMAZON = "Amazon";
 
 // --------------------- Sign Out ---------------------
 export const REQUEST_SIGN_OUT = "MOON_SIGN_OUT";
+
+// --------------------- Global Sign Out ---------------------
+export const REQUEST_GLOBAL_SIGN_OUT = "MOON_GLOBAL_SIGN_OUT";

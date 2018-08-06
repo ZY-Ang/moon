@@ -13,43 +13,65 @@ import {
     TYPE_FACEBOOK, TYPE_GOOGLE
 } from "../../../constants/events/app";
 
-const doLaunchWebAuthFlow = (type) =>
+const doLaunchWebAuthFlow = (type) => new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({
         message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
         type: type
+    }, response => {
+        if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+        } else {
+            resolve(response);
+        }
     });
+});
+
+const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
 
 class AuthFlow extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: false,
+            error: ""
+        };
+    }
+
     signIn = (event) => {
-        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_IN);
+        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_IN)
+            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
         if (event) {
             event.preventDefault();
         }
     };
 
     signUp = (event) => {
-        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_UP);
+        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_UP)
+            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithFacebook = (event) => {
-        doLaunchWebAuthFlow(TYPE_FACEBOOK);
+        doLaunchWebAuthFlow(TYPE_FACEBOOK)
+            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithGoogle = (event) => {
-        doLaunchWebAuthFlow(TYPE_GOOGLE);
+        doLaunchWebAuthFlow(TYPE_GOOGLE)
+            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithAmazon = (event) => {
-        doLaunchWebAuthFlow(TYPE_AMAZON);
+        doLaunchWebAuthFlow(TYPE_AMAZON)
+            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
         if (event) {
             event.preventDefault();
         }
