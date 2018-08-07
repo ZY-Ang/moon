@@ -21,7 +21,7 @@ const Storage = {
                 } else {
                     resolve(obj);
                 }
-            })
+            });
         }),
 
         /**
@@ -38,7 +38,7 @@ const Storage = {
                 } else {
                     resolve(obj);
                 }
-            })
+            });
         }),
 
         /**
@@ -55,7 +55,7 @@ const Storage = {
                 } else {
                     resolve(`Removed ${JSON.stringify(keys)} from storage.local successfully`);
                 }
-            })
+            });
         }),
 
         /**
@@ -71,7 +71,7 @@ const Storage = {
                 } else {
                     resolve("Storage.local cleared.");
                 }
-            })
+            });
         })
     }
 };
