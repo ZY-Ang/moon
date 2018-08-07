@@ -10,7 +10,7 @@ const build = () => {
     const DIR_SOURCE = `src/`;
     const DIR_FILES = `files/`;
 
-    console.log(`Building for ${shell.env.BUILD_ENV} environment`);
+    console.log(`Building for ${(shell.env.BUILD_ENV || 'development')} environment`);
 
 // 1. Delete all build files in the build folder of the browser extension
     console.log("Clearing build folder...");
