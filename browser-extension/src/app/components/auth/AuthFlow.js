@@ -14,8 +14,6 @@ import {
 } from "../../../constants/events/app";
 import AppRuntime from "../../browser/AppRuntime";
 
-const doLaunchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type});
-
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
 
 class AuthFlow extends Component {
@@ -27,41 +25,42 @@ class AuthFlow extends Component {
         };
     }
 
+    launchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type})
+        .catch(err => {
+            console.error(err);
+            this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN}));
+        });
+
     signIn = (event) => {
-        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_IN)
-            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
+        this.launchWebAuthFlow(TYPE_COGNITO_SIGN_IN);
         if (event) {
             event.preventDefault();
         }
     };
 
     signUp = (event) => {
-        doLaunchWebAuthFlow(TYPE_COGNITO_SIGN_UP)
-            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
+        this.launchWebAuthFlow(TYPE_COGNITO_SIGN_UP);
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithFacebook = (event) => {
-        doLaunchWebAuthFlow(TYPE_FACEBOOK)
-            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
+        this.launchWebAuthFlow(TYPE_FACEBOOK);
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithGoogle = (event) => {
-        doLaunchWebAuthFlow(TYPE_GOOGLE)
-            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
+        this.launchWebAuthFlow(TYPE_GOOGLE);
         if (event) {
             event.preventDefault();
         }
     };
 
     signInWithAmazon = (event) => {
-        doLaunchWebAuthFlow(TYPE_AMAZON)
-            .catch(() => this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN})));
+        this.launchWebAuthFlow(TYPE_AMAZON);
         if (event) {
             event.preventDefault();
         }
