@@ -6,15 +6,25 @@ import './SettingsTab.css';
 import {connect} from "react-redux";
 import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {REQUEST_SIGN_OUT} from "../../../constants/events/app";
-import Runtime from "../../browser/Runtime";
+import {REQUEST_GLOBAL_SIGN_OUT, REQUEST_SIGN_OUT} from "../../../constants/events/app";
+import AppRuntime from "../../browser/AppRuntime";
 
 class SettingsTab extends Component {
-    onSignOutClick = (event) => {
-        Runtime.sendMessage({
-            message: REQUEST_SIGN_OUT
-        });
+    signOut = () => {
         this.props.onSetAuthUser(null);
+    };
+
+    onSignOutClick = (event) => {
+        AppRuntime.sendMessage(REQUEST_SIGN_OUT);
+        this.signOut();
+        if (event) {
+            event.preventDefault();
+        }
+    };
+
+    onGlobalSignOutClick = (event) => {
+        AppRuntime.sendMessage(REQUEST_GLOBAL_SIGN_OUT);
+        this.signOut();
         if (event) {
             event.preventDefault();
         }
@@ -51,6 +61,9 @@ class SettingsTab extends Component {
                 </div>
                 <div>
                     <button onClick={this.onSignOutClick}><FontAwesomeIcon icon="sign-out-alt"/> Sign Out</button>
+                </div>
+                <div>
+                    <button onClick={this.onGlobalSignOutClick}><FontAwesomeIcon icon="sign-out-alt"/> Global Sign Out</button>
                 </div>
             </div>
         );
