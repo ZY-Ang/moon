@@ -3,42 +3,37 @@
  */
 
 import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER} from "../constants/events/background";
-import {injectApp, updateAuthUser} from "./index";
-import Runtime from "./browser/Runtime";
+import {toggleApp, updateAuthUser} from "./index";
+import AppRuntime from "./browser/AppRuntime";
+import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
 
 /**
  * Message handler for receiving messages from other extension processes
  * @param request {object} - message sent by the extension process
  * @param sender {object} - the extension process that sent the message
  * @param sendResponse {function(<object>)} - response callback to notify sender of completion or failure
+ *
+ * @see {@link https://developer.chrome.com/extensions/runtime#event-onMessage}
  */
 const messageCenter = (request, sender, sendResponse) => {
     // Always ensure message extension sender is our own
-    if (sender.id !== Runtime.id) {
+    if (sender.id !== AppRuntime.id) {
         return;
     }
-    const {message, authUser, source} = request;
-    switch (message) {
-        // If message is injectApp,
+    const sendSuccess = getSendSuccessResponseFunction(sendResponse);
+    const sendFailure = getSendFailureResponseFunction(sendResponse);
+    switch (request.message) {
         case REQUEST_INJECT_APP:
-            // Attempt to inject our app to DOM and send appropriate response
-            try {
-                injectApp(source);
-                sendResponse({success: true});
-            } catch (e) {
-                sendResponse({error: e});
-            }
-            break;
+            return !!toggleApp(request.source)
+                .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
+                .catch(() => sendFailure(`toggleApp(${request.source}) failed`));
         case REQUEST_UPDATE_AUTH_USER:
-            try {
-                updateAuthUser(authUser);
-                sendResponse({success: true});
-            } catch (e) {
-                sendResponse({error: e});
-            }
-            break;
+            return !!updateAuthUser(request.authUser)
+                .then(() => sendSuccess(`updateAuthUser(${request.authUser}) completed`))
+                .catch(() => sendFailure(`updateAuthUser(${request.authUser}) failed`));
         default:
             console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+            sendFailure("App messageCenter received an unknown request");
             break;
     }
 };

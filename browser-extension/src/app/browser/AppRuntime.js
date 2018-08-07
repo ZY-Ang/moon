@@ -2,26 +2,39 @@
  * Copyright (c) 2018 moon
  */
 
-import SuperRuntime from "../../browser/Runtime";
+import Runtime from "../../browser/Runtime";
 import messageCenter from "../messageCenter";
 
 /**
  * Utility Class for interaction with the browser's runtime API
+ * @class
  */
-class Runtime extends SuperRuntime {
+class AppRuntime extends Runtime {
     /**
-     * Sends a {@param message {object}} to the background script.
+     * Sends a {@param request {request}} to the background script.
+     * Requests for {@method AppRuntime.sendMessage} can be found
+     * in the shared events constants directory
+     * {@link ~/src/constants/events/app.js}
+     *
+     * @param options {object} - additional parameters to be passed into the request.
      *
      * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage}
      */
-    static sendMessage = (message) => new Promise((resolve, reject) => {
+    static sendMessage = (request, options) => new Promise((resolve, reject) => {
+        const message = {
+            ...options,
+            message: request
+        };
+
         chrome.runtime.sendMessage(message, response => {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
-            } else {
+            } else if (response.success) {
                 resolve(response);
+            } else {
+                reject(response);
             }
-        })
+        });
     });
 
     /**
@@ -39,4 +52,4 @@ class Runtime extends SuperRuntime {
     }
 }
 
-export default Runtime;
+export default AppRuntime;

@@ -6,27 +6,50 @@ import {tabDidUpdate} from "../app";
 
 /**
  * Interface for interaction with the browser's tabs API
+ * @class
  */
 class Tabs {
     /**
-     * Sends a {@param message} to the specified {@param tabId}.
-     * @param options - of the message
+     * Sends a {@param request {request}} to the specified {@param tabId}.
+     * Requests for {@method Tabs.sendMessage} can be found
+     * in the shared events constants directory
+     * {@link ~/src/constants/events/background.js}
+     *
+     * @param options {object} - additional parameters to be passed into the request.
      *
      * @see {@link https://developer.chrome.com/extensions/runtime#method-sendMessage}
      */
-    static sendMessage = (tabId, message, options = null) => new Promise(resolve => {
-        chrome.tabs.sendMessage(tabId, message, options, response => resolve(response));
+    static sendMessage = (tabId, request, options) => new Promise((resolve, reject) => {
+        const message = {
+            ...options,
+            message: request
+        };
+
+        chrome.tabs.sendMessage(tabId, message, null, response => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else if (response.success) {
+                resolve(response);
+            } else {
+                reject(response);
+            }
+        });
     });
 
     /**
      * Sends a {@param message} to the active
      * tab in the current window
      *
-     * @param options - of the message
+     * @param options {object} - additional parameters to be passed into the request.
      */
-    static sendMessageToActive = (message, options = null) =>
+    static sendMessageToActive = (message, options) =>
         Tabs.getActive()
-            .then(tab => Tabs.sendMessage(tab.id, message, options));
+            .then(tab => {
+                if (tab.status === 'complete') {
+                    return Tabs.sendMessage(tab.id, message, options);
+                }
+                // Otherwise, page is not ready.
+            });
 
     /**
      * Injects scripts and css onto a page

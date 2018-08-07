@@ -12,12 +12,9 @@ import {
     TYPE_COGNITO_SIGN_UP,
     TYPE_FACEBOOK, TYPE_GOOGLE
 } from "../../../constants/events/app";
-import Runtime from "../../browser/Runtime";
+import AppRuntime from "../../browser/AppRuntime";
 
-const doLaunchWebAuthFlow = (type) => Runtime.sendMessage({
-        message: REQUEST_LAUNCH_WEB_AUTH_FLOW,
-        type
-    });
+const doLaunchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type});
 
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
 

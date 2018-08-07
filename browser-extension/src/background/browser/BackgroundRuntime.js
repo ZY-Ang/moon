@@ -2,7 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import SuperRuntime from "../../browser/Runtime";
+import Runtime from "../../browser/Runtime";
 import {URL_EXTENSION_INSTALLED, URL_EXTENSION_UNINSTALLED} from "../../constants/url";
 import {isValidWebUrl} from "../../utils/url";
 import messageCenter from "../messageCenter";
@@ -10,8 +10,9 @@ import Tabs from "./Tabs";
 
 /**
  * Utility Class for interaction with the browser's runtime API
+ * @class
  */
-class Runtime extends SuperRuntime {
+class BackgroundRuntime extends Runtime {
     /**
      * Initializer script to be "run" when the script starts
      */
@@ -40,7 +41,7 @@ class Runtime extends SuperRuntime {
             } else if (details.reason === 'update') {
                 // Update of the currently installed extension
                 //  Reboot all content scripts in all tabs in all windows
-                const manifest = Runtime.getManifest();
+                const manifest = BackgroundRuntime.getManifest();
                 const contentScripts = manifest.content_scripts[0].js;
                 Tabs.getAll()
                     .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url))))
@@ -64,4 +65,4 @@ class Runtime extends SuperRuntime {
     }
 }
 
-export default Runtime;
+export default BackgroundRuntime;

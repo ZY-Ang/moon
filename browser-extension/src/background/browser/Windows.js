@@ -24,9 +24,10 @@ class Windows {
             height,
             width
         }, window => {
-            if (chrome.runtime.lastError) {
-                console.error(chrome.runtime.lastError);
-                reject(chrome.runtime.lastError);
+            const lastError = chrome.runtime.lastError;
+            if (!!lastError) {
+                console.error(lastError);
+                reject(lastError);
             } else {
                 resolve(window);
             }

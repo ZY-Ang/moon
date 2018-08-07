@@ -16,7 +16,7 @@ import {REQUEST_INJECT_APP} from "../constants/events/background";
  *      of the current tab.
  */
 export const doInjectAppEvent = (source) =>
-    Tabs.sendMessageToActive({source, message: REQUEST_INJECT_APP});
+    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {source});
 
 /**
  * Handler for when a {@param tab} is updated.

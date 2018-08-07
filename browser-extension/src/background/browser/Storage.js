@@ -23,6 +23,7 @@ const Storage = {
                 }
             })
         }),
+
         /**
          * Sets corresponding key-value pairs present in
          * an {@param obj {object}} to the browser's
@@ -39,6 +40,7 @@ const Storage = {
                 }
             })
         }),
+
         /**
          * Removes {@param keys {string | array<string>}}}
          * corresponding values from the browser's
@@ -55,6 +57,7 @@ const Storage = {
                 }
             })
         }),
+
         /**
          * Removes all items from the browser's
          * storage.local api

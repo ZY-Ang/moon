@@ -4,11 +4,11 @@
 
 import '../utils/preload.js';
 import BrowserAction from "./browser/BrowserAction";
-import Runtime from "./browser/Runtime";
+import BackgroundRuntime from "./browser/BackgroundRuntime";
 import Tabs from "./browser/Tabs";
 import Windows from "./browser/Windows";
 
-Runtime.run();
+BackgroundRuntime.run();
 Windows.run();
 Tabs.run();
 BrowserAction.run();

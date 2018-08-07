@@ -12,7 +12,7 @@ import {connect} from "react-redux";
 import AuthFlow from "./auth/AuthFlow";
 import Navbar from "./nav/Navbar";
 import SwipeableViews from "react-swipeable-views";
-import Runtime from "../browser/Runtime";
+import AppRuntime from "../browser/AppRuntime";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -68,7 +68,7 @@ class App extends Component {
             <div id="moon-div-shadow">
                 <div id="moon-wrapper">
                     <div id="moon-header">
-                        <img id="moon-header-img" src={Runtime.getUrl(logo)} alt="Moon"/>
+                        <img id="moon-header-img" src={AppRuntime.getURL(logo)} alt="Moon"/>
                         <div id="moon-header-buttons-div">
                             <div
                                 id="moon-header-toggle-button"
