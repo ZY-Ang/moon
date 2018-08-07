@@ -24,20 +24,6 @@ class Runtime {
                 'ehmpejjklcibliopgbghpgfinhbjopnn';
 
     /**
-     * {@returns} the last error reported by an Async browser API.
-     * This is only used in the callback-based version of
-     * WebExtension APIs.
-     *
-     * Note: You don't need this property if you are
-     * using the promise-based version of the APIs.
-     *
-     * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/lastError}
-     */
-    static getLastError = () => {
-        return chrome.runtime.lastError;
-    };
-
-    /**
      * Returns details about the app or extension from the manifest.
      * The object returned is a serialization of the full manifest file.
      * @returns {object}
