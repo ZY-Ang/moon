@@ -18,7 +18,7 @@ const build = () => {
     console.log("Force recreating build folder...");
     shell.mkdir('-p', DIR_BUILD);
 
-    // TODO: Disable source maps --no-sourcemaps on prod
+    // TODO: Disable source maps --no-sourcemaps on prod {@see {@link https://parceljs.org/api.html}}
 // 2. Build react app content script
     console.log("Building content-script...");
     const PATH_CONTENT_ENTRY = `${DIR_SOURCE}app/index.js`;
