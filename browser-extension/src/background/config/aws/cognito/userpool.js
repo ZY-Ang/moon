@@ -5,8 +5,8 @@
 import {CognitoUserPool} from "amazon-cognito-identity-js";
 
 /* ------------ Cognito User Pool ID ------------ */
-const COGNITO_USER_POOL_ID = 'us-east-1_yXMQEe6Uf';
-// TODO: Configure staging and dev user pools
+export const COGNITO_USER_POOL_ID = 'us-east-1_yXMQEe6Uf';
+// TODO: Configure staging and dev user pools, regions
 
 /* ------------ Cognito Client ID ------------ */
 export const COGNITO_CLIENT_ID = '277g8p0hbeeieuril3mnmv0ej8';

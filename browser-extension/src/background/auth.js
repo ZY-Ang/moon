@@ -21,13 +21,15 @@ import {
 } from "./config/aws/cognito/url";
 import axios from "axios";
 import {parseUrl, stringify} from "query-string";
-import userPool, {COGNITO_CLIENT_ID} from "./config/aws/cognito/userpool";
+import userPool, {COGNITO_CLIENT_ID, COGNITO_USER_POOL_ID} from "./config/aws/cognito/userpool";
 import {CognitoIdToken, CognitoRefreshToken, CognitoUser} from "amazon-cognito-identity-js";
 import Storage from "./browser/Storage";
 import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
 import Windows from "./browser/Windows";
 import {REQUEST_UPDATE_AUTH_USER} from "../constants/events/background";
+import AWS, {REGION} from "./config/aws/AWS";
+import {IDENTITY_POOL_ID} from "./config/aws/cognito/identitypool";
 
 let authUserCache = null;
 
@@ -68,6 +70,19 @@ const doSignIn = (tokens) => {
                 reject(error);
             }
         }))
+        // Set credentials for AWS SDK
+        .then(authUser => {
+            // For first sign in we can be pretty sure that signInUserSession exists and is valid.
+            //  For other use cases, possibly use {@code authUser.getSession} instead?
+            const cognitoIdToken = authUser.getSignInUserSession().getIdToken().getJwtToken();
+            AWS.config.update({
+                credentials: new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: IDENTITY_POOL_ID,
+                    Logins: {[`cognito-idp.${REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`]: cognitoIdToken}
+                })
+            });
+            return authUser;
+        })
         // Store authUser in authUserCache as a variable for subsequent reference
         .then(authUser => new Promise((resolve, reject) => {
             authUserCache = authUser;
@@ -231,6 +246,7 @@ export const getCurrentAuthUser = () => new Promise((resolve, reject) => {
                         // Manually refresh session using refresh token
                         cognitoUser.refreshSession(new CognitoRefreshToken({RefreshToken: refreshToken}), (err) => {
                             if (err) {
+                                doSignOut();
                                 reject(err);
                             } else {
                                 authUserCache = cognitoUser;
@@ -246,25 +262,47 @@ export const getCurrentAuthUser = () => new Promise((resolve, reject) => {
                         reject(new Error("You are not signed in"));
                     }
                 } catch (err) {
+                    doSignOut();
                     reject(err);
                 }
             })
-            .catch(err => reject(err));
+            .catch(err => {
+                doSignOut();
+                reject(err);
+            });
     }
 });
 
 /**
- * Constructs an authorization header to fit into API Gateway header?
- * TODO: Exchange tokens for IAM credentials instead and access to federated identity pool
+ * Refreshes AWS credentials ONLY IF REQUIRED.
+ *
+ * This should enable all AWS SDKs that require authentication.
  */
-const getAuthorizationHeader = () => new Promise((resolve, reject) => {
-    if (!!authUserCache &&
-        authUserCache.getSignInUserSession() != null && // Not !== as per CognitoUser specification
-        authUserCache.getSignInUserSession().isValid()
-    ) {
-        resolve(null);
+export const refreshCredentials = () => new Promise((resolve, reject) => {
+    console.log("refreshCredentials");
+    // We can be sure that calling {@code AWS.config.credentials.needsRefresh()} will
+    //  be in sync with the id token expiry, given that the token is supplied to the
+    //  AWS config to obtain credentials.
+    if (AWS.config.credentials.needsRefresh()) {
+        // Getting the latest authUser refreshes tokens via the cognito identity SDK if required.
+        getCurrentAuthUser()
+            .then(authUser => {
+                // getCurrentAuthUser automatically refreshes session so getSession is not required.
+                //  For other use cases, possibly use {@code authUser.getSession()} instead?
+                const cognitoIdToken = authUser.getSignInUserSession().getIdToken().getJwtToken();
+                AWS.config.update({
+                    credentials: new AWS.CognitoIdentityCredentials({
+                        IdentityPoolId: IDENTITY_POOL_ID,
+                        Logins: {[`cognito-idp.${REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`]: cognitoIdToken}
+                    })
+                });
+                const message = "Credentials successfully refreshed. You may now make use of the AWS SDKs specified by the user's IAM role";
+                console.log(message);
+                resolve(message);
+            })
+            .catch(err => reject(err));
     } else {
-        reject(null);
+        resolve("Skipping refresh");
     }
 });
 
