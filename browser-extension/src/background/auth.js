@@ -75,11 +75,11 @@ const doSignIn = (tokens) => {
             // For first sign in we can be pretty sure that signInUserSession exists and is valid.
             //  For other use cases, possibly use {@code authUser.getSession} instead?
             const cognitoIdToken = authUser.getSignInUserSession().getIdToken().getJwtToken();
-            AWS.config.update({
-                credentials: new AWS.CognitoIdentityCredentials({
-                    IdentityPoolId: IDENTITY_POOL_ID,
-                    Logins: {[`cognito-idp.${REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`]: cognitoIdToken}
-                })
+            let credentials = new AWS.CognitoIdentityCredentials({
+                IdentityPoolId: IDENTITY_POOL_ID,
+                Logins: {[`cognito-idp.${REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`]: cognitoIdToken}
+            });
+            AWS.config.update({credentials});
             });
             return authUser;
         })
@@ -290,15 +290,13 @@ export const refreshCredentials = () => new Promise((resolve, reject) => {
                 // getCurrentAuthUser automatically refreshes session so getSession is not required.
                 //  For other use cases, possibly use {@code authUser.getSession()} instead?
                 const cognitoIdToken = authUser.getSignInUserSession().getIdToken().getJwtToken();
-                AWS.config.update({
-                    credentials: new AWS.CognitoIdentityCredentials({
-                        IdentityPoolId: IDENTITY_POOL_ID,
-                        Logins: {[`cognito-idp.${REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`]: cognitoIdToken}
-                    })
+                let credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: IDENTITY_POOL_ID,
+                    Logins: {[`cognito-idp.${REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`]: cognitoIdToken}
                 });
-                const message = "Credentials successfully refreshed. You may now make use of the AWS SDKs specified by the user's IAM role";
-                console.log(message);
-                resolve(message);
+                AWS.config.update({credentials});
+                console.log("Credentials successfully refreshed. You may now make use of the AWS SDKs specified by the user's IAM role");
+                resolve(credentials);
             })
             .catch(err => reject(err));
     } else {
