@@ -35,33 +35,52 @@ let authUserCache = null;
  * Signs a user into the Moon client using the JSON Web
  * {@param tokens} (JWT)
  */
-const doSignIn = (tokens) => new Promise((resolve, reject) => {
-    try {
-        const {id_token, refresh_token} = tokens;
-        const cognitoIdToken = new CognitoIdToken({IdToken: id_token});
-        const cognitoRefreshToken = new CognitoRefreshToken({RefreshToken: refresh_token});
-        const username = cognitoIdToken.payload["cognito:username"];
-        const authUser = new CognitoUser({
-            Username: username,
-            Pool: userPool
-        });
-
-        // Manually refresh session using refresh token
-        authUser.refreshSession(cognitoRefreshToken, (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                authUserCache = authUser;
-                chrome.storage.local.set({authUser: authUser}, () => {
-                    console.log("User has been successfully signed in");
-                    resolve(authUser);
-                });
+const doSignIn = (tokens) => {
+    console.log("doSignIn");
+    // Clear federated token cache
+    return new Promise((resolve, reject) => {
+            try {
+                const {id_token} = tokens;
+                const cognitoIdToken = new CognitoIdToken({IdToken: id_token});
+                const username = cognitoIdToken.payload["cognito:username"];
+                resolve(new CognitoUser({
+                    Username: username,
+                    Pool: userPool
+                }));
+            } catch (error) {
+                reject(error);
             }
-        });
-    } catch (err) {
-        reject(err);
-    }
-});
+        })
+        // Manually refresh session using obtained refresh token
+        .then(authUser => new Promise((resolve, reject) => {
+            try {
+                const {refresh_token} = tokens;
+                const cognitoRefreshToken = new CognitoRefreshToken({RefreshToken: refresh_token});
+
+                authUser.refreshSession(cognitoRefreshToken, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(authUser);
+                    }
+                });
+            } catch (error) {
+                reject(error);
+            }
+        }))
+        // Store authUser in authUserCache as a variable for subsequent reference
+        .then(authUser => new Promise((resolve, reject) => {
+            authUserCache = authUser;
+            if (!!authUserCache) {
+                resolve(authUserCache);
+            } else {
+                reject(new Error("Unable to store authUser in cache"));
+            }
+        }))
+        // Store authUser in browser storage api
+        .then(authUser => Storage.local.set({authUser}))
+        .then(() => console.log("User has been successfully signed in"));
+};
 
 /**
  * Function to be called when OAuth flow finalizes.
@@ -80,18 +99,17 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     };
     const body = stringify({
         grant_type: 'authorization_code',
-        scope: 'email openid profile',
+        scope: 'email openid profile', // TODO: Verify scopes alignment with client and refresh call for new scopes
         redirect_uri: URL_OAUTH_REDIRECT,
         client_id: COGNITO_CLIENT_ID,
         code: code
     });
-    console.log(`Posting to ${URL_TOKEN_FLOW}`);
+    console.log(`Obtaining tokens from OAuth server via secure POST`);
     return axios.post(URL_TOKEN_FLOW, body, config)
         .then(({data}) => {
-            console.log("Successfully retrieved OAuth Tokens");
+            console.log("Retrieved tokens");
             return doSignIn(data);
         })
-        .catch(handleErrors)
         .finally(() => {
             console.log(`Closing tab ${tabId}`);
             Tabs.removeById(tabId);
@@ -150,7 +168,10 @@ export const getTrimmedAuthUser = (authUser) => {
 const doOAuthLogOut = () => {
     console.log("doOAuthLogOut");
     return axios.get(URL_SIGN_OUT)
-        .then(() => console.log(`Successfully called ${URL_SIGN_OUT}`))
+        .then(response => {
+            console.log(`Cleared cache via OAuth logout endpoint with response.data: "${response.data}"`);
+            return response;
+        })
         .catch(handleErrors);
 };
 
@@ -176,24 +197,14 @@ export const doSignOut = () => {
  */
 export const doGlobalSignOut = () => {
     console.log("doGlobalSignOut");
-    if (!!authUserCache) {
-        // Cache for authUser exists. Sign user out directly
-        return new Promise((resolve, reject) => authUserCache.globalSignOut({
+    return getCurrentAuthUser()
+        .then(authUser => new Promise((resolve, reject) => authUser.globalSignOut({
             onSuccess: msg => resolve(msg),
             onFailure: err => reject(err)
-        }))
-            .then(doOAuthLogOut)
-            .then(Storage.local.clear);
-    } else {
-        // Cache for authUser missing. Obtain new authenticated user and revoke all.
-        return getCurrentAuthUser()
-            .then(authUser => new Promise((resolve, reject) => authUser.globalSignOut({
-                onSuccess: msg => resolve(msg),
-                onFailure: err => reject(err)
-            })))
-            .then(doOAuthLogOut)
-            .then(Storage.local.clear);
-    }
+        })))
+        .then(() => {authUserCache = null})
+        .then(doOAuthLogOut)
+        .then(Storage.local.clear);
 };
 
 /**
@@ -223,11 +234,12 @@ export const getCurrentAuthUser = () => new Promise((resolve, reject) => {
                                 reject(err);
                             } else {
                                 authUserCache = cognitoUser;
-                                console.log("Setting CognitoUser", cognitoUser);
-                                chrome.storage.local.set({authUser: cognitoUser}, () => {
-                                    console.log("User cache has been refreshed");
-                                    resolve(cognitoUser);
-                                });
+                                console.log("Setting CognitoUser into cache");
+                                Storage.local.set({authUser: cognitoUser})
+                                    .then(() => {
+                                        console.log("User cache has been refreshed");
+                                        resolve(cognitoUser);
+                                    });
                             }
                         });
                     } else {
@@ -263,12 +275,10 @@ const getAuthorizationHeader = () => new Promise((resolve, reject) => {
 export const doUpdateAuthUserEvent = () => {
     console.log("doUpdateAuthUserEvent");
     return getCurrentAuthUser()
-        .then(authUser => Tabs.sendMessageToActive({
-            message: REQUEST_UPDATE_AUTH_USER,
+        .then(authUser => Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {
             authUser: getTrimmedAuthUser(authUser)
         }))
-        .catch(() => Tabs.sendMessageToActive({
-            message: REQUEST_UPDATE_AUTH_USER,
+        .catch(() => Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {
             authUser: null
         }));
 };
