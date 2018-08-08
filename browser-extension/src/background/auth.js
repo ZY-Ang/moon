@@ -31,6 +31,10 @@ import {REQUEST_UPDATE_AUTH_USER} from "../constants/events/background";
 import AWS, {REGION} from "./config/aws/AWS";
 import {IDENTITY_POOL_ID} from "./config/aws/cognito/identitypool";
 
+/**
+ * Globally cached Cognito user. Stored in-memory only when necessary.
+ * @type {CognitoUser | null}
+ */
 let authUserCache = null;
 
 /**
@@ -39,7 +43,7 @@ let authUserCache = null;
  */
 const doSignIn = (tokens) => {
     console.log("doSignIn");
-    // Clear federated token cache
+    // 1. Instantiate a new CognitoUser object
     return new Promise((resolve, reject) => {
             try {
                 const {id_token} = tokens;
@@ -53,7 +57,7 @@ const doSignIn = (tokens) => {
                 reject(error);
             }
         })
-        // Manually refresh session using obtained refresh token
+    // 2. Manually refresh session using obtained refresh token (because instance is currently unauthenticated)
         .then(authUser => new Promise((resolve, reject) => {
             try {
                 const {refresh_token} = tokens;
@@ -70,20 +74,19 @@ const doSignIn = (tokens) => {
                 reject(error);
             }
         }))
-        // Set credentials for AWS SDK
+        // 3. Set credentials for AWS SDK
         .then(authUser => {
             // For first sign in we can be pretty sure that signInUserSession exists and is valid.
             //  For other use cases, possibly use {@code authUser.getSession} instead?
             const cognitoIdToken = authUser.getSignInUserSession().getIdToken().getJwtToken();
             let credentials = new AWS.CognitoIdentityCredentials({
-                IdentityPoolId: IDENTITY_POOL_ID,
+                IdentityPoolId: IDENTITY_POOL_ID,   // TODO: Check viability of Identity Pool IAM usage as opposed to cognito-idp IAM usage
                 Logins: {[`cognito-idp.${REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`]: cognitoIdToken}
             });
             AWS.config.update({credentials});
-            });
             return authUser;
         })
-        // Store authUser in authUserCache as a variable for subsequent reference
+        // 4. Store authUser in authUserCache as a variable for subsequent reference
         .then(authUser => new Promise((resolve, reject) => {
             authUserCache = authUser;
             if (!!authUserCache) {
@@ -92,7 +95,7 @@ const doSignIn = (tokens) => {
                 reject(new Error("Unable to store authUser in cache"));
             }
         }))
-        // Store authUser in browser storage api
+        // 5. Persist authUser via browser storage api
         .then(authUser => Storage.local.set({authUser}))
         .then(() => console.log("User has been successfully signed in"));
 };
@@ -125,6 +128,10 @@ export const doOnAuthFlowResponse = (url, tabId) => {
             console.log("Retrieved tokens");
             return doSignIn(data);
         })
+        .catch(err => {
+            console.error("doSignIn failed with error");
+            handleErrors(err);
+        })
         .finally(() => {
             console.log(`Closing tab ${tabId}`);
             Tabs.removeById(tabId);
@@ -135,27 +142,22 @@ export const doOnAuthFlowResponse = (url, tabId) => {
  * Returns a fully qualified OAuth URL for a specified
  * provider {@param type}
  */
-const getOAuthUrlForType = (type) => new Promise((resolve, reject) => {
+const getOAuthUrlForType = async (type) => {
     switch (type) {
         case TYPE_COGNITO_SIGN_IN:
-            resolve(URL_COGNITO_SIGN_IN);
-            break;
+            return URL_COGNITO_SIGN_IN;
         case TYPE_COGNITO_SIGN_UP:
-            resolve(URL_COGNITO_SIGN_UP);
-            break;
+            return URL_COGNITO_SIGN_UP;
         case TYPE_FACEBOOK:
-            resolve(URL_FACEBOOK_AUTH);
-            break;
+            return URL_FACEBOOK_AUTH;
         case TYPE_GOOGLE:
-            resolve(URL_GOOGLE_AUTH);
-            break;
+            return URL_GOOGLE_AUTH;
         case TYPE_AMAZON:
-            resolve(URL_AMAZON_AUTH);
-            break;
+            return URL_AMAZON_AUTH;
         default:
-            reject(new Error(`${type} is not a recognized sign in type.`));
+            throw new Error(`${type} is not a recognized sign in type.`);
     }
-});
+};
 
 /**
  * Launches the OAuth web flow based on the {@param type} of authentication method
@@ -171,7 +173,7 @@ export const doLaunchWebAuthFlow = (type) => {
  *
  * @param {CognitoUser} authUser - to be trimmed
  */
-export const getTrimmedAuthUser = (authUser) => {
+export const getTrimmedAuthUser = async (authUser) => {
     // TODO: trim Cognito authUser for client interaction on front end only. (Send only data like email, name to be displayed to front end)
     return authUser;
 };
@@ -225,53 +227,48 @@ export const doGlobalSignOut = () => {
 /**
  * Gets the current auth user and refreshes the session if necessary.
  */
-export const getCurrentAuthUser = () => new Promise((resolve, reject) => {
+const getCurrentAuthUser = async () => {
     if (!!authUserCache &&
-        authUserCache.getSignInUserSession() != null && // Not !== as per CognitoUser specification
+        authUserCache.getSignInUserSession() != null &&
         authUserCache.getSignInUserSession().isValid()
     ) {
-        resolve(authUserCache);
+        return authUserCache;
     } else {
-        Storage.local.get('authUser')
-            .then(({authUser}) => {
-                try {
-                    if (!!authUser) {
-                        const cognitoUser = new CognitoUser({
-                            Username: authUser.username,
-                            Pool: userPool
-                        });
-
-                        // No getters or setters as browser storage serializes as an object
-                        const refreshToken = authUser.signInUserSession.refreshToken.token;
-                        // Manually refresh session using refresh token
-                        cognitoUser.refreshSession(new CognitoRefreshToken({RefreshToken: refreshToken}), (err) => {
-                            if (err) {
-                                doSignOut();
-                                reject(err);
-                            } else {
-                                authUserCache = cognitoUser;
-                                console.log("Setting CognitoUser into cache");
-                                Storage.local.set({authUser: cognitoUser})
-                                    .then(() => {
-                                        console.log("User cache has been refreshed");
-                                        resolve(cognitoUser);
-                                    });
-                            }
-                        });
-                    } else {
-                        reject(new Error("You are not signed in"));
-                    }
-                } catch (err) {
-                    doSignOut();
-                    reject(err);
-                }
-            })
-            .catch(err => {
-                doSignOut();
-                reject(err);
+        try {
+            const {authUser} = await Storage.local.get('authUser');
+            if (!authUser) {
+                // noinspection ExceptionCaughtLocallyJS
+                return new Error("You are not signed in");
+            }
+            const cognitoUser = new CognitoUser({
+                Username: authUser.username,
+                Pool: userPool
             });
+            // No getters or setters as browser storage serializes as an object
+            const refreshToken = authUser.signInUserSession.refreshToken.token;
+            const cognitoRefreshToken = new CognitoRefreshToken({RefreshToken: refreshToken});
+            // Refresh session as per sign in
+            await new Promise(resolve => cognitoUser.refreshSession(cognitoRefreshToken, err => {
+                if (err) {
+                    throw err;
+                } else {
+                    console.log("User cache has been refreshed");
+                    resolve(cognitoUser);
+                }
+            }));
+            console.log("Setting CognitoUser in cache");
+            authUserCache = cognitoUser;
+            console.log("Setting CognitoUser in storage");
+            await Storage.local.set({authUser: CognitoUser});
+
+            return cognitoUser;
+
+        } catch (error) {
+            doSignOut();
+            throw error;
+        }
     }
-});
+};
 
 /**
  * Refreshes AWS credentials ONLY IF REQUIRED.
@@ -311,10 +308,7 @@ export const refreshCredentials = () => new Promise((resolve, reject) => {
 export const doUpdateAuthUserEvent = () => {
     console.log("doUpdateAuthUserEvent");
     return getCurrentAuthUser()
-        .then(authUser => Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {
-            authUser: getTrimmedAuthUser(authUser)
-        }))
-        .catch(() => Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {
-            authUser: null
-        }));
+        .then(getTrimmedAuthUser)
+        .then(authUser => Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser}))
+        .catch(() => Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null}));
 };
