@@ -16,25 +16,29 @@ import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "..
  * @see {@link https://developer.chrome.com/extensions/runtime#event-onMessage}
  */
 const messageCenter = (request, sender, sendResponse) => {
-    // Always ensure message extension sender is our own
-    if (sender.id !== BackgroundRuntime.id) {
-        return;
-    }
     const sendSuccess = getSendSuccessResponseFunction(sendResponse);
     const sendFailure = getSendFailureResponseFunction(sendResponse);
+    // Always ensure message extension sender is our own
+    if (sender.id !== BackgroundRuntime.id) {
+        sendFailure(`${sender.id} is unauthorized`);
+        return;
+    }
     switch (request.message) {
         case REQUEST_LAUNCH_WEB_AUTH_FLOW:
-            return !!doLaunchWebAuthFlow(request.type)
+            doLaunchWebAuthFlow(request.type)
                 .then(() => sendSuccess(`doLaunchWebAuthFlow(${request.type}) completed`))
                 .catch(() => sendFailure(`doLaunchWebAuthFlow(${request.type}) failed`));
+            return true;
         case REQUEST_SIGN_OUT:
-            return !!doSignOut()
+            doSignOut()
                 .then(() => sendSuccess(`doSignOut() completed`))
                 .catch(() => sendFailure(`doSignOut() failed`));
+            return true;
         case REQUEST_GLOBAL_SIGN_OUT:
-            return !!doGlobalSignOut()
+            doGlobalSignOut()
                 .then(() => sendSuccess(`doGlobalSignOut() completed`))
                 .catch(() => sendFailure(`doGlobalSignOut() failed`));
+            return true;
         default:
             console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
             sendFailure("Background messageCenter received an unknown request");

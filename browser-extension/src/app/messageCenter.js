@@ -16,17 +16,19 @@ import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "..
  * @see {@link https://developer.chrome.com/extensions/runtime#event-onMessage}
  */
 const messageCenter = (request, sender, sendResponse) => {
-    // Always ensure message extension sender is our own
-    if (sender.id !== AppRuntime.id) {
-        return;
-    }
     const sendSuccess = getSendSuccessResponseFunction(sendResponse);
     const sendFailure = getSendFailureResponseFunction(sendResponse);
+    // Always ensure message extension sender is our own
+    if (sender.id !== AppRuntime.id) {
+        sendFailure(`${sender.id} is unauthorized`);
+        return;
+    }
     switch (request.message) {
         case REQUEST_INJECT_APP:
-            return !!toggleApp(request.source)
+            toggleApp(request.source)
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
                 .catch(() => sendFailure(`toggleApp(${request.source}) failed`));
+            return true;
         case REQUEST_UPDATE_AUTH_USER:
             return !!updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${request.authUser}) completed`))
