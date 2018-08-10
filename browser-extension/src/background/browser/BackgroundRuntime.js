@@ -3,10 +3,11 @@
  */
 
 import Runtime from "../../browser/Runtime";
+import Tabs from "./Tabs";
 import {URL_EXTENSION_INSTALLED, URL_EXTENSION_UNINSTALLED} from "../../constants/url";
 import {isValidWebUrl} from "../../utils/url";
 import messageCenter from "../messageCenter";
-import Tabs from "./Tabs";
+import {version} from "../../../manifest.json";
 
 /**
  * Utility Class for interaction with the browser's runtime API
@@ -33,27 +34,30 @@ class BackgroundRuntime extends Runtime {
          */
         chrome.runtime.onInstalled.addListener(details => {
             if (details.reason === 'install') {
+                console.log(`Moon extension v${version} has been installed!`);
                 // First time installing
                 chrome.tabs.create({url: URL_EXTENSION_INSTALLED}, (tab) => {
                     // TODO: Referral code
                 });
 
             } else if (details.reason === 'update') {
-                // Update of the currently installed extension
-                //  Reboot all content scripts in all tabs in all windows
-                const manifest = BackgroundRuntime.getManifest();
-                const contentScripts = manifest.content_scripts[0].js;
-                Tabs.getAll()
-                    .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url))))
-                    .then(tabs => tabs.forEach(tab => {
-                        contentScripts.forEach(file => {
-                            Tabs.executeScript(tab.id, {file})
-                                .catch(() => {
-                                    console.log(`Skipping ${tab.id} with ${tab.url}`);
-                                });
-                        })
-                    }));
+                console.log(`Moon extension has been updated to v${version}!`);
+
             }
+            // Update of the currently installed extension
+            //  Reboot all content scripts in all tabs in all windows
+            const manifest = BackgroundRuntime.getManifest();
+            const contentScripts = manifest.content_scripts[0].js;
+            Tabs.getAll()
+                .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url))))
+                .then(tabs => tabs.forEach(tab =>
+                    contentScripts.forEach(file =>
+                        Tabs.executeScript(tab.id, {file})
+                            .catch(() => {
+                                console.log(`Skipping ${tab.id} with ${tab.url}`);
+                            })
+                    )
+                ));
         });
 
         /**
