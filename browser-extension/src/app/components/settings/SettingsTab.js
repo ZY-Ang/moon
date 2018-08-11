@@ -10,6 +10,8 @@ import {REQUEST_GLOBAL_SIGN_OUT, REQUEST_SIGN_OUT} from "../../../constants/even
 import AppRuntime from "../../browser/AppRuntime";
 
 class SettingsTab extends Component {
+
+
     signOut = () => {
         this.props.onSetAuthUser(null);
     };
@@ -32,46 +34,67 @@ class SettingsTab extends Component {
 
     render() {
         return (
-            <div className="moon-tab moon-settings-menu">
-                <div>
-                    <FontAwesomeIcon icon="question"/> How it works
-                </div>
-                <div>
-                    <span><FontAwesomeIcon icon="user"/> User</span>
-                    <span>Update Email</span>
-                    <span>Change Password</span>
-                </div>
-                <div>
-                    <span><FontAwesomeIcon icon="wallet" /> Wallets</span>
-                    <span>Coinbase</span>
-                    <span>Kraken</span>
-                    <div>
-                        <h2>Manual</h2>
-                        <span>Bitcoin</span>
-                        <span>Ethereum</span>
-                        <span>Litecoin</span>
+            <div>
+                {
+                    !!this.props.authUser &&
+                    <div className="moon-settings-menu-header text-center">
+                        {
+                            !!this.props.authUser.picture &&
+                            <img src={this.props.authUser.picture} className="avatar"/>
+                        }
+                        {
+                            !!this.props.authUser.name &&
+                            <div>
+                                <p>Hello {this.props.authUser.name}!</p>
+                            </div>
+                        }
                     </div>
-                </div>
-                <div>
-                    <span><FontAwesomeIcon icon="info" /> Info</span>
-                    <span>About</span>
-                    <span>Support</span>
-                    <span>Terms & Conditions</span>
-                    <span>Privacy Policy</span>
-                </div>
-                <div>
-                    <button onClick={this.onSignOutClick}><FontAwesomeIcon icon="sign-out-alt"/> Sign Out</button>
-                </div>
-                <div>
-                    <button onClick={this.onGlobalSignOutClick}><FontAwesomeIcon icon="sign-out-alt"/> Global Sign Out</button>
+                }
+                <div className="moon-tab moon-settings-menu">
+                    <div>
+                        <FontAwesomeIcon icon="question"/> How Moon works
+                    </div>
+                    <div>
+                        <span><FontAwesomeIcon icon="user"/> User</span>
+                        <span>Update Email</span>
+                        <span>Change Password</span>
+                    </div>
+                    <div>
+                        <span><FontAwesomeIcon icon="wallet" /> Wallets</span>
+                        <span>Coinbase</span>
+                        <span>Kraken</span>
+                        <div>
+                            <h2>Manual</h2>
+                            <span>Bitcoin</span>
+                            <span>Ethereum</span>
+                            <span>Litecoin</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span><FontAwesomeIcon icon="info" /> Info</span>
+                        <span>About</span>
+                        <span>Support</span>
+                        <span>Terms & Conditions</span>
+                        <span>Privacy Policy</span>
+                    </div>
+                    <div>
+                        <button onClick={this.onSignOutClick}><FontAwesomeIcon icon="sign-out-alt"/> Sign Out</button>
+                    </div>
+                    <div>
+                        <button onClick={this.onGlobalSignOutClick}><FontAwesomeIcon icon="sign-out-alt"/> Global Sign Out</button>
+                    </div>
                 </div>
             </div>
         );
     }
 }
 
+const mapStateToProps = (state) => ({
+    authUser: state.sessionState.authUser
+});
+
 const mapDispatchToProps = (dispatch) => ({
     onSetAuthUser: (authUser) => dispatch({type: ACTION_SET_AUTH_USER, authUser}),
 });
 
-export default connect(null, mapDispatchToProps)(SettingsTab);
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsTab);

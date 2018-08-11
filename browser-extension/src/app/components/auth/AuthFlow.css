@@ -17,7 +17,97 @@
     width: 100%;
 }
 
-.ant-input-prefix svg {
-    height: 14px !important;
-    color: rgba(0,0,0,.25);
+.sign-in-divider {
+    line-height: 1em;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: black;
+    text-align: center;
+    height: 1.5em;
+    opacity: .5;
+    margin: 20px 0;
+}
+.sign-in-divider::before {
+    content: '';
+    background: linear-gradient(to right, transparent, #55544e, transparent);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+}
+.sign-in-divider::after {
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    color: black;
+    padding: 0 .5em;
+    line-height: 1.5em;
+    background-color: #fcfcfa;
+}
+
+.btn-auth {
+    cursor: pointer;
+    width: 100%;
+    border-radius: 3px;
+    padding: 10px 0;
+    font-size: 15px;
+    border: 2px solid #818078;
+    background-color: transparent;
+    color: black;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.btn-auth:hover {
+    background-color: #818078;
+    color: white;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.btn-auth-social {
+    cursor: pointer;
+    padding: 0;
+    border: 0;
+    text-align: center;
+    width: 36px;
+    height: 25px;
+    background-color: transparent;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.btn-auth-social:hover {
+    opacity: .7;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.btn-auth-social svg {
+    color: #818078;
+}
+
+/* Size Adjustments for FontAwesome*/
+.btn-auth-social-facebook svg {
+    height: 23px;
+}
+.btn-auth-social-google svg {
+    height: 20px;
+}
+.btn-auth-social-amazon svg {
+    height: 25px;
 }

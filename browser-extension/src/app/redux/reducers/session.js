@@ -3,6 +3,7 @@
  */
 
 import {ACTION_SET_AUTH_USER, ACTION_SET_AUTH_USER_TABLE} from "./constants";
+import {isValidAuthUser} from "../../auth";
 
 /* -----------------     Initial State     ------------------ */
 
@@ -19,10 +20,19 @@ const INITIAL_STATE = {
 /**
  * Action to set the {@code authUser} in the store based on the specified action
  */
-const applySetAuthUser = (state, action) => ({
-    ...state,
-    authUser: action.authUser
-});
+const applySetAuthUser = (state, action) => {
+    if (isValidAuthUser(action.authUser)) {
+        return {
+            ...state,
+            authUser: action.authUser
+        };
+    } else {
+        return {
+            ...state,
+            authUser: null
+        }
+    }
+};
 
 /**
  * Action to set the {@code authUserTable} in the store based on the specified action

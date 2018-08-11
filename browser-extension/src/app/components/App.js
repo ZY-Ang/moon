@@ -2,7 +2,6 @@
  * Copyright (c) 2018 moon
  */
 import React, {Component} from 'react';
-import './misc/fontawesome/library';
 import './App.css';
 import logo from '../../../../assets/icons/logo_300_text_dark.png';
 import {MOON_DIV_ID} from "../../constants/dom";
