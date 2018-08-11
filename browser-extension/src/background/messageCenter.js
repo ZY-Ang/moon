@@ -3,7 +3,7 @@
  */
 
 import {REQUEST_GLOBAL_SIGN_OUT, REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_SIGN_OUT} from "../constants/events/app";
-import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth";
+import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
 

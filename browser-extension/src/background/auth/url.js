@@ -1,0 +1,171 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+
+import {stringify} from "query-string";
+import BackgroundRuntime from "../browser/BackgroundRuntime";
+import {AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET} from "../config/Auth0/client";
+import {AUTH0_AUDIENCE} from "../config/Auth0/api";
+
+/**
+ * The unqualified domain URL where the OAuth Server/hosted UI is located
+ */
+export const DOMAIN_OAUTH_SERVER = 'paywithmoon.auth0.com';
+
+/**
+ * The fully qualified URL where the OAuth Server/hosted UI is located
+ */
+export const URL_OAUTH_SERVER = `https://${DOMAIN_OAUTH_SERVER}/`;
+
+/**
+ * The fully qualified URL where the Public key is located
+ */
+export const URL_OAUTH_SERVER_ISS = `${URL_OAUTH_SERVER}.well-known/jwks.json`;
+
+/**
+ * The URL that OAuth server should redirect to let chrome client handle OAuth
+ */
+export const URL_OAUTH_REDIRECT = BackgroundRuntime.getURL('oauth');
+
+/**
+ * The default OAuth spec parameters to be sent to the AWS Cognito hosted UI
+ * @type {{response_type: string, client_id: string, redirect_uri: string}}
+ *
+ * TODO: Pass State into query and obtain via REDUX to protect against CSRF
+ */
+const DEFAULT_PARAMS = {
+    response_type: 'code',
+    audience: AUTH0_AUDIENCE,
+    scope: 'email profile openid offline_access',
+    client_id: AUTH0_CLIENT_ID,
+    redirect_uri: URL_OAUTH_REDIRECT
+    // access_type: 'offline'
+};
+
+/** The overridden params for a standard sign in */
+const STANDARD_SIGN_IN_PARAMS = {
+    ...DEFAULT_PARAMS
+};
+/**
+ * The Standard Sign IN URL for the hosted UI
+ */
+export const URL_STANDARD_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(STANDARD_SIGN_IN_PARAMS)}`;
+
+/**
+ * The Standard Sign UP URL for the hosted UI
+ */
+export const URL_STANDARD_SIGN_UP = `${URL_OAUTH_SERVER}authorize?${stringify(DEFAULT_PARAMS)}`;
+
+/** The overridden params for an authentication via Facebook */
+const FACEBOOK_AUTH_PARAMS = {
+    ...DEFAULT_PARAMS,
+    connection: 'facebook'
+};
+/**
+ * The Facebook Auth URL for the hosted UI
+ */
+export const URL_FACEBOOK_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(FACEBOOK_AUTH_PARAMS)}`;
+
+/** The overridden params for a authentication via Google */
+const GOOGLE_AUTH_PARAMS = {
+    ...DEFAULT_PARAMS,
+    connection: 'google-oauth2'
+};
+/**
+ * The Google Auth URL for the hosted UI
+ */
+export const URL_GOOGLE_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(GOOGLE_AUTH_PARAMS)}`;
+
+/** The overridden params for a authentication via Amazon */
+const AMAZON_AUTH_PARAMS = {
+    ...DEFAULT_PARAMS,
+    connection: 'amazon'
+};
+/**
+ * The Amazon Auth URL for the hosted UI
+ */
+export const URL_AMAZON_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(AMAZON_AUTH_PARAMS)}`;
+
+/**
+ * Body of the POST request used in stage 2 of the OAuth Authorization Code Grant Flow.
+ *
+ * @param {string} code
+ * @return {{
+ *      grant_type: string,
+ *      scope: string,
+ *      redirect_uri: string,
+ *      client_secret: string,
+ *      client_id: string,
+ *      code: string
+ * }}
+ */
+export const getURLFlowParams = (code) => ({
+    grant_type: 'authorization_code',
+    scope: 'email openid profile', // TODO: Verify scopes alignment with client and refresh call for new scopes
+    redirect_uri: URL_OAUTH_REDIRECT,
+    client_secret: AUTH0_CLIENT_SECRET,
+    client_id: AUTH0_CLIENT_ID,
+    code: code
+});
+/**
+ * Body of the POST request used in refreshing tokens from the OAuth server.
+ *
+ * @param {string} refreshToken
+ * @return {{
+ *      grant_type: string,
+ *      client_id: string,
+ *      client_secret: string,
+ *      refresh_token: string
+ * }}
+ */
+export const getRefreshTokenParams = (refreshToken) => ({
+    grant_type: 'refresh_token',
+    client_id: AUTH0_CLIENT_ID,
+    client_secret: AUTH0_CLIENT_SECRET,
+    refresh_token: refreshToken
+});
+/**
+ * The endpoint of the OAuth server in stage 2 of the Authorization Code Grant Flow.
+ * @type {string} POST REST endpoint
+ *
+ * OR
+ *
+ * The endpoint of the OAuth server to obtain new tokens, using a refresh token
+ */
+export const URL_TOKEN_FLOW = `${URL_OAUTH_SERVER}oauth/token`;
+
+/**
+ * The final redirect URL to be supplied to the OAuth Server sign out endpoint
+ */
+export const URL_SIGN_OUT_REDIRECT = BackgroundRuntime.getURL('logout');
+/**
+ * The logout URI of the OAuth Server
+ */
+const SIGN_OUT_PARAMS = {
+    client_id: AUTH0_CLIENT_ID,
+    returnTo: URL_SIGN_OUT_REDIRECT
+};
+/**
+ * The logout endpoint
+ */
+export const URL_SIGN_OUT = `${URL_OAUTH_SERVER}v2/logout?${stringify(SIGN_OUT_PARAMS)}`;
+
+/**
+ * Body of the POST request used in refreshing tokens from the OAuth server.
+ *
+ * @param {string} refreshToken
+ * @return {{
+ *      client_id: string,
+ *      client_secret: string,
+ *      token: string
+ * }}
+ */
+export const getRevokeTokenParams = (refreshToken) => ({
+    client_id: AUTH0_CLIENT_ID,
+    client_secret: AUTH0_CLIENT_SECRET,
+    token: refreshToken
+});
+/**
+ * The revoke token endpoint
+ */
+export const URL_REVOKE_REFRESH_TOKENS = `${URL_OAUTH_SERVER}oauth/revoke`;

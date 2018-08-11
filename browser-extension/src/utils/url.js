@@ -2,7 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../background/config/aws/cognito/url";
+import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../background/auth/url";
 import supportedSites from "../../supportedSites";
 
 /**

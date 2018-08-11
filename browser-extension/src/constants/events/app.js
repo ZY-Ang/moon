@@ -9,9 +9,9 @@
 export const REQUEST_LAUNCH_WEB_AUTH_FLOW = "MOON_LAUNCH_AUTH_FLOW";
 
 /** Used to notify of sign in via Cognito email and password */
-export const TYPE_COGNITO_SIGN_IN = "CognitoSignIn";
+export const TYPE_STANDARD_SIGN_IN = "TypeStandardSignIn";
 /** Used to notify of sign up via Cognito email and password */
-export const TYPE_COGNITO_SIGN_UP = "CognitoSignUp";
+export const TYPE_STANDARD_SIGN_UP = "TypeStandardSignUp";
 /** Used to notify of authentication via Facebook */
 export const TYPE_FACEBOOK = "Facebook";
 /** Used to notify of authentication via Google */

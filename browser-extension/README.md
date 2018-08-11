@@ -7,7 +7,7 @@ https://medium.freecodecamp.org/building-chrome-extensions-in-react-parcel-79d02
 ## Development
 
 ```Shell
-npm run watch
+npm run watchContent
 ```
 
 Starts the watcher for building project when a file changed.

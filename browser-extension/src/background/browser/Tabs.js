@@ -74,7 +74,7 @@ class Tabs {
      *
      * @see {@link https://developer.chrome.com/extensions/tabs#method-query}
      */
-    static getActive = () => new Promise((resolve, reject) => {
+    static getActive = () => new Promise(resolve => {
         chrome.tabs.query({
             active: true,
             currentWindow: true
@@ -82,7 +82,8 @@ class Tabs {
             if (!!tabs && tabs.length === 1) {
                 resolve(tabs[0]);
             } else {
-                reject(new Error("Unable to get active tab"));
+                console.log("Unable to get active tab");
+                resolve(null);
             }
         });
     });

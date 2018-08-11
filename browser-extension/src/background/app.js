@@ -4,7 +4,7 @@
 import BrowserAction from './browser/BrowserAction';
 import Tabs from './browser/Tabs';
 import {isCheckoutPage, isClearCacheUrl, isValidWebUrl, isOAuthUrl, isSupportedSite} from "../utils/url";
-import {doOnAuthFlowResponse, doUpdateAuthUserEvent} from "./auth";
+import {doOnAuthFlowResponse, doUpdateAuthUserEvent} from "./auth/index";
 import {REQUEST_INJECT_APP} from "../constants/events/background";
 import {handleErrors} from "../utils/errors";
 
