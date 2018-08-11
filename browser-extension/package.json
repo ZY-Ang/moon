@@ -12,10 +12,14 @@
   "scripts": {
     "build": "node ./dev/build.js",
     "build-production": "cross-env BUILD_ENV=\"production\" npm run build",
-    "clean": "node ./dev/clean.js"
+    "clean": "node ./dev/clean.js",
+    "watch-content": "node ./dev/watchContent.js",
+    "watch-background": "node ./dev/watchBackground.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.0-14",
+    "@fortawesome/free-brands-svg-icons": "^5.2.0",
+    "@fortawesome/free-regular-svg-icons": "^5.2.0",
     "@fortawesome/free-solid-svg-icons": "^5.1.0-11",
     "@fortawesome/react-fontawesome": "0.1.0-11",
     "react": "^16.2.0",
