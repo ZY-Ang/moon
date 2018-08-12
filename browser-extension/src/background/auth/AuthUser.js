@@ -19,7 +19,7 @@ import axios from "axios";
 /**
  * Singleton {@class AuthUser}
  */
-export class AuthUser {
+class AuthUser {
     /**
      * Singleton instance for the currently signed in user
      * @type {AuthUser|null}
@@ -103,7 +103,7 @@ export class AuthUser {
     };
 
     signIn = async () => {
-        console.log("isSessionValid: ", this.isSessionValid());
+        console.log("signIn");
         if (this.isSessionValid()) {
             this.setAWSCredentials();
         } else {
@@ -116,9 +116,10 @@ export class AuthUser {
     };
 
     setAWSCredentials = () => {
+        console.log("setAWSCredentials");
         let credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: IDENTITY_POOL_ID,
-            Logins: {[DOMAIN_OAUTH_SERVER]: this.idToken}
+            Logins: {[DOMAIN_OAUTH_SERVER]: this.idToken.getJwtToken()}
         });
         AWS.config.update({credentials});
     };
@@ -159,6 +160,7 @@ export class AuthUser {
                     this.accessToken = new JwtToken(data.access_token);
                     this.idToken = new JwtToken(data.id_token);
                     AuthUser.setInstance(this);
+                    this.setAWSCredentials();
                     return this;
                 }
             });
@@ -212,3 +214,5 @@ export class AuthUser {
     )
         .catch(this.setAWSCredentials);
 }
+
+export default AuthUser;

@@ -19,11 +19,4 @@ export const REGION = process.env.REGION || 'us-east-1';
 // Set the region where your identity pool exists (us-east-1, eu-west-1)
 AWS.config.update({region: REGION});
 
-/**
- * To be wrapped before any AWS API
- * @return {boolean}
- */
-export const isAWSCredentialsExpired = () =>
-    AWS.config.credentials.needsRefresh();
-
 export default AWS;

@@ -2,10 +2,16 @@
  * Copyright (c) 2018 moon
  */
 
-import {REQUEST_GLOBAL_SIGN_OUT, REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_SIGN_OUT} from "../constants/events/app";
+import {
+    REQUEST_GLOBAL_SIGN_OUT,
+    REQUEST_LAUNCH_WEB_AUTH_FLOW,
+    REQUEST_SIGN_OUT,
+    REQUEST_TEST_FUNCTION
+} from "../constants/events/app";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
+import moonTestFunction from "./moonTestFunction";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -24,6 +30,15 @@ const messageCenter = (request, sender, sendResponse) => {
         return;
     }
     switch (request.message) {
+        case REQUEST_TEST_FUNCTION:
+            if (process.env.BUILD_ENV !== 'production') {
+                moonTestFunction(request.params)
+                    .then(res => sendSuccess(res))
+                    .catch(err => sendFailure(err));
+                return true;
+            }
+            sendFailure("You are not authorized to access this experimental feature yet.");
+            break;
         case REQUEST_LAUNCH_WEB_AUTH_FLOW:
             doLaunchWebAuthFlow(request.type)
                 .then(() => sendSuccess(`doLaunchWebAuthFlow(${request.type}) completed`))

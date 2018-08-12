@@ -17,7 +17,7 @@ import {handleErrors} from "../../utils/errors";
 import Tabs from "../browser/Tabs";
 import Windows from "../browser/Windows";
 import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/background";
-import {AuthUser} from "./AuthUser";
+import AuthUser from "./AuthUser";
 
 /**
  * Signs a user into the Moon client using the JSON Web
