@@ -70,6 +70,13 @@
     border-style: none;
 }
 
+#moon-header-img::selection{
+    background-color: transparent;
+}
+#moon-header-img::-moz-selection {
+    background-color: transparent;
+}
+
 #moon-header-buttons-div {
     box-sizing: border-box !important;
     height: 100%;
