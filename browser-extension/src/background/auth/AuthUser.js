@@ -4,7 +4,7 @@
 
 import JwtToken, {isValidJWT} from "./JwtToken";
 import Storage from "../browser/Storage";
-import AWS from "../config/aws/AWS";
+import AWS, {REGION} from "../config/aws/AWS";
 import {IDENTITY_POOL_ID} from "../config/aws/cognito/identitypool";
 import {
     DOMAIN_OAUTH_SERVER,
@@ -46,6 +46,10 @@ class AuthUser {
             AuthUser.setInstance(this);
         }
     }
+
+    getIdToken = () => this.idToken;
+    getAccessToken = () => this.accessToken;
+    getRefreshToken = () => this.refreshToken;
 
     /**
      * @returns {boolean} {@code true} if
@@ -105,11 +109,11 @@ class AuthUser {
     signIn = async () => {
         console.log("signIn");
         if (this.isSessionValid()) {
-            this.setAWSCredentials();
+            await this.setAWSCredentials();
         } else {
             // refresh session and set new AWS credentials
             await this.refreshSession();
-            this.setAWSCredentials();
+            await this.setAWSCredentials();
         }
 
         return this.setTokensToStorage();
@@ -119,9 +123,12 @@ class AuthUser {
         console.log("setAWSCredentials");
         let credentials = new AWS.CognitoIdentityCredentials({
             IdentityPoolId: IDENTITY_POOL_ID,
-            Logins: {[DOMAIN_OAUTH_SERVER]: this.idToken.getJwtToken()}
+            Logins: {[DOMAIN_OAUTH_SERVER]: this.getIdToken().getJwtToken()}
         });
         AWS.config.update({credentials});
+        return AWS.config.credentials.refreshPromise()
+            .then(() => console.log("AWS credentials refresh success"))
+            .catch(err => console.error("AWS credentials refresh failure: ", err));
     };
 
     signOut = () => {
