@@ -34,7 +34,10 @@ const messageCenter = (request, sender, sendResponse) => {
             if (process.env.BUILD_ENV !== 'production') {
                 moonTestFunction(request.params)
                     .then(res => sendSuccess(res))
-                    .catch(err => sendFailure(err));
+                    .catch(err => {
+                        console.error(err);
+                        sendFailure(err);
+                    });
                 return true;
             }
             sendFailure("You are not authorized to access this experimental feature yet.");

@@ -3,6 +3,7 @@
  */
 
 import AWS from "./config/aws/AWS";
+import S3 from "./services/aws/S3";
 
 /**
  * A test function to be used for prototyping new APIs.
@@ -10,33 +11,12 @@ import AWS from "./config/aws/AWS";
  */
 const moonTestFunction = (params) => {
     console.log("moonTestFunction");
-    return new Promise((resolve, reject) => {
-        let lambda = new AWS.Lambda({});
-        const Payload = JSON.stringify(params);
-        console.log("Sending payload to Lambda: ", Payload);
-        lambda.invoke({
-            FunctionName : 'hello-world-federated-identity',
-            InvocationType : 'RequestResponse',
-            LogType : 'None',
-            Payload
-        }, (err, data) => {
-            if (err) {
-                console.log("Something went wrong in invoking the protected lambda");
-                console.error(err);
-                reject(err);
-            } else {
-                console.log("Executed Protected Lambda");
-                try {
-                    console.log("data: ", data);
-                    const parsedPayload = JSON.parse(data.Payload);
-                    console.log("parsedPayload: ", parsedPayload);
-                    resolve(parsedPayload);
-                } catch (error) {
-                    reject(error);
-                }
-            }
-        });
-    });
+    // const userSub = decode(AuthUser.getInstance().getIdToken().getJwtToken()).sub;
+    const userSub = AWS.config.credentials.identityId;
+
+    return S3.upload('moon-user-info', userSub, params)
+        .promise()
+        .then(stuff => console.log("YAS!!!. Stuff: ", stuff));
 };
 
 export default moonTestFunction;
