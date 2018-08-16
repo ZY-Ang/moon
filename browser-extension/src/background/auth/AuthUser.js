@@ -4,10 +4,8 @@
 
 import JwtToken, {isValidJWT} from "./JwtToken";
 import Storage from "../browser/Storage";
-import AWS, {REGION} from "../config/aws/AWS";
-import {IDENTITY_POOL_ID} from "../config/aws/cognito/identitypool";
+import AWS from "../config/aws/AWS";
 import {
-    DOMAIN_OAUTH_SERVER,
     getRefreshTokenParams,
     getRevokeTokenParams,
     URL_REVOKE_REFRESH_TOKENS,
@@ -121,14 +119,14 @@ class AuthUser {
 
     setAWSCredentials = () => {
         console.log("setAWSCredentials");
-        let credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: IDENTITY_POOL_ID,
-            Logins: {[DOMAIN_OAUTH_SERVER]: this.getIdToken().getJwtToken()}
+        let credentials = new AWS.WebIdentityCredentials({
+            RoleArn: 'arn:aws:iam::325751747533:role/moon-auth0-users-role',
+            WebIdentityToken: this.getIdToken().getJwtToken()
         });
         AWS.config.update({credentials});
-        return AWS.config.credentials.refreshPromise()
-            .then(() => console.log("AWS credentials refresh success"))
-            .catch(err => console.error("AWS credentials refresh failure: ", err));
+        return AWS.config.credentials.getPromise()
+            .then(() => console.log("AWS credentials get success"))
+            .catch(err => console.error("AWS credentials get failure: ", err));
     };
 
     signOut = () => {
@@ -192,8 +190,8 @@ class AuthUser {
     setTokensToStorage = async () => {
         return Storage.local.set({
             authUser: {
-                access_token: this.accessToken.raw,
-                id_token: this.idToken.raw,
+                access_token: this.accessToken.encodedJwt,
+                id_token: this.idToken.encodedJwt,
                 refresh_token: this.refreshToken
             }
         });

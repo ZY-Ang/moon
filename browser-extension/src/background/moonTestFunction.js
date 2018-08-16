@@ -2,8 +2,8 @@
  * Copyright (c) 2018 moon
  */
 
-import AWS from "./config/aws/AWS";
 import S3 from "./services/aws/S3";
+import AuthUser from "./auth/AuthUser";
 
 /**
  * A test function to be used for prototyping new APIs.
@@ -11,8 +11,7 @@ import S3 from "./services/aws/S3";
  */
 const moonTestFunction = (params) => {
     console.log("moonTestFunction");
-    // const userSub = decode(AuthUser.getInstance().getIdToken().getJwtToken()).sub;
-    const userSub = AWS.config.credentials.identityId;
+    const userSub = AuthUser.getInstance().getIdToken().getSub();
 
     return S3.upload('moon-user-info', userSub, params)
         .promise()

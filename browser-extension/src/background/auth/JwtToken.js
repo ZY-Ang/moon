@@ -35,7 +35,7 @@ class JwtToken {
      */
     constructor(token) {
         // Assign object
-        this.raw = token || '';
+        this.encodedJwt = token || '';
         this.payload = this.decodePayload();
     }
 
@@ -43,7 +43,14 @@ class JwtToken {
      * @returns {string} the record's token.
      */
     getJwtToken() {
-        return this.raw;
+        return this.encodedJwt;
+    }
+
+    /**
+     * @returns {string} the token's subject (sub member).
+     */
+    getSub() {
+        return this.payload.sub;
     }
 
     /**
@@ -65,7 +72,7 @@ class JwtToken {
      */
     decodePayload() {
         try {
-            return decode(this.raw);
+            return decode(this.encodedJwt);
         } catch (err) {
             return {};
         }
