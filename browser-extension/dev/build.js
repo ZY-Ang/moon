@@ -55,12 +55,12 @@ const build = () => {
     console.log("Building manifest.json...");
     const manifestJs = require("../build/manifestBuilder");
     const PATH_MANIFEST_BUILD = `${DIR_BUILD}manifest.json`;
-    fs.writeFile(PATH_MANIFEST_BUILD, JSON.stringify(manifestJs, null, 2), 'utf8', err => {
-        if (err) {
-            shell.echo('Error: build failed - unable to build manifest.json via the manifest builder');
-            shell.exit(1);
-        }
-    });
+    try {
+        fs.writeFileSync(PATH_MANIFEST_BUILD, JSON.stringify(manifestJs, null, 2), 'utf8');
+    } catch (error) {
+        shell.echo('Error: build failed - unable to build manifest.json via the manifest builder');
+        shell.exit(1);
+    }
 
     // 4iii. Remove the compiled manifest builder
     console.log("Removing manifestBuilder.js...");
