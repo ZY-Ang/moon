@@ -4,7 +4,7 @@
 import React, {Component} from 'react';
 import './Navbar.css';
 import {TAB_GROUP_AUTH} from "./constants";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import FaIcon from "../misc/fontawesome/FaIcon";
 
 class Navbar extends Component {
     changeTab = (index) => (event) => {
@@ -27,7 +27,7 @@ class Navbar extends Component {
                                 className={`moon-navbar-item${(this.props.activeTab === tabObject.index) ? ' active' : ''}`}
                             >
                                 <div>
-                                    <FontAwesomeIcon icon={tabObject.icon}/>
+                                    <FaIcon icon={tabObject.icon}/>
                                 </div>
                                 <div className="moon-navbar-item-text">
                                     {tabObject.name}

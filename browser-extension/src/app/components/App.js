@@ -6,12 +6,12 @@ import './App.css';
 import logo from '../../../../assets/icons/logo_300_text_dark.png';
 import {MOON_DIV_ID} from "../../constants/dom";
 import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {connect} from "react-redux";
 import AuthFlow from "./auth/AuthFlow";
 import Navbar from "./nav/Navbar";
 import SwipeableViews from "react-swipeable-views";
 import AppRuntime from "../browser/AppRuntime";
+import FaIcon from "./misc/fontawesome/FaIcon";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -77,8 +77,8 @@ class App extends Component {
                             >
                                 {
                                     this.state.isMaximized
-                                        ? <FontAwesomeIcon icon="minus-circle"/>
-                                        : <FontAwesomeIcon icon="plus-circle"/>
+                                        ? <FaIcon icon="minus-circle"/>
+                                        : <FaIcon icon="plus-circle"/>
                                 }
                             </div>
                             <div
@@ -87,7 +87,7 @@ class App extends Component {
                                 // data-tip="Close"
                                 onClick={this.onClose}
                             >
-                                <FontAwesomeIcon icon="times-circle"/>
+                                <FaIcon icon="times-circle"/>
                             </div>
                         </div>
                     </div>

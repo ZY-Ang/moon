@@ -13,7 +13,7 @@ import {
     TYPE_FACEBOOK, TYPE_GOOGLE
 } from "../../../constants/events/app";
 import AppRuntime from "../../browser/AppRuntime";
-import Icon from "../misc/fontawesome/Icon";
+import FaIcon from "../misc/fontawesome/FaIcon";
 
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
 
@@ -77,9 +77,9 @@ class AuthFlow extends Component {
                 <hr className="sign-in-divider" data-content="or use a social provider"/>
                 {/*<button onClick={this.signUp}>Sign Up</button>*/}
                 <div className="text-center">
-                    <button className="btn-auth-social btn-auth-social-facebook" onClick={this.signInWithFacebook}><Icon icon={['fab', 'facebook']}/></button>
-                    <button className="btn-auth-social btn-auth-social-google" onClick={this.signInWithGoogle}><Icon icon={['fab', 'google']}/></button>
-                    <button className="btn-auth-social btn-auth-social-amazon" onClick={this.signInWithAmazon}><Icon icon={['fab', 'amazon']}/></button>
+                    <button className="btn-auth-social btn-auth-social-facebook" onClick={this.signInWithFacebook}><FaIcon icon={['fab', 'facebook']}/></button>
+                    <button className="btn-auth-social btn-auth-social-google" onClick={this.signInWithGoogle}><FaIcon icon={['fab', 'google']}/></button>
+                    <button className="btn-auth-social btn-auth-social-amazon" onClick={this.signInWithAmazon}><FaIcon icon={['fab', 'amazon']}/></button>
                 </div>
                 <p className="text-center text-danger">{this.state.error}</p>
             </div>
