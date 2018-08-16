@@ -7,7 +7,7 @@ import Tabs from "./Tabs";
 import {URL_EXTENSION_INSTALLED, URL_EXTENSION_UNINSTALLED} from "../../constants/url";
 import {isValidWebUrl} from "../../utils/url";
 import messageCenter from "../messageCenter";
-import {version} from "../../../manifest.json";
+import {version} from "../../../package.json";
 
 /**
  * Utility Class for interaction with the browser's runtime API

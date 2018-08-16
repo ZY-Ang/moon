@@ -2,13 +2,16 @@
  * Copyright (c) 2018 moon
  */
 
+const AdmZip = require("adm-zip");
 const fs = require("fs");
 const shell = require("shelljs");
 
 const build = () => {
     const DIR_BUILD = `build/`;
+    const DIR_DEV = `dev/`;
     const DIR_SOURCE = `src/`;
     const DIR_FILES = `files/`;
+    const SOURCE_MAPS_FLAG = (shell.env.BUILD_ENV === 'production') ? '--no-source-maps' : '';
 
     console.log(`Building for ${(shell.env.BUILD_ENV || 'development')} environment`);
 
@@ -18,12 +21,11 @@ const build = () => {
     console.log("Force recreating build folder...");
     shell.mkdir('-p', DIR_BUILD);
 
-    // TODO: Disable source maps --no-sourcemaps on prod {@see {@link https://parceljs.org/api.html}}
 // 2. Build react app content script
     console.log("Building content-script...");
     const PATH_CONTENT_ENTRY = `${DIR_SOURCE}app/index.js`;
 
-    if (shell.exec(`parcel build ${PATH_CONTENT_ENTRY} -d ${DIR_BUILD} -o app.js`).code !== 0) {
+    if (shell.exec(`parcel build ${PATH_CONTENT_ENTRY} -d ${DIR_BUILD} -o app.js ${SOURCE_MAPS_FLAG}`).code !== 0) {
         shell.echo('Error: build failed - unable to build chrome content script');
         shell.exit(1);
     }
@@ -32,43 +34,58 @@ const build = () => {
     console.log("Building background-script...");
     const PATH_BACKGROUND_ENTRY = `${DIR_SOURCE}background/index.js`;
 
-    if (shell.exec(`parcel build ${PATH_BACKGROUND_ENTRY} -d ${DIR_BUILD} -o background.js`).code !== 0) {
+    if (shell.exec(`parcel build ${PATH_BACKGROUND_ENTRY} -d ${DIR_BUILD} -o background.js ${SOURCE_MAPS_FLAG}`).code !== 0) {
         shell.echo('Error: build failed - unable to build chrome background script');
         shell.exit(1);
     }
 
-// 4. Modify and build manifest.json
-    console.log("Searching for logo_128 imported file in build dir...");
-    const logo_128_png_arr = shell.find(DIR_BUILD).filter(file => file.match(/logo_128.*\.png/));
+// 4. Build manifest.json
+    // 4i. Build the manifest builder to sync asset imports
+    console.log("Building manifestBuilder.js...");
+    const FILE_MANIFEST_BUILDER = 'manifestBuilder.js';
+    const PATH_MANIFEST_BUILDER_ENTRY = `${DIR_DEV}${FILE_MANIFEST_BUILDER}`;
+    const PATH_MANIFEST_BUILDER_EXIT = `${DIR_BUILD}${FILE_MANIFEST_BUILDER}`;
 
-    if (logo_128_png_arr.length !== 1) {
-        shell.echo('Error: build failed - unable to find exactly one logo_128.png in build directory');
+    if (shell.exec(`parcel build ${PATH_MANIFEST_BUILDER_ENTRY} -d ${DIR_BUILD} -o ${FILE_MANIFEST_BUILDER} --no-source-maps`).code !== 0) {
+        shell.echo('Error: build failed - unable to build manifest builder');
         shell.exit(1);
     }
 
-    console.log("Reading manifest.json for replacements...");
-    const PATH_MANIFEST_ENTRY = "manifest.json";
+    // 4ii. Run the built manifest builder to build manifest.json
+    console.log("Building manifest.json...");
+    const manifestJs = require("../build/manifestBuilder");
     const PATH_MANIFEST_BUILD = `${DIR_BUILD}manifest.json`;
-
-    fs.readFile(PATH_MANIFEST_ENTRY, 'utf8', (err, data) => {
+    fs.writeFile(PATH_MANIFEST_BUILD, JSON.stringify(manifestJs, null, 2), 'utf8', err => {
         if (err) {
-            shell.echo('Error: build failed - unable to read from manifest.json');
+            shell.echo('Error: build failed - unable to build manifest.json via the manifest builder');
             shell.exit(1);
-            return console.error(err);
         }
-        console.log("Replacing and saving manifest.json with replacements into build dir...");
-        const result = data.replace(/logo_128\.png/g, logo_128_png_arr[0].replace(DIR_BUILD, ""));
-        fs.writeFile(PATH_MANIFEST_BUILD, result, 'utf8', (err) => {
-            if (err) {
-                shell.echo('Error: build failed - unable to write amended manifest.json');
-                shell.exit(1);
-            }
-        })
     });
 
+    // 4iii. Remove the compiled manifest builder
+    console.log("Removing manifestBuilder.js...");
+    shell.rm('-f', PATH_MANIFEST_BUILDER_EXIT);
+
 // 5. Copy all other unhashed assets
-    console.log("Copying unhashed assets");
+    console.log("Copying unhashed assets...");
     shell.cp('-r', `${DIR_FILES}.`, DIR_BUILD);
+
+// 6. Zip folder on production to prepare for WebStore deployments
+    if (shell.env.BUILD_ENV === 'production') {
+        console.log("Zipping up folder...");
+
+        const PATH_ZIP_EXIT = `${DIR_BUILD}moon-extension.zip`;
+        const zip = new AdmZip();
+        zip.addLocalFolder(DIR_BUILD);
+        zip.writeZip(PATH_ZIP_EXIT, err => {
+            if (err) {
+                shell.echo('Error: build failed - unable to zip build');
+                shell.exit(1);
+            }
+        });
+    }
+
+// TODO: Implement publishing to chrome webstore via {@link https://developer.chrome.com/webstore/using_webstore_api}
 };
 
 module.exports = build;

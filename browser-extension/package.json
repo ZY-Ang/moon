@@ -1,6 +1,6 @@
 {
   "name": "Moon",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Shop and pay with crypto at the lowest rates. Works on Amazon.com and many more!",
   "author": "Moon",
   "repository": {
@@ -30,6 +30,7 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
+    "adm-zip": "^0.4.11",
     "babel-plugin-transform-class-properties": "6.24.1",
     "babel-plugin-transform-es2015-arrow-functions": "6.22.0",
     "babel-plugin-transform-es2015-modules-commonjs": "6.26.2",
