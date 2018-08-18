@@ -98,6 +98,9 @@ export const toggleApp = (source) => new Promise((resolve, reject) => {
     }
 });
 
+// FIXME: handle orphaned content script @see {@link https://stackoverflow.com/questions/7792552/how-to-detect-chrome-extension-uninstall}
+// FIXME: DE-EXECUTE CONTENT SCRIPT OR SOME SORT OF RECONNECT DISPLAY
+
 /**
  * Updates the global {@param authUser} for the app
  */
