@@ -16,3 +16,7 @@ export const SOURCE_NONE = "MOON_SOURCE_NONE";
 // --------------------- Auth User Update ---------------------
 /** Used to request an update to the current authenticated user from the background script */
 export const REQUEST_UPDATE_AUTH_USER = "MOON_REQUEST_UPDATE_AUTH_USER";
+
+// --------------------- Coinbase API Keys ---------------------
+/** Used to request an extraction of API keys */
+export const REQUEST_COINBASE_EXTRACT_API_KEYS = "MOON_EXTRACT_COINBASE_API_KEYS";

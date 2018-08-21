@@ -23,6 +23,18 @@ export const TYPE_GOOGLE = "Google";
 /** Used to notify of authentication via Login With Amazon */
 export const TYPE_AMAZON = "Amazon";
 
+// --------------------- Launch Coinbase Auth Flow ---------------------
+/** Used to launch the coinbase auth flow */
+export const REQUEST_LAUNCH_COINBASE_AUTH_FLOW = "MOON_LAUNCH_COINBASE_AUTH_FLOW";
+
+// --------------------- Coinbase Auth Flow Poll ---------------------
+/** Used to poll the background script if we are in a coinbase authorization mode */
+export const POLL_IS_COINBASE_AUTH_MODE = "MOON_IS_COINBASE_API_URL";
+
+// --------------------- Update Coinbase API Key ---------------------
+/** Used to notify the background of a confirmed, new API key */
+export const REQUEST_UPDATE_COINBASE_API_KEYS = "MOON_UPDATE_COINBASE_API_KEYS";
+
 // --------------------- Sign Out ---------------------
 export const REQUEST_SIGN_OUT = "MOON_SIGN_OUT";
 

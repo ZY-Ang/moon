@@ -5,7 +5,7 @@
 import logoDisabled from "../../../../assets/icons/logo_disabled_128.png";
 import logo from "../../../../assets/icons/logo_128.png";
 import {SOURCE_MANUAL} from "../../constants/events/background";
-import {doInjectAppEvent} from "../app";
+import {doInjectAppEvent} from "../windowManager";
 
 /**
  * Interface for interaction with the browser's browserAction API

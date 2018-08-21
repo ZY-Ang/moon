@@ -2,7 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import {tabDidUpdate} from "../app";
+import {tabDidUpdate} from "../windowManager";
 
 /**
  * Interface for interaction with the browser's windows API

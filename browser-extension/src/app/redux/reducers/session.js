@@ -3,7 +3,7 @@
  */
 
 import {ACTION_SET_AUTH_USER, ACTION_SET_AUTH_USER_TABLE} from "./constants";
-import {isValidAuthUser} from "../../auth";
+import {isValidAuthUser} from "../../utils/auth";
 
 /* -----------------     Initial State     ------------------ */
 

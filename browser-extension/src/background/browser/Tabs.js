@@ -2,7 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import {tabDidUpdate} from "../app";
+import {tabDidUpdate} from "../windowManager";
 
 /**
  * Interface for interaction with the browser's tabs API
@@ -65,6 +65,20 @@ class Tabs {
                 reject(chrome.runtime.lastError);
             } else {
                 resolve(results);
+            }
+        });
+    });
+
+    /**
+     * Updates a tab of {@param tabId}
+     * with new {@param updateProperties}
+     */
+    static update = (tabId, updateProperties) => new Promise((resolve, reject) => {
+        chrome.tabs.update(tabId, updateProperties, tab => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else {
+                resolve(tab);
             }
         });
     });

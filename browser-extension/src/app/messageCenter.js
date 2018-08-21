@@ -2,8 +2,12 @@
  * Copyright (c) 2018 moon
  */
 
-import {REQUEST_INJECT_APP, REQUEST_UPDATE_AUTH_USER} from "../constants/events/background";
-import {toggleApp, updateAuthUser} from "./index";
+import {
+    REQUEST_COINBASE_EXTRACT_API_KEYS,
+    REQUEST_INJECT_APP,
+    REQUEST_UPDATE_AUTH_USER
+} from "../constants/events/background";
+import {doExtractCoinbaseApiKeys, toggleApp, updateAuthUser} from "./index";
 import AppRuntime from "./browser/AppRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
 
@@ -30,9 +34,14 @@ const messageCenter = (request, sender, sendResponse) => {
                 .catch(() => sendFailure(`toggleApp(${request.source}) failed`));
             return true;
         case REQUEST_UPDATE_AUTH_USER:
-            return !!updateAuthUser(request.authUser)
+            updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${request.authUser}) completed`))
                 .catch(() => sendFailure(`updateAuthUser(${request.authUser}) failed`));
+            return true;
+        case REQUEST_COINBASE_EXTRACT_API_KEYS:
+            doExtractCoinbaseApiKeys();
+            sendSuccess("doExtractCoinbaseApiKeys() started");
+            return;
         default:
             console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
             sendFailure("App messageCenter received an unknown request");

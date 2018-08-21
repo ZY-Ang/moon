@@ -5,12 +5,32 @@ import React, {Component} from 'react';
 import './SettingsTab.css';
 import {connect} from "react-redux";
 import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
-import {REQUEST_GLOBAL_SIGN_OUT, REQUEST_SIGN_OUT} from "../../../constants/events/app";
+import {
+    REQUEST_GLOBAL_SIGN_OUT,
+    REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
+    REQUEST_SIGN_OUT
+} from "../../../constants/events/app";
 import AppRuntime from "../../browser/AppRuntime";
 import FaIcon from "../misc/fontawesome/FaIcon";
+import {handleErrors} from "../../../utils/errors";
 
 class SettingsTab extends Component {
-
+    onLaunchCoinbaseAuthFlow = () => {
+        console.log("onLaunchCoinbaseAuthFlow");
+        AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
+            .then(({success, response}) => {
+                if (success) {
+                    console.log(response);
+                    // FIXME: Show user permission warnings and shit
+                } else {
+                    throw new Error(response);
+                }
+            })
+            .catch(err => {
+                handleErrors(err);
+                // FIXME: Show user errors and shit
+            });
+    };
 
     signOut = () => {
         this.props.onSetAuthUser(null);
@@ -61,7 +81,7 @@ class SettingsTab extends Component {
                     </div>
                     <div>
                         <span><FaIcon icon="wallet" /> Wallets</span>
-                        <span>Coinbase</span>
+                        <span onClick={this.onLaunchCoinbaseAuthFlow}>Coinbase</span>
                         <span>Kraken</span>
                         <div>
                             <h2>Manual</h2>
