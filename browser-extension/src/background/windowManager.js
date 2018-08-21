@@ -3,10 +3,19 @@
  */
 import BrowserAction from './browser/BrowserAction';
 import Tabs from './browser/Tabs';
-import {isCheckoutPage, isClearCacheUrl, isValidWebUrl, isOAuthUrl, isSupportedSite} from "../utils/url";
+import {
+    isCheckoutPage,
+    isClearCacheUrl,
+    isValidWebUrl,
+    isOAuthUrl,
+    isSupportedSite,
+    isCoinbaseDashboardUrl, isCoinbaseSettingsApiUrl
+} from "../utils/url";
 import {doOnAuthFlowResponse, doUpdateAuthUserEvent} from "./auth/index";
-import {REQUEST_INJECT_APP} from "../constants/events/background";
+import {REQUEST_COINBASE_EXTRACT_API_KEYS, REQUEST_INJECT_APP} from "../constants/events/background";
 import {handleErrors} from "../utils/errors";
+import {URL_COINBASE_SETTINGS_API} from "./auth/url";
+import store from "./redux/store";
 
 /**
  * Sends an app injection event message to the
@@ -18,6 +27,19 @@ import {handleErrors} from "../utils/errors";
  */
 export const doInjectAppEvent = (source) =>
     Tabs.sendMessageToActive(REQUEST_INJECT_APP, {source});
+
+/**
+ * Returns the state of the coinbase auth
+ * flow from the coinbase redux state
+ * @return {boolean} {@code true} if the
+ * user has requested an authorization via
+ * coinbase or false otherwise.
+ */
+const isCoinbaseAuthFlow = () =>
+    store.getState().coinbaseState.isCoinbaseAuthFlow;
+
+const doStartCoinbaseAuthFlow = (source) =>
+    Tabs.sendMessageToActive()
 
 /**
  * Handler for when a {@param tab} is updated.
@@ -36,6 +58,13 @@ export const tabDidUpdate = (tab) => {
         // URL on the current tab is the final redirect after an OAuth logout has been hit
         // DEPRECATED. An Ajax call via Axios replaced the need to manually open a new tab
         Tabs.remove(tab).catch(handleErrors);
+
+    } else if (isCoinbaseDashboardUrl(tab.url) && isCoinbaseAuthFlow()) {
+        Tabs.update(tab.id, {url: URL_COINBASE_SETTINGS_API}).catch(handleErrors);
+
+    } else if (isCoinbaseSettingsApiUrl(tab.url) && isCoinbaseAuthFlow()) {
+        Tabs.sendMessageToActive(REQUEST_COINBASE_EXTRACT_API_KEYS);
+        // Do I need to update AuthUser Event?
 
     } else if (!isValidWebUrl(tab.url)) {
         // URL is not of a valid web schema - e.g. chrome-extension://... or file:///...
