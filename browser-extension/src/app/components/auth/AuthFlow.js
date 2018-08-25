@@ -11,7 +11,7 @@ import {
     TYPE_STANDARD_SIGN_IN,
     TYPE_STANDARD_SIGN_UP,
     TYPE_FACEBOOK, TYPE_GOOGLE
-} from "../../../constants/events/app";
+} from "../../../constants/events/appEvents";
 import AppRuntime from "../../browser/AppRuntime";
 import FaIcon from "../misc/fontawesome/FaIcon";
 
@@ -70,12 +70,15 @@ class AuthFlow extends Component {
 
     render() {
         return (
-            <div className="moon-tab" style={{paddingTop: '35%'}}>
+            <div className="moon-tab" style={{paddingTop: '27%'}}>
                 <div>
-                    <button className="btn-auth" onClick={this.signIn}>Authenticate With Moon</button>
+                    <button className="btn-auth" onClick={this.signIn}>
+                        <div className="btn-auth-icon"><FaIcon icon="moon"/></div>
+                        <div className="btn-auth-text">Sign In With Moon</div>
+                    </button>
                 </div>
+                <div className="text-center" style={{padding: '10px 0', fontSize: 'smaller'}}>Don't have an account? <a href="#" style={{fontStyle: 'none', textDecoration: 'none'}} onClick={this.signUp}>Sign Up!</a></div>
                 <hr className="sign-in-divider" data-content="or use a social provider"/>
-                {/*<button onClick={this.signUp}>Sign Up</button>*/}
                 <div className="text-center">
                     <button className="btn-auth-social btn-auth-social-facebook" onClick={this.signInWithFacebook}><FaIcon icon={['fab', 'facebook']}/></button>
                     <button className="btn-auth-social btn-auth-social-google" onClick={this.signInWithGoogle}><FaIcon icon={['fab', 'google']}/></button>

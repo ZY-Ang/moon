@@ -51,10 +51,25 @@ const STANDARD_SIGN_IN_PARAMS = {
  */
 export const URL_STANDARD_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(STANDARD_SIGN_IN_PARAMS)}`;
 
+/** The overridden params for a standard sign up */
+const STANDARD_SIGN_UP_PARAMS = {
+    ...DEFAULT_PARAMS,
+    initialScreen: 'signUp'
+};
 /**
  * The Standard Sign UP URL for the hosted UI
  */
-export const URL_STANDARD_SIGN_UP = `${URL_OAUTH_SERVER}authorize?${stringify(DEFAULT_PARAMS)}`;
+export const URL_STANDARD_SIGN_UP = `${URL_OAUTH_SERVER}authorize?${stringify(STANDARD_SIGN_UP_PARAMS)}`;
+
+/** The overridden params for a password reset */
+const STANDARD_RESET_PASSWORD_PARAMS = {
+    ...DEFAULT_PARAMS,
+    initialScreen: 'forgotPassword'
+};
+/**
+ * The Reset Password URL for the hosted UI
+ */
+export const URL_RESET_PASSWORD = `${URL_OAUTH_SERVER}authorize?${stringify(STANDARD_RESET_PASSWORD_PARAMS)}`;
 
 /** The overridden params for an authentication via Facebook */
 const FACEBOOK_AUTH_PARAMS = {

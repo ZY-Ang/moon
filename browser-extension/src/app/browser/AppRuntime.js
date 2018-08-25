@@ -14,7 +14,7 @@ class AppRuntime extends Runtime {
      * Sends a {@param request {request}} to the background script.
      * Requests for {@method AppRuntime.sendMessage} can be found
      * in the shared events constants directory
-     * {@link ~/src/constants/events/app.js}
+     * {@link ~/src/constants/events/appEvents.js}
      *
      * @param options {object} - additional parameters to be passed into the request.
      *

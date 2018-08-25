@@ -15,5 +15,5 @@ if (process.env.BUILD_ENV === 'production') {
     console.error = () => {};
     // TODO: Log to Cloud Service
 } else {
-    console.log(`Running in ${(process.env.BUILD_ENV || 'development')} environment`);
+    console.log(`Moon running in ${(process.env.BUILD_ENV || 'development')} environment`);
 }

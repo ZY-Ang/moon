@@ -12,10 +12,12 @@ export const REQUEST_TEST_FUNCTION = "MOON_TEST_FUNCTION";
 /** Used to request an injection of the moon extension onto the page */
 export const REQUEST_LAUNCH_WEB_AUTH_FLOW = "MOON_LAUNCH_AUTH_FLOW";
 
-/** Used to notify of sign in via Cognito email and password */
+/** Used to notify of sign in via email and password */
 export const TYPE_STANDARD_SIGN_IN = "TypeStandardSignIn";
-/** Used to notify of sign up via Cognito email and password */
+/** Used to notify of sign up via email and password */
 export const TYPE_STANDARD_SIGN_UP = "TypeStandardSignUp";
+/** Used to notify of a password reset or change */
+export const TYPE_RESET_PASSWORD = "TypeResetPassword";
 /** Used to notify of authentication via Facebook */
 export const TYPE_FACEBOOK = "Facebook";
 /** Used to notify of authentication via Google */

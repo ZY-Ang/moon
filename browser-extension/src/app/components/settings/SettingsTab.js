@@ -7,16 +7,18 @@ import {connect} from "react-redux";
 import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {
     REQUEST_GLOBAL_SIGN_OUT,
-    REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
-    REQUEST_SIGN_OUT
-} from "../../../constants/events/app";
+    REQUEST_LAUNCH_COINBASE_AUTH_FLOW, REQUEST_LAUNCH_WEB_AUTH_FLOW,
+    REQUEST_SIGN_OUT, TYPE_RESET_PASSWORD
+} from "../../../constants/events/appEvents";
 import AppRuntime from "../../browser/AppRuntime";
 import FaIcon from "../misc/fontawesome/FaIcon";
 import {handleErrors} from "../../../utils/errors";
 
+const MESSAGE_ERROR_CHANGE_FAILURE = "We were unable to change your password!";
+
 class SettingsTab extends Component {
-    onLaunchCoinbaseAuthFlow = () => {
-        console.log("onLaunchCoinbaseAuthFlow");
+    launchCoinbaseAuthFlow = () => {
+        console.log("launchCoinbaseAuthFlow");
         AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
             .then(({success, response}) => {
                 if (success) {
@@ -30,6 +32,20 @@ class SettingsTab extends Component {
                 handleErrors(err);
                 // FIXME: Show user errors and shit
             });
+    };
+
+    launchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type})
+        .catch(err => {
+            console.error(err);
+            this.props.onSetAuthUser(null);
+            this.setState(() => ({error: MESSAGE_ERROR_CHANGE_FAILURE}));
+        });
+
+    changePassword = (event) => {
+        this.launchWebAuthFlow(TYPE_RESET_PASSWORD);
+        if (event) {
+            event.preventDefault();
+        }
     };
 
     signOut = () => {
@@ -74,29 +90,8 @@ class SettingsTab extends Component {
                     <div>
                         <FaIcon icon="question"/> How Moon works
                     </div>
-                    <div>
-                        <span><FaIcon icon="user"/> User</span>
-                        <span>Update Email</span>
-                        <span>Change Password</span>
-                    </div>
-                    <div>
-                        <span><FaIcon icon="wallet" /> Wallets</span>
-                        <span onClick={this.onLaunchCoinbaseAuthFlow}>Coinbase</span>
-                        <span>Kraken</span>
-                        <div>
-                            <h2>Manual</h2>
-                            <span>Bitcoin</span>
-                            <span>Ethereum</span>
-                            <span>Litecoin</span>
-                        </div>
-                    </div>
-                    <div>
-                        <span><FaIcon icon="info" /> Info</span>
-                        <span>About</span>
-                        <span>Support</span>
-                        <span>Terms & Conditions</span>
-                        <span>Privacy Policy</span>
-                    </div>
+                    <div onClick={this.launchCoinbaseAuthFlow}>Update your Coinbase account</div>
+                    <div onClick={this.changePassword}><FaIcon icon="user"/> Change Password</div>
                     <div>
                         <button onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
                     </div>

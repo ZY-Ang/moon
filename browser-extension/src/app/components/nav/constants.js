@@ -26,14 +26,14 @@ export const TAB_SETTINGS = 'TAB_SETTINGS';
 export const TAB_GROUP_AUTH = {
     components: [
         PayTab,
-        WalletsTab,
-        RewardsTab,
+        // WalletsTab, TODO: Implement post-MVP
+        // RewardsTab,
         SettingsTab
     ],
     navTabs: [
         TAB_PAY,
-        TAB_WALLETS,
-        TAB_REWARDS,
+        // TAB_WALLETS, TODO: Implement post-MVP
+        // TAB_REWARDS,
         TAB_SETTINGS
     ],
     [TAB_PAY]: {
@@ -42,20 +42,20 @@ export const TAB_GROUP_AUTH = {
         name: 'Pay',
         component: PayTab
     },
-    [TAB_WALLETS]: {
-        index: 1,
-        icon: "wallet",
-        name: 'Wallets',
-        component: WalletsTab
-    },
-    [TAB_REWARDS]: {
-        index: 2,
-        icon: "rocket",
-        name: 'Rewards',
-        component: RewardsTab
-    },
+    // [TAB_WALLETS]: { TODO: Implement post-MVP
+    //     index: 1,
+    //     icon: "wallet",
+    //     name: 'Wallets',
+    //     component: WalletsTab
+    // },
+    // [TAB_REWARDS]: {
+    //     index: 2,
+    //     icon: "rocket",
+    //     name: 'Rewards',
+    //     component: RewardsTab
+    // },
     [TAB_SETTINGS]: {
-        index: 3,
+        index: 1,
         icon: "cog",
         name: 'Settings',
         component: SettingsTab

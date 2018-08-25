@@ -3,7 +3,7 @@
  */
 import React, {Component} from 'react';
 import AppRuntime from "../../browser/AppRuntime";
-import {REQUEST_TEST_FUNCTION} from "../../../constants/events/app";
+import {REQUEST_TEST_FUNCTION} from "../../../constants/events/appEvents";
 import {getFormattedFileForS3} from "../../utils/file";
 
 class PayTab extends Component {

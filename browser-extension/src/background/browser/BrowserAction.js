@@ -4,7 +4,7 @@
 
 import logoDisabled from "../../../../assets/icons/logo_disabled_128.png";
 import logo from "../../../../assets/icons/logo_128.png";
-import {SOURCE_MANUAL} from "../../constants/events/background";
+import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
 import {doInjectAppEvent} from "../windowManager";
 
 /**

@@ -2,13 +2,19 @@
  * Copyright (c) 2018 moon
  */
 
-import {TYPE_AMAZON, TYPE_FACEBOOK, TYPE_GOOGLE, TYPE_STANDARD_SIGN_IN} from "../../constants/events/app";
+import {
+    TYPE_AMAZON,
+    TYPE_FACEBOOK,
+    TYPE_GOOGLE, TYPE_RESET_PASSWORD,
+    TYPE_STANDARD_SIGN_IN,
+    TYPE_STANDARD_SIGN_UP
+} from "../../constants/events/appEvents";
 import {
     getURLFlowParams,
     URL_AMAZON_AUTH,
     URL_FACEBOOK_AUTH,
-    URL_GOOGLE_AUTH,
-    URL_STANDARD_AUTH,
+    URL_GOOGLE_AUTH, URL_RESET_PASSWORD,
+    URL_STANDARD_AUTH, URL_STANDARD_SIGN_UP,
     URL_TOKEN_FLOW
 } from "./url";
 import axios from "axios";
@@ -16,7 +22,7 @@ import {parseUrl} from "query-string";
 import {handleErrors} from "../../utils/errors";
 import Tabs from "../browser/Tabs";
 import Windows from "../browser/Windows";
-import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/background";
+import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
 import AuthUser from "./AuthUser";
 
 /**
@@ -74,6 +80,10 @@ const getOAuthUrlForType = async (type) => {
     switch (type) {
         case TYPE_STANDARD_SIGN_IN:
             return URL_STANDARD_AUTH;
+        case TYPE_STANDARD_SIGN_UP:
+            return URL_STANDARD_SIGN_UP;
+        case TYPE_RESET_PASSWORD:
+            return URL_RESET_PASSWORD;
         case TYPE_FACEBOOK:
             return URL_FACEBOOK_AUTH;
         case TYPE_GOOGLE:

@@ -19,8 +19,8 @@
 }
 
 #moon-body.moon-body-maximized {
-    max-height: 577px;
-    height: 577px;
+    max-height: 366px;
+    height: 366px;
     opacity: 1.0;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;

@@ -51,16 +51,45 @@
     cursor: pointer;
     width: 100%;
     border-radius: 3px;
-    padding: 10px 0;
+    padding: 0;
     font-size: 15px;
     border: 2px solid #818078;
     background-color: transparent;
-    color: black;
+    color: #818078;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
+}
+
+.btn-auth-icon {
+    color: white;
+    background-color: #818078;
+    padding: 10px;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    transition: background-color 0.3s;
+    -webkit-transition: background-color 0.3s;
+}
+
+.btn-auth-text {
+    box-sizing: border-box;
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .7px;
+    line-height: 20px;
+    overflow: hidden;
+    padding: 10px 15px 10px 54px;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+    width: 100%;
+    transition: background 0.3s;
+    text-align: center;
+    -webkit-transition: background 0.3s;
 }
 
 .btn-auth:hover {

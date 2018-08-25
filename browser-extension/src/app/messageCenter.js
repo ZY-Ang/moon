@@ -6,7 +6,7 @@ import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
     REQUEST_INJECT_APP,
     REQUEST_UPDATE_AUTH_USER
-} from "../constants/events/background";
+} from "../constants/events/backgroundEvents";
 import {doExtractCoinbaseApiKeys, toggleApp, updateAuthUser} from "./index";
 import AppRuntime from "./browser/AppRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";

@@ -8,7 +8,7 @@ import {
     REQUEST_LAUNCH_WEB_AUTH_FLOW,
     REQUEST_SIGN_OUT,
     REQUEST_TEST_FUNCTION, REQUEST_UPDATE_COINBASE_API_KEYS
-} from "../constants/events/app";
+} from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";

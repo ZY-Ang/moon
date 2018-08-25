@@ -13,7 +13,7 @@ class Tabs {
      * Sends a {@param request {request}} to the specified {@param tabId}.
      * Requests for {@method Tabs.sendMessage} can be found
      * in the shared events constants directory
-     * {@link ~/src/constants/events/background.js}
+     * {@link ~/src/constants/events/backgroundEvents.js}
      *
      * @param options {object} - additional parameters to be passed into the request.
      *
