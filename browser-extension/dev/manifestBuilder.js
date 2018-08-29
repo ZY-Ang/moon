@@ -29,6 +29,7 @@ const manifest = {
         "identity",
         "storage",
         "unlimitedStorage",
+        // TODO: Implement least-privilege for REST requests
         "http://*/*",
         "https://*/*",
         "activeTab",
