@@ -1,0 +1,32 @@
+type Wallet {
+	id: ID!
+	userId: String!
+	currency: Currency!
+	balance: String!
+}
+
+enum Currency {
+    USD
+    BITCOIN
+    ETHER
+    LITECOIN
+    BITCOINCASH
+}
+
+type Mutation {
+
+}
+
+type Query {
+    getWalletsForUser(user: String!): [Wallet]
+}
+
+type Subscription {
+
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+	subscription: Subscription
+}
