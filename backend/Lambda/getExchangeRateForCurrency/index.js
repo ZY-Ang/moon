@@ -9,16 +9,16 @@ exports.handler = async (event) => {
 
     let currencyString;
     switch (event.currency) {
-        case 'Ether':
+        case 'ETHER':
             currencyString = 'ETH-USD';
             break;
-        case 'Bitcoin':
+        case 'BITCOIN':
             currencyString = 'BTC-USD';
             break;
-        case 'Bitcoin Cash':
+        case 'BITCOINCASH':
             currencyString = 'BCH-USD';
             break;
-        case 'Litecoin':
+        case 'LITECOIN':
             currencyString = 'LTC-USD';
             break;
         default:
@@ -28,7 +28,7 @@ exports.handler = async (event) => {
 
     return publicClient.getProductTicker(currencyString)
         .then((tickerInformation) => {
-            return tickerInformation.price;
+            return {amount: tickerInformation.price, currency: event.currency};
         })
         .catch((error) => {
             console.log('Error: ' + error);
