@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gdax": "^0.8.0"
+    "coinbase": "^2.0.8"
   }
 }
