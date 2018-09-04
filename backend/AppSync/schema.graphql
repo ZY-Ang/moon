@@ -5,6 +5,12 @@ type Wallet {
 	balance: String!
 }
 
+# 1 BTC = [amount] USD. The exchange rate is [amount]
+type ExchangeRate {
+    currency: Currency!
+    amount: String!
+}
+
 enum Currency {
     USD
     BITCOIN
@@ -13,12 +19,24 @@ enum Currency {
     BITCOINCASH
 }
 
-type Mutation {
+# the response after a user clicks "pay with moon", which includes all the information needed to complete the purchase
+type PaymentPayload {
+    card: String!
+    balance: String!
+}
 
+type Mutation {
+    # called when the user clicks "Pay with Moon", returns the information the client needs to complete the purchase
+    payWithMoon(user: String!, ...other info needed): PaymentPayload
+    # called after the payment is completed by the client to inform the server that everything is done, returns if all was successful or not
+    confirmPaymentCompleted(user: String!,  ... other payment info): Boolean
+    # called after we've extracted the user's Coinbase information in the client, returns if it was successful or not
+    connectCoinbase(user: String!): Boolean
 }
 
 type Query {
     getWalletsForUser(user: String!): [Wallet]
+    getExchangeRateForCurrency(currency: Currency!): ExchangeRate
 }
 
 type Subscription {
