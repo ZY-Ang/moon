@@ -3,12 +3,26 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-lambdas": "cd Lambda/getWalletsForUser && npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "coinbase": "^2.0.8",
+    "gdax": "^0.8.0",
     "knex": "^0.15.2",
     "pg": "^7.4.3"
+  },
+  "devDependencies": {
+    "adm-zip": "^0.4.11",
+    "babel-plugin-graphql-tag": "^1.6.0",
+    "babel-plugin-import-graphql": "^2.6.2",
+    "babel-plugin-transform-class-properties": "6.24.1",
+    "babel-plugin-transform-es2015-arrow-functions": "6.22.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "6.26.2",
+    "babel-preset-react-app": "^3.1.2",
+    "parcel-bundler": "1.9.7",
+    "shelljs": "^0.8.2",
+    "shx": "^0.3.0"
   }
 }

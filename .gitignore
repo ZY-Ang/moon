@@ -128,7 +128,8 @@ $RECYCLE.BIN/
 node_modules/
 \.cache/
 
-browser-extension/build/
+# All files and folders within any 'build' folder throughout the codebase
+build/
 
 browser-extension/node_modules/
 
