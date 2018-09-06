@@ -2,25 +2,69 @@
  * Copyright (c) 2018 moon
  */
 
-let Client = require('coinbase').Client;
+const CoinbaseClient = require('coinbase').Client;
+const AWS = require('aws-sdk');
+AWS.config.update({region: 'us-east-1'});
 
-exports.handler = async (event) => {
+const util = require('util');
 
-    // todo: get the user's apikey and api secret from dynamodb
-    let client = new Client({'apiKey': mykey, 'apiSecret': mysecret});
+// get the user's api key and api secret from dynamodb
+const getCoinbaseKeys = (userId) => {
+    let dynamodb = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+    let params = {
+        TableName: "CoinbaseApiKeyTable",
+        Key: {
+            'userId': userId
+        }
+    };
 
-    return client.getAccounts().then((accounts) => {
+    return dynamodb.get(params).promise()
+        .then(data => {
+            return data.Item;
+        });
+};
+
+const getCoinbaseWallets = (coinbaseKeys) => {
+    return new Promise((resolve, reject) => {
+        let userCoinbaseApiSecret = coinbaseKeys.secret;
+        let userCoinbaseApiKey = coinbaseKeys.key;
+
+        let coinbaseClient = new CoinbaseClient(
+            {
+                'apiKey': userCoinbaseApiKey,
+                'apiSecret': userCoinbaseApiSecret,
+                'version': '2018-04-10'
+            });
+
+        coinbaseClient.getAccounts({}, function(err, accounts) {
+            if(err){
+                return reject(err);
+            }
             let wallets = [];
             accounts.forEach(account => {
-                console.log('my bal: ' + account.balance.amount + ' for ' + account.name);
                 wallets.push({
+                    id: account.id,
+                    name: account.name,
                     balance: account.balance.amount,
-                    name: account.name
+                    currency: account.balance.currency
                 })
             });
-            console.log(wallets);
-            return wallets;
-        }).catch(error => {
-            console.log('Error accessing user\'s accounts: ' + error);
+            return resolve(wallets);
+        });
+    });
+};
+
+exports.handler = async (event) => {
+    let userId = event.idToken;
+
+    // todo: assume identity based on event.idToken, create a role for lambda to access dynamo on behalf of user
+
+    // todo: handle the case of no coinbase keys found
+    return getCoinbaseKeys(userId)
+        .then(coinbaseKeys => {return getCoinbaseWallets(coinbaseKeys)})
+        .then(wallets => {return wallets})
+        .catch(error => {
+            console.log(error);
+            return {error: 'An error occurred fetching wallet list.' };
         });
 };
