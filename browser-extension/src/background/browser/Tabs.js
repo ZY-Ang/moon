@@ -45,7 +45,7 @@ class Tabs {
     static sendMessageToActive = (message, options) =>
         Tabs.getActive()
             .then(tab => {
-                if (tab.status === 'complete') {
+                if (tab && tab.status === 'complete') {
                     return Tabs.sendMessage(tab.id, message, options);
                 }
                 // Otherwise, page is not ready.
