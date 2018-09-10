@@ -4,7 +4,7 @@
 
 import getAWSAppSyncClient from "./api/AWSAppSyncClient";
 import {handleErrors} from "../utils/errors";
-import {updateCoinbaseApiKey} from "./api/coinbase";
+import {onUpdateCoinbaseApiKey} from "./api/coinbase";
 
 /**
  * A test function to be used for prototyping new APIs.
@@ -12,21 +12,16 @@ import {updateCoinbaseApiKey} from "./api/coinbase";
  */
 const moonTestFunction = (params) => {
     console.log("moonTestFunction");
-
     return getAWSAppSyncClient()
-        .then(client => {
-            return client.mutate({
-                mutation: updateCoinbaseApiKey,
-                variables: {
-                    key: params.key,
-                    secret: params.secret
-                }
-            });
-        })
-        .then(({data}) => {
-            if (data) {
-                console.log("MUTATION DATA: ", data);
-            }
+        .then(awsAppSyncClient => {
+            const observable = awsAppSyncClient.subscribe({query: onUpdateCoinbaseApiKey});
+
+            observable
+                .subscribe({
+                    next: (data) => console.log("next-data: ", data),
+                    complete: () => console.log("complete: ", args),
+                    error: () => console.error("error: ", args)
+                })
         })
         .catch(handleErrors);
 };

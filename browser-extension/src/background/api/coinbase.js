@@ -11,7 +11,14 @@ export const updateCoinbaseApiKey = gql`
             secret: $secret
         }) {
             key
-            secret
+        }
+    }
+`;
+
+export const onUpdateCoinbaseApiKey = gql`
+    subscription onUpdateCoinbaseApiKey {
+        onUpdateCoinbaseApiKey {
+            key
         }
     }
 `;
