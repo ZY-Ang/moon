@@ -7,6 +7,8 @@ import {ACTION_SET_COINBASE_AUTH_FLOW} from "../redux/reducers/coinbase";
 import Windows from "../browser/Windows";
 import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
 import Tabs from "../browser/Tabs";
+import getAWSAppSyncClient from "../api/AWSAppSyncClient";
+import {updateCoinbaseApiKey} from "../api/coinbase";
 
 /**
  * Launches and begins the coinbase auth flow in a new window
@@ -42,9 +44,15 @@ export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerText, senderTab) 
             resolve(true);
         }
     })
-        .then(() => {
-            // FIXME: AWS AppSync implementation
-        })
+        .then(() => getAWSAppSyncClient())
+        .then(appSyncClient => appSyncClient.mutate({
+            mutation: updateCoinbaseApiKey,
+            variables: {
+                key: apiKey,
+                secret: apiSecret
+            }
+        }))
+        .then(({data}) => console.log("Successfully added new API Keys: ", data))
         .finally(() => {
             store.dispatch({
                 type: ACTION_SET_COINBASE_AUTH_FLOW,

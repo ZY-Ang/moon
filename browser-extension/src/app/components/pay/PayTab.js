@@ -10,8 +10,6 @@ class PayTab extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            fib: "0",
-            file: null,
             isSuccess: false,
             isError: false
         };
@@ -22,7 +20,7 @@ class PayTab extends Component {
             isSuccess: false,
             isError: false
         }));
-        const params = this.state.file;
+        const params = this.state;
         AppRuntime.sendMessage(REQUEST_TEST_FUNCTION, {params})
             .then(response => {
                 console.log("%cTEST FUNCTION SUCCEEDED. Response:", 'background: #6b0; color: #fff', response);
@@ -53,11 +51,22 @@ class PayTab extends Component {
                     process.env.BUILD_ENV !== 'production' &&
                     <div>
                         <input
-                            type="file"
-                            onChange={event =>
-                                getFormattedFileForS3(event.target.files[0])
-                                    .then(formattedFile => this.setState(() => ({file: formattedFile})))
-                            }
+                            type="text"
+                            placeholder="key"
+                            value={this.state.key}
+                            onChange={event => {
+                                const key = event.target.value;
+                                this.setState(() => ({key}));
+                            }}
+                        />
+                        <input
+                            type="text"
+                            placeholder="secret"
+                            value={this.state.secret}
+                            onChange={event => {
+                                const secret = event.target.value;
+                                this.setState(() => ({secret}));
+                            }}
                         />
                         <button onClick={this.onTest}>I am a test button</button>
                         {this.state.isSuccess && <p style={{color: 'green'}}>Test function succeeded</p>}

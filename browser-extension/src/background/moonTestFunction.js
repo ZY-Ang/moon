@@ -2,8 +2,9 @@
  * Copyright (c) 2018 moon
  */
 
-import S3 from "./services/aws/S3";
-import AuthUser from "./auth/AuthUser";
+import getAWSAppSyncClient from "./api/AWSAppSyncClient";
+import {handleErrors} from "../utils/errors";
+import {updateCoinbaseApiKey} from "./api/coinbase";
 
 /**
  * A test function to be used for prototyping new APIs.
@@ -11,11 +12,23 @@ import AuthUser from "./auth/AuthUser";
  */
 const moonTestFunction = (params) => {
     console.log("moonTestFunction");
-    const userSub = AuthUser.getInstance().getIdToken().getSub();
 
-    return S3.upload('moon-user-info', userSub, params)
-        .promise()
-        .then(stuff => console.log("YAS!!!. Stuff: ", stuff));
+    return getAWSAppSyncClient()
+        .then(client => {
+            return client.mutate({
+                mutation: updateCoinbaseApiKey,
+                variables: {
+                    key: params.key,
+                    secret: params.secret
+                }
+            });
+        })
+        .then(({data}) => {
+            if (data) {
+                console.log("MUTATION DATA: ", data);
+            }
+        })
+        .catch(handleErrors);
 };
 
 export default moonTestFunction;

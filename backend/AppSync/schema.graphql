@@ -27,15 +27,16 @@ enum AWSIPAddress {
     _DO_NOT_PUSH_TO_APPSYNC
 }
 
+# Sub-input to be used in GetPaymentPayloadInput
 input CartInfo {
     # Currency of the purchase
     currency: Currency!
+    # Total amount of the cart, in the specified currency
     amount: String!
 }
 
 # Coinbase API keys
 type CoinbaseApiKey {
-    userId: ID!
     key: String!
     secret: String!
 }
@@ -100,6 +101,8 @@ input GetPaymentPayloadInput {
 }
 
 type Mutation {
+    # Updates the callee's coinbase API keys
+    updateCoinbaseApiKey(input: UpdateCoinbaseApiKeyInput!): CoinbaseApiKey
     # Get information required to complete purchase
     getPaymentPayload(input: GetPaymentPayloadInput!): PaymentPayload
     # Notify if transaction was completed
@@ -165,7 +168,18 @@ type Query {
     # Returns user information belonging to the callee
     user: User
     # Returns the latest exchange rate object for a currency and a baseCurrency
-    exchangerate(currency: Currency!, baseCurrency: Currency!): ExchangeRate
+    exchangeRate(currency: Currency!, baseCurrency: Currency!): ExchangeRate
+}
+
+type Subscription {
+    onUpdateCoinbaseApiKey: CoinbaseApiKey
+    @aws_subscribe(mutations: ["updateCoinbaseApiKey"])
+}
+
+# Input for updateCoinbaseApiKey
+input UpdateCoinbaseApiKeyInput {
+    key: String!
+    secret: String!
 }
 
 type User {
@@ -190,4 +204,5 @@ enum WalletProvider {
 schema {
     query: Query
     mutation: Mutation
+    subscription: Subscription
 }
