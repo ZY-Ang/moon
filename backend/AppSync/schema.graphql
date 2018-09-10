@@ -1,50 +1,184 @@
-type Wallet {
-	id: ID!
-	userId: String!
-	currency: Currency!
-	balance: String!
+﻿# DO NOT PUSH TO APPSYNC (AWS AppSync primitive scalars, just to make sure they work with IDE)
+enum AWSDate {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSTime {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSDateTime {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSTimestamp {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSEmail {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSJSON {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSURL {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSPhone {
+    _DO_NOT_PUSH_TO_APPSYNC
+}
+enum AWSIPAddress {
+    _DO_NOT_PUSH_TO_APPSYNC
 }
 
-# 1 BTC = [amount] USD. The exchange rate is [amount]
-type ExchangeRate {
+input CartInfo {
+    # Currency of the purchase
     currency: Currency!
     amount: String!
 }
 
+# Coinbase API keys
+type CoinbaseApiKey {
+    userId: ID!
+    key: String!
+    secret: String!
+}
+
+# Currencies supported on Coinbase
+enum CoinbaseCurrency {
+    USD
+    BTC
+    ETC
+    LTC
+    BCH
+}
+
+# Coinbase information associated with a user
+type CoinbaseInfo {
+    # Coinbase user ID
+    userId: ID!
+    apiKey: CoinbaseApiKey
+    wallets: [CoinbaseWallet]
+}
+
+# A Coinbase Wallet
+type CoinbaseWallet implements Wallet {
+    id: ID!
+    name: String!
+    currency: CoinbaseCurrency!
+    balance: String!
+}
+
+# List of all known currencies we support
 enum Currency {
     USD
-    BITCOIN
-    ETHER
-    LITECOIN
-    BITCOINCASH
+    BTC
+    ETC
+    LTC
+    BCH
+    MNR
+    SGD
+    EUR
+}
+
+type Error {
+    message: String!
+    code: ID!
+}
+
+# An exchange rate object
+type ExchangeRate {
+    # denominator currency
+    baseCurrency: Currency!
+    # numerator currency
+    currency: Currency!
+    # (numerator currency)/(denominator currency)
+    amount: String!
+}
+
+# Input for getPaymentPayload mutation
+input GetPaymentPayloadInput {
+    cartInfo: CartInfo!
+    wallet: WalletInput!
+    pageInfo: PageInfo!
+}
+
+type Mutation {
+    # Get information required to complete purchase
+    getPaymentPayload(input: GetPaymentPayloadInput!): PaymentPayload
+    # Notify if transaction was completed
+    notifyPaymentCompletion(input: NotifyPaymentCompletionInput!): PaymentCompletionPayload
+}
+
+input NotifyPaymentCompletionInput {
+    # ID associated with the transaction
+    id: ID!
+    success: Boolean!
+    pageInfo: PageInfo!
+}
+
+type OIDCClaims {
+    aud: String!
+    sub: String!
+    name: String!
+    nickname: String!
+    exp: Int!
+}
+
+type OIDCIdentity {
+    sub: String!
+    issuer: String!
+    claims: OIDCClaims!
+}
+
+# Information about a page
+input PageInfo {
+    # Fully qualified URL of the page
+    url: AWSURL!
+    # HTML content of the page
+    content: String!
+}
+
+type PaymentCompletionPayload {
+    emailSent: Boolean!
 }
 
 # the response after a user clicks "pay with moon", which includes all the information needed to complete the purchase
 type PaymentPayload {
-    card: String!
-    balance: String!
-}
-
-type Mutation {
-    # called when the user clicks "Pay with Moon", returns the information the client needs to complete the purchase
-    payWithMoon(user: String!, ...other info needed): PaymentPayload
-    # called after the payment is completed by the client to inform the server that everything is done, returns if all was successful or not
-    confirmPaymentCompleted(user: String!,  ... other payment info): Boolean
-    # called after we've extracted the user's Coinbase information in the client, returns if it was successful or not
-    connectCoinbase(user: String!): Boolean
+    # ID associated with the transaction
+    id: ID
+    # The magical data that makes it all happen
+    data: String
+    # Balance of said magical data
+    balance: String
+    # currency of the card
+    currency: Currency
+    # The updated user
+    user: User
 }
 
 type Query {
-    getWalletsForUser(user: String!): [Wallet]
+    GetIdentity: OIDCIdentity
+    User: User
     getExchangeRateForCurrency(currency: Currency!): ExchangeRate
 }
 
-type Subscription {
+type User {
+    coinbaseInfo: CoinbaseInfo
+}
 
+# A cryptocurrency wallet
+interface Wallet {
+    name: String!
+    balance: String!
+}
+
+input WalletInput {
+    provider: WalletProvider!
+    id: ID!
+}
+
+enum WalletProvider {
+    COINBASE
 }
 
 schema {
-	query: Query
-	mutation: Mutation
-	subscription: Subscription
+    query: Query
+    mutation: Mutation
 }
