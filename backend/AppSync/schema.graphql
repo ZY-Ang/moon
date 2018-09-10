@@ -154,9 +154,12 @@ type PaymentPayload {
 }
 
 type Query {
-    GetIdentity: OIDCIdentity
-    User: User
-    getExchangeRateForCurrency(currency: Currency!): ExchangeRate
+    # Returns information about the callee's JWT
+    identity: OIDCIdentity
+    # Returns user information belonging to the callee
+    user: User
+    # Returns the latest exchange rate object for a currency and a baseCurrency
+    exchangerate(currency: Currency!, baseCurrency: Currency!): ExchangeRate
 }
 
 type User {
