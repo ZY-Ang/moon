@@ -7,9 +7,11 @@ import {
     REQUEST_INJECT_APP,
     REQUEST_UPDATE_AUTH_USER
 } from "../constants/events/backgroundEvents";
-import {doExtractCoinbaseApiKeys, toggleApp, updateAuthUser} from "./index";
+import {toggleApp} from "./index";
 import AppRuntime from "./browser/AppRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
+import {doExtractCoinbaseApiKeys} from "./wallets/coinbase";
+import {updateAuthUser} from "./utils/auth";
 
 /**
  * Message handler for receiving messages from other extension processes
