@@ -55,7 +55,6 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     const code = parseUrl(url).query.code.split("#")[0];
 
     const body = getURLFlowParams(code);
-    console.log(`Obtaining tokens from OAuth server via secure POST`);
     return axios.post(URL_TOKEN_FLOW, body)
         .then(({data}) => {
             console.log("Retrieved tokens");
