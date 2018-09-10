@@ -33,7 +33,6 @@ class AuthUser {
 
     constructor(params) {
         if (!AuthUser.isValidTokens(params)) {
-
             AuthUser.setInstance(null);
             throw new Error("Tokens are not valid");
 
@@ -77,6 +76,10 @@ class AuthUser {
         return AuthUser.authUserInstance;
     };
 
+    static getUuid = () => {
+        return AuthUser.getInstance().getIdToken().getSub();
+    };
+
     /**
      * Gets the current auth user and refreshes the session if necessary.
      */
@@ -111,10 +114,17 @@ class AuthUser {
         } else {
             // refresh session and set new AWS credentials
             await this.refreshSession();
-            await this.setAWSCredentials();
         }
 
         return this.setTokensToStorage();
+    };
+
+    getRefreshedIdJWToken = async () => {
+        if (!this.isSessionValid()) {
+            // refresh session
+            await this.refreshSession();
+        }
+        return this.getIdToken().getJwtToken();
     };
 
     setAWSCredentials = () => {
@@ -122,11 +132,25 @@ class AuthUser {
         let credentials = new AWS.WebIdentityCredentials({
             RoleArn: 'arn:aws:iam::325751747533:role/moon-auth0-users-role',
             WebIdentityToken: this.getIdToken().getJwtToken()
+            // TODO: (maybe) Implement RoleSessionName for downstream validation
         });
         AWS.config.update({credentials});
         return AWS.config.credentials.getPromise()
             .then(() => console.log("AWS credentials get success"))
             .catch(err => console.error("AWS credentials get failure: ", err));
+    };
+
+    /**
+     * Gets refreshed AWS credentials
+     * @return {Promise<Credentials | CredentialsOptions>}
+     */
+    getAWSCredentials = async () => {
+        if (AWS.config.credentials) {
+            await AWS.config.credentials.getPromise();
+        } else {
+            await this.setAWSCredentials();
+        }
+        return AWS.config.credentials;
     };
 
     signOut = () => {
@@ -207,17 +231,6 @@ class AuthUser {
                 }
             });
     };
-
-    getRefreshedAWSCredentials = () => new Promise((resolve, reject) =>
-        AWS.config.credentials.get(err => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(AWS.config.credentials);
-            }
-        })
-    )
-        .catch(this.setAWSCredentials);
 }
 
 export default AuthUser;
