@@ -41,7 +41,6 @@ export const tabDidUpdate = (tab) => {
     } else if (isOAuthUrl(tab.url)) {
         // URL on the current tab is a OAuth redirect URL - retrieve tokens from code grant and store in storage
         doOnAuthFlowResponse(tab.url, tab.id).catch(handleErrors);
-        // TODO: Let webapp domain manually handle closing so as to store tokens in localStorage as well, for dashboard purposes.
 
     } else if (isClearCacheUrl(tab.url)) {
         // URL on the current tab is the final redirect after an OAuth logout has been hit
