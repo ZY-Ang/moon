@@ -9,6 +9,7 @@
   "license": "ISC",
   "dependencies": {
     "coinbase": "^2.0.8",
+    "decimal.js": "^10.0.1",
     "gdax": "^0.8.0",
     "knex": "^0.15.2",
     "pg": "^7.4.3"
