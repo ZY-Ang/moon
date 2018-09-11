@@ -22,6 +22,7 @@
     "babel-plugin-transform-es2015-arrow-functions": "6.22.0",
     "babel-plugin-transform-es2015-modules-commonjs": "6.26.2",
     "babel-preset-react-app": "^3.1.2",
+    "serverless": "^1.31.0",
     "shelljs": "^0.8.2",
     "shx": "^0.3.0"
   }
