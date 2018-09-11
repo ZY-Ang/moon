@@ -32,8 +32,8 @@ const messageCenter = (request, sender, sendResponse) => {
         sendFailure(`${sender.id} is unauthorized`);
         return;
     }
-    switch (request.message) {
-        case REQUEST_TEST_FUNCTION:
+    const messageResolver = {
+        [REQUEST_TEST_FUNCTION]() {
             if (process.env.BUILD_ENV !== 'production') {
                 moonTestFunction(request.params)
                     .then(res => sendSuccess(res))
@@ -41,38 +41,44 @@ const messageCenter = (request, sender, sendResponse) => {
                 return true;
             }
             sendFailure("You are not authorized to access this experimental feature yet.");
-            break;
-        case REQUEST_LAUNCH_WEB_AUTH_FLOW:
+        },
+        [REQUEST_LAUNCH_WEB_AUTH_FLOW]() {
             doLaunchWebAuthFlow(request.type)
                 .then(() => sendSuccess(`doLaunchWebAuthFlow(${request.type}) completed`))
                 .catch(() => sendFailure(`doLaunchWebAuthFlow(${request.type}) failed`));
             return true;
-        case REQUEST_LAUNCH_COINBASE_AUTH_FLOW:
+        },
+        [REQUEST_LAUNCH_COINBASE_AUTH_FLOW]() {
             doLaunchCoinbaseAuthFlow()
                 .then(() => sendSuccess(`doLaunchCoinbaseAuthFlow() completed`))
                 .catch(() => sendFailure(`doLaunchCoinbaseAuthFlow() failed`));
             return true;
-        case POLL_IS_COINBASE_AUTH_MODE:
+        },
+        [POLL_IS_COINBASE_AUTH_MODE]() {
             sendSuccess(store.getState().coinbaseState.isCoinbaseAuthFlow);
-            return;
-        case REQUEST_UPDATE_COINBASE_API_KEYS:
+        },
+        [REQUEST_UPDATE_COINBASE_API_KEYS]() {
             doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab);
             sendSuccess("doUpdateCoinbaseApiKey() started");
-            return;
-        case REQUEST_SIGN_OUT:
+        },
+        [REQUEST_SIGN_OUT]() {
             doSignOut()
                 .then(() => sendSuccess(`doSignOut() completed`))
                 .catch(() => sendFailure(`doSignOut() failed`));
             return true;
-        case REQUEST_GLOBAL_SIGN_OUT:
+        },
+        [REQUEST_GLOBAL_SIGN_OUT]() {
             doGlobalSignOut()
                 .then(() => sendSuccess(`doGlobalSignOut() completed`))
                 .catch(() => sendFailure(`doGlobalSignOut() failed`));
             return true;
-        default:
-            console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
-            sendFailure("Background messageCenter received an unknown request");
-            break;
+        }
+    };
+    if (request.message && request.message in messageResolver) {
+        return messageResolver[request.message]();
+    } else {
+        console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+        sendFailure("Background messageCenter received an unknown request");
     }
 };
 
