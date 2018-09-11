@@ -1,0 +1,14 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    # Does nothing
+    stub
+}
+
+type Mutation {
+    # Does nothing
+    stub
+}
