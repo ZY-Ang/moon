@@ -55,7 +55,7 @@ const getCoinbaseWallets = (coinbaseKeys) => {
 };
 
 exports.handler = async (event) => {
-    let userId = event.idToken; // todo: where do we get userId in the input of this function?
+    let userId = event.userId; // todo: where do we get userId in the input of this function?
     let userCoinbaseKeys;
 
     // todo: handle the case of no coinbase keys found
@@ -66,11 +66,11 @@ exports.handler = async (event) => {
         })
         .then(wallets => {
             return {
-                'CloinbaseInfo': {
-                    userId,
+                'coinbaseInfo': {
+                    coinbaseUserId, // todo: get this
                     'apiKey': {
-                        'sub': userId,
-                        'key': 'OBFUSCATED'
+                        // TODO: append sub in vtl
+                        'key': userCoinbaseKeys.key
                     },
                     wallets
                 }

@@ -121,10 +121,10 @@ const getUserCoinbaseAccountForCurrency = (coinbaseKeys, currency) => {
 const sendCryptoToCoinbaseAccount = (sourceWallet, targetAccountEmail, amountCrypto) => {
     return new Promise((resolve, reject) => {
         let args = {
-            "to": targetAccountEmail,
-            "amount": amountCrypto,
-            "currency": sourceWallet.balance.currency,
-            "description": "Your purchase through Moon"
+            to: targetAccountEmail,
+            amount: amountCrypto,
+            currency: sourceWallet.balance.currency,
+            description: "Your purchase through Moon"
         };
         sourceWallet.sendMoney(args, (err, txn) => {
             if(err){
@@ -222,7 +222,8 @@ const sellCryptoOnGdax = (cryptoCurrency, amountFiat) => {
 
 exports.handler = async (event) => {
     let currencyToSell = event.currency;
-    let amountFiat = event.amountFiat;
+    let amountFiat = event.amount;
+    let userId = event.userId;
 
     // amnt crypto to transfer from the user and sell - calculated from the amountFiat
     let amountCrypto;
@@ -231,7 +232,7 @@ exports.handler = async (event) => {
     let userCoinbaseWallet;
 
     // get the user's Coinbase API keys from dynamodb
-    return getCoinbaseKeys()
+    return getCoinbaseKeys(userId)
         .then(userCoinbaseKeys => {
             // get the user's Coinbase wallet
             return getUserCoinbaseAccountForCurrency(userCoinbaseKeys, currencyToSell)
@@ -239,7 +240,7 @@ exports.handler = async (event) => {
         .then(wallet => {
             userCoinbaseWallet = wallet;
             // get the current exchange rate
-            return getGdaxExchangeRate(currencyToSell, 'USD');
+            return getGdaxExchangeRate(currencyToSell, 'USD');//  fixme: conform coinbase base ccy
         })
         .then(exchangeRate => {
             // calculate how much crypto is needed to complete the exchange
@@ -287,8 +288,10 @@ exports.handler = async (event) => {
         })
         .then(() => {
             // todo: issue the gift card
+            return {}; // todo: fill in test
         })
         .catch(error => {
-            console.log(error);
+            console.error(error);
+            return {};
         });
 };
