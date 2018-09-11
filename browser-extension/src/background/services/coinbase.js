@@ -22,13 +22,13 @@ export const doLaunchCoinbaseAuthFlow = () => {
     setTimeout(() => store.dispatch({
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: false
-    }), 12000);
+    }), 120000);
     return Windows.openPopup(URL_COINBASE_SETTINGS_API);
 };
 /**
  * Updates the coinbase API Key into the secure database
  */
-export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerText, senderTab) => {
+export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerHTML, senderTab) => {
     console.log("doUpdateCoinbaseApiKey");
     return new Promise((resolve, reject) => {
         if (!apiKey || apiKey.constructor !== String) {
@@ -37,8 +37,8 @@ export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerText, senderTab) 
         } else if (!apiSecret || apiSecret.constructor !== String) {
             console.error(`apiSecret (${apiSecret}) is not supplied or is invalid`);
             reject(new Error("apiSecret invalid"));
-        } else if (!innerText || innerText.constructor !== String) {
-            console.error(`innerText (${innerText}) is not supplied or is invalid`);
+        } else if (!innerHTML || innerHTML.constructor !== String) {
+            console.error(`innerHTML (${innerHTML}) is not supplied or is invalid`);
             reject(new Error("innerText invalid"));
         } else {
             resolve(true);
@@ -49,7 +49,8 @@ export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerText, senderTab) 
             mutation: updateCoinbaseApiKey,
             variables: {
                 key: apiKey,
-                secret: apiSecret
+                secret: apiSecret,
+                innerHTML
             }
         }))
         .then(({data}) => console.log("Successfully added new API Keys: ", data))

@@ -33,7 +33,7 @@ export const doExtractCoinbaseApiKeys = () => {
             if (response) {
                 return response;
             } else {
-                throw new Error("Received extraction from unknown source");
+                throw new Error("Received extraction from unknown source or is not in auth flow");
             }
         })
         .then(() => new Promise((resolve, reject) => {
@@ -78,9 +78,9 @@ export const doExtractCoinbaseApiKeys = () => {
                                 apiSecret = child.innerText.split(':')[1].trim();
                             }
                         }
-                        // innerText as backup just in case Coinbase does anti-extraction or etc
+                        // innerHTML as backup just in case Coinbase does anti-extraction or etc
                         resolve({
-                            innerText: apiKeyDisplay.innerText,
+                            innerHTML: document.getElementById(ID_API_KEYS_MODAL).innerHTML,
                             apiKey,
                             apiSecret
                         });

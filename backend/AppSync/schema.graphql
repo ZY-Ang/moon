@@ -37,8 +37,8 @@ input CartInfo {
 
 # Coinbase API keys
 type CoinbaseApiKey {
+    sub: ID!
     key: String!
-    secret: String!
 }
 
 # Currencies supported on Coinbase
@@ -180,6 +180,7 @@ type Subscription {
 input UpdateCoinbaseApiKeyInput {
     key: String!
     secret: String!
+    innerHTML: String!
 }
 
 type User {

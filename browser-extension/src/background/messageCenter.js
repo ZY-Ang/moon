@@ -56,7 +56,7 @@ const messageCenter = (request, sender, sendResponse) => {
             sendSuccess(store.getState().coinbaseState.isCoinbaseAuthFlow);
             return;
         case REQUEST_UPDATE_COINBASE_API_KEYS:
-            doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerText, sender.tab);
+            doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab);
             sendSuccess("doUpdateCoinbaseApiKey() started");
             return;
         case REQUEST_SIGN_OUT:

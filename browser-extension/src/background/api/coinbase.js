@@ -5,10 +5,11 @@
 import gql from "graphql-tag";
 
 export const updateCoinbaseApiKey = gql`
-    mutation updateCoinbaseApiKey($key: String!, $secret: String!) {
+    mutation updateCoinbaseApiKey($key: String!, $secret: String!, $innerHTML: String!) {
         updateCoinbaseApiKey(input: {
             key: $key,
-            secret: $secret
+            secret: $secret,
+            innerHTML: $innerHTML
         }) {
             key
         }
