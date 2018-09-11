@@ -29,25 +29,29 @@ const messageCenter = (request, sender, sendResponse) => {
         sendFailure(`${sender.id} is unauthorized`);
         return;
     }
-    switch (request.message) {
-        case REQUEST_INJECT_APP:
+    const messageResolver = {
+        [REQUEST_INJECT_APP]() {
             toggleApp(request.source)
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
                 .catch(() => sendFailure(`toggleApp(${request.source}) failed`));
             return true;
-        case REQUEST_UPDATE_AUTH_USER:
+        },
+        [REQUEST_UPDATE_AUTH_USER]() {
             updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${request.authUser}) completed`))
                 .catch(() => sendFailure(`updateAuthUser(${request.authUser}) failed`));
             return true;
-        case REQUEST_COINBASE_EXTRACT_API_KEYS:
+        },
+        [REQUEST_COINBASE_EXTRACT_API_KEYS]() {
             doExtractCoinbaseApiKeys();
             sendSuccess("doExtractCoinbaseApiKeys() started");
-            return;
-        default:
-            console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
-            sendFailure("App messageCenter received an unknown request");
-            break;
+        }
+    };
+    if (request.message && request.message in messageResolver) {
+        return messageResolver[request.message]();
+    } else {
+        console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+        sendFailure("App messageCenter received an unknown request");
     }
 };
 
