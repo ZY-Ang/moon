@@ -12,6 +12,7 @@ import Navbar from "./nav/Navbar";
 import SwipeableViews from "react-swipeable-views";
 import AppRuntime from "../browser/AppRuntime";
 import FaIcon from "./misc/fontawesome/FaIcon";
+import loadFullstory from "../plugins/fullstory";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -27,6 +28,7 @@ class App extends Component {
     }
 
     componentDidMount() {
+        loadFullstory();
         console.log("Main App Mounted");
         // if (this.tabSwiper) {
         //     setTimeout(this.tabSwiper.updateHeight, 500);
