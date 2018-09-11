@@ -27,9 +27,9 @@ const ENDPOINT_APPSYNC_MOON_PUBLIC = (process.env.BUILD_ENV === 'production')
     : ENDPOINT_APPSYNC_MOON_PUBLIC_DEVELOPMENT;
 
 /**
- * Gets a dynamic configuration for AWS AppSync authenticated client.
+ * Dynamic configuration for AWS AppSync authenticated client.
  *
- * @returns {object}
+ * @type {{url: string, region: string, auth: {type: AUTH_TYPE.OPENID_CONNECT, jwtToken: (function(): Promise<*>)}, disableOffline: boolean}}
  */
 export const AppSyncAuthConfig = {
     url: ENDPOINT_APPSYNC_MOON_AUTH,
@@ -42,7 +42,11 @@ export const AppSyncAuthConfig = {
     disableOffline: true
 };
 
-
+/**
+ * Configuration for AWS AppSync public client
+ *
+ * @type {{url: string, region: string, auth: {type: AUTH_TYPE.API_KEY, apiKey: string}}}
+ */
 export const AppSyncPublicConfig = {
     url: ENDPOINT_APPSYNC_MOON_PUBLIC,
     region: AWS.config.region,
