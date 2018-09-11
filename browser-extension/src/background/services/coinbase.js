@@ -11,15 +11,22 @@ import getAWSAppSyncClient from "../api/AWSAppSyncClient";
 import {updateCoinbaseApiKey} from "../api/coinbase";
 
 /**
+ * Global timeout variable defined to
+ * @type {null}
+ */
+let coinbaseAuthFlowTimeout = null;
+
+/**
  * Launches and begins the coinbase auth flow in a new window
  */
 export const doLaunchCoinbaseAuthFlow = () => {
+    clearTimeout(coinbaseAuthFlowTimeout);
     console.log("doLaunchCoinbaseAuthFlow");
     store.dispatch({
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: true
     });
-    setTimeout(() => store.dispatch({
+    coinbaseAuthFlowTimeout = setTimeout(() => store.dispatch({
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: false
     }), 120000);
