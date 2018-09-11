@@ -1,0 +1,49 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+
+import AWSAppSyncClient from "aws-appsync";
+import AuthUser from "../auth/AuthUser";
+import {AppSyncAuthConfig, AppSyncPublicConfig} from "../config/aws/appsync";
+
+/**
+ * Utility class to obtain graphql client for application.
+ */
+class MoonGraphQL {
+    /** @readonly */
+    static _authClient = null;
+
+    /** @readonly */
+    static _publicClient = null; // TODO: new AWSAppSyncClient(AppSyncPublicConfig) once AppSyncPublicConfig has been configured properly
+
+    /**
+     * The authenticated AppSync client with valid credentials.
+     * Automatically refreshes JWT them when necessary.
+     *
+     * @returns {AWSAppSyncClient} (authenticated endpoint) or,
+     * @throws {Error} if application is not authenticated.
+     */
+    static get authClient() {
+        const authUser = AuthUser.getInstance();
+        if (!authUser) {
+            throw new Error("User is not authenticated");
+
+        } else if (MoonGraphQL._authClient) {
+            return MoonGraphQL._authClient;
+
+        } else {
+            MoonGraphQL._authClient = new AWSAppSyncClient(AppSyncAuthConfig);
+            return MoonGraphQL._authClient;
+        }
+    };
+
+    /**
+     * The public AppSync client.
+     * @return {AWSAppSyncClient}
+     */
+    static get publicClient() {
+        return MoonGraphQL._publicClient;
+    }
+}
+
+export default MoonGraphQL;

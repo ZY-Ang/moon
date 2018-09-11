@@ -7,7 +7,7 @@ import {ACTION_SET_COINBASE_AUTH_FLOW} from "../redux/reducers/coinbase";
 import Windows from "../browser/Windows";
 import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
 import Tabs from "../browser/Tabs";
-import getAWSAppSyncClient from "../api/AWSAppSyncClient";
+import MoonGraphQL from "../api/MoonGraphQL";
 import {updateCoinbaseApiKey} from "../api/coinbase";
 
 /**
@@ -46,12 +46,12 @@ export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerHTML, senderTab) 
             reject(new Error("apiSecret invalid"));
         } else if (!innerHTML || innerHTML.constructor !== String) {
             console.error(`innerHTML (${innerHTML}) is not supplied or is invalid`);
-            reject(new Error("innerText invalid"));
+            reject(new Error("innerHTML invalid"));
         } else {
             resolve(true);
         }
     })
-        .then(() => getAWSAppSyncClient())
+        .then(() => MoonGraphQL.authClient)
         .then(appSyncClient => appSyncClient.mutate({
             mutation: updateCoinbaseApiKey,
             variables: {

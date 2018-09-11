@@ -2,9 +2,10 @@
  * Copyright (c) 2018 moon
  */
 
-import getAWSAppSyncClient from "./api/AWSAppSyncClient";
-import {handleErrors} from "../utils/errors";
+import getAWSAppSyncClient from "./api/MoonGraphQL";
 import {onUpdateCoinbaseApiKey} from "./api/coinbase";
+
+let subscription = null;
 
 /**
  * A test function to be used for prototyping new APIs.
@@ -12,18 +13,23 @@ import {onUpdateCoinbaseApiKey} from "./api/coinbase";
  */
 const moonTestFunction = (params) => {
     console.log("moonTestFunction");
-    return getAWSAppSyncClient()
-        .then(awsAppSyncClient => {
-            const observable = awsAppSyncClient.subscribe({query: onUpdateCoinbaseApiKey});
+    const awsAppSyncClient = getAWSAppSyncClient();
 
-            observable
-                .subscribe({
-                    next: (data) => console.log("next-data: ", data),
-                    complete: () => console.log("complete: ", args),
-                    error: () => console.error("error: ", args)
-                })
-        })
-        .catch(handleErrors);
+    if (subscription) {
+        console.log("subscription: ", subscription);
+        subscription.unsubscribe();
+        subscription = null;
+    } else {
+        subscription = awsAppSyncClient
+            .subscribe({query: onUpdateCoinbaseApiKey})
+            .subscribe({
+                next: ({data}) => console.log("next-data: ", data),
+                complete: console.log,
+                error: console.error
+            });
+        console.log("subscription: ", subscription);
+    }
+    return new Promise(resolve => resolve(subscription));
 };
 
 export default moonTestFunction;

@@ -6,39 +6,50 @@ import AWS from "./AWS";
 import {AUTH_TYPE} from "aws-appsync/lib/link/auth-link";
 import AuthUser from "../../auth/AuthUser";
 
-const ENDPOINT_APPSYNC_MOON_PRODUCTION = "https://rkupgarzrnfvtflhrlmrmkvb5i.appsync-api.us-east-1.amazonaws.com/graphql";
-const ENDPOINT_APPSYNC_MOON_DEVELOPMENT = "https://iq3pqooobre5ziyhu2ogpn6ndm.appsync-api.us-east-1.amazonaws.com/graphql";
+const ENDPOINT_APPSYNC_MOON_AUTH_PRODUCTION = "https://rkupgarzrnfvtflhrlmrmkvb5i.appsync-api.us-east-1.amazonaws.com/graphql";
+const ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT = "https://iq3pqooobre5ziyhu2ogpn6ndm.appsync-api.us-east-1.amazonaws.com/graphql";
+/**
+ * Authenticated graphql API endpoint for AWS AppSync
+ * @type {string}
+ */
+const ENDPOINT_APPSYNC_MOON_AUTH = (process.env.BUILD_ENV === 'production')
+    ? ENDPOINT_APPSYNC_MOON_AUTH_PRODUCTION
+    : ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT;
 
-export const ENDPOINT_APPSYNC_MOON_AUTHENTICATED = (process.env.BUILD_ENV === 'production')
-    ? ENDPOINT_APPSYNC_MOON_PRODUCTION
-    : ENDPOINT_APPSYNC_MOON_DEVELOPMENT;
+const ENDPOINT_APPSYNC_MOON_PUBLIC_PRODUCTION = ''; // TODO: implement
+const ENDPOINT_APPSYNC_MOON_PUBLIC_DEVELOPMENT = ''; // TODO: implement
+/**
+ * Public graphql API endpoint for AWS AppSync
+ * @type {string}
+ */
+const ENDPOINT_APPSYNC_MOON_PUBLIC = (process.env.BUILD_ENV === 'production')
+    ? ENDPOINT_APPSYNC_MOON_PUBLIC_PRODUCTION
+    : ENDPOINT_APPSYNC_MOON_PUBLIC_DEVELOPMENT;
 
-class AppSyncConfig {
-    /**
-     * Gets a authenticated configuration for AWS AppSync clients
-     *
-     * @return {Promise<{url: string, region: string, auth: {type: AUTH_TYPE.OPENID_CONNECT, jwtToken: *}, disableOffline: boolean}>}
-     */
-    static getAuthConfig = async () => ({
-        url: ENDPOINT_APPSYNC_MOON_AUTHENTICATED,
-        region: AWS.config.region,
-        auth: {
-            type: AUTH_TYPE.OPENID_CONNECT,
-            jwtToken: await AuthUser.getInstance().getRefreshedIdJWToken()
-        },
-        disableOffline: true
-    });
+/**
+ * Gets a dynamic configuration for AWS AppSync authenticated client.
+ *
+ * @returns {object}
+ */
+export const AppSyncAuthConfig = {
+    url: ENDPOINT_APPSYNC_MOON_AUTH,
+    region: AWS.config.region,
+    auth: {
+        type: AUTH_TYPE.OPENID_CONNECT,
+        // Jwt automatically refreshes according to promise implementation.
+        jwtToken: () => AuthUser.getInstance().getRefreshedIdJWToken()
+    },
+    disableOffline: true
+};
 
-    // TODO: New endpoint for unauthenticated requests
-    // static getNonAuthConfig = async () => ({
-    //     url: ENDPOINT_APPSYNC_MOON_UNAUTHENTICATED,
-    //     region: AWS.config.region,
-    //     auth: {
-    //         type: AUTH_TYPE.OPENID_CONNECT,
-    //         jwtToken: await AuthUser.getInstance().getRefreshedIdJWToken()
-    //     },
-    //     disableOffline: true
-    // });
-}
 
-export default AppSyncConfig;
+export const AppSyncPublicConfig = {
+    url: ENDPOINT_APPSYNC_MOON_PUBLIC,
+    region: AWS.config.region,
+    auth: {
+        type: AUTH_TYPE.API_KEY,
+        apiKey: "" // TODO: implement
+    }
+};
+
+export default AppSyncPublicConfig;
