@@ -2,7 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import getAWSAppSyncClient from "./api/MoonGraphQL";
+import MoonGraphQL from "./api/MoonGraphQL";
 import {onUpdateCoinbaseApiKey} from "./api/coinbase";
 
 let subscription = null;
@@ -13,7 +13,7 @@ let subscription = null;
  */
 const moonTestFunction = (params) => {
     console.log("moonTestFunction");
-    const awsAppSyncClient = getAWSAppSyncClient();
+    const awsAppSyncClient = MoonGraphQL.authClient;
 
     if (subscription) {
         console.log("subscription: ", subscription);
