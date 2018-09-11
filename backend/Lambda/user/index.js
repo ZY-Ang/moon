@@ -55,14 +55,27 @@ const getCoinbaseWallets = (coinbaseKeys) => {
 };
 
 exports.handler = async (event) => {
-    let userId = event.idToken;
-
-    // todo: assume identity based on event.idToken, create a role for lambda to access dynamo on behalf of user
+    let userId = event.userId; // todo: where do we get userId in the input of this function?
+    let userCoinbaseKeys;
 
     // todo: handle the case of no coinbase keys found
     return getCoinbaseKeys(userId)
-        .then(coinbaseKeys => {return getCoinbaseWallets(coinbaseKeys)})
-        .then(wallets => {return wallets})
+        .then(coinbaseKeys => {
+            userCoinbaseKeys = coinbaseKeys;
+            return getCoinbaseWallets(coinbaseKeys)
+        })
+        .then(wallets => {
+            return {
+                'coinbaseInfo': {
+                    coinbaseUserId, // todo: get this
+                    'apiKey': {
+                        // TODO: append sub in vtl
+                        'key': userCoinbaseKeys.key
+                    },
+                    wallets
+                }
+            }
+        })
         .catch(error => {
             console.log(error);
             return {error: 'An error occurred fetching wallet list.' };
