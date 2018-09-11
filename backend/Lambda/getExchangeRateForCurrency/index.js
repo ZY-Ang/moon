@@ -9,16 +9,16 @@ exports.handler = async (event) => {
 
     let currencyString;
     switch (event.currency) {
-        case 'ETHER':
+        case 'ETH':
             currencyString = 'ETH-USD';
             break;
-        case 'BITCOIN':
+        case 'BTC':
             currencyString = 'BTC-USD';
             break;
-        case 'BITCOINCASH':
+        case 'BCH':
             currencyString = 'BCH-USD';
             break;
-        case 'LITECOIN':
+        case 'LTC':
             currencyString = 'LTC-USD';
             break;
         default:
