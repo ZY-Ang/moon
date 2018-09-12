@@ -1,0 +1,24 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VisualEditor0",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:325751747533:table/CoinbaseApiKeyTable",
+        "arn:aws:dynamodb:us-east-1:325751747533:table/CoinbaseApiKeyTableDevelopment"
+      ],
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "dynamodb:LeadingKeys": [
+            "${paywithmoon.auth0.com/:sub}"
+          ]
+        }
+      }
+    }
+  ]
+}

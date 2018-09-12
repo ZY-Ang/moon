@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "StmtAllowAppSyncAuth0",
+      "Effect": "Allow",
+      "Action": "appsync:GraphQL",
+      "Resource": [
+        "arn:aws:appsync:us-east-1:325751747533:apis/lnsol35lf5cjjjgh3ca2x2f4zi/*",
+        "arn:aws:appsync:us-east-1:325751747533:apis/nxfodyrn7bfwhlncoklyn4dq3m/*"
+      ]
+    }
+  ]
+}
