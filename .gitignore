@@ -137,3 +137,6 @@ browser-extension/\.cache/
 
 browser-extension/build.crx
 browser-extension/build.pem
+
+.serverless/
+jspm_packages/
