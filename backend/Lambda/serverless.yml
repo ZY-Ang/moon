@@ -24,6 +24,8 @@ provider:
   #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
   stage: ${opt:stage, self:custom.defaultStage}
   profile: ${self:custom.profiles.${self:provider.stage}}
+  environment:
+    NODE_ENV: ${opt:stage, self:custom.defaultStage}
 
 # you can overwrite defaults here
 #  stage: dev
@@ -46,12 +48,14 @@ provider:
 #            - "/*"
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
 
 functions:
   exchangeRate:
     handler: src/index.exchangeRate
+  user:
+    handler: src/index.user
+  getPaymentPayload:
+    handler: src/index.getPaymentPayload
 
 # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
 # See link for more information:

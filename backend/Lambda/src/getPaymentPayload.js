@@ -2,10 +2,11 @@
  * Copyright (c) 2018 moon
  */
 
+const AWS = require("aws-sdk");
 const Decimal = require('decimal.js');
-
-let CoinbaseClient = require('coinbase').Client;
+const CoinbaseClient = require('coinbase').Client;
 const gdax = require('gdax');
+
 const publicClient = new gdax.PublicClient();
 
 const key = 'your_api_key'; // todo: get from env
@@ -220,7 +221,7 @@ const sellCryptoOnGdax = (cryptoCurrency, amountFiat) => {
         });
 };
 
-exports.handler = async (event) => {
+module.exports.handler = async (event) => {
     let currencyToSell = event.currency;
     let amountFiat = event.amount;
     let userId = event.userId;

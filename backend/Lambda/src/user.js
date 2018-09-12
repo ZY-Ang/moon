@@ -1,83 +1,25 @@
 /*
  * Copyright (c) 2018 moon
  */
+const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
+const getCoinbaseUser = require("./services/walletProviders/coinbase/getCoinbaseUser");
+const getCoinbaseWallets = require("./services/walletProviders/coinbase/getCoinbaseWallets");
 
-const CoinbaseClient = require('coinbase').Client;
-const AWS = require('aws-sdk');
-AWS.config.update({region: 'us-east-1'});
+module.exports.handler = async (event) => {
+    let {sub} = event;
 
-const util = require('util');
+    const coinbaseApiKeys = await getCoinbaseApiKeys(sub);
+    const coinbaseWallets = await getCoinbaseWallets(coinbaseApiKeys);
+    const coinbaseUser = await getCoinbaseUser(coinbaseApiKeys);
 
-// get the user's api key and api secret from dynamodb
-const getCoinbaseKeys = (userId) => {
-    let dynamodb = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
-    let params = {
-        TableName: "CoinbaseApiKeyTable",
-        Key: {
-            'userId': userId
+    return {
+        coinbaseInfo: {
+            userId: coinbaseUser.id,
+            apiKey: {
+                sub,
+                key: coinbaseApiKeys.key
+            },
+            wallets: coinbaseWallets
         }
     };
-
-    return dynamodb.get(params).promise()
-        .then(data => {
-            return data.Item;
-        });
-};
-
-const getCoinbaseWallets = (coinbaseKeys) => {
-    return new Promise((resolve, reject) => {
-        let userCoinbaseApiSecret = coinbaseKeys.secret;
-        let userCoinbaseApiKey = coinbaseKeys.key;
-
-        let coinbaseClient = new CoinbaseClient(
-            {
-                'apiKey': userCoinbaseApiKey,
-                'apiSecret': userCoinbaseApiSecret,
-                'version': '2018-04-10'
-            });
-
-        coinbaseClient.getAccounts({}, function(err, accounts) {
-            if(err){
-                return reject(err);
-            }
-            let wallets = [];
-            accounts.forEach(account => {
-                wallets.push({
-                    id: account.id,
-                    name: account.name,
-                    balance: account.balance.amount,
-                    currency: account.balance.currency
-                })
-            });
-            return resolve(wallets);
-        });
-    });
-};
-
-exports.handler = async (event) => {
-    let userId = event.userId; // todo: where do we get userId in the input of this function?
-    let userCoinbaseKeys;
-
-    // todo: handle the case of no coinbase keys found
-    return getCoinbaseKeys(userId)
-        .then(coinbaseKeys => {
-            userCoinbaseKeys = coinbaseKeys;
-            return getCoinbaseWallets(coinbaseKeys)
-        })
-        .then(wallets => {
-            return {
-                'coinbaseInfo': {
-                    coinbaseUserId, // todo: get this
-                    'apiKey': {
-                        // TODO: append sub in vtl
-                        'key': userCoinbaseKeys.key
-                    },
-                    wallets
-                }
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            return {error: 'An error occurred fetching wallet list.' };
-        });
 };

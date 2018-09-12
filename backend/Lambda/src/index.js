@@ -5,18 +5,9 @@
 'use strict';
 
 const exchangeRate = require("./exchangeRate");
-
-module.exports.hello = async (event, context) => {
-    return {
-        statusCode: 200,
-        body: JSON.stringify({
-            message: 'Go Serverless v1.0! Your function executed successfully!',
-            input: event,
-        }),
-    };
-
-    // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-    // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
-};
+const getPaymentPayload = require("./getPaymentPayload");
+const user = require("./user");
 
 module.exports.exchangeRate = exchangeRate.handler;
+module.exports.getPaymentPayload = getPaymentPayload.handler;
+module.exports.user = user.handler;
