@@ -100,6 +100,7 @@ input GetPaymentPayloadInput {
     pageInfo: PageInfo!
 }
 
+# Mutations (actionable). Naming convention: VERBS
 type Mutation {
     # Updates the callee's coinbase API keys
     updateCoinbaseApiKey(input: UpdateCoinbaseApiKeyInput!): CoinbaseApiKey
@@ -162,6 +163,7 @@ type PaymentPayload {
     user: User
 }
 
+# Queries (static). Naming convention: NOUNS
 type Query {
     # Returns information about the callee's JWT
     identity: OIDCIdentity
