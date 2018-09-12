@@ -1,0 +1,40 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+# Queries (static). Naming convention: NOUNS
+type Query {
+    # Returns the latest exchange rate object for a currency and a baseCurrency
+    exchangeRate(currency: Currency!, baseCurrency: Currency!): ExchangeRate
+}
+
+# Mutations (actionable). Naming convention: VERBS
+type Mutation {
+    # Does nothing
+    stub: ID!
+}
+
+# List of all known currencies we support
+enum Currency {
+    USD
+    BTC
+    ETC
+    LTC
+    BCH
+    MNR
+    SGD
+    EUR
+}
+
+# An exchange rate object
+type ExchangeRate {
+    # denominator currency
+    baseCurrency: Currency!
+
+    # numerator currency
+    currency: Currency!
+
+    # (numerator currency)/(denominator currency)
+    amount: String!
+}
