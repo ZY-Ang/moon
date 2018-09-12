@@ -9,8 +9,10 @@ module.exports.handler = async (event) => {
     let {sub} = event;
 
     const coinbaseApiKeys = await getCoinbaseApiKeys(sub);
-    const coinbaseWallets = await getCoinbaseWallets(coinbaseApiKeys);
-    const coinbaseUser = await getCoinbaseUser(coinbaseApiKeys);
+    const [coinbaseWallets, coinbaseUser] = await Promise.all([
+        getCoinbaseWallets(coinbaseApiKeys),
+        getCoinbaseUser(coinbaseApiKeys)
+    ]);
 
     return {
         coinbaseInfo: {
