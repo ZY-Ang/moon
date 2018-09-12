@@ -50,8 +50,8 @@ provider:
 #    variable1: value1
 
 functions:
-  getExchangeRateForCurrency:
-    handler: src/getExchangeRateForCurrency.handler
+  exchangeRate:
+    handler: src/index.exchangeRate
 
 # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
 # See link for more information:

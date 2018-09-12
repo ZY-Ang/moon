@@ -4,7 +4,7 @@
 
 'use strict';
 
-import getExchangeRateForCurrency from "./getExchangeRateForCurrency";
+const exchangeRate = require("./exchangeRate");
 
 module.exports.hello = async (event, context) => {
     return {
@@ -19,4 +19,4 @@ module.exports.hello = async (event, context) => {
     // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
 
-module.exports.getExchangeRateForCurrency = getExchangeRateForCurrency;
+module.exports.exchangeRate = exchangeRate.handler;
