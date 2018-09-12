@@ -66,16 +66,18 @@ type CoinbaseWallet implements Wallet {
     balance: String!
 }
 
-# List of all known currencies we support
+# All known currencies
 enum Currency {
     USD
+    SGD
+    EUR
+    GBP
     BTC
     ETC
+    ETH
     LTC
     BCH
     MNR
-    SGD
-    EUR
 }
 
 type Error {
@@ -86,11 +88,27 @@ type Error {
 # An exchange rate object
 type ExchangeRate {
     # denominator currency
-    baseCurrency: Currency!
+    base: Currency!
     # numerator currency
-    currency: Currency!
+    quote: Currency!
     # (numerator currency)/(denominator currency)
     amount: String!
+}
+
+# Base Currencies (denominator currencies) supported by GDAX
+enum GdaxBaseCurrency {
+    USD
+    EUR
+    GBP
+}
+
+# Quote Currencies (numerator currencies) supported by GDAX
+enum GdaxQuoteCurrency {
+    BTC
+    BCH
+    ETC
+    ETH
+    LTC
 }
 
 # Input for getPaymentPayload mutation
@@ -169,8 +187,8 @@ type Query {
     identity: OIDCIdentity
     # Returns user information belonging to the callee
     user: User
-    # Returns the latest exchange rate object for a currency and a baseCurrency
-    exchangeRate(currency: Currency!, baseCurrency: Currency!): ExchangeRate
+    # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD)
+    exchangeRate(quote: GdaxQuoteCurrency!, base: GdaxBaseCurrency = "USD"): ExchangeRate
 }
 
 type Subscription {
