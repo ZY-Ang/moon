@@ -1,0 +1,157 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: moon
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  # See link for more information:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  stage: ${opt:stage, self:custom.defaultStage}
+  region: ${opt:region, self:custom.defaultRegion}
+  profile: ${self:custom.profiles.${self:provider.stage}}
+  environment:
+    NODE_ENV: ${opt:stage, self:custom.defaultStage}
+
+plugins:
+  - serverless-appsync-plugin
+  - serverless-pseudo-parameters
+
+resources:
+  Resources:
+    CoinbaseApiKeyDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${opt:stage, self:custom.defaultStage}-coinbase-api-key
+        AttributeDefinitions:
+        - AttributeName: sub
+          AttributeType: S
+        KeySchema:
+        - AttributeName: sub
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+    AppSyncServiceRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        RoleName: AppSyncServiceRole
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+              - "appsync.amazonaws.com"
+            Action:
+            - "sts:AssumeRole"
+        Policies:
+        - PolicyName: ${self:resources.Resources.CoinbaseApiKeyDynamoDBTable.Properties.TableName}-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Action:
+              - "dynamodb:Query"
+              - "dynamodb:BatchWriteItem"
+              - "dynamodb:GetItem"
+              - "dynamodb:DeleteItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:Scan"
+              - "dynamodb:UpdateItem"
+              Resource:
+              - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
+              - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+        - PolicyName: ${self:functions.exchangeRate.name}-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Action:
+              - "lambda:invokeFunction"
+              Resource:
+              - { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
+              - { Fn::Join: ['', [{ Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }, ':*']] }
+              - { Fn::GetAtt: [UserLambdaFunction, Arn] }
+              - { Fn::Join: ['', [{ Fn::GetAtt: [UserLambdaFunction, Arn] }, ':*']] }
+              - { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
+              - { Fn::Join: ['', [{ Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }, ':*']] }
+
+# See Link for functions documentation:
+#     https://serverless.com/framework/docs/providers/aws/guide/functions/
+functions:
+  exchangeRate:
+    name: ${self:service}-${self:provider.stage}-exchangeRate
+    description: 'Returns the exchange rate given a quote and base currency.'
+    handler: Lambda/index.exchangeRate
+  user:
+    name: ${self:service}-${self:provider.stage}-user
+    description: 'Returns information about a moon user.'
+    handler: Lambda/index.user
+  getPaymentPayload:
+    name: ${self:service}-${self:provider.stage}-getPaymentPayload
+    description: 'Exchanges client information for a payment payload to be executed on the client'
+    handler: Lambda/index.getPaymentPayload
+
+custom:
+  # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
+  # See link for credentials documentation:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  defaultStage: development
+  defaultRegion: "us-east-1"
+  profiles:
+    production: moonProduction
+    staging: moonStaging
+    development: moonDevelopment
+
+  accountId: "#{AWS::AccountId}"
+
+  appSync:
+    name: ${self:service}-${opt:stage, self:custom.defaultStage}
+    schema: AppSync/schema.graphql
+    authenticationType: OPENID_CONNECT
+    openIdConnectConfig:
+      issuer: ${file(./config/auth0.json):iss}
+      clientId: ${file(./config/auth0.json):aud}
+    serviceRole: ${self:resources.Resources.AppSyncServiceRole.Properties.RoleName}
+    dataSources:
+      # CoinbaseApiKeyDynamoDBTable
+      - type: AMAZON_DYNAMODB
+        name: CoinbaseApiKeyDynamoDBTable
+        description: 'DynamoDB table that stores user coinbase API keys'
+        config:
+          tableName: ${self:resources.Resources.CoinbaseApiKeyDynamoDBTable.Properties.TableName}
+          serviceRoleArn: { Fn::GetAtt: [AppSyncServiceRole, Arn] }
+      # exchangeRate
+      - type: AWS_LAMBDA
+        name: exchangeRate
+        description: ${self:functions.exchangeRate.description}
+        config:
+          lambdaFunctionArn: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
+      # user
+      - type: AWS_LAMBDA
+        name: user
+        description: ${self:functions.user.description}
+        config:
+          lambdaFunctionArn: { Fn::GetAtt: [UserLambdaFunction, Arn] }
+      # getPaymentPayload
+      - type: AWS_LAMBDA
+        name: getPaymentPayload
+        description: ${self:functions.getPaymentPayload.description}
+        config:
+          lambdaFunctionArn: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }

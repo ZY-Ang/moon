@@ -1,33 +1,4 @@
-﻿# DO NOT PUSH TO APPSYNC (AWS AppSync primitive scalars, just to make sure they work with IDE)
-enum AWSDate {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSTime {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSDateTime {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSTimestamp {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSEmail {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSJSON {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSURL {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSPhone {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-enum AWSIPAddress {
-    _DO_NOT_PUSH_TO_APPSYNC
-}
-
-# Sub-input to be used in GetPaymentPayloadInput
+﻿# Sub-input to be used in GetPaymentPayloadInput
 input CartInfo {
     # Currency of the purchase
     currency: Currency!

@@ -1,16 +1,37 @@
 {
   "name": "moon_backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for all moon services",
   "scripts": {
-    "creationTest": "serverless create --template aws-nodejs --path Lambda",
-    "lambda-package": "cd Lambda && npm run package",
-    "lambda-production-deploy": "cd Lambda && npm run deploy-production"
+    "creationTest": "serverless create --template aws-nodejs",
+    "package": "serverless package",
+    "deploy": "serverless deploy",
+    "deploy-production": "serverless deploy --stage production",
+    "deploy-staging": "serverless deploy --stage staging"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paywithmoon/moon.git"
+  },
+  "keywords": [
+    "moon"
+  ],
+  "author": "moon",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/paywithmoon/moon/issues"
+  },
+  "homepage": "https://github.com/paywithmoon/moon#readme",
   "dependencies": {
+    "coinbase": "^2.0.8",
+    "decimal.js": "^10.0.1",
+    "gdax": "^0.8.0",
     "knex": "^0.15.2",
     "pg": "^7.4.3"
+  },
+  "devDependencies": {
+    "serverless": "^1.31.0",
+    "serverless-appsync-plugin": "^1.0.5",
+    "serverless-pseudo-parameters": "^2.2.0"
   }
 }

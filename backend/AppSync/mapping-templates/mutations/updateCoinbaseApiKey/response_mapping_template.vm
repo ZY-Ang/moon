@@ -1,6 +1,5 @@
 ## Pass back the result from DynamoDB. **
 $util.toJson({
 	"sub": $ctx.result.sub,
-    "key": $ctx.result.key,
-    "secret": "OBFUSCATED"
+    "key": $ctx.result.key
 })
