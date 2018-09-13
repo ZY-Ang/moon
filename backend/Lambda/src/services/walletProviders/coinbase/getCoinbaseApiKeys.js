@@ -3,10 +3,7 @@
  */
 const AWS = require("aws-sdk");
 
-const COINBASE_API_KEY_TABLE =
-    (process.env.NODE_ENV === 'production') ? "CoinbaseApiKeyTable" :
-    (process.env.NODE_ENV === 'staging') ? "CoinbaseApiKeyTableStaging" :
-    (process.env.NODE_ENV === 'development') ? "CoinbaseApiKeyTableDevelopment" : "";
+const COINBASE_API_KEY_TABLE = `moon-${process.env.NODE_ENV}-coinbase-api-key`;
 
 /**
  * Gets the coinbase API Keys of a particular

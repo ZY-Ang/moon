@@ -20,10 +20,10 @@ const getCoinbaseUser = async (coinbaseApiKeys) => {
         coinbaseClient.getCurrentUser((err, currentUser) => {
             if (err) {
                 reject(err);
-            } else if (!currentUser.data) {
-                reject(new Error("Coinbase returned malformed user data"));
+            } else if (!currentUser) {
+                reject(new Error(`Coinbase returned malformed currentUser: ${currentUser}`));
             } else {
-                resolve(currentUser.data);
+                resolve(currentUser);
             }
         })
     );

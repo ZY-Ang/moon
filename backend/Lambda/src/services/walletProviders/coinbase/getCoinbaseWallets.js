@@ -25,10 +25,10 @@ const getCoinbaseWallets = async (coinbaseApiKeys) => {
         coinbaseClient.getAccounts({}, (err, accounts) => {
             if (err) {
                 reject(err);
-            } else if (!accounts.data) {
-                reject(new Error("Coinbase returned malformed accounts data"));
+            } else if (!accounts) {
+                reject(new Error(`Coinbase returned malformed accounts: ${accounts}`));
             } else {
-                resolve(accounts.data.map(({id, name, balance}) => ({
+                resolve(accounts.map(({id, name, balance}) => ({
                     id,
                     name,
                     currency: balance.currency,

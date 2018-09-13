@@ -4,9 +4,9 @@
 
 'use strict';
 
-const exchangeRate = require("./exchangeRate");
-const getPaymentPayload = require("./getPaymentPayload");
-const user = require("./user");
+const exchangeRate = require("./src/exchangeRate");
+const getPaymentPayload = require("./src/getPaymentPayload");
+const user = require("./src/user");
 
 module.exports.exchangeRate = exchangeRate.handler;
 module.exports.getPaymentPayload = getPaymentPayload.handler;
