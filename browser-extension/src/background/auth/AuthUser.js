@@ -13,6 +13,7 @@ import {
     URL_TOKEN_FLOW
 } from "./url";
 import axios from "axios";
+import {WEBIDENTITY_IAM_ROLE_ARN} from "../config/aws/iam";
 
 /**
  * Singleton {@class AuthUser}
@@ -130,7 +131,7 @@ class AuthUser {
     setAWSCredentials = () => {
         console.log("setAWSCredentials");
         let credentials = new AWS.WebIdentityCredentials({
-            RoleArn: 'arn:aws:iam::325751747533:role/moon-auth0-users-role',
+            RoleArn: WEBIDENTITY_IAM_ROLE_ARN,
             WebIdentityToken: this.getIdToken().getJwtToken()
             // TODO: (maybe) Implement RoleSessionName for downstream validation
         });

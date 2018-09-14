@@ -9,7 +9,10 @@
     "clean-and-build-extension": "cd browser-extension && npm run clean && npm run build",
     "build-extension-production": "cd browser-extension && npm run build-production",
     "clean-and-build-extension-production": "cd browser-extension && npm run clean && npm run build-production",
-    "watch-extension": "cd browser-extension && npm run watch",
+    "backend-package": "cd backend && npm run package",
+    "backend-deploy": "cd backend && npm run deploy",
+    "backend-deploy-staging": "cd backend && npm run deploy-staging",
+    "backend-deploy-production": "cd backend && npm run deploy-production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

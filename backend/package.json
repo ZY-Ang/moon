@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "Backend for all moon services",
   "scripts": {
-    "creationTest": "serverless create --template aws-nodejs",
     "package": "serverless package",
     "deploy": "serverless deploy",
-    "deploy-production": "serverless deploy --stage production",
-    "deploy-staging": "serverless deploy --stage staging"
+    "deploy-staging": "serverless deploy --stage staging",
+    "deploy-production": "serverless deploy --stage production"
   },
   "repository": {
     "type": "git",

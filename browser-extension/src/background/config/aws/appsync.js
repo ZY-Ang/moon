@@ -6,8 +6,8 @@ import AWS from "./AWS";
 import {AUTH_TYPE} from "aws-appsync/lib/link/auth-link";
 import AuthUser from "../../auth/AuthUser";
 
-const ENDPOINT_APPSYNC_MOON_AUTH_PRODUCTION = "https://rkupgarzrnfvtflhrlmrmkvb5i.appsync-api.us-east-1.amazonaws.com/graphql";
-const ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT = "https://iq3pqooobre5ziyhu2ogpn6ndm.appsync-api.us-east-1.amazonaws.com/graphql";
+const ENDPOINT_APPSYNC_MOON_AUTH_PRODUCTION = "https://wti3lpxmjzezzbsg5sonlzipae.appsync-api.us-east-1.amazonaws.com/graphql";
+const ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT = "https://iimjzpnjsvgctmfags3h7x5xem.appsync-api.us-east-1.amazonaws.com/graphql";
 /**
  * Authenticated graphql API endpoint for AWS AppSync
  * @type {string}

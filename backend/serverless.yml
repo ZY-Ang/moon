@@ -24,6 +24,7 @@ plugins:
 resources:
   Resources:
     CoinbaseApiKeyDynamoDBTable:
+      # Table that stores coinbase API Keys for users.
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${opt:stage, self:custom.defaultStage}-coinbase-api-key
@@ -36,8 +37,94 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
+
+    S3Bucket:
+      # Generic S3 bucket to store shit in TODO: Delete or specialize for a purpose
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-${opt:stage, self:custom.defaultStage}
+        CorsConfiguration:
+          CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE']
+            AllowedOrigins: ['*']
+            ExposedHeaders: ['ETag']
+
+    UserRole:
+      # Specifies the AWS resources that authenticated users from the moon auth0 federated provider are authorized to access.
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:service}-${opt:stage, self:custom.defaultStage}-auth0-user-role
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Effect: "Allow"
+            Principal:
+              # TODO: Add OIDC manual setup in developer README. There is no AWS CloudFormation resource to generate OIDC provider
+              Federated:
+              - "arn:aws:iam::${self:custom.accountId}:oidc-provider/${file(./config/auth0.json):short_iss}"
+            Action:
+            - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals:
+                paywithmoon.auth0.com/:aud:
+                - ${file(./config/auth0.json):aud}
+        Policies:
+        - PolicyName: AppSync-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Action:
+              - "appsync:GraphQL"
+              Resource:
+              - { Fn::Join: ['', [{ Fn::GetAtt: [GraphQlApi, Arn] }, '/*']] }
+        - PolicyName: S3Bucket-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Action:
+              - "s3:GetObject"
+              - "s3:PutObject"
+              - "s3:DeleteObject"
+              Resource:
+              - { Fn::Join: ['', [{ Fn::GetAtt: [S3Bucket, Arn] }, '/$', '{', "${file(./config/auth0.json):short_iss}", ':sub}']] }
+              - { Fn::Join: ['', [{ Fn::GetAtt: [S3Bucket, Arn] }, '/$', '{', "${file(./config/auth0.json):short_iss}", ':sub}/*']] }
+            - Effect: "Allow"
+              Action:
+              - "s3:ListBucket"
+              Resource:
+              - { Fn::GetAtt: [S3Bucket, Arn] }
+              Condition:
+                StringLike:
+                  s3:prefix:
+                    Fn::Join:
+                      - ''
+                      - - ${self:resources.Resources.S3Bucket.Properties.BucketName}
+                        - '/$'
+                        - '{'
+                        - ${file(./config/auth0.json):short_iss}
+                        - ':sub}/*'
+        - PolicyName: CoinbaseApiKeyDynamoDBTable-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:PutItem"
+              Resource:
+              - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
+              - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+              Condition:
+                ForAllValues:StringEquals:
+                  dynamodb:LeadingKeys:
+                    - { Fn::Join: ['', ['$','{', "${file(./config/auth0.json):short_iss}", ':sub}']] }
+
     AppSyncServiceRole:
-      Type: "AWS::IAM::Role"
+      # Specifies the AWS resources that AppSync API has access to.
+      Type: AWS::IAM::Role
       Properties:
         RoleName: ${self:service}-${opt:stage, self:custom.defaultStage}-appsync-service-role
         AssumeRolePolicyDocument:
@@ -50,19 +137,13 @@ resources:
             Action:
             - "sts:AssumeRole"
         Policies:
-        - PolicyName: DynamoDB-policy
+        - PolicyName: CoinbaseApiKeyDynamoDBTable-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
             - Effect: "Allow"
               Action:
-              - "dynamodb:Query"
-              - "dynamodb:BatchWriteItem"
-              - "dynamodb:GetItem"
-              - "dynamodb:DeleteItem"
               - "dynamodb:PutItem"
-              - "dynamodb:Scan"
-              - "dynamodb:UpdateItem"
               Resource:
               - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
               - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
