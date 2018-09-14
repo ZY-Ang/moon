@@ -47,7 +47,7 @@ class PayTab extends Component {
             <div className="moon-tab">
                 <h1>I am a pay tab</h1>
                 {
-                    process.env.BUILD_ENV !== 'production' &&
+                    process.env.NODE_ENV !== 'production' &&
                     <div>
                         <input
                             type="text"

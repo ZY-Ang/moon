@@ -34,7 +34,7 @@ const messageCenter = (request, sender, sendResponse) => {
     }
     const messageResolver = {
         [REQUEST_TEST_FUNCTION]() {
-            if (process.env.BUILD_ENV !== 'production') {
+            if (process.env.NODE_ENV !== 'production') {
                 moonTestFunction(request.params)
                     .then(res => sendSuccess(res))
                     .catch(err => sendFailure(err));

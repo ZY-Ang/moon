@@ -12,7 +12,7 @@ const ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT = "https://iimjzpnjsvgctmfags3h7x5x
  * Authenticated graphql API endpoint for AWS AppSync
  * @type {string}
  */
-const ENDPOINT_APPSYNC_MOON_AUTH = (process.env.BUILD_ENV === 'production')
+const ENDPOINT_APPSYNC_MOON_AUTH = (process.env.NODE_ENV === 'production')
     ? ENDPOINT_APPSYNC_MOON_AUTH_PRODUCTION
     : ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT;
 
@@ -22,7 +22,7 @@ const ENDPOINT_APPSYNC_MOON_PUBLIC_DEVELOPMENT = ''; // TODO: implement
  * Public graphql API endpoint for AWS AppSync
  * @type {string}
  */
-const ENDPOINT_APPSYNC_MOON_PUBLIC = (process.env.BUILD_ENV === 'production')
+const ENDPOINT_APPSYNC_MOON_PUBLIC = (process.env.NODE_ENV === 'production')
     ? ENDPOINT_APPSYNC_MOON_PUBLIC_PRODUCTION
     : ENDPOINT_APPSYNC_MOON_PUBLIC_DEVELOPMENT;
 
