@@ -4,6 +4,8 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.cache" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/.serverless" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/Lambda/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/backend/Lambda/getWalletsForUser/.cache" />
       <excludeFolder url="file://$MODULE_DIR$/backend/Lambda/getWalletsForUser/build" />
       <excludeFolder url="file://$MODULE_DIR$/browser-extension/.cache" />

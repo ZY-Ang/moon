@@ -1,16 +1,5 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
 # For full config options, check the docs:
 #    docs.serverless.com
-#
-# Happy Coding!
-
 service: moon
 
 # You can pin your service to only deploy with a specific Serverless version
@@ -50,7 +39,7 @@ resources:
     AppSyncServiceRole:
       Type: "AWS::IAM::Role"
       Properties:
-        RoleName: AppSyncServiceRole
+        RoleName: ${self:service}-${opt:stage, self:custom.defaultStage}-appsync-service-role
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
           Statement:
@@ -61,7 +50,7 @@ resources:
             Action:
             - "sts:AssumeRole"
         Policies:
-        - PolicyName: ${self:resources.Resources.CoinbaseApiKeyDynamoDBTable.Properties.TableName}-policy
+        - PolicyName: DynamoDB-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -77,7 +66,7 @@ resources:
               Resource:
               - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
               - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
-        - PolicyName: ${self:functions.exchangeRate.name}-policy
+        - PolicyName: Lambda-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -94,6 +83,12 @@ resources:
 
 # See Link for functions documentation:
 #     https://serverless.com/framework/docs/providers/aws/guide/functions/
+#
+# IMPORTANT NOTE: CloudFormation logical IDs for functions are converted
+#     to camel case with first character capitalized, then appended with
+#     "LambdaFunction" at the end. For example,
+#     the function 'exchangeRate' will have a CloudFormation logical ID of
+#     'ExchangeRateLambdaFunction'
 functions:
   exchangeRate:
     name: ${self:service}-${self:provider.stage}-exchangeRate
@@ -113,7 +108,9 @@ custom:
   # See link for credentials documentation:
   #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
   defaultStage: development
+
   defaultRegion: "us-east-1"
+
   profiles:
     production: moonProduction
     staging: moonStaging
@@ -130,28 +127,65 @@ custom:
       clientId: ${file(./config/auth0.json):aud}
     serviceRole: ${self:resources.Resources.AppSyncServiceRole.Properties.RoleName}
     dataSources:
-      # CoinbaseApiKeyDynamoDBTable
+    # ============== Dynamo DB Tables ==============
+    # CoinbaseApiKeyDynamoDBTable
       - type: AMAZON_DYNAMODB
         name: CoinbaseApiKeyDynamoDBTable
         description: 'DynamoDB table that stores user coinbase API keys'
         config:
           tableName: ${self:resources.Resources.CoinbaseApiKeyDynamoDBTable.Properties.TableName}
           serviceRoleArn: { Fn::GetAtt: [AppSyncServiceRole, Arn] }
-      # exchangeRate
+    # ============== Lambda Functions ==============
+    # exchangeRate
       - type: AWS_LAMBDA
-        name: exchangeRate
+        name: ExchangeRateLambdaFunction
         description: ${self:functions.exchangeRate.description}
         config:
           lambdaFunctionArn: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
-      # user
+    # user
       - type: AWS_LAMBDA
-        name: user
+        name: UserLambdaFunction
         description: ${self:functions.user.description}
         config:
           lambdaFunctionArn: { Fn::GetAtt: [UserLambdaFunction, Arn] }
-      # getPaymentPayload
+    # getPaymentPayload
       - type: AWS_LAMBDA
-        name: getPaymentPayload
+        name: GetPaymentPayloadLambdaFunction
         description: ${self:functions.getPaymentPayload.description}
         config:
           lambdaFunctionArn: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
+    # ============== None ==============
+    # identity
+      - type: NONE
+        name: identityNone
+        description: 'Returns information about the callee'
+
+    mappingTemplatesLocation: AppSync/mapping-templates # Defaults to mapping-templates
+
+    mappingTemplates:
+    # ============== Query ==============
+    # Query/identity
+      - dataSource: identityNone
+        type: Query
+        field: identity
+        request: Query/identity/request.vm
+        response: Query/identity/response.vm
+    # Query/user
+      - dataSource: UserLambdaFunction
+        type: Query
+        field: user
+        request: Query/user/request.vm
+        response: Query/user/response.vm
+    # Query/exchangeRate
+      - dataSource: ExchangeRateLambdaFunction
+        type: Query
+        field: exchangeRate
+        request: Query/exchangeRate/request.vm
+        response: Query/exchangeRate/response.vm
+    # ============== Mutation ==============
+    # Mutation/updateCoinbaseApiKey
+      - dataSource: CoinbaseApiKeyDynamoDBTable
+        type: Mutation
+        field: updateCoinbaseApiKey
+        request: Mutation/updateCoinbaseApiKey/request.vm
+        response: Mutation/updateCoinbaseApiKey/response.vm
