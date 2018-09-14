@@ -30,7 +30,6 @@
   },
   "devDependencies": {
     "serverless": "^1.31.0",
-    "serverless-appsync-plugin": "^1.0.5",
-    "serverless-pseudo-parameters": "^2.2.0"
+    "serverless-appsync-plugin": "^1.0.5"
   }
 }
