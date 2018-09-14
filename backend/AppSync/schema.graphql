@@ -23,10 +23,23 @@ enum CoinbaseCurrency {
 
 # Coinbase information associated with a user
 type CoinbaseInfo {
-    # Coinbase user ID
-    userId: ID!
+    # Coinbase user as defined by coinbase
+    user: CoinbaseUser
     apiKey: CoinbaseApiKey
     wallets: [CoinbaseWallet]
+}
+
+# A Coinbase User
+type CoinbaseUser {
+    id: ID
+    name: String
+    username: String
+    profile_location: String
+    profile_bio: String
+    profile_url: AWSURL
+    avatar_url: AWSURL
+    resource: String
+    resource_path: String
 }
 
 # A Coinbase Wallet

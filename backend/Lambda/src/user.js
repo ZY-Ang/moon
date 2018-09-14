@@ -9,19 +9,23 @@ module.exports.handler = async (event) => {
     let {sub} = event;
 
     const coinbaseApiKeys = await getCoinbaseApiKeys(sub);
-    const [coinbaseWallets, coinbaseUser] = await Promise.all([
-        getCoinbaseWallets(coinbaseApiKeys),
-        getCoinbaseUser(coinbaseApiKeys)
-    ]);
+    const [coinbaseWallets, coinbaseUser] = (coinbaseApiKeys)
+        ? await Promise.all([
+            getCoinbaseWallets(coinbaseApiKeys),
+            getCoinbaseUser(coinbaseApiKeys)
+        ]).catch(() => [null, null])
+        : [null, null];
 
     return {
         coinbaseInfo: {
-            userId: coinbaseUser.id,
-            apiKey: {
-                sub,
-                key: coinbaseApiKeys.key
-            },
-            wallets: coinbaseWallets
+            user: coinbaseUser,
+            apiKey: coinbaseApiKeys,
+            wallets: coinbaseWallets && coinbaseWallets.map(wallet => ({
+                id: wallet.id,
+                name: wallet.name,
+                currency: wallet.balance && wallet.balance.currency,
+                balance: wallet.balance && wallet.balance.amount
+            }))
         }
     };
 };
