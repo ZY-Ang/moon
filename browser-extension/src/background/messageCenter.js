@@ -3,7 +3,7 @@
  */
 
 import {
-    POLL_IS_COINBASE_AUTH_MODE,
+    POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_ID_JWTOKEN,
     REQUEST_GLOBAL_SIGN_OUT, REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
     REQUEST_LAUNCH_WEB_AUTH_FLOW,
     REQUEST_SIGN_OUT,
@@ -15,6 +15,7 @@ import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "..
 import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKey} from "./services/coinbase";
+import AuthUser from "./auth/AuthUser";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -35,9 +36,14 @@ const messageCenter = (request, sender, sendResponse) => {
     const messageResolver = {
         [REQUEST_TEST_FUNCTION]() {
             if (process.env.NODE_ENV !== 'production') {
-                moonTestFunction(request.params)
-                    .then(res => sendSuccess(res))
-                    .catch(err => sendFailure(err));
+                moonTestFunction(request.params).then(sendSuccess).catch(sendFailure);
+                return true;
+            }
+            sendFailure("You are not authorized to access this experimental feature yet.");
+        },
+        [REQUEST_GET_ID_JWTOKEN]() {
+            if (process.env.NODE_ENV !== 'production') {
+                AuthUser.getInstance().getRefreshedIdJWToken().then(sendSuccess).catch(sendFailure);
                 return true;
             }
             sendFailure("You are not authorized to access this experimental feature yet.");

@@ -4,9 +4,10 @@
 
 // This file contains the events and request types that are EMITTED FROM THE CONTENT SCRIPT.
 
-// --------------------- TESTING ---------------------
-// TODO: Used in development for testing one-off functions. Will be useless in production
+// --------------------- Developer ---------------------
+// TODO: Used in development for developer one-off functions. Will be useless in production
 export const REQUEST_TEST_FUNCTION = "MOON_TEST_FUNCTION";
+export const REQUEST_GET_ID_JWTOKEN = "MOON_GET_ID_TOKEN";
 
 // --------------------- Launch Web Auth Flow ---------------------
 /** Used to request an injection of the moon extension onto the page */

@@ -28,3 +28,20 @@ export const observeDOM = (obj, callback) => {
         obj.addEventListener('DOMNodeRemoved', callback, false);
     }
 };
+
+/**
+ * Copies a {@param text} string to the clipboard via the
+ * {@code document.execCommand('copy')} API.
+ */
+export const copyToClipboard = async (text) => {
+    if (text && text.constructor === String) {
+        const textField = document.createElement('textarea');
+        textField.innerText = text;
+        document.body.appendChild(textField);
+        textField.select();
+        document.execCommand('copy');
+        textField.remove();
+        return text;
+    }
+    throw new Error(`Unable to copy (${text}) to clipboard. `);
+};

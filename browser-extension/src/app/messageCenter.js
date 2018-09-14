@@ -38,8 +38,8 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_UPDATE_AUTH_USER]() {
             updateAuthUser(request.authUser)
-                .then(() => sendSuccess(`updateAuthUser(${request.authUser}) completed`))
-                .catch(() => sendFailure(`updateAuthUser(${request.authUser}) failed`));
+                .then(() => sendSuccess(`updateAuthUser(${JSON.stringify(request.authUser)}) completed`))
+                .catch(() => sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`));
             return true;
         },
         [REQUEST_COINBASE_EXTRACT_API_KEYS]() {

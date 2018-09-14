@@ -6,6 +6,7 @@ import PayTab from "../pay/PayTab";
 import WalletsTab from "../wallets/WalletsTab";
 import RewardsTab from "../rewards/RewardsTab";
 import SettingsTab from "../settings/SettingsTab";
+import DeveloperTab from "../developer/DeveloperTab";
 
 /** Tabs that can only be shown when user is NOT signed in */
 export const TAB_AUTH = 'TAB_AUTH';
@@ -22,19 +23,24 @@ export const TAB_REWARDS = 'TAB_REWARDS';
 /** The settings tab that allows user to change  */
 export const TAB_SETTINGS = 'TAB_SETTINGS';
 
+/** The developer tab that allows debugging in development environment */
+export const TAB_DEVELOPER = 'TAB_TESTING';
+
 /** Tab groups and orderings that are displayed depending on auth, browser and other state */
 export const TAB_GROUP_AUTH = {
     components: [
         PayTab,
         // WalletsTab, TODO: Implement post-MVP
         // RewardsTab,
-        SettingsTab
+        SettingsTab,
+        (process.env.NODE_ENV !== 'production') ? DeveloperTab : null
     ],
     navTabs: [
         TAB_PAY,
         // TAB_WALLETS, TODO: Implement post-MVP
         // TAB_REWARDS,
-        TAB_SETTINGS
+        TAB_SETTINGS,
+        (process.env.NODE_ENV !== 'production') ? TAB_DEVELOPER : null
     ],
     [TAB_PAY]: {
         index: 0,
@@ -59,5 +65,11 @@ export const TAB_GROUP_AUTH = {
         icon: "cog",
         name: 'Settings',
         component: SettingsTab
+    },
+    [TAB_DEVELOPER]: {
+        index: 2,
+        icon: "cog",
+        name: 'Developer',
+        component: DeveloperTab
     }
 };
