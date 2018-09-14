@@ -5,7 +5,6 @@
   "scripts": {
     "package": "serverless package",
     "deploy": "serverless deploy",
-    "deploy-staging": "serverless deploy --stage staging",
     "deploy-production": "serverless deploy --stage production"
   },
   "repository": {

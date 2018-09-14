@@ -188,13 +188,12 @@ custom:
   defaultRegion: us-east-1
   profiles:
     production: moon-production
-    staging: moon-staging
     development: moon-development
 
   accountId: ${AWS::AccountId}
 
   appSync:
-    name: ${{self:service}}-${{self:provider.stage}}-${{self:provider.region}}
+    name: ${{self:service}}-${{self:provider.stage}}
     schema: AppSync/schema.graphql
     authenticationType: OPENID_CONNECT
     openIdConnectConfig:
