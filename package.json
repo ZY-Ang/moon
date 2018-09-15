@@ -12,6 +12,8 @@
     "backend-package": "cd backend && npm run package",
     "backend-deploy": "cd backend && npm run deploy",
     "backend-deploy-production": "cd backend && npm run deploy-production",
+    "deploy-and-build": "npm run backend-deploy && npm run clean-and-build-extension",
+    "deploy-and-build-production": "npm run backend-deploy-production && npm run clean-and-build-extension-production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

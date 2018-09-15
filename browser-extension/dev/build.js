@@ -168,7 +168,7 @@ const build = async () => {
 
         const PATH_ZIP_EXIT = `${DIR_BUILD}moon-extension.zip`;
         const zip = new AdmZip();
-        zip.addLocalFolder(DIR_BUILD, null, null);
+        zip.addLocalFolder(DIR_BUILD);
         await new Promise((resolve, reject) =>
             zip.writeZip(PATH_ZIP_EXIT, err => {
                 if (err) {
