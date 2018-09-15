@@ -148,6 +148,14 @@ functions:
     name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
     description: 'Exchanges client information for a payment payload to be executed on the client'
     handler: Lambda/index.getPaymentPayload
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:GetItem"
+      Resource:
+      - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
+      - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
@@ -170,7 +178,7 @@ custom:
       clientId: ${{file(./config/auth0.json):aud}}
     dataSources:
     # ============== Dynamo DB Tables ==============
-    # CoinbaseApiKeyDynamoDBTable
+      # CoinbaseApiKeyDynamoDBTable
       - type: AMAZON_DYNAMODB
         name: CoinbaseApiKeyDynamoDBTable
         description: 'DynamoDB table that stores user coinbase API keys'
@@ -184,7 +192,7 @@ custom:
             - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
     # ============== Lambda Functions ==============
-    # exchangeRate
+      # exchangeRate
       - type: AWS_LAMBDA
         name: ExchangeRateLambdaFunction
         description: ${{self:functions.exchangeRate.description}}
@@ -197,7 +205,7 @@ custom:
             Resource:
             - { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }, ':*']] }
-    # user
+      # user
       - type: AWS_LAMBDA
         name: UserLambdaFunction
         description: ${{self:functions.user.description}}
@@ -210,7 +218,7 @@ custom:
             Resource:
             - { Fn::GetAtt: [UserLambdaFunction, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [UserLambdaFunction, Arn] }, ':*']] }
-    # getPaymentPayload
+      # getPaymentPayload
       - type: AWS_LAMBDA
         name: GetPaymentPayloadLambdaFunction
         description: ${{self:functions.getPaymentPayload.description}}
@@ -224,35 +232,35 @@ custom:
             - { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }, ':*']] }
     # ============== None ==============
-    # identity
+      # identity
       - type: NONE
         name: identityNone
         description: 'Returns information about the callee'
 
-    mappingTemplatesLocation: AppSync/mapping-templates # Defaults to mapping-templates
+    mappingTemplatesLocation: AppSync/mapping-templates
 
     mappingTemplates:
     # ============== Query ==============
-    # Query/identity
+      # Query/identity
       - dataSource: identityNone
         type: Query
         field: identity
         request: Query/identity/request.vm
         response: Query/identity/response.vm
-    # Query/user
+      # Query/user
       - dataSource: UserLambdaFunction
         type: Query
         field: user
         request: Query/user/request.vm
         response: Query/user/response.vm
-    # Query/exchangeRate
+      # Query/exchangeRate
       - dataSource: ExchangeRateLambdaFunction
         type: Query
         field: exchangeRate
         request: Query/exchangeRate/request.vm
         response: Query/exchangeRate/response.vm
     # ============== Mutation ==============
-    # Mutation/updateCoinbaseApiKey
+      # Mutation/updateCoinbaseApiKey
       - dataSource: CoinbaseApiKeyDynamoDBTable
         type: Mutation
         field: updateCoinbaseApiKey
