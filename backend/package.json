@@ -5,7 +5,8 @@
   "scripts": {
     "package": "serverless package",
     "deploy": "serverless deploy",
-    "deploy-production": "serverless deploy --stage production"
+    "deploy-production": "serverless deploy --stage production",
+    "deploy-changeset-production": "serverless deploy --changeset --stage production"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "serverless": "^1.31.0",
     "serverless-appsync-plugin": "^1.0.5",
+    "serverless-cloudformation-changesets": "0.0.2",
     "serverless-iam-roles-per-function": "^1.0.4"
   }
 }

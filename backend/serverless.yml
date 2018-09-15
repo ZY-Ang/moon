@@ -24,6 +24,7 @@ provider:
 plugins:
   - serverless-appsync-plugin
   - serverless-iam-roles-per-function
+  - serverless-cloudformation-changesets
 
 resources:
   Resources:
