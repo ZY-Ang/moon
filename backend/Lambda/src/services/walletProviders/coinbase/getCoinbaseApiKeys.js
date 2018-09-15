@@ -1,6 +1,8 @@
 /*
  * Copyright (c) 2018 moon
  */
+const logHead = require("../../../utils/logHead");
+const logTail = require("../../../utils/logTail");
 const AWS = require("aws-sdk");
 
 const COINBASE_API_KEY_TABLE = `moon-${process.env.NODE_ENV}-coinbase-api-key`;
@@ -11,6 +13,7 @@ const COINBASE_API_KEY_TABLE = `moon-${process.env.NODE_ENV}-coinbase-api-key`;
  * @returns {Promise<object>}
  */
 const getCoinbaseApiKeys = async (sub) => {
+    logHead("getCoinbaseApiKeys", sub);
     let dynamodb = new AWS.DynamoDB.DocumentClient();
     let params = {
         TableName: COINBASE_API_KEY_TABLE,
@@ -18,7 +21,10 @@ const getCoinbaseApiKeys = async (sub) => {
     };
 
     const coinbaseKeyData = await dynamodb.get(params).promise();
-    return coinbaseKeyData.Item;
+    const coinbaseApiKeys = coinbaseKeyData.Item;
+
+    logTail("coinbaseApiKeys", coinbaseApiKeys);
+    return coinbaseApiKeys;
 };
 
 module.exports = getCoinbaseApiKeys;

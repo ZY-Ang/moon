@@ -2,6 +2,8 @@
  * Copyright (c) 2018 moon
  */
 
+const logHead = require("./utils/logHead");
+const logTail = require("./utils/logTail");
 const AWS = require("aws-sdk");
 const Decimal = require('decimal.js');
 const CoinbaseClient = require('coinbase').Client;
@@ -222,6 +224,7 @@ const sellCryptoOnGdax = (cryptoCurrency, amountFiat) => {
 };
 
 module.exports.handler = async (event) => {
+    logHead("getPaymentPayload", event);
     let currencyToSell = event.currency;
     let amountFiat = event.amount;
     let userId = event.userId;

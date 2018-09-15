@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2018 moon
+ */
+const logHead = require("../../../utils/logHead");
+const logTail = require("../../../utils/logTail");
+
+/**
+ * Gets the coinbase current user using
+ * @see {@link https://developers.coinbase.com/api/v2#show-current-user}
+ *
+ * @param coinbaseClient - Coinbase Client instance
+ * @return {Promise<object>}
+ */
+const getCoinbaseCurrentUser = async (coinbaseClient) => {
+    logHead("getCoinbaseUser", coinbaseClient);
+
+    const coinbaseUser = await new Promise((resolve, reject) =>
+        coinbaseClient.getCurrentUser((err, currentUser) => {
+            if (err) {
+                reject(err);
+            } else if (!currentUser) {
+                reject(new Error(`Coinbase returned malformed currentUser: ${currentUser}`));
+            } else {
+                resolve(currentUser);
+            }
+        })
+    );
+
+    logTail("coinbaseUser", coinbaseUser);
+    return coinbaseUser;
+};
+
+module.exports = getCoinbaseCurrentUser;

@@ -1,11 +1,13 @@
 /*
  * Copyright (c) 2018 moon
  */
-
+const logHead = require("./utils/logHead");
+const logTail = require("./utils/logTail");
 const {PublicClient} = require("gdax");
 const {base, quote} = require("./constants/exchanges/gdax/currencies");
 
 module.exports.handler = async (event) => {
+    logHead("exchangeRate", event);
     const publicClient = new PublicClient();
 
     if (!event.quote) {
@@ -23,9 +25,12 @@ module.exports.handler = async (event) => {
     }
 
     const tickerInformation = await publicClient.getProductTicker(`${event.quote}-${event.base}`);
-    return {
+    const exchangeRate = {
         base: event.base,
         quote: event.quote,
         amount: tickerInformation.price
     };
+
+    logTail("exchangeRate", exchangeRate);
+    return exchangeRate;
 };

@@ -1,42 +1,33 @@
 /*
  * Copyright (c) 2018 moon
  */
-const CoinbaseClient = require("coinbase").Client;
+const logHead = require("../../../utils/logHead");
+const logTail = require("../../../utils/logTail");
 
 /**
- * Gets the coinbase wallets using
- * @param coinbaseApiKeys - Coinbase API Keys
- * @return {Promise<any>}
+ * Gets the coinbase wallets (accounts) using
+ * @see {@link https://developers.coinbase.com/api/v2#list-accounts}
+ *
+ * @param coinbaseClient - Coinbase Client instance
+ * @return {Promise<object>}
  */
-const getCoinbaseWallets = async (coinbaseApiKeys) => {
-    if (!coinbaseApiKeys ||
-        !coinbaseApiKeys.key ||
-        !coinbaseApiKeys.secret
-    ) {
-        throw new Error("Invalid coinbase API Keys");
-    }
+const getCoinbaseWallets = async (coinbaseClient) => {
+    logHead("getCoinbaseWallets", coinbaseClient);
 
-    let coinbaseClient = new CoinbaseClient({
-        apiKey: coinbaseApiKeys.key,
-        apiSecret: coinbaseApiKeys.secret
-    });
-
-    return new Promise((resolve, reject) =>
+    const coinbaseWallets = await new Promise((resolve, reject) =>
         coinbaseClient.getAccounts({}, (err, accounts) => {
             if (err) {
                 reject(err);
             } else if (!accounts) {
                 reject(new Error(`Coinbase returned malformed accounts: ${accounts}`));
             } else {
-                resolve(accounts.map(({id, name, balance}) => ({
-                    id,
-                    name,
-                    currency: balance.currency,
-                    balance: balance.amount
-                })));
+                resolve(accounts);
             }
         })
     );
+
+    logTail("coinbaseWallets", coinbaseWallets);
+    return coinbaseWallets;
 };
 
 module.exports = getCoinbaseWallets;
