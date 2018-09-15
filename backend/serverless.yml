@@ -23,6 +23,7 @@ provider:
 
 plugins:
   - serverless-appsync-plugin
+  - serverless-iam-roles-per-function
 
 resources:
   Resources:
@@ -54,10 +55,10 @@ resources:
             ExposedHeaders: ['ETag']
 
     UserRole:
-      # Specifies the AWS resources that authenticated users from the moon auth0 federated provider are authorized to access.
+      # Specifies the AWS resources that authenticated users from the moon federated provider are authorized to access.
       Type: AWS::IAM::Role
       Properties:
-        RoleName: ${{self:service}}-${{self:provider.stage}}-auth0-user-role
+        RoleName: ${{self:service}}-${{self:provider.stage}}-user-role
         AssumeRolePolicyDocument:
           Version: "2012-10-17"
           Statement:
@@ -118,46 +119,6 @@ resources:
                   dynamodb:LeadingKeys:
                     - "${${{file(./config/auth0.json):short_iss}}:sub}"
 
-    AppSyncServiceRole:
-      # Specifies the AWS resources that AppSync API has access to.
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: ${{self:service}}-${{self:provider.stage}}-appsync-service-role
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-          - Effect: "Allow"
-            Principal:
-              Service:
-              - "appsync.amazonaws.com"
-            Action:
-            - "sts:AssumeRole"
-        Policies:
-        - PolicyName: CoinbaseApiKeyDynamoDBTable-policy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-            - Effect: "Allow"
-              Action:
-              - "dynamodb:PutItem"
-              Resource:
-              - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
-              - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
-        - PolicyName: Lambda-policy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-            - Effect: "Allow"
-              Action:
-              - "lambda:invokeFunction"
-              Resource:
-              - { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
-              - { Fn::Join: ['', [{ Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }, ':*']] }
-              - { Fn::GetAtt: [UserLambdaFunction, Arn] }
-              - { Fn::Join: ['', [{ Fn::GetAtt: [UserLambdaFunction, Arn] }, ':*']] }
-              - { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
-              - { Fn::Join: ['', [{ Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }, ':*']] }
-
 # See Link for functions documentation:
 #     https://serverless.com/framework/docs/providers/aws/guide/functions/
 #
@@ -175,6 +136,14 @@ functions:
     name: ${{self:service}}-${{self:provider.stage}}-user
     description: 'Returns information about a moon user.'
     handler: Lambda/index.user
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:GetItem"
+      Resource:
+      - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
+      - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
   getPaymentPayload:
     name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
     description: 'Exchanges client information for a payment payload to be executed on the client'
@@ -207,7 +176,13 @@ custom:
         description: 'DynamoDB table that stores user coinbase API keys'
         config:
           tableName: ${{self:resources.Resources.CoinbaseApiKeyDynamoDBTable.Properties.TableName}}
-          serviceRoleArn: { Fn::GetAtt: [AppSyncServiceRole, Arn] }
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "dynamodb:PutItem"
+            Resource:
+            - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
     # ============== Lambda Functions ==============
     # exchangeRate
       - type: AWS_LAMBDA
@@ -215,18 +190,39 @@ custom:
         description: ${{self:functions.exchangeRate.description}}
         config:
           lambdaFunctionArn: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }, ':*']] }
     # user
       - type: AWS_LAMBDA
         name: UserLambdaFunction
         description: ${{self:functions.user.description}}
         config:
           lambdaFunctionArn: { Fn::GetAtt: [UserLambdaFunction, Arn] }
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - { Fn::GetAtt: [UserLambdaFunction, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [UserLambdaFunction, Arn] }, ':*']] }
     # getPaymentPayload
       - type: AWS_LAMBDA
         name: GetPaymentPayloadLambdaFunction
         description: ${{self:functions.getPaymentPayload.description}}
         config:
           lambdaFunctionArn: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }, ':*']] }
     # ============== None ==============
     # identity
       - type: NONE
