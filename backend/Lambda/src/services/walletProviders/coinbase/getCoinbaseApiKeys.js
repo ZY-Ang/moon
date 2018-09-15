@@ -14,6 +14,11 @@ const COINBASE_API_KEY_TABLE = `moon-${process.env.NODE_ENV}-coinbase-api-key`;
  */
 const getCoinbaseApiKeys = async (sub) => {
     logHead("getCoinbaseApiKeys", sub);
+
+    if (!sub || sub.constructor !== String) {
+        throw new Error(`${sub} is an invalid subject identifier.`);
+    }
+
     let dynamodb = new AWS.DynamoDB.DocumentClient();
     let params = {
         TableName: COINBASE_API_KEY_TABLE,
