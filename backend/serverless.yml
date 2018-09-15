@@ -17,7 +17,7 @@ provider:
   #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
   stage: ${{opt:stage, self:custom.defaultStage}}
   region: ${{opt:region, self:custom.defaultRegion}}
-  profile: ${{self:custom.profiles.${{self:provider.stage}}}}
+  profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
   environment:
     NODE_ENV: ${{self:provider.stage}}
 
