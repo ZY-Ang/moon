@@ -27,7 +27,5 @@ module.exports = {
     COLUMN_AMOUNT_CRYPTOCURRENCY: 'amount_cryptocurrency',
     COLUMN_CRYPTOCURRENCY_TYPE: 'cryptocurrency_type',
     COLUMN_WEBWITE: 'website',
-    COLUMN_WALLET_ID: 'wallet_id',
-
-
+    COLUMN_WALLET_ID: 'wallet_id'
 };

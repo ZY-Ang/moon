@@ -24,40 +24,40 @@ module.exports = {
         }
     },
 
-      staging: {
-          client: 'pg',
-          connection: {
-              host: '',
-              user: '',
-              password: '',
-              database: 'moon',
-              port: 5432,
-              ssl: true
-          },
-          migrations: {
-              directory: __dirname + '/migrations'
-          },
-          seeds: {
-              directory: __dirname + '/seeds/development'
-          }
-      },
+    staging: {
+        client: 'pg',
+        connection: {
+            host: '',
+            user: '',
+            password: '',
+            database: 'moon',
+            port: 5432,
+            ssl: true
+        },
+        migrations: {
+            directory: __dirname + '/migrations'
+        },
+        seeds: {
+            directory: __dirname + '/seeds/development'
+        }
+    },
 
-      production: {
-          client: 'pg',
-          connection: {
-              host: '',
-              user: '',
-              password: '',
-              database: 'moon',
-              port: 5432,
-              ssl: true
-          },
-          migrations: {
-              directory: __dirname + '/migrations'
-          },
-          seeds: {
-              directory: __dirname + '/seeds/development'
-          }
-      }
+    production: {
+        client: 'pg',
+        connection: {
+            host: '',
+            user: '',
+            password: '',
+            database: 'moon',
+            port: 5432,
+            ssl: true
+        },
+        migrations: {
+            directory: __dirname + '/migrations'
+        },
+        seeds: {
+            directory: __dirname + '/seeds/development'
+        }
+    }
 
 };
