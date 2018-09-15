@@ -173,7 +173,7 @@ type Query {
     # Returns user information belonging to the callee
     user: User
     # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD)
-    exchangeRate(quote: GdaxQuoteCurrency!, base: GdaxBaseCurrency = "USD"): ExchangeRate
+    exchangeRate(quote: GdaxQuoteCurrency!, base: GdaxBaseCurrency=USD): ExchangeRate
 }
 
 type Subscription {
@@ -199,7 +199,9 @@ interface Wallet {
 }
 
 input WalletInput {
+    # Provider for the wallet
     provider: WalletProvider!
+    # ID of the wallet under the provider's records
     id: ID!
 }
 
