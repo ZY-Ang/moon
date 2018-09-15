@@ -7,16 +7,68 @@ const AWS = require("aws-sdk");
 const fs = require("fs");
 const shell = require("shelljs");
 
+const getAWSAccountId = (credentials) => new Promise((resolve, reject) =>
+    (new AWS.STS({credentials}))
+        .getCallerIdentity({}, (err, data) => {
+            if (err) {
+                console.error("Error while calling sts.getCallerIdentity. You most likely forgot to set up aws credentials. See https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html for more information");
+                reject(err);
+            } else if (!data.Account) {
+                console.error("Error while getting data.Account. This is unexpected.");
+                reject(data);
+            } else {
+                resolve(data.Account);
+            }
+        })
+);
+
+const getAWSAppSyncEndpoint = (credentials, apiName) => new Promise((resolve, reject) =>
+    (new AWS.AppSync({credentials}))
+        .listGraphqlApis((err, data) => {
+            if (err) {
+                console.error("Error while listing GraphQL APIs. You most likely have not deployed your backend");
+                reject(err);
+            } else if (!data.graphqlApis) {
+                console.error("Error while getting data.graphqlApis. This is unexpected.");
+                reject(data);
+            } else {
+                const filteredGraphqlApis = data.graphqlApis.filter(({name}) => (name === apiName));
+                if (filteredGraphqlApis.length !== 1) {
+                    console.error(`Error: No GraphQL APIs match expected name: ${apiName}`);
+                    reject(data);
+                } else if (
+                    !filteredGraphqlApis[0] ||
+                    !filteredGraphqlApis[0].uris ||
+                    !filteredGraphqlApis[0].uris.GRAPHQL
+                ) {
+                    console.error(`Error: filteredGraphqlApis[0] malformed: ${filteredGraphqlApis[0]}`);
+                    reject(data);
+                } else {
+                    resolve(filteredGraphqlApis[0].uris.GRAPHQL);
+                }
+            }
+        })
+);
+
 const build = async () => {
     console.log("================== ENVIRONMENT VARIABLES ==================");
+    // NODE_ENV
     const DEFAULT_NODE_ENV = 'development';
     console.log(`NODE_ENV:\t\t\t\t${shell.env.NODE_ENV}${!shell.env.NODE_ENV?` => ${DEFAULT_NODE_ENV}`:''}`);
     shell.env.NODE_ENV = process.env.NODE_ENV || DEFAULT_NODE_ENV;
+
+    // AWS_PROFILE
     const DEFAULT_AWS_PROFILE = `moon-${shell.env.NODE_ENV}`;
     console.log(`AWS_PROFILE:\t\t\t${shell.env.AWS_PROFILE}${!shell.env.AWS_PROFILE?` => ${DEFAULT_AWS_PROFILE}`:''}`);
     shell.env.AWS_PROFILE = process.env.AWS_PROFILE || DEFAULT_AWS_PROFILE;
+
+    // AWS_ACCESS_KEY_ID
     console.log(`AWS_ACCESS_KEY_ID:\t\t${shell.env.AWS_ACCESS_KEY_ID}`);
+
+    // AWS_SECRET_ACCESS_KEY
     console.log(`AWS_SECRET_ACCESS_KEY:\t${shell.env.AWS_SECRET_ACCESS_KEY}`);
+
+    // AWS_ACCOUNT_ID
     const credentials = (
         shell.env.AWS_ACCESS_KEY_ID &&
         shell.env.AWS_SECRET_ACCESS_KEY &&
@@ -24,28 +76,26 @@ const build = async () => {
     )
         ? new AWS.Credentials(shell.env.AWS_ACCESS_KEY_ID, shell.env.AWS_SECRET_ACCESS_KEY)
         : new AWS.SharedIniFileCredentials({profile: shell.env.AWS_PROFILE});
-    shell.env.AWS_ACCOUNT_ID = await new Promise((resolve, reject) =>
-        (new AWS.STS({credentials}))
-            .getCallerIdentity({}, (err, data) => {
-                if (err) {
-                    console.error("Error while calling sts.getCallerIdentity. You most likely forgot to set up aws credentials. See https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html for more information");
-                    reject(err);
-                } else if (!data.Account) {
-                    console.error("Error while getting data.Account. This is unexpected.");
-                    reject(data);
-                } else {
-                    resolve(data.Account);
-                }
-            })
-    );
+    shell.env.AWS_ACCOUNT_ID = await getAWSAccountId(credentials);
     console.log(`AWS_ACCOUNT_ID:\t\t\t${(shell.env.AWS_ACCOUNT_ID)}`);
-    const DEFAULT_REGION = 'us-east-1';
-    console.log(`AWS_REGION:\t\t\t\t${shell.env.AWS_REGION}${!shell.env.AWS_REGION?` => ${DEFAULT_REGION}`:''}`);
-    shell.env.AWS_REGION = process.env.AWS_REGION || DEFAULT_REGION;
+
+    // AWS_REGION
+    const DEFAULT_AWS_REGION = 'us-east-1';
+    console.log(`AWS_REGION:\t\t\t\t${shell.env.AWS_REGION}${!shell.env.AWS_REGION?` => ${DEFAULT_AWS_REGION}`:''}`);
+    shell.env.AWS_REGION = process.env.AWS_REGION || DEFAULT_AWS_REGION;
+
+    // AWS_APPSYNC_ENDPOINT_AUTH
+    shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getAWSAppSyncEndpoint(credentials, `moon-${shell.env.NODE_ENV}`);
+    console.log(`AWS_APPSYNC_ENDPOINT_AUTH:\t${(shell.env.AWS_APPSYNC_ENDPOINT_AUTH)}`);
+
+    // AWS_APPSYNC_ENDPOINT_PUBLIC
+    shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC = undefined;
+    console.log(`AWS_APPSYNC_ENDPOINT_PUBLIC:\t${(shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC)}`);
+
+    // BROWSER
     const DEFAULT_BROWSER = 'chrome';
     console.log(`BROWSER:\t\t\t\t${shell.env.BROWSER}${!shell.env.BROWSER?` => ${DEFAULT_BROWSER}`:''}`);
     shell.env.BROWSER = process.env.BROWSER || DEFAULT_BROWSER;
-    const SOURCE_MAPS_FLAG = (shell.env.NODE_ENV === 'production') ? ' --no-source-maps' : '';
     console.log("===========================================================\n");
     console.log("=================== BUILD CONFIGURATION ===================");
     console.log(`credentials:\t\t\t${credentials.constructor.name}`);
@@ -55,6 +105,7 @@ const build = async () => {
     const DIR_DEV = `dev/`;
     const DIR_SOURCE = `src/`;
     const DIR_FILES = `files/`;
+    const SOURCE_MAPS_FLAG = (shell.env.NODE_ENV === 'production') ? ' --no-source-maps' : '';
 
 // 1. Delete all build files in the build folder of the browser extension
     console.log("Clearing build folder...");
@@ -99,12 +150,7 @@ const build = async () => {
     console.log("Building manifest.json...");
     const manifestJs = require("../build/manifestBuilder");
     const PATH_MANIFEST_BUILD = `${DIR_BUILD}manifest.json`;
-    try {
-        fs.writeFileSync(PATH_MANIFEST_BUILD, JSON.stringify(manifestJs, null, 2), 'utf8');
-    } catch (error) {
-        console.error('Error: build failed - unable to build manifest.json via the manifest builder');
-        throw error;
-    }
+    fs.writeFileSync(PATH_MANIFEST_BUILD, JSON.stringify(manifestJs, null, 2), 'utf8');
 
     // 4iii. Remove the compiled manifest builder
     console.log("Removing manifestBuilder.js...");

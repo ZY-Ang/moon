@@ -6,25 +6,17 @@ import AWS from "./AWS";
 import {AUTH_TYPE} from "aws-appsync/lib/link/auth-link";
 import AuthUser from "../../auth/AuthUser";
 
-const ENDPOINT_APPSYNC_MOON_AUTH_PRODUCTION = "https://wti3lpxmjzezzbsg5sonlzipae.appsync-api.us-east-1.amazonaws.com/graphql";
-const ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT = "https://iimjzpnjsvgctmfags3h7x5xem.appsync-api.us-east-1.amazonaws.com/graphql";
 /**
  * Authenticated graphql API endpoint for AWS AppSync
  * @type {string}
  */
-const ENDPOINT_APPSYNC_MOON_AUTH = (process.env.NODE_ENV === 'production')
-    ? ENDPOINT_APPSYNC_MOON_AUTH_PRODUCTION
-    : ENDPOINT_APPSYNC_MOON_AUTH_DEVELOPMENT;
+const ENDPOINT_APPSYNC_MOON_AUTH = process.env.AWS_APPSYNC_ENDPOINT_AUTH;
 
-const ENDPOINT_APPSYNC_MOON_PUBLIC_PRODUCTION = ''; // TODO: implement
-const ENDPOINT_APPSYNC_MOON_PUBLIC_DEVELOPMENT = ''; // TODO: implement
 /**
  * Public graphql API endpoint for AWS AppSync
  * @type {string}
  */
-const ENDPOINT_APPSYNC_MOON_PUBLIC = (process.env.NODE_ENV === 'production')
-    ? ENDPOINT_APPSYNC_MOON_PUBLIC_PRODUCTION
-    : ENDPOINT_APPSYNC_MOON_PUBLIC_DEVELOPMENT;
+const ENDPOINT_APPSYNC_MOON_PUBLIC = process.env.AWS_APPSYNC_ENDPOINT_PUBLIC;
 
 /**
  * Dynamic configuration for AWS AppSync authenticated client.
