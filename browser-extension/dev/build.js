@@ -6,6 +6,7 @@ const AdmZip = require("adm-zip");
 const AWS = require("aws-sdk");
 const fs = require("fs");
 const shell = require("shelljs");
+const path = require("path");
 
 const getAWSAccountId = (credentials) => new Promise((resolve, reject) =>
     (new AWS.STS({credentials}))
@@ -102,67 +103,47 @@ const build = async () => {
     console.log("===========================================================\n");
 
     const DIR_BUILD = `build/`;
-    const DIR_DEV = `dev/`;
-    const DIR_SOURCE = `src/`;
     const DIR_FILES = `files/`;
-    const SOURCE_MAPS_FLAG = (shell.env.NODE_ENV === 'production') ? ' --no-source-maps' : '';
 
 // 1. Delete all build files in the build folder of the browser extension
     console.log("Clearing build folder...");
-    shell.rm('-f', `${DIR_BUILD}*`);
+    shell.rm('-rf', `${DIR_BUILD}*`);
     console.log("Force recreating build folder...");
     shell.mkdir('-p', DIR_BUILD);
     console.log("===========================================================\n");
 
-// 2. Build react app content script
-    console.log("Building content-script...");
-    const PATH_CONTENT_ENTRY = `${DIR_SOURCE}app/index.js`;
+// 2. Build browser-extension
+    console.log("Building browser-extension...");
 
-    if (shell.exec(`parcel build ${PATH_CONTENT_ENTRY} -d ${DIR_BUILD} -o app.js${SOURCE_MAPS_FLAG}`).code !== 0) {
-        shell.echo('Error: build failed - unable to build chrome content script');
-        shell.exit(1);
-    }
-    console.log("===========================================================\n");
+    await  new Promise((resolve, reject) => {
+        if (shell.exec(`webpack --config webpack.config.js`).code !== 0) {
+            reject(new Error('Error: build failed - unable to build browser-extension.'));
+        } else {
+            resolve(true);
+            console.log("===========================================================\n");
+        }
+    });
 
-// 3. Build background script
-    console.log("Building background-script...");
-    const PATH_BACKGROUND_ENTRY = `${DIR_SOURCE}background/index.js`;
-
-    if (shell.exec(`parcel build ${PATH_BACKGROUND_ENTRY} -d ${DIR_BUILD} -o background.js${SOURCE_MAPS_FLAG}`).code !== 0) {
-        shell.echo('Error: build failed - unable to build chrome background script');
-        shell.exit(1);
-    }
-    console.log("===========================================================\n");
-
-// 4. Build manifest.json
-    // 4i. Build the manifest builder to sync asset imports
-    console.log("Building manifestBuilder.js...");
-    const FILE_MANIFEST_BUILDER = 'manifestBuilder.js';
-    const PATH_MANIFEST_BUILDER_ENTRY = `${DIR_DEV}${FILE_MANIFEST_BUILDER}`;
-    const PATH_MANIFEST_BUILDER_EXIT = `${DIR_BUILD}${FILE_MANIFEST_BUILDER}`;
-
-    if (shell.exec(`parcel build ${PATH_MANIFEST_BUILDER_ENTRY} -d ${DIR_BUILD} -o ${FILE_MANIFEST_BUILDER} --no-source-maps`).code !== 0) {
-        shell.echo('Error: build failed - unable to build manifest builder');
-        shell.exit(1);
-    }
-
-    // 4ii. Run the built manifest builder to build manifest.json
+// 3. Build manifest.json
+    // 3i. Run the built manifest builder to build manifest.json
     console.log("Building manifest.json...");
+    const FILE_MANIFEST_BUILDER = 'manifestBuilder.js';
+    const PATH_MANIFEST_BUILDER_EXIT = `${DIR_BUILD}${FILE_MANIFEST_BUILDER}`;
     const manifestJs = require("../build/manifestBuilder");
     const PATH_MANIFEST_BUILD = `${DIR_BUILD}manifest.json`;
     fs.writeFileSync(PATH_MANIFEST_BUILD, JSON.stringify(manifestJs, null, 2), 'utf8');
 
-    // 4iii. Remove the compiled manifest builder
+    // 3ii. Remove the compiled manifest builder
     console.log("Removing manifestBuilder.js...");
     shell.rm('-f', PATH_MANIFEST_BUILDER_EXIT);
     console.log("===========================================================\n");
 
-// 5. Copy all other unhashed assets
+// 4. Copy all other unhashed assets
     console.log("Copying unhashed assets...");
     shell.cp('-r', `${DIR_FILES}.`, DIR_BUILD);
     console.log("===========================================================\n");
 
-// 6. Zip folder on production to prepare for WebStore deployments
+// 5. Zip folder on production to prepare for WebStore deployments
     if (shell.env.NODE_ENV === 'production') {
         console.log("Zipping up folder...");
 
@@ -173,9 +154,12 @@ const build = async () => {
             zip.writeZip(PATH_ZIP_EXIT, err => {
                 if (err) {
                     reject(err);
+                } else {
+                    resolve(true);
                 }
             })
         );
+        console.log(`Folder zipped. You may find the deployment package at ${path.join(__dirname, '../', PATH_ZIP_EXIT)}`);
     } else {
         console.log("Skipping folder zip...");
     }

@@ -4,7 +4,7 @@
 import React, {Component} from 'react';
 import './App.css';
 import logo from '../../../../assets/icons/logo_300_text_dark.png';
-import {MOON_DIV_ID} from "../../constants/dom";
+import {MOON_DIV_ID} from "../constants/dom";
 import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
 import {connect} from "react-redux";
 import AuthFlow from "./auth/AuthFlow";

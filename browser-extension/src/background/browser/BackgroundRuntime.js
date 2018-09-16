@@ -7,7 +7,6 @@ import Tabs from "./Tabs";
 import {URL_EXTENSION_INSTALLED, URL_EXTENSION_UNINSTALLED} from "../../constants/url";
 import {isValidWebUrl} from "../../utils/url";
 import messageCenter from "../messageCenter";
-import {version} from "../../../package.json";
 
 /**
  * Utility Class for interaction with the browser's runtime API
@@ -33,6 +32,7 @@ class BackgroundRuntime extends Runtime {
          * @see {@link https://developer.chrome.com/apps/runtime#event-onInstalled}
          */
         chrome.runtime.onInstalled.addListener(details => {
+            const version = Runtime.getManifest().version;
             if (details.reason === 'install') {
                 console.log(`Moon extension v${version} has been installed!`);
                 // First time installing
@@ -53,9 +53,7 @@ class BackgroundRuntime extends Runtime {
                 .then(tabs => tabs.forEach(tab =>
                     contentScripts.forEach(file =>
                         Tabs.executeScript(tab.id, {file})
-                            .catch(() => {
-                                console.log(`Skipping ${tab.id} with ${tab.url}`);
-                            })
+                            .catch(() => console.log(`Skipping ${tab.id} with ${tab.url}`))
                     )
                 ));
         });

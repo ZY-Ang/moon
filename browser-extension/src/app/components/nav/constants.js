@@ -32,16 +32,14 @@ export const TAB_GROUP_AUTH = {
         PayTab,
         // WalletsTab, TODO: Implement post-MVP
         // RewardsTab,
-        SettingsTab,
-        (process.env.NODE_ENV !== 'production') ? DeveloperTab : null
-    ],
+        SettingsTab
+    ].concat((process.env.NODE_ENV !== 'production') ? DeveloperTab : []),
     navTabs: [
         TAB_PAY,
         // TAB_WALLETS, TODO: Implement post-MVP
         // TAB_REWARDS,
-        TAB_SETTINGS,
-        (process.env.NODE_ENV !== 'production') ? TAB_DEVELOPER : null
-    ],
+        TAB_SETTINGS
+    ].concat((process.env.NODE_ENV !== 'production') ? TAB_DEVELOPER : []),
     [TAB_PAY]: {
         index: 0,
         icon: "moon",

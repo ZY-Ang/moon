@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import WebFont from 'webfontloader';
 import App from "./components/App";
-import {MOON_DIV_ID} from "../constants/dom";
+import {MOON_DIV_ID} from "./constants/dom";
 import {SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/backgroundEvents";
 import {Provider} from "react-redux";
 import store from "./redux/store";

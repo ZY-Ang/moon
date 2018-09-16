@@ -22,7 +22,11 @@ const manifest = {
     },
 
     web_accessible_resources:[
-        "/*"
+        "app.js", // Required for re-injection by Browser.Runtime
+        "static/*",
+        "app.css",
+        "logout",
+        "oauth"
     ],
 
     permissions: [
