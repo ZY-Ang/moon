@@ -1,8 +1,8 @@
 {
     "version" : "2017-02-28",
     "operation": "Invoke",
-    "payload": {
-        "quote": $util.defaultIfNull($context.args.quote, "USD")
-        "base": $context.args.base
-    }
+    "payload": $utils.toJson({
+        "quote": $context.args.quote,
+        "base": $util.defaultIfNull($context.args.base, "USD")
+    })
 }
