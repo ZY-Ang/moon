@@ -3,9 +3,9 @@
  */
 
 /**
- * Map of quote currencies supported by coinbase
+ * Map of quoteCurrencies currencies supported by coinbase
  */
-module.exports.quote = {
+module.exports.quoteCurrencies = {
     ETH: true,
     ETC: true,
     BTC: true,
@@ -16,7 +16,7 @@ module.exports.quote = {
 /**
  * Map of base currencies supported by coinbase
  */
-module.exports.base = {
+module.exports.baseCurrencies = {
     USD: true,
     EUR: true,
     GBP: true

@@ -3,12 +3,13 @@
  */
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
-const {PublicClient} = require("gdax");
-const {base, quote} = require("./constants/exchanges/gdax/currencies");
+
+const {baseCurrencies, quoteCurrencies} = require("./constants/exchanges/gdax/currencies");
+
+const getCoinbaseProExchangeRate = require('./services/walletProviders/coinbase/getCoinbaseProExchangeRate');
 
 module.exports.handler = async (event) => {
     logHead("exchangeRate", event);
-    const publicClient = new PublicClient();
 
     if (!event.quote) {
         throw new Error("Please supply a valid quote currency.");
@@ -16,20 +17,14 @@ module.exports.handler = async (event) => {
     } else if (!event.base) {
         throw new Error("Please supply a valid base currency.");
 
-    } else if (!quote[event.quote]) {
+    } else if (!quoteCurrencies[event.quote]) {
         throw new Error(`${event.quote} is invalid or a currently unsupported quote currency.`);
 
-    } else if (!base[event.base]) {
+    } else if (!baseCurrencies[event.base]) {
         throw new Error(`${event.base} is invalid or a currently unsupported base currency.`);
-
     }
 
-    const tickerInformation = await publicClient.getProductTicker(`${event.quote}-${event.base}`);
-    const exchangeRate = {
-        base: event.base,
-        quote: event.quote,
-        amount: tickerInformation.price
-    };
+    const exchangeRate = await getCoinbaseProExchangeRate(event.quote, event.base);
 
     logTail("exchangeRate", exchangeRate);
     return exchangeRate;
