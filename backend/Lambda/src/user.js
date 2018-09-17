@@ -12,22 +12,25 @@ module.exports.handler = async (event) => {
     logHead("user", event);
     const {identity} = event;
 
+    // coinbaseInfo
     const coinbaseApiKeys = await getCoinbaseApiKeys(identity.sub);
-    if (!coinbaseApiKeys) {
-        throw new Error("Coinbase keys not found.");
-    }
-    const coinbaseClient = new CoinbaseClient({
-        apiKey: coinbaseApiKeys.key,
-        apiSecret: coinbaseApiKeys.secret
-    });
-    const [coinbaseWallets, coinbaseUser] = await Promise.all([
-        getCoinbaseWallets(coinbaseClient),
-        getCoinbaseCurrentUser(coinbaseClient)
-    ])
-        .catch(() => [null, null]);
+    const isValidCoinbaseApiKeys = (coinbaseApiKeys && coinbaseApiKeys.key && coinbaseApiKeys.secret);
+    const coinbaseClient = (isValidCoinbaseApiKeys)
+        ? new CoinbaseClient({
+            apiKey: coinbaseApiKeys.key,
+            apiSecret: coinbaseApiKeys.secret
+        })
+        : null;
+    const [coinbaseWallets, coinbaseUser] = (isValidCoinbaseApiKeys)
+        ? await Promise.all([
+            getCoinbaseWallets(coinbaseClient),
+            getCoinbaseCurrentUser(coinbaseClient)
+        ])
+            .catch(() => [null, null])
+        : [null, null];
 
     const user = {
-        coinbaseInfo: {
+        coinbaseInfo: coinbaseApiKeys ? {
             user: coinbaseUser,
             wallets: coinbaseWallets && coinbaseWallets.map(wallet => ({
                 id: wallet.id,
@@ -35,7 +38,7 @@ module.exports.handler = async (event) => {
                 currency: wallet.balance && wallet.balance.currency,
                 balance: wallet.balance && wallet.balance.amount
             }))
-        }
+        } : null
     };
 
     logTail("user", user);
