@@ -3,9 +3,9 @@
  */
 
 import {stringify} from "query-string";
-import BackgroundRuntime from "../browser/BackgroundRuntime";
 import {AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET} from "../config/Auth0/client";
 import {AUTH0_AUDIENCE} from "../config/Auth0/api";
+import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../../constants/url";
 
 /**
  * The unqualified domain URL where the OAuth Server/hosted UI is located
@@ -21,11 +21,6 @@ export const URL_OAUTH_SERVER = `https://${DOMAIN_OAUTH_SERVER}/`;
  * The fully qualified URL where the Public key is located
  */
 export const URL_OAUTH_SERVER_ISS = `${URL_OAUTH_SERVER}.well-known/jwks.json`;
-
-/**
- * The URL that OAuth server should redirect to let chrome client handle OAuth
- */
-export const URL_OAUTH_REDIRECT = BackgroundRuntime.getURL('oauth');
 
 /**
  * The default OAuth spec parameters to be sent to the AWS Cognito hosted UI
@@ -149,10 +144,6 @@ export const getRefreshTokenParams = (refreshToken) => ({
  */
 export const URL_TOKEN_FLOW = `${URL_OAUTH_SERVER}oauth/token`;
 
-/**
- * The final redirect URL to be supplied to the OAuth Server sign out endpoint
- */
-export const URL_SIGN_OUT_REDIRECT = BackgroundRuntime.getURL('logout');
 /**
  * The logout URI of the OAuth Server
  */

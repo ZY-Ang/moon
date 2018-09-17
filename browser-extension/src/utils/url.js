@@ -3,11 +3,11 @@
  */
 
 import {
-    URL_OAUTH_REDIRECT,
     URL_SIGN_OUT_REDIRECT
-} from "../background/auth/url";
+} from "../constants/url";
 import supportedSites from "../../supportedSites";
 import {URL_COINBASE, URL_COINBASE_SETTINGS_API, URL_COINBASE_SIGNIN} from "../constants/coinbase";
+import {URL_OAUTH_REDIRECT} from "../constants/url";
 
 /**
  * @return {boolean} {@code true} if
