@@ -69,7 +69,13 @@ const extensionConfig = env => {
             /**
              * @see {@link https://webpack.js.org/plugins/mini-css-extract-plugin/}
              */
-            new MiniCssExtractPlugin({filename: "[name].css"})
+            new MiniCssExtractPlugin({filename: "[name].css"}),
+            /**
+             * @see {@link https://github.com/NMFR/optimize-css-assets-webpack-plugin}
+             */
+            new OptimizeCSSAssetsPlugin({
+                assetNameRegExp: /\.optimize\.css$/g
+            })
         ],
         entry: {
             app: './src/app/index.js',
@@ -94,11 +100,6 @@ const extensionConfig = env => {
                         "css-loader"
                     ]
                 }
-            ]
-        },
-        optimization: {
-            minimizer: [
-                new OptimizeCSSAssetsPlugin()
             ]
         }
     };
