@@ -3,8 +3,8 @@
  */
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
-const baseCurrencies = require("./constants/exchanges/gdax/currencies").base;
-const quoteCurrencies = require("./constants/exchanges/gdax/currencies").quote;
+const baseCurrencies = require("./constants/exchanges/coinbasePro/currencies").base;
+const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").quote;
 const getCoinbaseProExchangeRate = require('./services/walletProviders/coinbase/getCoinbaseProExchangeRate');
 
 module.exports.handler = async (event) => {

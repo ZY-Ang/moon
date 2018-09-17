@@ -7,8 +7,8 @@ const CoinbaseClient = require('coinbase').Client;
 const gdax = require('gdax');
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
-const baseCurrencies = require("./constants/exchanges/gdax/currencies").base;
-const quoteCurrencies = require("./constants/exchanges/gdax/currencies").quote;
+const baseCurrencies = require("./constants/exchanges/coinbasePro/currencies").base;
+const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").quote;
 const {walletProviders} = require("./constants/walletProviders");
 const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
 const getCoinbaseWallet = require("./services/walletProviders/coinbase/getCoinbaseWallet");
@@ -22,8 +22,8 @@ const secret = 'your_b64_secret'; // todo: get from env
 const passphrase = 'your_passphrase'; // todo: get from env
 
 // todo: switch to apiURI from sandboxURI
-const apiURI = 'https://api.gdax.com';
-const sandboxURI = 'https://api-public.sandbox.gdax.com';
+const apiURI = 'https://api.coinbasePro.com';
+const sandboxURI = 'https://api-public.sandbox.coinbasePro.com';
 
 const moonCoinbaseAccountEmail = "ken@kenco.io";
 
@@ -145,7 +145,7 @@ module.exports.handler = async (event) => {
     let transactionId = transaction.id;
     //todo: store the whole transaction in the db somewhere associated with transaction id and purchase id
 
-    // transfer the money from moon's coinbase account to moon's gdax account
+    // transfer the money from moon's coinbase account to moon's coinbasePro account
     const moonCoinbaseAccountId = moonCoinbaseWalletIds[currencyToSell];
     const depositInfo = await sendFundsFromCoinbaseToCoinbasePro(authedGdaxClient, currencyToSell, amountCrypto, moonCoinbaseAccountId);
     // todo: log this in db? kinda useless info, but nice to have for the sake of completion
