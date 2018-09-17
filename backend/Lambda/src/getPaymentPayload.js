@@ -5,10 +5,10 @@
 const Decimal = require('decimal.js');
 const CoinbaseClient = require('coinbase').Client;
 const gdax = require('gdax');
-
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
-const {baseCurrencies, quoteCurrencies} = require("./constants/exchanges/gdax/currencies");
+const baseCurrencies = require("./constants/exchanges/gdax/currencies").base;
+const quoteCurrencies = require("./constants/exchanges/gdax/currencies").quote;
 const {walletProviders} = require("./constants/walletProviders");
 const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
 const getCoinbaseWallet = require("./services/walletProviders/coinbase/getCoinbaseWallet");
