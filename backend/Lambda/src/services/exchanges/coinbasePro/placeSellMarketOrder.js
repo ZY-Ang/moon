@@ -4,8 +4,6 @@
 const logHead = require("../../../utils/logHead");
 const logTail = require("../../../utils/logTail");
 
-const {baseCurrencies, quoteCurrencies} = require("./constants/exchanges/gdax/currencies");
-
 /**
  * Executes a market sell order on Coinbase Pro.
  * Account must have sufficient funds to complete the sale, including fees, or it will fail
@@ -17,8 +15,8 @@ const {baseCurrencies, quoteCurrencies} = require("./constants/exchanges/gdax/cu
  * @param quoteCurrency - quote currency for the trade
  * @return {Promise<object>}
  */
-const placeSellMarketOrderOnCoinbasePro = async (authedGdaxClient, amount, baseCurrency, quoteCurrency) => {
-    logHead("placeSellMarketOrderOnCoinbasePro", event);
+const placeSellMarketOrder = async (authedGdaxClient, amount, baseCurrency, quoteCurrency) => {
+    logHead("placeSellMarketOrder", event);
 
     // specifying the fiat amount we want after the trade
     const params = {
@@ -27,10 +25,10 @@ const placeSellMarketOrderOnCoinbasePro = async (authedGdaxClient, amount, baseC
         funds: amount,
         product_id: `${quoteCurrency}-${baseCurrency}`,
     };
-    const orderInfo = await authedGdaxClient.sell(params);
+    const sellMarketOrderInfo = await authedGdaxClient.sell(params);
 
-    logTail("placeSellMarketOrderOnCoinbasePro", orderInfo);
-    return orderInfo;
+    logTail("sellMarketOrderInfo", sellMarketOrderInfo);
+    return sellMarketOrderInfo;
 };
 
-module.exports = placeSellMarketOrderOnCoinbasePro;
+module.exports = placeSellMarketOrder;

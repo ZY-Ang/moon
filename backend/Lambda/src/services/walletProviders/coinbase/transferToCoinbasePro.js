@@ -14,18 +14,18 @@ const logTail = require("../../../utils/logTail");
  * @param coinbaseAccountId - Coinbase account id with which to make the transfer
  * @return {Promise<object>}
  */
-const sendFundsFromCoinbaseToCoinbasePro = async (authedGdaxClient, amount, currency, coinbaseAccountId) => {
-    logHead("sendFundsFromCoinbaseToCoinbasePro", event);
+const transferToCoinbasePro = async (authedGdaxClient, amount, currency, coinbaseAccountId) => {
+    logHead("transferToCoinbasePro", {authedGdaxClient, amount, currency, coinbaseAccountId});
 
     const depositParams = {
-        amount: amount,
-        currency: currency,
+        amount,
+        currency,
         coinbase_account_id: coinbaseAccountId
     };
-    const depositInfo = await authedGdaxClient.deposit(depositParams);
+    const transferToCoinbaseProInfo = await authedGdaxClient.deposit(depositParams);
 
-    logTail("sendFundsFromCoinbaseToCoinbasePro", depositInfo);
-    return depositInfo;
+    logTail("transferToCoinbaseProInfo", transferToCoinbaseProInfo);
+    return transferToCoinbaseProInfo;
 };
 
-module.exports = sendFundsFromCoinbaseToCoinbasePro;
+module.exports = transferToCoinbasePro;
