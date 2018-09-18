@@ -8,9 +8,9 @@ const logTail = require("../../../utils/logTail");
  * Gets the coinbase wallet (account) associated with the specified currency
  * @see {@link https://developers.coinbase.com/api/v2#show-an-account}
  *
- * @param coinbaseClient - Coinbase Client instance
- * @param currency - The currency associated with the desired wallet
- * @return {Promise<object>}
+ * @param coinbaseWalletId - Coinbase Wallet Id of a wallet belonging to the user of
+ * @param coinbaseClient - authenticated Coinbase Client instance.
+ * @returns {Promise<Object>}
  */
 const getCoinbaseWallet = async (coinbaseClient, coinbaseWalletId) => {
     logHead("getCoinbaseWallet", coinbaseClient);
