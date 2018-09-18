@@ -5,6 +5,6 @@
 /**
  * Map of supported wallet providers
  */
-module.exports.walletProviders = {
+module.exports = {
     COINBASE: true
 };

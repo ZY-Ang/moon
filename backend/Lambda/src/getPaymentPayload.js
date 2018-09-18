@@ -1,27 +1,26 @@
 /*
  * Copyright (c) 2018 moon
  */
-
-const Decimal = require('decimal.js');
-const CoinbaseClient = require('coinbase').Client;
-const gdax = require('gdax');
+const Decimal = require("decimal.js");
+const CoinbaseClient = require("coinbase").Client;
+const gdax = require("gdax");
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
 const baseCurrencies = require("./constants/exchanges/coinbasePro/currencies").base;
 const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").quote;
-const {walletProviders} = require("./constants/walletProviders");
+const walletProviders = require("./constants/walletProviders");
 const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
 const getCoinbaseWallet = require("./services/walletProviders/coinbase/getCoinbaseWallet");
-const sendFundsToCoinbaseUser = require("./services/walletProviders/coinbase/sendFundsToCoinbaseUser");
-const getCoinbaseProExchangeRate = require("./services/walletProviders/coinbase/getCoinbaseProExchangeRate");
-const sendFundsFromCoinbaseToCoinbasePro = require("./services/walletProviders/coinbase/sendFundsFromCoinbaseToCoinbasePro");
-const placeSellMarketOrderOnCoinbasePro = require("./services/walletProviders/coinbase/placeSellMarketOrderOnCoinbasePro");
+const transferToCoinbasePro = require("./services/walletProviders/coinbase/transferToCoinbasePro");
+const transferToCoinbaseUser = require("./services/walletProviders/coinbase/transferToCoinbaseUser");
+const getCoinbaseProExchangeRate = require("./services/exchangeRateProviders/coinbasePro/getExchangeRate");
+const placeCoinbaseProSellMarketOrder = require("./services/exchanges/coinbasePro/placeSellMarketOrder");
 
 const key = 'your_api_key'; // todo: get from env
 const secret = 'your_b64_secret'; // todo: get from env
 const passphrase = 'your_passphrase'; // todo: get from env
 
-// todo: switch to apiURI from sandboxURI
+// todo: switch to apiURI from sandboxURI, MOVE CONSTANTS TO CONSTANTS/CONFIG/<FUNCTION SUBFOLDER> AND CAPITALIZE
 const apiURI = 'https://api.coinbasePro.com';
 const sandboxURI = 'https://api-public.sandbox.coinbasePro.com';
 
@@ -138,7 +137,7 @@ module.exports.handler = async (event) => {
     }
 
     // send the crypto to Moon's Coinbase account from the user's Coinbase account
-    const transaction = await sendFundsToCoinbaseUser(userCoinbaseWallet, moonCoinbaseAccountEmail, amountCrypto.toString());
+    const transaction = await transferToCoinbaseUser(userCoinbaseWallet, moonCoinbaseAccountEmail, amountCrypto.toString());
 
     console.log('transaction: ' + util.inspect(transaction, false, null, true /* enable colors */));
 
@@ -147,13 +146,13 @@ module.exports.handler = async (event) => {
 
     // transfer the money from moon's coinbase account to moon's coinbasePro account
     const moonCoinbaseAccountId = moonCoinbaseWalletIds[currencyToSell];
-    const depositInfo = await sendFundsFromCoinbaseToCoinbasePro(authedGdaxClient, currencyToSell, amountCrypto, moonCoinbaseAccountId);
+    const depositInfo = await transferToCoinbasePro(authedGdaxClient, currencyToSell, amountCrypto, moonCoinbaseAccountId);
     // todo: log this in db? kinda useless info, but nice to have for the sake of completion
 
     console.log('deposit info: ' + util.inspect(depositInfo, false, null, true /* enable colors */));
 
     // Sell the crypto that is now in Moon's Coinbase Pro account
-    const orderInfo = await placeSellMarketOrderOnCoinbasePro(authedGdaxClient, amountFiat, baseCurrency, currencyToSell);
+    const orderInfo = await placeCoinbaseProSellMarketOrder(authedGdaxClient, amountFiat, baseCurrency, currencyToSell);
 
     console.log('order info: ' + util.inspect(orderInfo, false, null, true /* enable colors */));
 
