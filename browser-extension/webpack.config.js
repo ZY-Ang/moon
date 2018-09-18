@@ -74,7 +74,7 @@ const extensionConfig = env => {
              * @see {@link https://github.com/NMFR/optimize-css-assets-webpack-plugin}
              */
             new OptimizeCSSAssetsPlugin({
-                assetNameRegExp: /\.optimize\.css$/g
+                assetNameRegExp: /\.css$/
             })
         ],
         entry: {
