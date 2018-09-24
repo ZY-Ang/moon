@@ -9,6 +9,7 @@ const logTail = require("./utils/logTail");
 const baseCurrencies = require("./constants/exchanges/coinbasePro/currencies").base;
 const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").quote;
 const walletProviders = require("./constants/walletProviders");
+const getAmazonGiftCard = require("./services/paymentProviders/amazonIncentives/getAmazonGiftCard");
 const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
 const getCoinbaseWallet = require("./services/walletProviders/coinbase/getCoinbaseWallet");
 const transferToCoinbasePro = require("./services/walletProviders/coinbase/transferToCoinbasePro");
@@ -16,9 +17,12 @@ const transferToCoinbaseUser = require("./services/walletProviders/coinbase/tran
 const getCoinbaseProExchangeRate = require("./services/exchangeRateProviders/coinbasePro/getExchangeRate");
 const placeCoinbaseProSellMarketOrder = require("./services/exchanges/coinbasePro/placeSellMarketOrder");
 
-const key = 'your_api_key'; // todo: get from env
-const secret = 'your_b64_secret'; // todo: get from env
-const passphrase = 'your_passphrase'; // todo: get from env
+
+// todo: set these to live values and get from env securely
+// ken@kenco.io Coinbase Pro API Sandbox info
+const key = '16bd50d7c738a59ab3fbf865263e2b6e';
+const secret = 'HTPvesdFIwvHFI9ggfNFEsr/Bqq4dJiOPo/mtcZLg+1y+KfgLQa0UdGRApGoxkE6btf6Q8BzZnkXMh+iOBwF1g==';
+const passphrase = 'a46jmf09r0t';
 
 // todo: switch to apiURI from sandboxURI, MOVE CONSTANTS TO CONSTANTS/CONFIG/<FUNCTION SUBFOLDER> AND CAPITALIZE
 const apiURI = 'https://api.coinbasePro.com';
@@ -161,6 +165,9 @@ module.exports.handler = async (event) => {
     // todo: extract order info and store in database
 
     // todo: issue the gift card
+    const giftcardInfo = await getAmazonGiftCard(amountFiat, baseCurrency);
 
-    logTail("getPaymentPayload", 'TBD card info');
+    const giftcardClaimCode = giftcardInfo['gcClaimCode'];
+
+    logTail("getPaymentPayload", giftcardInfo);
 };

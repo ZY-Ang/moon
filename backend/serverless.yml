@@ -158,6 +158,9 @@ functions:
       Resource:
       - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
       - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+    environment:
+      # specify custom config directory for agcod
+      NODE_CONFIG_DIR: "./Lambda/src/services/paymentProviders/amazonIncentives/config"
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
