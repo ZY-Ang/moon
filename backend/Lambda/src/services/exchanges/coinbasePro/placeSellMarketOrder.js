@@ -16,7 +16,7 @@ const logTail = require("../../../utils/logTail");
  * @return {Promise<object>}
  */
 const placeSellMarketOrder = async (authedGdaxClient, amount, baseCurrency, quoteCurrency) => {
-    logHead("placeSellMarketOrder", event);
+    logHead("placeSellMarketOrder", {amount, baseCurrency, quoteCurrency});
 
     // specifying the fiat amount we want after the trade
     const params = {

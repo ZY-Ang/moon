@@ -14,7 +14,7 @@ const {PublicClient} = require("gdax");
  * @return {Promise<object>}
  */
 const getExchangeRate = async (quote, base) => {
-    logHead("coinbasePro.getExchangeRate", event);
+    logHead("coinbasePro.getExchangeRate", {quote, base});
     const publicClient = new PublicClient();
 
     const {bid} = await publicClient.getProductTicker(`${quote}-${base}`);
