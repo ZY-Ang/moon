@@ -39,6 +39,21 @@ class BrowserAction {
             }
         });
     });
+    /**
+     * Sets the browser action badge text to
+     * {@param text} on an optional {@param tabId}
+     * @see {@link https://developer.chrome.com/extensions/browserAction#method-setBadgeText}
+     */
+    static setBadgeText = (text, tabId) => new Promise((resolve, reject) => {
+        const details = {text, tabId};
+        chrome.browserAction.setBadgeText(details, () => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else {
+                resolve(`Successfully set badge text "${text}" for tab ${tabId}.`);
+            }
+        });
+    });
 
     /**
      * Initializer script to be "run" when the script starts
@@ -49,6 +64,8 @@ class BrowserAction {
          * @see {@link https://developer.chrome.com/extensions/browserAction#event-onClicked}
          */
         chrome.browserAction.onClicked.addListener(() => doInjectAppEvent(SOURCE_MANUAL));
+
+        chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
     }
 }
 

@@ -65,6 +65,7 @@ export const tabDidUpdate = (tab) => {
     } else if (isSupportedSite(tab.url)) {
         // URL on the current tab is a supported site - set to valid browser icon.
         BrowserAction.setValidIcon(tab.id).catch(handleErrors);
+        BrowserAction.setBadgeText('1', tab.id).catch(handleErrors);
         if (isCheckoutPage(tab.url)) {
             // URL on the current tab is supported and is a checkout page - auto render the extension
             doInjectAppEvent(tab.url).catch(handleErrors);
