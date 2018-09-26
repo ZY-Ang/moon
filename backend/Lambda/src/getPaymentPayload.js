@@ -21,11 +21,6 @@ const placeCoinbaseProSellMarketOrder = require("./services/exchanges/coinbasePr
 
 
 // todo: set these to live values and get from env securely
-// ken@kenco.io Coinbase Pro API Sandbox info
-// const key = '16bd50d7c738a59ab3fbf865263e2b6e';
-// const secret = 'HTPvesdFIwvHFI9ggfNFEsr/Bqq4dJiOPo/mtcZLg+1y+KfgLQa0UdGRApGoxkE6btf6Q8BzZnkXMh+iOBwF1g==';
-// const passphrase = 'a46jmf09r0t';
-
 // payments@paywithmoon.com Coinbase Pro API production info
 const key = 'd95c464fe72a443077d99d11fd79408c';
 const secret = 'J6AG2sPjhSLQCh01T/qD4dhwvVw2pqPB13I1hImhwe45/uw0HECB4r1fduz/pgOeBXoIMe3HS9EZpYB1mvbxNw==';
@@ -38,7 +33,7 @@ const passphrase = '79mxbffa74g';
 
 // todo: switch to apiURI from sandboxURI, MOVE CONSTANTS TO CONSTANTS/CONFIG/<FUNCTION SUBFOLDER> AND CAPITALIZE
 const apiURI = 'https://api.pro.coinbase.com';
-//const sandboxURI = 'https://api-public.sandbox.pro.coinbase.com';
+const sandboxURI = 'https://api-public.sandbox.pro.coinbase.com';
 
 const moonCoinbaseAccountEmail = "payments@paywithmoon.com";
 
@@ -89,7 +84,8 @@ module.exports.handler = async (event) => {
     if (!amountFiat) {
         throw new Error("Please supply a purchase amount.");
 
-    } else if (amountFiat <= 0) { // todo: test for the proper range of gift cards
+    } else if (amountFiat < 10 || amountFiat > 2000) {
+        // Coinbase Pro has a min sell order of $10 USD and Amazon Incentives issues a maximum of a $2000 USD gift card
         throw new Error(`${amountFiat} is an invalid purchase amount.`);
 
     } else if (!baseCurrency) {
