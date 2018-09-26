@@ -27,8 +27,7 @@
     "decimal.js": "^10.0.1",
     "gdax": "^0.8.0",
     "knex": "^0.15.2",
-    "pg": "^7.4.3",
-    "util": "^0.11.0"
+    "pg": "^7.4.3"
   },
   "devDependencies": {
     "serverless": "^1.31.0",
