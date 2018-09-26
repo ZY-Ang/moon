@@ -65,6 +65,10 @@ class BrowserAction {
          */
         chrome.browserAction.onClicked.addListener(() => doInjectAppEvent(SOURCE_MANUAL));
 
+        /**
+         * Sets the background color for the badge (notification).
+         * @see {@link https://developer.chrome.com/extensions/browserAction#method-setBadgeBackgroundColor}
+         */
         chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
     }
 }
