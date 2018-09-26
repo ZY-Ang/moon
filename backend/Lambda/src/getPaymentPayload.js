@@ -2,6 +2,7 @@
  * Copyright (c) 2018 moon
  */
 const Decimal = require("decimal.js");
+const util = require("util");
 const CoinbaseClient = require("coinbase").Client;
 const gdax = require("gdax");
 const logHead = require("./utils/logHead");
@@ -11,7 +12,8 @@ const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").
 const walletProviders = require("./constants/walletProviders");
 const getAmazonGiftCard = require("./services/paymentProviders/amazonIncentives/getAmazonGiftCard");
 const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
-const getCoinbaseWallet = require("./services/walletProviders/coinbase/getCoinbaseWallet");
+const getCoinbaseWallets = require("./services/walletProviders/coinbase/getCoinbaseWallets");
+const getCoinbaseCurrentUser = require("./services/walletProviders/coinbase/getCoinbaseCurrentUser");
 const transferToCoinbasePro = require("./services/walletProviders/coinbase/transferToCoinbasePro");
 const transferToCoinbaseUser = require("./services/walletProviders/coinbase/transferToCoinbaseUser");
 const getCoinbaseProExchangeRate = require("./services/exchangeRateProviders/coinbasePro/getExchangeRate");
@@ -20,25 +22,35 @@ const placeCoinbaseProSellMarketOrder = require("./services/exchanges/coinbasePr
 
 // todo: set these to live values and get from env securely
 // ken@kenco.io Coinbase Pro API Sandbox info
-const key = '16bd50d7c738a59ab3fbf865263e2b6e';
-const secret = 'HTPvesdFIwvHFI9ggfNFEsr/Bqq4dJiOPo/mtcZLg+1y+KfgLQa0UdGRApGoxkE6btf6Q8BzZnkXMh+iOBwF1g==';
-const passphrase = 'a46jmf09r0t';
+// const key = '16bd50d7c738a59ab3fbf865263e2b6e';
+// const secret = 'HTPvesdFIwvHFI9ggfNFEsr/Bqq4dJiOPo/mtcZLg+1y+KfgLQa0UdGRApGoxkE6btf6Q8BzZnkXMh+iOBwF1g==';
+// const passphrase = 'a46jmf09r0t';
+
+// payments@paywithmoon.com Coinbase Pro API production info
+const key = 'd95c464fe72a443077d99d11fd79408c';
+const secret = 'J6AG2sPjhSLQCh01T/qD4dhwvVw2pqPB13I1hImhwe45/uw0HECB4r1fduz/pgOeBXoIMe3HS9EZpYB1mvbxNw==';
+const passphrase = '79mxbffa74g';
+
+// payments@paywithmoon.com Coinbase Pro API sandbox info - using this means we need to get sandbox coinbase account id, which is annoying
+// const key = '34fa68b5c03c5fc93134a7f0872a9cae';
+// const secret = 'JCcfP9wTbMz9fBp8jp1A/FiYWe63SU7+8EhRSIGFNse+/dp0koUTBmj98Gtd1+stXVINVZKRMEUFELTeE1B1sg==';
+// const passphrase = '183g8be9zmk';
 
 // todo: switch to apiURI from sandboxURI, MOVE CONSTANTS TO CONSTANTS/CONFIG/<FUNCTION SUBFOLDER> AND CAPITALIZE
-const apiURI = 'https://api.coinbasePro.com';
-const sandboxURI = 'https://api-public.sandbox.coinbasePro.com';
+const apiURI = 'https://api.pro.coinbase.com';
+//const sandboxURI = 'https://api-public.sandbox.pro.coinbase.com';
 
-const moonCoinbaseAccountEmail = "ken@kenco.io";
+const moonCoinbaseAccountEmail = "payments@paywithmoon.com";
 
 // Saving the Coinbase wallet ids here prevents us from making an additional call to the API
 // These ids do not change unless we switch to another account
-// todo: update these with the actual account ids, add ETC
+// wallet ids for Coinbase account payments@paywithmoon.com
 const moonCoinbaseWalletIds = {
-    ETH: '84d0b4d1-af06-5a2c-9010-a67b189ff43e',
-    BTC: 'feeb0346-bfcd-57f4-9eab-7daedac7908e',
-    BCH: '8d98dd01-b443-50dc-a101-12c8ead253be',
-    LTC: '0f083601-0241-5433-929c-7db96902568e',
-    ETC: ''
+    ETH: '376582d6-1afc-5775-ae4b-39226c4b948d',
+    BTC: '1be8268c-6321-5277-86b7-14a65b78d541',
+    BCH: '748061f1-433a-532f-896b-0787239961a7',
+    LTC: '40f8d107-dc1e-5e22-adce-8c702fedba83',
+    ETC: '2ffa35f1-2489-5db9-bdaa-939df47472e2'
 };
 
 // Round up the 8th digit of an amount of currency if necessary. This is Coinbase's standard. Returns a string
@@ -77,7 +89,7 @@ module.exports.handler = async (event) => {
     if (!amountFiat) {
         throw new Error("Please supply a purchase amount.");
 
-    } else if (amountFiat <= 0) {
+    } else if (amountFiat <= 0) { // todo: test for the proper range of gift cards
         throw new Error(`${amountFiat} is an invalid purchase amount.`);
 
     } else if (!baseCurrency) {
@@ -103,7 +115,7 @@ module.exports.handler = async (event) => {
         key,
         secret,
         passphrase,
-        sandboxURI
+        apiURI
     );
 
     // get the user's Coinbase API keys from dynamodb
@@ -115,8 +127,15 @@ module.exports.handler = async (event) => {
         apiSecret: userCoinbaseApiKeys.secret
     });
 
+    // get user's coinbase user object and wallets - these are returned in the PaymentPayload
+    const [userCoinbaseWallets, coinbaseUser] = await Promise.all([
+            getCoinbaseWallets(userCoinbaseClient),
+            getCoinbaseCurrentUser(userCoinbaseClient)
+        ]);
+
     // get the user's Coinbase wallet from which we want to draw funds
-    const userCoinbaseWallet = await getCoinbaseWallet(userCoinbaseClient, userCoinbaseWalletId);
+    const userCoinbaseWallet = userCoinbaseWallets.find(wallet => wallet.id === userCoinbaseWalletId);
+
     const currencyToSell = userCoinbaseWallet.balance.currency;
 
     if(!quoteCurrencies[currencyToSell]){
@@ -124,10 +143,10 @@ module.exports.handler = async (event) => {
     }
 
     // get the exchange rate between the base and quote currencies
-    const exchangeRate = await getCoinbaseProExchangeRate(baseCurrency, currencyToSell);
+    const exchangeRate = await getCoinbaseProExchangeRate(currencyToSell, baseCurrency);
 
     // calculate how much crypto is needed to complete the exchange - the amount to transfer from the user and sell
-    const amountCrypto = calculateNeededCrypto(amountFiat, exchangeRate);
+    const amountCrypto = calculateNeededCrypto(amountFiat, exchangeRate.bid);
     console.log('Amount in fiat of the purchase = $' + amountFiat);
     console.log('Exchange rate = $' + exchangeRate);
     console.log('Amount in crypto to withdraw from user\'s Coinbase account = ' + amountCrypto);
@@ -150,7 +169,7 @@ module.exports.handler = async (event) => {
 
     // transfer the money from moon's coinbase account to moon's coinbasePro account
     const moonCoinbaseAccountId = moonCoinbaseWalletIds[currencyToSell];
-    const depositInfo = await transferToCoinbasePro(authedGdaxClient, currencyToSell, amountCrypto, moonCoinbaseAccountId);
+    const depositInfo = await transferToCoinbasePro(authedGdaxClient, amountCrypto, currencyToSell, moonCoinbaseAccountId);
     // todo: log this in db? kinda useless info, but nice to have for the sake of completion
 
     console.log('deposit info: ' + util.inspect(depositInfo, false, null, true /* enable colors */));
@@ -164,10 +183,32 @@ module.exports.handler = async (event) => {
     // now extract the amount that was actually sold, including fee info and send to the database
     // todo: extract order info and store in database
 
-    // todo: issue the gift card
+    // issue the gift card
     const giftcardInfo = await getAmazonGiftCard(amountFiat, baseCurrency);
 
     const giftcardClaimCode = giftcardInfo['gcClaimCode'];
 
+    const user = {
+        coinbaseInfo: {
+            user: coinbaseUser,
+            wallets: userCoinbaseWallets && userCoinbaseWallets.map(wallet => ({
+                id: wallet.id,
+                name: wallet.name,
+                currency: wallet.balance && wallet.balance.currency,
+                balance: wallet.balance && wallet.balance.amount
+            }))
+        }
+    };
+
+    const paymentPayload = {
+        id: 'id_tbd',
+        data: giftcardClaimCode,
+        balance: amountFiat,
+        currency: baseCurrency,
+        user
+    };
+
     logTail("getPaymentPayload", giftcardInfo);
+
+    return paymentPayload;
 };
