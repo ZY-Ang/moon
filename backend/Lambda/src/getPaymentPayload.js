@@ -134,7 +134,7 @@ module.exports.handler = async (event) => {
 
     const currencyToSell = userCoinbaseWallet.balance.currency;
 
-    if(!quoteCurrencies[currencyToSell]){
+    if (!quoteCurrencies[currencyToSell]) {
         throw new Error('Selected wallet is not denominated in a currency we support');
     }
 
@@ -149,9 +149,9 @@ module.exports.handler = async (event) => {
 
     // check if there is enough crypto in the user's account to fund the purchase
     let userAccountBalance = userCoinbaseWallet.balance.amount;
-    if(userAccountBalance < amountCrypto){
+    if (userAccountBalance < amountCrypto) {
         throw new Error(`Insufficient funds! The user only has ${userAccountBalance} available.`);
-    }else{
+    } else {
         console.log(`Sufficient funds! The user has ${userAccountBalance} available.`);
     }
 
