@@ -271,3 +271,9 @@ custom:
         field: updateCoinbaseApiKey
         request: Mutation/updateCoinbaseApiKey/request.vm
         response: Mutation/updateCoinbaseApiKey/response.vm
+      # Mutation/getPaymentPayload
+      - dataSource: GetPaymentPayloadLambdaFunction
+        type: Mutation
+        field: getPaymentPayload
+        request: Mutation/getPaymentPayload/request.vm
+        response: Mutation/getPaymentPayload/response.vm
