@@ -9,7 +9,7 @@ module.exports = {
     development: {
         client: 'pg',
         connection: {
-            host: 'moonpg-cluster-1.cluster-cpezx7ml533n.us-east-1.rds.amazonaws.com',
+            host: 'moon-development-cluster.cluster-cpezx7ml533n.us-east-1.rds.amazonaws.com',
             user: 'moonadmin',
             password: 'MooningMonkeys123!',
             database: 'moon',
