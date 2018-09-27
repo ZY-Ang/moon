@@ -46,13 +46,13 @@ module.exports.handler = async (event) => {
 
     const {identity} = event;
     // the provider (e.g. Coinbase) with which the wallet is associated
-    const userWalletProvider = event.input.wallet.provider;
+    const userWalletProvider = event.arguments.input.wallet.provider;
     // id of the Coinbase wallet from which the user would like to pay
-    const userCoinbaseWalletId = event.input.wallet.id;
+    const userCoinbaseWalletId = event.arguments.input.wallet.id;
     // amount of the purchase in local (base) currency
-    const amountFiat = event.input.cartInfo.amount;
+    const amountFiat = event.arguments.input.cartInfo.amount;
     // local currency of the purchase
-    const baseCurrency = event.input.cartInfo.currency;
+    const baseCurrency = event.arguments.input.cartInfo.currency;
 
     if (!amountFiat) {
         throw new Error("Please supply a purchase amount.");
@@ -157,6 +157,8 @@ module.exports.handler = async (event) => {
 
     const giftcardClaimCode = giftcardInfo['gcClaimCode'];
 
+
+    // todo: fix this - call getUser
     const user = {
         coinbaseInfo: {
             user: coinbaseUser,
