@@ -11,13 +11,13 @@ const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").
 const walletProviders = require("./constants/walletProviders");
 const getAmazonGiftCard = require("./services/paymentProviders/amazonIncentives/getAmazonGiftCard");
 const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
-const getCoinbaseWallets = require("./services/walletProviders/coinbase/getCoinbaseWallets");
-const getCoinbaseCurrentUser = require("./services/walletProviders/coinbase/getCoinbaseCurrentUser");
+const getCoinbaseWallet = require("./services/walletProviders/coinbase/getCoinbaseWallet");
 const transferToCoinbasePro = require("./services/walletProviders/coinbase/transferToCoinbasePro");
 const transferToCoinbaseUser = require("./services/walletProviders/coinbase/transferToCoinbaseUser");
 const getCoinbaseProExchangeRate = require("./services/exchangeRateProviders/coinbasePro/getExchangeRate");
 const placeCoinbaseProSellMarketOrder = require("./services/exchanges/coinbasePro/placeSellMarketOrder");
 const {coinbaseProUri, coinbaseProKey, coinbaseProSecret, coinbaseProPassphrase} = require("./constants/exchanges/coinbasePro/config");
+const getUser = require("./user").handler;
 const moonCoinbaseWalletIds = require("./constants/exchanges/coinbasePro/config").coinbaseWalletIds;
 const moonCoinbaseAccountEmail = require("./constants/exchanges/coinbasePro/config").coinbaseAccountEmail;
 
@@ -96,14 +96,8 @@ module.exports.handler = async (event) => {
         apiSecret: userCoinbaseApiKeys.secret
     });
 
-    // get user's coinbase user object and wallets - these are returned in the PaymentPayload
-    const [userCoinbaseWallets, coinbaseUser] = await Promise.all([
-            getCoinbaseWallets(userCoinbaseClient),
-            getCoinbaseCurrentUser(userCoinbaseClient)
-        ]);
-
     // get the user's Coinbase wallet from which we want to draw funds
-    const userCoinbaseWallet = userCoinbaseWallets.find(wallet => wallet.id === userCoinbaseWalletId);
+    const userCoinbaseWallet = await getCoinbaseWallet(userCoinbaseClient, userCoinbaseWalletId);
 
     const currencyToSell = userCoinbaseWallet.balance.currency;
 
@@ -157,19 +151,8 @@ module.exports.handler = async (event) => {
 
     const giftcardClaimCode = giftcardInfo['gcClaimCode'];
 
-
-    // todo: fix this - call getUser
-    const user = {
-        coinbaseInfo: {
-            user: coinbaseUser,
-            wallets: userCoinbaseWallets && userCoinbaseWallets.map(wallet => ({
-                id: wallet.id,
-                name: wallet.name,
-                currency: wallet.balance && wallet.balance.currency,
-                balance: wallet.balance && wallet.balance.amount
-            }))
-        }
-    };
+    // get the updated user object after the money has been
+    const user = await getUser(event);
 
     const paymentPayload = {
         id: 'id_tbd',
