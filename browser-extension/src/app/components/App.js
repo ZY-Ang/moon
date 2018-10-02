@@ -107,7 +107,7 @@ class App extends Component {
                                             )
                                         }
                                     </SwipeableViews>
-                                    <Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>
+                                    {/*<Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>*/}
                                 </div>
                             ) : (
                                 <div id="moon-body" className={CLASS_MOON_BODY}>
