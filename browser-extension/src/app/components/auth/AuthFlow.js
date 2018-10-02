@@ -77,12 +77,38 @@ class AuthFlow extends Component {
                         <div className="btn-auth-text">Sign In With Moon</div>
                     </button>
                 </div>
-                <div className="text-center" style={{padding: '10px 0', fontSize: 'smaller'}}>Don't have an account? <a href="#" style={{fontStyle: 'none', textDecoration: 'none'}} onClick={this.signUp}>Sign Up!</a></div>
+                <div
+                    className="text-center"
+                    style={{padding: '10px 0', fontSize: 'smaller'}}
+                >
+                    Don't have an account? <a
+                    href="#"
+                    style={{fontStyle: 'none', textDecoration: 'none'}}
+                    onClick={this.signUp}
+                    >
+                        Sign Up!
+                    </a>
+                </div>
                 <hr className="sign-in-divider" data-content="or use a social provider"/>
                 <div className="text-center">
-                    <button className="btn-auth-social btn-auth-social-facebook" onClick={this.signInWithFacebook}><FaIcon icon={['fab', 'facebook']}/></button>
-                    <button className="btn-auth-social btn-auth-social-google" onClick={this.signInWithGoogle}><FaIcon icon={['fab', 'google']}/></button>
-                    <button className="btn-auth-social btn-auth-social-amazon" onClick={this.signInWithAmazon}><FaIcon icon={['fab', 'amazon']}/></button>
+                    <button
+                        className="btn-auth-social btn-auth-social-facebook"
+                        onClick={this.signInWithFacebook}
+                    >
+                        <FaIcon icon={['fab', 'facebook']}/>
+                    </button>
+                    <button
+                        className="btn-auth-social btn-auth-social-google"
+                        onClick={this.signInWithGoogle}
+                    >
+                        <FaIcon icon={['fab', 'google']}/>
+                    </button>
+                    <button
+                        className="btn-auth-social btn-auth-social-amazon"
+                        onClick={this.signInWithAmazon}
+                    >
+                        <FaIcon icon={['fab', 'amazon']}/>
+                    </button>
                 </div>
                 <p className="text-center text-danger">{this.state.error}</p>
             </div>
