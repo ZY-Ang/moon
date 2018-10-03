@@ -7,7 +7,7 @@
 }
 
 #moon-wrapper * {
-    font-family: Raleway, Bellefair, sans-serif !important;
+    font-family: Quicksand, Raleway, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
 }
 
 #moon-body {
@@ -60,13 +60,13 @@
     align-items: center;
     justify-content: center;
     flex-direction: row;
-    padding: 5px 16px 5px;
+    padding: 16px;
 }
 
 #moon-header-img {
     align-self: center;
     width: auto;
-    height: 48px !important;
+    height: 24px !important;
     border-style: none;
 }
 
@@ -79,7 +79,7 @@
 
 #moon-header-buttons-div {
     box-sizing: border-box !important;
-    height: 100%;
+    height: 24px;
     width: 100%;
     display: flex;
 }

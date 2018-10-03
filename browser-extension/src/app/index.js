@@ -13,6 +13,7 @@ import {SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/backgroundEvents";
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import AppRuntime from "./browser/AppRuntime";
+import axios from "axios";
 
 /**
  * Load required font families from the appropriate libraries.
@@ -20,7 +21,7 @@ import AppRuntime from "./browser/AppRuntime";
  */
 WebFont.load({
     google: {
-        families: ['Raleway', 'Bellefair']
+        families: ['Quicksand', 'Raleway']
     }
 });
 
@@ -35,7 +36,8 @@ const reRenderApp = () => {
     if (!!moonDiv) {
         console.log("moonDiv found, re-rendering app");
         moonDiv.remove();
-        toggleApp(SOURCE_MANUAL);
+        toggleApp(SOURCE_MANUAL)
+            .then(console.log);
     }
 };
 
@@ -54,51 +56,52 @@ const reRenderApp = () => {
  * appropriate render logic. Or, if an app
  * already exists, remove it from the DOM.
  */
-export const toggleApp = (source) => new Promise((resolve, reject) => {
-    try {
-        console.log("toggleApp request received from ", source);
-        // Attempt to get the wrapper div
-        let moonDiv = document.getElementById(MOON_DIV_ID);
+export const toggleApp = async (source) => {
+    console.log("toggleApp request received from ", source);
+    // Attempt to get the wrapper div
+    let moonDiv = document.getElementById(MOON_DIV_ID);
 
-        if (source === SOURCE_MANUAL && !!moonDiv) {
-            // If the source of the injection came from a manual click of the
-            // browserAction icon and a div already exists, destroy the div.
-            console.log("Removing existing moonDiv...");
-            moonDiv.remove();
-            resolve("Removed div");
-        } else if (source !== SOURCE_NONE && !moonDiv) {
-            // If the source of the injection came from a source other than
-            // {@code SOURCE_NONE}, and no div exists yet, create the new div
+    if (source === SOURCE_MANUAL && !!moonDiv) {
+        // If the source of the injection came from a manual click of the
+        // browserAction icon and a div already exists, destroy the div.
+        console.log("Removing existing moonDiv...");
+        moonDiv.remove();
+        return true;
 
-            // Create a new Moon Div
-            console.log("Creating a new moon div");
-            moonDiv = document.createElement("div");
-            moonDiv.setAttribute("id", MOON_DIV_ID);
-            document.body.appendChild(moonDiv);
-            console.log("Creating a new moon div shadow");
-            const moonShadow = moonDiv.attachShadow({mode: 'open'});
+    } else if (source !== SOURCE_NONE && !moonDiv) {
+        // If the source of the injection came from a source other than
+        // {@code SOURCE_NONE}, and no div exists yet, create the new div
 
-            console.log("Rendering App");
-            ReactDOM.render((
-                <Provider store={store}>
-                    <App/>
-                </Provider>
-            ), moonShadow);
-            console.log("Creating a new moon style element");
-            const moonStyles = document.createElement('style');
-            moonStyles.innerHTML = `@import url("${AppRuntime.getURL('app.css')}")`;
-            console.log("Attaching styles to moon div shadow");
-            moonShadow.appendChild(moonStyles);
-            console.log("Extension successfully rendered");
-            resolve("Extension successfully rendered");
-        }
-    } catch (error) {
-        reject(error);
+        // Create Moon Div (Wrapper)
+        console.log("Creating a new moon div");
+        moonDiv = document.createElement("div");
+        moonDiv.setAttribute("id", MOON_DIV_ID);
+        document.body.appendChild(moonDiv);
+
+        // Create Moon Shadow of Moon Div
+        console.log("Creating a new moon div shadow");
+        const moonShadow = moonDiv.attachShadow({mode: 'open'});
+
+        // Create Styles of Moon Shadow
+        console.log("Creating a new moon style element");
+        const moonStyles = document.createElement('style');
+        moonStyles.innerHTML = (await axios.get(AppRuntime.getURL('app.css'))).data;
+
+        // Render React Application onto shadow child
+        console.log("Rendering App");
+        ReactDOM.render((
+            <Provider store={store}>
+                <App/>
+            </Provider>
+        ), moonShadow);
+
+        // Append styles after rendering application (has to be done after the application render)
+        moonShadow.appendChild(moonStyles);
+        return true;
     }
-});
+};
 
-// FIXME: handle orphaned content script @see {@link https://stackoverflow.com/questions/7792552/how-to-detect-chrome-extension-uninstall}
-// FIXME: DE-EXECUTE CONTENT SCRIPT OR SOME SORT OF RECONNECT DISPLAY
+// TODO: handle orphaned content script @see {@link https://stackoverflow.com/questions/7792552/how-to-detect-chrome-extension-uninstall}
 
 reRenderApp();
 AppRuntime.run();

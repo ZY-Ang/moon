@@ -8,7 +8,6 @@ import {MOON_DIV_ID} from "../constants/dom";
 import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
 import {connect} from "react-redux";
 import AuthFlow from "./auth/AuthFlow";
-import Navbar from "./nav/Navbar";
 import SwipeableViews from "react-swipeable-views";
 import AppRuntime from "../browser/AppRuntime";
 import FaIcon from "./misc/fontawesome/FaIcon";
