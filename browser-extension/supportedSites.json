@@ -1,56 +1,17 @@
-[
-  {
-    "regexCheckoutURL": "amazon.com/gp/buy/spc/handlers",
-    "supportingURLs": [
-      {
-        "regexURL": "amazon.com/gp/product/",
-        "name": "Amazon-Product"
-      },
-      {
-        "regexURL": "amazon.com/dp/",
-        "name": "Amazon-Product"
-      },
-      {
-        "regexURL": "amazon.com/(.*)/dp/",
-        "name": "Amazon-Product"
-      },
-      {
-        "regexURL": "amazon.com/gp/buy/addressselect/handlers/display.html",
-        "name": "Amazon-Address-Select"
-      },
-      {
-        "regexURL": "amazon.com/gp/buy/shipoptionselect/handlers/display.html",
-        "name": "Amazon-Shipping-Select"
-      },
-      {
-        "regexURL": "amazon.com/gp/buy/payselect/handlers/display.html",
-        "name": "Amazon-Payment-Select"
-      },
-      {
-        "regexURL": "amazon.com/gp/buy/billingaddressselect/handlers/display.html",
-        "name": "Amazon-Billing-Address-Select"
-      }
-    ],
-    "nonCheckoutURL": "amazon.com",
-    "baseURL": "https://amazon.com",
-    "name": "Amazon"
+{
+  "www.amazon.com": {
+    "name": "Amazon",
+    "logoURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png",
+    "isSupported": true,
+    "pathnameCheckout": "/gp/buy/spc/handlers",
+    "pathnameProduct": "/gp/product",
+    "endpointPaymentPayloadApply": "/gp/buy/spc/handlers/add-giftcard-promotion.html/ref=ox_pay_page_gc_add",
+    "querySelectorPaymentPayloadDataInject": "#spc-gcpromoinput",
+    "querySelectorPaymentPayloadSubmit": ""
   },
-  {
-    "regexCheckoutURL": "amazon.cn/gp/buy/spc/handlers",
-    "nonCheckoutURL": "amazon.cn",
-    "baseURL": "https://amazon.cn",
-    "name": "Amazon-CN"
-  },
-  {
-    "regexCheckoutURL": "amazon.co.jp/gp/buy/spc/handlers",
-    "nonCheckoutURL": "amazon.co.jp",
-    "baseURL": "https://amazon.co.jp",
-    "name": "Amazon-JP"
-  },
-  {
-    "regexCheckoutURL": "amazon.co.uk/gp/buy/spc/handlers",
-    "nonCheckoutURL": "amazon.co.uk",
-    "baseURL": "https://amazon.co.uk",
-    "name": "Amazon-UK"
+  "paywithmoon.com": {
+    "name": "Moon",
+    "logoURL": "https://paywithmoon.com/wp-content/uploads/2018/08/moon-logo-black.png",
+    "isSupported": false
   }
-]
+}

@@ -43,6 +43,36 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
 
+    SupportedSitesDynamoDBTable:
+      # Table that stores supported sites.
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${{self:service}}-${{self:provider.stage}}-supported-sites
+        AttributeDefinitions:
+        - AttributeName: host
+          AttributeType: S
+        KeySchema:
+        - AttributeName: host
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+    SiteSupportRequestDynamoDBTable:
+      # Table that stores site support requests from users.
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${{self:service}}-${{self:provider.stage}}-site-support-request
+        AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+        KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
     S3Bucket:
       # Generic S3 bucket to store shit in TODO: Delete or specialize for a purpose
       Type: AWS::S3::Bucket
@@ -196,6 +226,33 @@ custom:
             Resource:
             - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+      # SupportedSitesDynamoDBTable
+      - type: AMAZON_DYNAMODB
+        name: SupportedSitesDynamoDBTable
+        description: 'DynamoDB table that stores supported sites for Pay with Moon'
+        config:
+          tableName: ${{self:resources.Resources.SupportedSitesDynamoDBTable.Properties.TableName}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "dynamodb:GetItem"
+            Resource:
+            - { Fn::GetAtt: [SupportedSitesDynamoDBTable, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [SupportedSitesDynamoDBTable, Arn] }, '/*']] }
+      # SiteSupportRequestDynamoDBTable
+      - type: AMAZON_DYNAMODB
+        name: SiteSupportRequestDynamoDBTable
+        description: 'DynamoDB table that stores user site support feature requests'
+        config:
+          tableName: ${{self:resources.Resources.SiteSupportRequestDynamoDBTable.Properties.TableName}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "dynamodb:GetItem"
+            - "dynamodb:UpdateItem"
+            Resource:
+            - { Fn::GetAtt: [SiteSupportRequestDynamoDBTable, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [SiteSupportRequestDynamoDBTable, Arn] }, '/*']] }
     # ============== Lambda Functions ==============
       # exchangeRate
       - type: AWS_LAMBDA
@@ -264,6 +321,12 @@ custom:
         field: exchangeRate
         request: Query/exchangeRate/request.vm
         response: Query/exchangeRate/response.vm
+      # Query/siteInformation
+      - dataSource: SupportedSitesDynamoDBTable
+        type: Query
+        field: siteInformation
+        request: Query/siteInformation/request.vm
+        response: Query/siteInformation/response.vm
     # ============== Mutation ==============
       # Mutation/updateCoinbaseApiKey
       - dataSource: CoinbaseApiKeyDynamoDBTable
@@ -271,6 +334,12 @@ custom:
         field: updateCoinbaseApiKey
         request: Mutation/updateCoinbaseApiKey/request.vm
         response: Mutation/updateCoinbaseApiKey/response.vm
+      # Mutation/addSiteSupportRequest
+      - dataSource: SiteSupportRequestDynamoDBTable
+        type: Mutation
+        field: addSiteSupportRequest
+        request: Mutation/addSiteSupportRequest/request.vm
+        response: Mutation/addSiteSupportRequest/response.vm
       # Mutation/getPaymentPayload
       - dataSource: GetPaymentPayloadLambdaFunction
         type: Mutation

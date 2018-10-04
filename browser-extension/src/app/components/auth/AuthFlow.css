@@ -2,6 +2,14 @@
  * Copyright (c) 2018 moon
  */
 
+.moon-authflow-tab {
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-flow: column;
+}
+
 .login-form {
     margin-left: auto;
     margin-right: auto;
@@ -25,12 +33,12 @@
     color: black;
     text-align: center;
     height: 1.5em;
-    opacity: .5;
+    opacity: 1.0;
     margin: 20px 0;
 }
 .sign-in-divider::before {
     content: '';
-    background: linear-gradient(to right, transparent, #55544e, transparent);
+    background: linear-gradient(to right, transparent, #2E2F33, transparent);
     position: absolute;
     left: 0;
     top: 50%;
@@ -44,7 +52,7 @@
     color: black;
     padding: 0 .5em;
     line-height: 1.5em;
-    background-color: #fcfcfa;
+    background-color: white;
 }
 
 .btn-auth {
@@ -53,9 +61,9 @@
     border-radius: 3px;
     padding: 0;
     font-size: 15px;
-    border: 2px solid #818078;
+    border: 2px solid #2E2F33;
     background-color: transparent;
-    color: #818078;
+    color: #2E2F33;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
     -ms-transition: all 0.2s ease;
@@ -64,14 +72,17 @@
 }
 
 .btn-auth-icon {
-    color: white;
-    background-color: #818078;
+    background-color: #2E2F33;
     padding: 10px;
     width: 20px;
     height: 20px;
     position: absolute;
     transition: background-color 0.3s;
     -webkit-transition: background-color 0.3s;
+}
+
+.btn-auth-icon path {
+    color: white !important;
 }
 
 .btn-auth-text {
@@ -93,13 +104,16 @@
 }
 
 .btn-auth:hover {
-    background-color: #818078;
-    color: white;
+    background-color: #2E2F33;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
+}
+
+.btn-auth:hover .btn-auth-text {
+    color: white;
 }
 
 .btn-auth-social {
@@ -126,8 +140,13 @@
     transition: all 0.2s ease;
 }
 
+.btn-auth-social:active,
+.btn-auth-social:focus {
+    outline: 0 !important;
+}
+
 .btn-auth-social svg {
-    color: #818078;
+    color: #2E2F33;
 }
 
 /* Size Adjustments for FontAwesome*/

@@ -4,7 +4,7 @@
 
 import AppRuntime from "../browser/AppRuntime";
 import {POLL_IS_COINBASE_AUTH_MODE, REQUEST_UPDATE_COINBASE_API_KEYS} from "../../constants/events/appEvents";
-import {isCoinbaseSettingsApiUrl} from "../../utils/url";
+import {isCoinbaseSettingsApiUrl} from "../../utils/coinbase";
 import {observeDOM} from "../utils/dom";
 import {
     ID_ADD_NEW_KEY_BUTTON,
@@ -29,7 +29,7 @@ import {handleErrors} from "../../utils/errors";
 export const doExtractCoinbaseApiKeys = () => {
     console.log("doExtractCoinbaseApiKeys");
     return AppRuntime.sendMessage(POLL_IS_COINBASE_AUTH_MODE)
-        .then(({response}) => {
+        .then(response => {
             if (response) {
                 return response;
             } else {

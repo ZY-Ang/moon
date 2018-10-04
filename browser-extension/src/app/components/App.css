@@ -6,8 +6,34 @@
     width: 100%;
 }
 
-#moon-wrapper * {
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #576CA8;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2E2F33;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #1F3384;
+}
+
+::-webkit-scrollbar-thumb:active,
+::-webkit-scrollbar-thumb:focus {
+    background: #1B264F;
+}
+
+* {
     font-family: Quicksand, Raleway, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+    color: #2E2F33;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
 }
 
 #moon-body {
@@ -46,7 +72,31 @@
 }
 
 .moon-tab {
-    padding: 5px 16px 5px;
+    height: 100%;
+    padding: 0 16px;
+    overflow-y: auto;
+}
+
+.moon-tab .btn-nav-back {
+    font-weight: bold;
+    cursor: pointer;
+    padding-top: 5px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
+
+.moon-tab .btn-nav-back svg {
+    width: 16px;
+    padding-right: 5px;
+}
+
+.overflow-hidden {
+    overflow: hidden !important;
+}
+
+.overflow-y-auto {
+    overflow-y: auto !important;
 }
 
 #moon-header {
@@ -88,12 +138,9 @@
     cursor: pointer;
 }
 
-.moon-header-button:hover {
-    opacity: 0.75 !important;
-}
-
-.moon-header-button:active {
-    opacity: 0.5 !important;
+.moon-header-button svg {
+    margin: 2px 0;
+    height: 20px;
 }
 
 .moon-header-button:focus {
@@ -106,31 +153,158 @@
     font-size: 24px;
     background: transparent;
     border: none;
+    -webkit-transition: transform 0.2s ease;
+    -moz-transition: transform 0.2s ease;
+    -ms-transition: transform 0.2s ease;
+    -o-transition: transform 0.2s ease;
+    transition: transform 0.2s ease;
 }
 
-#moon-header-toggle-button svg {
-    height: 24px;
+#moon-header-toggle-button.minimized {
+    transform: rotate(-180deg);
 }
 
 #moon-header-toggle-button.minimized path {
-    color: #74cd00;
+    color: rgb(116, 205, 0);
+}
+
+#moon-header-toggle-button.minimized:active path {
+    color: rgb(72, 128, 0);
 }
 
 #moon-header-toggle-button.maximized path {
-    color: #ffa300;
+    color: rgb(255, 163, 0);
+}
+
+#moon-header-toggle-button.maximized:active path {
+    color: rgb(179, 113, 0);
 }
 
 #moon-header-close-button {
-    margin-left: 8px;
+    margin-left: 12px;
     font-size: 24px;
     background: transparent;
     border: none;
 }
 
-#moon-header-close-button svg {
-    height: 24px;
+#moon-header-close-button path {
+    color: rgb(211, 0, 0);
 }
 
-#moon-header-close-button path {
-    color: #d30000;
+#moon-header-close-button:active path {
+    color: rgb(133, 0, 0);
+}
+
+.btn-nav:hover,
+.btn-nav:hover * {
+    color: #576CA8 !important;
+}
+
+.btn-nav:active,
+.btn-nav:active *,
+.btn-nav:focus,
+.btn-nav:focus * {
+    color: #0F62BD !important;
+}
+
+.btn {
+    padding: 9px 16px;
+    box-shadow: none;
+    border-radius: 3px;
+    color: #2E2F33;
+    background: transparent;
+    border: 2px solid #2E2F33;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.btn svg {
+    height: 15px;
+    padding-right: 10px;
+}
+
+.btn.full-width {
+    width: 100%;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn:hover,
+.btn:hover path {
+    color: white;
+    opacity: .8;
+    background: #2E2F33;
+    border: 2px solid #2E2F33;
+}
+
+.btn:focus {
+    outline: 0;
+}
+
+.btn:active,
+.btn:active path {
+    color: white;
+    opacity: .6;
+    background: #2E2F33;
+    border: 2px solid #2E2F33;
+}
+
+.btn.btn-primary,
+.btn.btn-primary-outline:hover {
+    opacity: 1;
+    color: white;
+    background: #0F62BD;
+    border: 2px solid #0F62BD;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.btn.btn-primary *,
+.btn.btn-primary-outline:hover * {
+    color: white;
+}
+
+.btn.btn-primary-outline {
+    color: #0F62BD;
+    background: transparent;
+    border: 2px solid #0F62BD;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:disabled{
+    opacity: 1;
+    color: white;
+    background: #576CA8;
+    border: 2px solid #576CA8;
+}
+
+.btn.btn-primary:active,
+.btn.btn-primary-outline:active {
+    opacity: 1;
+    color: white;
+    background: #1B264F;
+    border: 2px solid #1B264F;
+}
+
+.btn.btn-icon svg {
+    padding-right: 0;
+}
+
+.btn.btn-primary-outline path {
+    color: #0F62BD;
 }

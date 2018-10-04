@@ -52,6 +52,7 @@ const getAWSAppSyncEndpoint = (credentials, apiName) => new Promise((resolve, re
 );
 
 const build = async () => {
+    // TODO: Seed backend with supportedSites
     console.log("================== ENVIRONMENT VARIABLES ==================");
     // NODE_ENV
     const DEFAULT_NODE_ENV = 'development';

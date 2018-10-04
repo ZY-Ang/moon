@@ -14,6 +14,7 @@ import FaIcon from "./misc/fontawesome/FaIcon";
 
 const INITIAL_STATE = {
     isMaximized: true,
+    isHoverHeaderButtons: false,
     currentTabIndex: TAB_GROUP_AUTH[TAB_PAY].index
 };
 
@@ -27,9 +28,9 @@ class App extends Component {
 
     componentDidMount() {
         console.log("Main App Mounted");
-        // if (this.tabSwiper) {
-        //     setTimeout(this.tabSwiper.updateHeight, 500);
-        // }
+        if (this.tabSwiper) {
+            setTimeout(this.tabSwiper.updateHeight, 100);
+        }
     }
 
     componentDidUpdate() {
@@ -41,6 +42,9 @@ class App extends Component {
     onToggleMaximize = () => {
         this.setState(() => ({isMaximized: !this.state.isMaximized}));
     };
+
+    onHoverHeaderButtons = () =>
+        this.setState(state => ({isHoverHeaderButtons: !state.isHoverHeaderButtons}));
 
     onClose = () => {
         const moonDiv = document.getElementById(MOON_DIV_ID);
@@ -60,6 +64,12 @@ class App extends Component {
         }));
     };
 
+    componentWillReceiveProps(nextProps) {
+        if (!nextProps.authUser) {
+            this.setState(() => INITIAL_STATE);
+        }
+    }
+
     render() {
         const CLASS_MOON_BODY = this.state.isMaximized ? "moon-body-maximized" : "moon-body-minimized";
         return (
@@ -73,11 +83,13 @@ class App extends Component {
                                 className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
                                 // data-tip="Toggle Size"
                                 onClick={this.onToggleMaximize}
+                                onMouseEnter={this.onHoverHeaderButtons}
+                                onMouseLeave={this.onHoverHeaderButtons}
                             >
                                 {
-                                    this.state.isMaximized
-                                        ? <FaIcon icon="minus-circle"/>
-                                        : <FaIcon icon="plus-circle"/>
+                                    this.state.isHoverHeaderButtons
+                                        ? <FaIcon icon="chevron-circle-up"/>
+                                        : <FaIcon icon="circle"/>
                                 }
                             </div>
                             <div
@@ -85,8 +97,14 @@ class App extends Component {
                                 className="moon-header-button"
                                 // data-tip="Close"
                                 onClick={this.onClose}
+                                onMouseEnter={this.onHoverHeaderButtons}
+                                onMouseLeave={this.onHoverHeaderButtons}
                             >
-                                <FaIcon icon="times-circle"/>
+                                {
+                                    this.state.isHoverHeaderButtons
+                                        ? <FaIcon icon="dot-circle"/>
+                                        : <FaIcon icon="circle"/>
+                                }
                             </div>
                         </div>
                     </div>
@@ -95,14 +113,15 @@ class App extends Component {
                             ? (
                                 <div id="moon-body" className={CLASS_MOON_BODY}>
                                     <SwipeableViews
+                                        animateHeight
                                         ref={c => (this.tabSwiper = c)}
                                         disabled
-                                        style={{height: 'calc(100% - 66px)', overflowY: 'auto !important'}}
+                                        style={{height: '100%', overflowY: 'hidden !important'}}
                                         index={this.state.currentTabIndex}
                                     >
                                         {
                                             TAB_GROUP_AUTH.components.map((AuthTab, index) =>
-                                                <AuthTab key={index}/>
+                                                <AuthTab key={index} changeTab={this.changeTab}/>
                                             )
                                         }
                                     </SwipeableViews>

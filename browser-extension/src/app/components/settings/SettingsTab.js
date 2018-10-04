@@ -13,20 +13,17 @@ import {
 import AppRuntime from "../../browser/AppRuntime";
 import FaIcon from "../misc/fontawesome/FaIcon";
 import {handleErrors} from "../../../utils/errors";
+import {TAB_DEVELOPER, TAB_GROUP_AUTH, TAB_PAY} from "../nav/constants";
+import CoinbaseIcon from "../misc/coinbase/CoinbaseIcon";
 
 const MESSAGE_ERROR_CHANGE_FAILURE = "We were unable to change your password!";
 
 class SettingsTab extends Component {
     launchCoinbaseAuthFlow = () => {
-        console.log("launchCoinbaseAuthFlow");
         AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
-            .then(({success, response}) => {
-                if (success) {
-                    console.log(response);
-                    // FIXME: Show user permission warnings and shit
-                } else {
-                    throw new Error(response);
-                }
+            .then(response => {
+                // FIXME: Show user permission warnings and shit
+                console.log(response);
             })
             .catch(err => {
                 handleErrors(err);
@@ -70,7 +67,13 @@ class SettingsTab extends Component {
 
     render() {
         return (
-            <div>
+            <div className="moon-tab overflow-hidden">
+                <div
+                    className="btn-nav-back btn-nav"
+                    onClick={() => this.props.changeTab(TAB_GROUP_AUTH[TAB_PAY].index)}
+                >
+                    <FaIcon icon="chevron-left"/> Back
+                </div>
                 {
                     !!this.props.authUser &&
                     <div className="moon-settings-menu-header text-center">
@@ -81,22 +84,32 @@ class SettingsTab extends Component {
                         {
                             !!this.props.authUser.name &&
                             <div>
-                                <p>Hello {this.props.authUser.name}!</p>
+                                <p>Hello {this.props.authUser.name}</p>
                             </div>
                         }
                     </div>
                 }
-                <div className="moon-tab moon-settings-menu">
-                    <div>
-                        <FaIcon icon="question"/> How Moon works
+                <div className="moon-settings-menu overflow-y-auto">
+                    {
+                        process.env.NODE_ENV !== 'production' &&
+                        <div className="mb-10">
+                            <button className="btn full-width" onClick={() => this.props.changeTab(TAB_GROUP_AUTH[TAB_DEVELOPER].index)}>
+                                <FaIcon icon="wrench"/> Developers
+                            </button>
+                        </div>
+                    }
+                    <div className="mb-10">
+                        <button className="btn full-width" onClick={() => window.open("https://paywithmoon.com/#howitworks", "_blank")}><FaIcon icon="question"/> How Moon works</button>
                     </div>
-                    <div onClick={this.launchCoinbaseAuthFlow}>Update your Coinbase account</div>
-                    <div onClick={this.changePassword}><FaIcon icon="user"/> Change Password</div>
-                    <div>
-                        <button onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
+                    <div className="mb-10">
+                        <button className="btn full-width" onClick={this.launchCoinbaseAuthFlow}><CoinbaseIcon/> Update your Coinbase account</button>
                     </div>
-                    <div>
-                        <button onClick={this.onGlobalSignOutClick}><FaIcon icon="sign-out-alt"/> Global Sign Out</button>
+                    <div className="mb-10">
+                        <button className="btn full-width" onClick={this.changePassword}><FaIcon icon="user"/> Change Password</button>
+                    </div>
+                    {/*<div className="mb-10"><button className="btn full-width" onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button></div>*/}
+                    <div className="mb-10">
+                        <button className="btn full-width" onClick={this.onGlobalSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
                     </div>
                 </div>
             </div>

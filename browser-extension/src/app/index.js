@@ -37,7 +37,11 @@ const reRenderApp = () => {
         console.log("moonDiv found, re-rendering app");
         moonDiv.remove();
         toggleApp(SOURCE_MANUAL)
-            .then(console.log);
+            .then(res => {
+                if (res) {
+                    console.log("App re-rendered");
+                }
+            });
     }
 };
 

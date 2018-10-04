@@ -38,6 +38,20 @@ export const POLL_IS_COINBASE_AUTH_MODE = "MOON_IS_COINBASE_API_URL";
 /** Used to notify the background of a confirmed, new API key */
 export const REQUEST_UPDATE_COINBASE_API_KEYS = "MOON_UPDATE_COINBASE_API_KEYS";
 
+// --------------------- Checkout Flow ---------------------
+/** Used to request for information to be used to checkout from the page */
+export const REQUEST_GET_PAYMENT_PAYLOAD = "MOON_GET_PAYMENT_PAYLOAD";
+
+/** Used to notify the backend of a checkout completion, successful or otherwise */
+export const REQUEST_NOTIFY_PAYMENT_COMPLETION = "MOON_NOTIFY_PAYMENT_COMPLETION";
+
+// --------------------- Supported Sites ---------------------
+/** Used to get information about the current site by passing in {@code window.location.host} as key */
+export const REQUEST_GET_SITE_INFORMATION = "MOON_GET_SITE_INFORMATION";
+
+/** Used to request for support for the current host that the user is on */
+export const REQUEST_MOON_SITE_SUPPORT = "MOON_I_WANT_TO_SHOP_ON_THIS_SITE";
+
 // --------------------- Sign Out ---------------------
 export const REQUEST_SIGN_OUT = "MOON_SIGN_OUT";
 

@@ -6,9 +6,6 @@ import Tabs from './browser/Tabs';
 import {
     isCheckoutPage,
     isClearCacheUrl,
-    isCoinbaseSettingsApiUrl,
-    isCoinbaseSignInUrl,
-    isCoinbaseUrl,
     isOAuthUrl,
     isSupportedSite,
     isValidWebUrl
@@ -18,6 +15,7 @@ import {REQUEST_COINBASE_EXTRACT_API_KEYS, REQUEST_INJECT_APP} from "../constant
 import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
+import {isCoinbaseSettingsApiUrl, isCoinbaseSignInUrl, isCoinbaseUrl} from "../utils/coinbase";
 
 /**
  * Sends an app injection event message to the

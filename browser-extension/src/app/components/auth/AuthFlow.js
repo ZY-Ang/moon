@@ -70,8 +70,8 @@ class AuthFlow extends Component {
 
     render() {
         return (
-            <div className="moon-tab" style={{paddingTop: '27%'}}>
-                <div>
+            <div className="moon-tab moon-authflow-tab">
+                <div style={{width: '100%'}}>
                     <button className="btn-auth" onClick={this.signIn}>
                         <div className="btn-auth-icon"><FaIcon icon="moon"/></div>
                         <div className="btn-auth-text">Sign In With Moon</div>
@@ -89,7 +89,7 @@ class AuthFlow extends Component {
                         Sign Up!
                     </a>
                 </div>
-                <hr className="sign-in-divider" data-content="or use a social provider"/>
+                <hr className="sign-in-divider" data-content="or log in with" style={{width: '100%'}}/>
                 <div className="text-center">
                     <button
                         className="btn-auth-social btn-auth-social-facebook"

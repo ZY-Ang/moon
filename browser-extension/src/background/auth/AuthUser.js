@@ -14,6 +14,7 @@ import {
 } from "./url";
 import axios from "axios";
 import {WEBIDENTITY_IAM_ROLE_ARN} from "../config/aws/iam";
+import {getUser} from "../services/moon";
 
 /**
  * Singleton {@class AuthUser}
@@ -199,14 +200,16 @@ class AuthUser {
     /**
      * Returns a authUser object for display on the front end
      */
-    trim = () => {
-        const payload = this.idToken.decodePayload();
+    trim = async () => {
+        const {data} = await getUser();
         return {
-            name: payload.name || payload.email,
-            email: payload.email,
-            picture: payload.picture,
-            email_verified: payload.email_verified
-        }
+            name: data.identity.claims.nickname || data.identity.claims.name || data.identity.claims.email,
+            email: data.identity.claims.email,
+            email_verified: data.identity.claims.email_verified,
+            picture: data.identity.claims.picture,
+            // TODO: Simply concatenate additional wallets to conform to shape
+            wallets: data.user.coinbaseInfo.wallets.map(coinbaseWallet => ({...coinbaseWallet, name: `Coinbase (${coinbaseWallet.currency})`, provider: 'COINBASE'}))
+        };
     };
 
     /**

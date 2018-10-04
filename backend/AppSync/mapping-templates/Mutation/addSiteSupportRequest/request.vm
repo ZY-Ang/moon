@@ -1,0 +1,16 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "UpdateItem",
+    "key" : {
+        "email": $util.dynamodb.toDynamoDBJson($context.identity.claims.email)
+    },
+    "update" : {
+        "expression" : "SET #host = :value",
+        "expressionNames" : {
+           "#host" : "$ctx.args.host"
+        },
+        "expressionValues" : {
+            ":value" : $util.dynamodb.toDynamoDBJson(true)
+        }
+    }
+}

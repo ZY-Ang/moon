@@ -3,6 +3,7 @@
  */
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
+const supportedCurrencies = require("./constants/walletProviders/coinbase/currencies");
 const CoinbaseClient = require("coinbase").Client;
 const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
 const getCoinbaseCurrentUser = require("./services/walletProviders/coinbase/getCoinbaseCurrentUser");
@@ -32,12 +33,14 @@ module.exports.handler = async (event) => {
     const user = {
         coinbaseInfo: coinbaseApiKeys ? {
             user: coinbaseUser,
-            wallets: coinbaseWallets && coinbaseWallets.map(wallet => ({
-                id: wallet.id,
-                name: wallet.name,
-                currency: wallet.balance && wallet.balance.currency,
-                balance: wallet.balance && wallet.balance.amount
-            }))
+            wallets: coinbaseWallets && coinbaseWallets
+                .filter(wallet => (supportedCurrencies[wallet.balance.currency]))
+                .map(wallet => ({
+                    id: wallet.id,
+                    name: wallet.name,
+                    currency: wallet.balance && wallet.balance.currency,
+                    balance: wallet.balance && wallet.balance.amount
+                }))
         } : null
     };
 

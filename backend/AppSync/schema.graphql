@@ -14,7 +14,6 @@ type CoinbaseApiKey {
 
 # Currencies supported on Coinbase
 enum CoinbaseCurrency {
-    USD
     BTC
     ETH
     ETC
@@ -111,6 +110,8 @@ type Mutation {
     getPaymentPayload(input: GetPaymentPayloadInput!): PaymentPayload
     # Notify if transaction was completed
     notifyPaymentCompletion(input: NotifyPaymentCompletionInput!): PaymentCompletionPayload
+    # Request a site to be added to the list of sites to be supported
+    addSiteSupportRequest(host: String!): AWSJSON
 }
 
 input NotifyPaymentCompletionInput {
@@ -174,6 +175,24 @@ type Query {
     user: User
     # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD)
     exchangeRate(quote: GdaxQuoteCurrency!, base: GdaxBaseCurrency=USD): ExchangeRate
+    # Returns information about the URL of the current site.
+    siteInformation(host: String!): SiteInformation
+}
+
+# Information about a specific site
+type SiteInformation {
+    # The name of the site
+    name: String
+    # The URL of the logo for the site
+    logoURL: AWSURL
+    # Whether the site is supported
+    isSupported: Boolean
+    # The checkout pathname of the site
+    pathnameCheckout: String
+    # The product pathname of the site
+    pathnameProduct: String
+    # Endpoint of the URL to apply the payment payload
+    endpointPaymentPayloadApply: String
 }
 
 type Subscription {
@@ -194,6 +213,7 @@ type User {
 
 # A cryptocurrency wallet
 interface Wallet {
+    id: ID!
     name: String!
     balance: String!
 }

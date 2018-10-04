@@ -5,6 +5,8 @@ import React, {Component} from 'react';
 import AppRuntime from "../../browser/AppRuntime";
 import {REQUEST_GET_ID_JWTOKEN, REQUEST_TEST_FUNCTION} from "../../../constants/events/appEvents";
 import {copyToClipboard} from "../../utils/dom";
+import {TAB_GROUP_AUTH, TAB_SETTINGS} from "../nav/constants";
+import FaIcon from "../misc/fontawesome/FaIcon";
 
 class DeveloperTab extends Component {
     constructor(props) {
@@ -42,7 +44,7 @@ class DeveloperTab extends Component {
     getIdToken = () => {
         console.log("getIdToken");
         AppRuntime.sendMessage(REQUEST_GET_ID_JWTOKEN)
-            .then(({response}) => copyToClipboard(response))
+            .then(response => copyToClipboard(response))
             .then(console.log)
             .then(() => this.setState(() => ({idJWToken: "Copied to clipboard"})))
             .catch(err => {
@@ -54,7 +56,13 @@ class DeveloperTab extends Component {
     render() {
         return (
             <div className="moon-tab">
-                <h1>Developers</h1>
+                <div
+                    className="btn-nav-back btn-nav"
+                    onClick={() => this.props.changeTab(TAB_GROUP_AUTH[TAB_SETTINGS].index)}
+                >
+                    <FaIcon icon="chevron-left"/> Back
+                </div>
+                <h1 style={{textAlign: 'center'}}>Developers</h1>
                 <div>
                     <input
                         type="text"

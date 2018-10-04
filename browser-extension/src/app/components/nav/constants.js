@@ -3,8 +3,6 @@
  */
 
 import PayTab from "../pay/PayTab";
-import WalletsTab from "../wallets/WalletsTab";
-import RewardsTab from "../rewards/RewardsTab";
 import SettingsTab from "../settings/SettingsTab";
 import DeveloperTab from "../developer/DeveloperTab";
 

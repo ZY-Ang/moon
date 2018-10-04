@@ -35,7 +35,7 @@
     top:15px;
     right:25px;
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
-    border-radius:10px;
+    border-radius:3px;
     background-color: #ffffff;
     box-sizing:border-box;
     color: #21304d;
@@ -59,6 +59,7 @@
 }
 
 .react-swipeable-view-container {
+    height: 100% !important;
     display: -webkit-box;
     display: -ms-flexbox;
 }

@@ -29,7 +29,7 @@ class Tabs {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             } else if (response.success) {
-                resolve(response);
+                resolve(response.response);
             } else {
                 reject(response);
             }

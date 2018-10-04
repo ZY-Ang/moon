@@ -2,19 +2,17 @@
  * Copyright (c) 2018 moon
  */
 
-const Client = require('agcod');
-const client = new Client();
-
+const AmazonGiftCardClient = require('agcod');
 const logHead = require("../../../utils/logHead");
 const logTail = require("../../../utils/logTail");
 
-const getAmazonGiftCard  = async (amount, currency = 'USD', region = 'NA') => {
+const getAmazonGiftCard  = async (amount, currency, region) => {
+    logHead("getAmazonGiftCard", {amount, currency, region});
 
-    logHead("getAmazonGiftCard", amount);
+    const amazonGiftCardClient = new AmazonGiftCardClient();
 
     const giftCardInfo = await new Promise((resolve, reject) =>
-        client.createGiftCard(region, amount, currency, (error, result) => {
-            console.log('client.createGiftCard response', error, result);
+        amazonGiftCardClient.createGiftCard(region, amount, currency, (error, result) => {
             if(error){
                 reject(error);
             }
