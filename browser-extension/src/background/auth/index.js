@@ -76,21 +76,18 @@ export const doOnAuthFlowResponse = (url, tabId) => {
  * provider {@param type}
  */
 const getOAuthUrlForType = async (type) => {
-    switch (type) {
-        case TYPE_STANDARD_SIGN_IN:
-            return URL_STANDARD_AUTH;
-        case TYPE_STANDARD_SIGN_UP:
-            return URL_STANDARD_SIGN_UP;
-        case TYPE_RESET_PASSWORD:
-            return URL_RESET_PASSWORD;
-        case TYPE_FACEBOOK:
-            return URL_FACEBOOK_AUTH;
-        case TYPE_GOOGLE:
-            return URL_GOOGLE_AUTH;
-        case TYPE_AMAZON:
-            return URL_AMAZON_AUTH;
-        default:
-            throw new Error(`${type} is not a recognized sign in type.`);
+    const oauthMap = {
+        [TYPE_STANDARD_SIGN_IN]: URL_STANDARD_AUTH,
+        [TYPE_STANDARD_SIGN_UP]: URL_STANDARD_SIGN_UP,
+        [TYPE_RESET_PASSWORD]: URL_RESET_PASSWORD,
+        [TYPE_FACEBOOK]: URL_FACEBOOK_AUTH,
+        [TYPE_GOOGLE]: URL_GOOGLE_AUTH,
+        [TYPE_AMAZON]: URL_AMAZON_AUTH
+    };
+    if (oauthMap[type]) {
+        return oauthMap[type];
+    } else {
+        throw new Error(`${type} is not a recognized sign in type.`);
     }
 };
 
@@ -101,6 +98,14 @@ export const doLaunchWebAuthFlow = (type) => {
     console.log(`doLaunchWebAuthFlow for ${type}`);
     return getOAuthUrlForType(type)
         .then(url => Windows.openPopup(url));
+};
+
+/**
+ * Sends a password reset link to the user
+ */
+export const doPasswordReset = () => {
+    console.log("doPasswordReset");
+    return AuthUser.getInstance().resetPassword();
 };
 
 /**
