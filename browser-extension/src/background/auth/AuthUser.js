@@ -6,8 +6,9 @@ import JwtToken, {isValidJWT} from "./JwtToken";
 import Storage from "../browser/Storage";
 import AWS from "../config/aws/AWS";
 import {
+    getPasswordResetFlowParams,
     getRefreshTokenParams,
-    getRevokeTokenParams,
+    getRevokeTokenParams, URL_PASSWORD_RESET,
     URL_REVOKE_REFRESH_TOKENS,
     URL_SIGN_OUT,
     URL_TOKEN_FLOW
@@ -79,7 +80,19 @@ class AuthUser {
     };
 
     static getUuid = () => {
-        return AuthUser.getInstance().getIdToken().getSub();
+        try {
+            return AuthUser.getInstance().getIdToken().getSub();
+        } catch (error) {
+            return null;
+        }
+    };
+
+    static getEmail = () => {
+        try {
+            return AuthUser.getInstance().getIdToken().getEmail();
+        } catch (error) {
+            return null;
+        }
     };
 
     /**
@@ -155,6 +168,12 @@ class AuthUser {
         return AWS.config.credentials;
     };
 
+    resetPassword = () => {
+        const email = AuthUser.getEmail();
+        const body = getPasswordResetFlowParams(email);
+        return axios.post(URL_PASSWORD_RESET, body);
+    };
+
     signOut = () => {
         AuthUser.setInstance(null);
         return this.clearTokensFromStorage()
@@ -202,13 +221,20 @@ class AuthUser {
      */
     trim = async () => {
         const {data} = await getUser();
+        const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets)
+            ? data.user.coinbaseInfo.wallets.map(coinbaseWallet => ({
+                ...coinbaseWallet,
+                name: `Coinbase (${coinbaseWallet.currency})`,
+                provider: 'COINBASE'
+            }))
+            : [];
         return {
             name: data.identity.claims.nickname || data.identity.claims.name || data.identity.claims.email,
             email: data.identity.claims.email,
             email_verified: data.identity.claims.email_verified,
             picture: data.identity.claims.picture,
             // TODO: Simply concatenate additional wallets to conform to shape
-            wallets: data.user.coinbaseInfo.wallets.map(coinbaseWallet => ({...coinbaseWallet, name: `Coinbase (${coinbaseWallet.currency})`, provider: 'COINBASE'}))
+            wallets: coinbaseWallets
         };
     };
 

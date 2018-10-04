@@ -54,6 +54,13 @@ class JwtToken {
     }
 
     /**
+     * @returns {string} the token's email (email member).
+     */
+    getEmail() {
+        return this.payload.email;
+    }
+
+    /**
      * @returns {int} the token's expiration (exp member).
      */
     getExpiration() {

@@ -145,6 +145,23 @@ export const getRefreshTokenParams = (refreshToken) => ({
 export const URL_TOKEN_FLOW = `${URL_OAUTH_SERVER}oauth/token`;
 
 /**
+ * Body of the POST request used to request to send a password reset email from the OAuth server
+ * @param email {string} - of the user
+ * @returns {{client_id: string, connection: string, email: string}}
+ */
+export const getPasswordResetFlowParams = (email) => ({
+    client_id: AUTH0_CLIENT_ID,
+    client_secret: AUTH0_CLIENT_SECRET,
+    connection: 'Username-Password-Authentication',
+    email
+});
+/**
+ * The endpoint of the OAuth server to send a password reset email
+ * @type {string} POST REST endpoint
+ */
+export const URL_PASSWORD_RESET = `${URL_OAUTH_SERVER}dbconnections/change_password`;
+
+/**
  * The logout URI of the OAuth Server
  */
 const SIGN_OUT_PARAMS = {

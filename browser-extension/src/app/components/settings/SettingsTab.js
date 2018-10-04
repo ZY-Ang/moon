@@ -7,8 +7,8 @@ import {connect} from "react-redux";
 import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {
     REQUEST_GLOBAL_SIGN_OUT,
-    REQUEST_LAUNCH_COINBASE_AUTH_FLOW, REQUEST_LAUNCH_WEB_AUTH_FLOW,
-    REQUEST_SIGN_OUT, TYPE_RESET_PASSWORD
+    REQUEST_LAUNCH_COINBASE_AUTH_FLOW, REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_RESET_PASSWORD,
+    REQUEST_SIGN_OUT
 } from "../../../constants/events/appEvents";
 import AppRuntime from "../../browser/AppRuntime";
 import FaIcon from "../misc/fontawesome/FaIcon";
@@ -39,7 +39,9 @@ class SettingsTab extends Component {
         });
 
     changePassword = (event) => {
-        this.launchWebAuthFlow(TYPE_RESET_PASSWORD);
+        AppRuntime.sendMessage(REQUEST_RESET_PASSWORD)
+            .then(() => alert("A password reset email has been sent to your email!"))
+            .catch(handleErrors);
         if (event) {
             event.preventDefault();
         }

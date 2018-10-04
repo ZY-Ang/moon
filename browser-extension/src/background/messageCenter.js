@@ -5,7 +5,7 @@
 import {
     POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_ID_JWTOKEN, REQUEST_GET_PAYMENT_PAYLOAD, REQUEST_GET_SITE_INFORMATION,
     REQUEST_GLOBAL_SIGN_OUT, REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
-    REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_MOON_SITE_SUPPORT,
+    REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_MOON_SITE_SUPPORT, REQUEST_RESET_PASSWORD,
     REQUEST_SIGN_OUT,
     REQUEST_TEST_FUNCTION, REQUEST_UPDATE_COINBASE_API_KEYS
 } from "../constants/events/appEvents";
@@ -17,6 +17,7 @@ import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKey} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
 import {doAddSiteSupportRequest, doGetPaymentPayload, getSiteInformation} from "./services/moon";
+import {doPasswordReset} from "./auth";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -84,6 +85,12 @@ const messageCenter = (request, sender, sendResponse) => {
             doAddSiteSupportRequest(request.host)
                 .then(({data}) => sendSuccess(data))
                 .catch(() => sendFailure(`doAddSiteSupportRequest(${request.host}) failed`))
+            return true;
+        },
+        [REQUEST_RESET_PASSWORD]() {
+            doPasswordReset()
+                .then(() => sendSuccess(`doPasswordReset() completed`))
+                .catch(() => sendFailure(`doPasswordReset() failed`));
             return true;
         },
         [REQUEST_SIGN_OUT]() {
