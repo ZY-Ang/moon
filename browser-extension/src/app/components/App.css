@@ -129,17 +129,29 @@
 
 #moon-header-buttons-div {
     box-sizing: border-box !important;
-    height: 24px;
+    height: 20px;
     width: 100%;
     display: flex;
 }
 
 .moon-header-button {
     cursor: pointer;
+    font-size: 20px;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+    display: flex;
+}
+
+.moon-header-button path {
+    -webkit-transition: color 0.2s ease;
+    -moz-transition: color 0.2s ease;
+    -ms-transition: color 0.2s ease;
+    -o-transition: color 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .moon-header-button svg {
-    margin: 2px 0;
     height: 20px;
 }
 
@@ -150,7 +162,6 @@
 
 #moon-header-toggle-button {
     margin-left: auto;
-    font-size: 24px;
     background: transparent;
     border: none;
     -webkit-transition: transform 0.2s ease;
@@ -182,7 +193,6 @@
 
 #moon-header-close-button {
     margin-left: 12px;
-    font-size: 24px;
     background: transparent;
     border: none;
 }
