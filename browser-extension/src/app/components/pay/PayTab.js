@@ -3,10 +3,10 @@
  */
 import React, {Component} from 'react';
 import {connect} from "react-redux";
-import axios from "axios";
 import "./PayTab.css";
+import CheckoutBody from "./CheckoutBody";
 import FaIcon from "../misc/fontawesome/FaIcon";
-import {TAB_SETTINGS, TAB_GROUP_AUTH} from "../nav/constants";
+import {TAB_GROUP_AUTH, TAB_SETTINGS} from "../nav/constants";
 import AppRuntime from "../../browser/AppRuntime";
 import {
     REQUEST_GET_PAYMENT_PAYLOAD,
@@ -14,6 +14,7 @@ import {
     REQUEST_MOON_SITE_SUPPORT
 } from "../../../constants/events/appEvents";
 import {handleErrors} from "../../../utils/errors";
+import {ACTION_SET_SITE_INFORMATION} from "../../redux/reducers/constants";
 
 const SettingsIcon = ({changeTab}) => (
     <div
@@ -24,14 +25,11 @@ const SettingsIcon = ({changeTab}) => (
     </div>
 );
 
-const PayBanner = ({site, changeTab}) => (site && site.isSupported)
+const PayBanner = ({siteInformation, changeTab}) => (siteInformation && siteInformation.isSupported)
     ? (
         <div>
-            <div>
-                <img className="site-logo" src={site.logoURL} alt={site.title}/>
-                <SettingsIcon changeTab={changeTab}/>
-            </div>
-            <h2>{site.name}</h2>
+            <img className="site-logo" src={siteInformation.logoURL} alt={siteInformation.name}/>
+            <SettingsIcon changeTab={changeTab}/>
         </div>
     ) : (
         <div>
@@ -50,27 +48,23 @@ const PayBanner = ({site, changeTab}) => (site && site.isSupported)
         </div>
     );
 
-const PayBody = ({changeWallet, pay, selectedWallet}) => (
+const ProductBody = ({pathnameCheckout}) => (
     <div>
         <div>
-            <p>TODO: Cart icon or product icon</p>
-            <p>TODO: Total value</p>
-            <p>TODO: Wallet selection Dropdown menu (Use chrome.storage.local for readonly store of user data to bypass need for Redux)</p>
+            <span
+                className="site-logo unsupported"
+                role="img"
+                aria-label="Checkout"
+                style={{fontSize: 100}}
+            >
+                🛒
+            </span>
+            <p>TODO: Product icon</p>
+            <p>TODO: Value Calculator</p>
         </div>
-        {
-            selectedWallet
-                ? (
-                    <div className="btn-group btn-group-pay">
-                        <button className="btn btn-pay btn-primary" onClick={pay}>Pay with <b>{selectedWallet.name}</b></button>
-                        <button className="btn btn-icon btn-primary-outline" onClick={changeWallet}><FaIcon icon="caret-down"/></button>
-                    </div>
-                ) : (
-                    <div className="btn-group btn-group-pay">
-                        <button className="btn btn-pay btn-primary" onClick={pay}>Pay with <b>Coinbase (BTC)</b></button>
-                        <button className="btn btn-icon btn-primary-outline" onClick={changeWallet}><FaIcon icon="caret-down"/></button>
-                    </div>
-                )
-        }
+        <div className="btn-group btn-group-pay">
+            <button className="btn btn-pay btn-primary" onClick={() => window.location.replace(pathnameCheckout)}>Checkout</button>
+        </div>
     </div>
 );
 
@@ -90,55 +84,60 @@ class PayTab extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            site: null,
             isRequested: false,
-            selectedWallet: props.authUser ? props.authUser.wallets[0] : null
+            showWalletSelector: false,
+            selectedWallet: props.authUser ? props.authUser.wallets[0] : null,
+            cartAmount: "0",
+            cartCurrency: ""
         };
     }
 
     componentWillMount() {
         AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, {host: window.location.host})
-            .then(({siteInformation}) => {
-                this.setState(() => ({site: siteInformation}))
+            .then(siteInformation => {
+                this.props.onSetSiteInformation(siteInformation);
+                this.parsePage();
             })
-            .catch(handleErrors);
+            .catch(err => {
+                console.error("SITE_INFORMATION FAILED: ", err);
+                handleErrors(err);
+            });
     }
 
-    pay = () => {
-        this.getPaymentPayload()
-            .then(this.inject)
-            .catch(handleErrors)
+    parsePage = () => {
+        const {siteInformation} = this.props;
+        if (siteInformation) {
+            ({
+                "www.amazon.com": (pathname) =>
+                    this.setState(() => {
+                        const isCheckoutPage = (pathname.startsWith(siteInformation.pathnameCheckout));
+                        return isCheckoutPage ? {
+                            cartAmount: document.getElementsByName("purchaseTotal")[0].value,
+                            cartCurrency: document.getElementsByName("purchaseTotalCurrency")[0].value
+                        } : {};
+                    })
+            })[window.location.host](window.location.pathname);
+        }
     };
 
-    getPaymentPayload = async () => {
-        return await AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
-            cartCurrency: "USD", // TODO: Insert currency here. Should be USD
-            cartAmount: "0.01", // TODO: Fix this
+    pay = () => {
+        // TODO: this.onUIBlockingModal()
+        this.getPaymentPayload() // TODO: Background script has to execute injection of code. Can't be done here. Best we can do is wait for new content script to send a success message
+        // TODO: .then(this.offUIBlockingModal)
+            .catch(handleErrors);
+    };
 
-            walletProvider: this.selectedWallet.provider, // TODO: Insert wallet provider here. Currently, only 'COINBASE' should work
-            walletID: this.selectedWallet.id,
+    getPaymentPayload = () => {
+        return AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
+            cartCurrency: this.state.cartCurrency,
+            cartAmount: (process.env.NODE_ENV === 'production') ? this.state.cartAmount : "0.01",
 
-            pageContent: document.getElementsByTagName("body")[0].innerHTML,
+            walletProvider: this.state.selectedWallet.provider,
+            walletID: this.state.selectedWallet.id,
+
+            pageContent: document.documentElement.innerHTML,
             pageURL: window.location.href,
         });
-    };
-
-    inject = (paymentPayload) => {
-        // TODO: Incomplete
-        axios.post(this.state.site.endpointPaymentPayloadApply, {
-            purchaseTotal: 55.82,
-            claimcode: "PW4UUGSF",
-            disablegc: false,
-            returnjson: 1,
-            returnFullHTML: 1,
-            hasWorkingJavascript: 1,
-            fromAnywhere: 0,
-            cachebuster: 1538592601427
-        })
-            .then(response => {
-                console.log("inject: ", response);
-            })
-            .catch(handleErrors);
     };
 
     requestSite = () =>
@@ -146,14 +145,46 @@ class PayTab extends Component {
             .then(() => this.setState(() => ({isRequested: true})))
             .catch(handleErrors);
 
+    changeWallet = (selectedWallet) => this.setState(() => ({selectedWallet}));
+
+    setShowWalletSelector = (showWalletSelector) => this.setState(() => ({showWalletSelector}));
+
     render() {
+        const {siteInformation} = this.props;
         return (
             <div className="moon-tab text-center">
-                <PayBanner site={this.state.site} changeTab={this.props.changeTab}/>
+                <PayBanner
+                    siteInformation={siteInformation}
+                    changeTab={this.props.changeTab}
+                />
                 {
-                    this.state.site && this.state.site.isSupported
-                        ? <PayBody pay={this.pay} selectedWallet={this.state.selectedWallet} />
-                        : <UnSupportedSiteBody isRequested={this.state.isRequested} requestSite={this.requestSite}/>
+                    siteInformation &&
+                    siteInformation.isSupported &&
+                    window.location.pathname.startsWith(siteInformation.pathnameCheckout) &&
+                    <CheckoutBody
+                        cartCurrency={this.state.cartCurrency}
+                        cartAmount={this.state.cartAmount}
+                        changeWallet={this.changeWallet}
+                        pay={this.pay}
+                        selectedWallet={this.state.selectedWallet}
+                        setShowWalletSelector={this.setShowWalletSelector}
+                        showWalletSelector={this.state.showWalletSelector}
+                    />
+                }
+                {
+                    siteInformation &&
+                    siteInformation.isSupported &&
+                    window.location.pathname.startsWith(siteInformation.pathnameProduct) &&
+                    <ProductBody
+                        pathnameCheckout={siteInformation.pathnameCheckout}
+                    />
+                }
+                {
+                    (!siteInformation || !siteInformation.isSupported) &&
+                    <UnSupportedSiteBody
+                        isRequested={this.state.isRequested}
+                        requestSite={this.requestSite}
+                    />
                 }
             </div>
         );
@@ -161,7 +192,12 @@ class PayTab extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    authUser: state.sessionState.authUser
+    authUser: state.sessionState.authUser,
+    siteInformation: state.sessionState.siteInformation
 });
 
-export default connect(mapStateToProps)(PayTab);
+const mapDispatchToProps = (dispatch) => ({
+    onSetSiteInformation: (siteInformation) => dispatch({type: ACTION_SET_SITE_INFORMATION, siteInformation}),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PayTab);

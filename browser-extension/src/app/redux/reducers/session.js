@@ -2,7 +2,12 @@
  * Copyright (c) 2018 moon
  */
 
-import {ACTION_SET_AUTH_USER, ACTION_SET_AUTH_USER_TABLE} from "./constants";
+import {
+    ACTION_SET_IS_APP_ACTIVE,
+    ACTION_SET_AUTH_USER,
+    ACTION_SET_SITE_INFORMATION,
+    ACTION_TOGGLE_IS_APP_ACTIVE
+} from "./constants";
 import {isValidAuthUser} from "../../utils/auth";
 
 /* -----------------     Initial State     ------------------ */
@@ -11,12 +16,21 @@ import {isValidAuthUser} from "../../utils/auth";
  * Initial/ Fallback state
  */
 const INITIAL_STATE = {
+    isAppActive: false,
     authUser: null,
-    authUserTable: null
+    siteInformation: null
 };
 
 
 /* -----------------     Actions     ------------------ */
+/**
+ * Action to set {@code isAppActive} in the store based on the specified action
+ */
+const applySetIsAppActive = (state, action) => ({
+    ...state,
+    isAppActive: !!action.isAppActive
+});
+
 /**
  * Action to set the {@code authUser} in the store based on the specified action
  */
@@ -35,11 +49,11 @@ const applySetAuthUser = (state, action) => {
 };
 
 /**
- * Action to set the {@code authUserTable} in the store based on the specified action
+ * Action to set the {@code siteInformation} in the store based on the specified action
  */
-const applySetAuthUserTable = (state, action) => ({
+const applySetSiteInformation = (state, action) => ({
     ...state,
-    authUserTable: action.authUserTable
+    siteInformation: action.siteInformation
 });
 
 /* -----------------     Session Reducer     ------------------ */
@@ -48,10 +62,14 @@ const applySetAuthUserTable = (state, action) => ({
  */
 function sessionReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
+        case ACTION_SET_IS_APP_ACTIVE:
+            return applySetIsAppActive(state, action);
+        case ACTION_TOGGLE_IS_APP_ACTIVE:
+            return applySetIsAppActive(state, {isAppActive: !state.isAppActive});
         case ACTION_SET_AUTH_USER:
             return applySetAuthUser(state, action);
-        case ACTION_SET_AUTH_USER_TABLE:
-            return applySetAuthUserTable(state, action);
+        case ACTION_SET_SITE_INFORMATION:
+            return applySetSiteInformation(state, action);
         default:
             return state;
     }

@@ -40,6 +40,8 @@ const manifest = {
         "tabs"
     ],
 
+    // content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
+
     browser_action: {
         default_title: "Moon"
     },

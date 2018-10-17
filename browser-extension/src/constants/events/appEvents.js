@@ -42,8 +42,11 @@ export const REQUEST_UPDATE_COINBASE_API_KEYS = "MOON_UPDATE_COINBASE_API_KEYS";
 /** Used to request for information to be used to checkout from the page */
 export const REQUEST_GET_PAYMENT_PAYLOAD = "MOON_GET_PAYMENT_PAYLOAD";
 
-/** Used to notify the backend of a checkout completion, successful or otherwise */
-export const REQUEST_NOTIFY_PAYMENT_COMPLETION = "MOON_NOTIFY_PAYMENT_COMPLETION";
+/** Used to get the exchange rate */
+export const REQUEST_GET_EXCHANGE_RATE = "MOON_GET_EXCHANGE_RATE";
+
+/** Used to notify the backend of a payment payload completion, successful or otherwise */
+export const REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION = "MOON_NOTIFY_PAYMENT_COMPLETION";
 
 // --------------------- Supported Sites ---------------------
 /** Used to get information about the current site by passing in {@code window.location.host} as key */

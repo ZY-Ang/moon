@@ -164,6 +164,9 @@
     margin-left: auto;
     background: transparent;
     border: none;
+}
+
+#moon-header-toggle-button svg {
     -webkit-transition: transform 0.2s ease;
     -moz-transition: transform 0.2s ease;
     -ms-transition: transform 0.2s ease;
@@ -171,7 +174,7 @@
     transition: transform 0.2s ease;
 }
 
-#moon-header-toggle-button.minimized {
+#moon-header-toggle-button.minimized svg {
     transform: rotate(-180deg);
 }
 
@@ -246,6 +249,16 @@
     border-radius: 0;
 }
 
+.btn-group-vertical {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.btn-group-vertical .btn {
+    border-radius: 0;
+}
+
 .btn:hover,
 .btn:hover path {
     color: white;
@@ -277,6 +290,12 @@
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
+}
+
+.btn.btn-primary-outline.btn-dropdown,
+.btn.btn-primary-outline.btn-dropdown:hover,
+.btn.btn-primary-outline.btn-dropdown:active {
+    border-bottom: none;
 }
 
 .btn.btn-primary *,

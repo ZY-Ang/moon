@@ -28,7 +28,7 @@ import {faRocket} from '@fortawesome/free-solid-svg-icons/faRocket';
 import {faCog} from '@fortawesome/free-solid-svg-icons/faCog';
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
-import {faCaretDown} from '@fortawesome/free-solid-svg-icons/faCaretDown';
+import {faCaretUp} from '@fortawesome/free-solid-svg-icons/faCaretUp';
 
 library.add(faFacebook, faGoogle, faAmazon);
 library.add(
@@ -45,7 +45,7 @@ library.add(
     faCog,
     faChevronLeft,
     faWrench,
-    faCaretDown
+    faCaretUp
 );
 
 export default FaIcon;

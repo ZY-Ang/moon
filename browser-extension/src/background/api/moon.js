@@ -3,8 +3,9 @@
  */
 
 import gql from "graphql-tag";
+import MoonGraphQL from "./MoonGraphQL";
 
-export const user = gql`
+const user = gql`
     query user {
         user {
             coinbaseInfo {
@@ -26,8 +27,29 @@ export const user = gql`
         }
     }
 `;
+export const getUser = () => MoonGraphQL.authClient
+    .query({
+        query: user
+    });
 
-export const siteInformation = gql`
+const exchangeRates = gql`
+    query exchangeRates(
+    $quote: CoinbaseProQuoteCurrency!,
+    $base: CoinbaseProBaseCurrency!
+    ) {
+        exchangeRate(quote: $quote, base: $base) {
+            bid
+            ask
+        }
+    }
+`;
+export const getExchangeRate = (quote, base) => MoonGraphQL.authClient
+    .query({
+        query: exchangeRates,
+        variables: {quote, base}
+    });
+
+const siteInformation = gql`
     query siteInformation($host: String!) {
         siteInformation(host: $host) {
             name
@@ -39,8 +61,13 @@ export const siteInformation = gql`
         }
     }
 `;
+export const getSiteInformation = (host) => MoonGraphQL.authClient
+    .query({
+        query: siteInformation,
+        variables: {host}
+    });
 
-export const getPaymentPayload = gql`
+const getPaymentPayload = gql`
     mutation getPaymentPayload(
         $cartCurrency: Currency!,
         $cartAmount: String!,
@@ -67,13 +94,31 @@ export const getPaymentPayload = gql`
             data
             balance
             currency
-            user
+            user {
+                coinbaseInfo {
+                    wallets {
+                        id
+                        currency
+                        balance
+                    }
+                }
+            }
         }
     }
 `;
+export const doGetPaymentPayload = (variables) => MoonGraphQL.authClient
+    .mutate({
+        mutation: getPaymentPayload,
+        variables
+    });
 
-export const addSiteSupportRequest = gql`
+const addSiteSupportRequest = gql`
     mutation addSiteSupportRequest($host: String!) {
         addSiteSupportRequest(host: $host)
     }
 `;
+export const doAddSiteSupportRequest = (host) => MoonGraphQL.authClient
+    .mutate({
+        mutation: addSiteSupportRequest,
+        variables: {host}
+    });

@@ -3,11 +3,18 @@
  */
 
 import {
-    POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_ID_JWTOKEN, REQUEST_GET_PAYMENT_PAYLOAD, REQUEST_GET_SITE_INFORMATION,
-    REQUEST_GLOBAL_SIGN_OUT, REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
-    REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_MOON_SITE_SUPPORT, REQUEST_RESET_PASSWORD,
+    POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_EXCHANGE_RATE,
+    REQUEST_GET_ID_JWTOKEN,
+    REQUEST_GET_PAYMENT_PAYLOAD,
+    REQUEST_GET_SITE_INFORMATION,
+    REQUEST_GLOBAL_SIGN_OUT,
+    REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
+    REQUEST_LAUNCH_WEB_AUTH_FLOW,
+    REQUEST_MOON_SITE_SUPPORT, REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
+    REQUEST_RESET_PASSWORD,
     REQUEST_SIGN_OUT,
-    REQUEST_TEST_FUNCTION, REQUEST_UPDATE_COINBASE_API_KEYS
+    REQUEST_TEST_FUNCTION,
+    REQUEST_UPDATE_COINBASE_API_KEYS
 } from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
@@ -16,8 +23,11 @@ import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKey} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
-import {doAddSiteSupportRequest, doGetPaymentPayload, getSiteInformation} from "./services/moon";
+import {doAddSiteSupportRequest, getExchangeRate} from "./api/moon";
 import {doPasswordReset} from "./auth";
+import {handleErrors} from "../utils/errors";
+import Tabs from "./browser/Tabs";
+import {doGetPaymentPayload, getSiteInformation} from "./api/moon";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -32,7 +42,7 @@ const messageCenter = (request, sender, sendResponse) => {
     const sendFailure = getSendFailureResponseFunction(sendResponse);
     // Always ensure message extension sender is our own
     if (sender.id !== BackgroundRuntime.id) {
-        sendFailure(`${sender.id} is unauthorized`);
+        sendFailure(`sender.id (${sender.id}) is unauthorized`);
         return;
     }
     const messageResolver = {
@@ -45,7 +55,12 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_GET_ID_JWTOKEN]() {
             if (process.env.NODE_ENV !== 'production') {
-                AuthUser.getInstance().getRefreshedIdJWToken().then(sendSuccess).catch(sendFailure);
+                AuthUser.getInstance().getRefreshedIdJWToken()
+                    .then(sendSuccess)
+                    .catch(err => {
+                        handleErrors(err);
+                        sendFailure(err);
+                    });
                 return true;
             }
             sendFailure("You are not authorized to access this experimental feature yet.");
@@ -53,13 +68,19 @@ const messageCenter = (request, sender, sendResponse) => {
         [REQUEST_LAUNCH_WEB_AUTH_FLOW]() {
             doLaunchWebAuthFlow(request.type)
                 .then(() => sendSuccess(`doLaunchWebAuthFlow(${request.type}) completed`))
-                .catch(() => sendFailure(`doLaunchWebAuthFlow(${request.type}) failed`));
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doLaunchWebAuthFlow(${request.type}) failed`);
+                });
             return true;
         },
         [REQUEST_LAUNCH_COINBASE_AUTH_FLOW]() {
             doLaunchCoinbaseAuthFlow()
                 .then(() => sendSuccess(`doLaunchCoinbaseAuthFlow() completed`))
-                .catch(() => sendFailure(`doLaunchCoinbaseAuthFlow() failed`));
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doLaunchCoinbaseAuthFlow() failed`);
+                });
             return true;
         },
         [POLL_IS_COINBASE_AUTH_MODE]() {
@@ -69,40 +90,77 @@ const messageCenter = (request, sender, sendResponse) => {
             doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab);
             sendSuccess("doUpdateCoinbaseApiKey() started");
         },
+        [REQUEST_GET_EXCHANGE_RATE]() {
+            getExchangeRate(request.quote, request.base)
+                .then(({data}) => sendSuccess(data.exchangeRate))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`getExchangeRate(${request.quote}, ${request.base}) failed`);
+                });
+            return true;
+        },
         [REQUEST_GET_PAYMENT_PAYLOAD]() {
             doGetPaymentPayload(request)
-                .then(({data}) => sendSuccess(data))
-                .catch(() => sendFailure(`doGetPaymentPayload() failed`));
+                .then(({data}) => {
+                    const scripts = data.getPaymentPayload.data || [];
+                    return scripts.map(script => Tabs.executeScript(sender.tab.id, {code: script}));
+                })
+                .then(responses => sendSuccess(responses))
+                // TODO: doUpdateAuthUserEvent with new user from  payment payload
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(err);
+                });
+            return true;
+        },
+        [REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION]() {
+            console.log("Notify payment payload completion request: ", request);
+            sendFailure("FIXME: Not implemented yet");
             return true;
         },
         [REQUEST_GET_SITE_INFORMATION]() {
             getSiteInformation(request.host)
-                .then(({data}) => sendSuccess(data))
-                .catch(() => sendFailure(`getSiteInformation(${request.host}) failed`));
+                .then(({data}) => sendSuccess(data.siteInformation))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`getSiteInformation(${request.host}) failed`);
+                });
             return true;
         },
         [REQUEST_MOON_SITE_SUPPORT]() {
             doAddSiteSupportRequest(request.host)
                 .then(({data}) => sendSuccess(data))
-                .catch(() => sendFailure(`doAddSiteSupportRequest(${request.host}) failed`))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doAddSiteSupportRequest(${request.host}) failed`);
+                });
             return true;
         },
         [REQUEST_RESET_PASSWORD]() {
             doPasswordReset()
                 .then(() => sendSuccess(`doPasswordReset() completed`))
-                .catch(() => sendFailure(`doPasswordReset() failed`));
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doPasswordReset() failed`);
+                });
             return true;
         },
         [REQUEST_SIGN_OUT]() {
             doSignOut()
                 .then(() => sendSuccess(`doSignOut() completed`))
-                .catch(() => sendFailure(`doSignOut() failed`));
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doSignOut() failed`);
+                });
             return true;
         },
         [REQUEST_GLOBAL_SIGN_OUT]() {
             doGlobalSignOut()
                 .then(() => sendSuccess(`doGlobalSignOut() completed`))
-                .catch(() => sendFailure(`doGlobalSignOut() failed`));
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doGlobalSignOut() failed`);
+                });
             return true;
         }
     };

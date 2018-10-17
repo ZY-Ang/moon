@@ -46,6 +46,22 @@
     text-align: center !important;
 }
 
+.text-left {
+    text-align: left !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.float-left {
+    float: left !important;
+}
+
+.float-right {
+    float: right !important;
+}
+
 .text-danger {
     color: #d30000 !important;
 }

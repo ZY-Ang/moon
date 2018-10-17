@@ -15,7 +15,7 @@ import {
 } from "./url";
 import axios from "axios";
 import {WEBIDENTITY_IAM_ROLE_ARN} from "../config/aws/iam";
-import {getUser} from "../services/moon";
+import {getUser} from "../api/moon";
 
 /**
  * Singleton {@class AuthUser}
@@ -234,7 +234,7 @@ class AuthUser {
             email_verified: data.identity.claims.email_verified,
             picture: data.identity.claims.picture,
             // TODO: Simply concatenate additional wallets to conform to shape
-            wallets: coinbaseWallets
+            wallets: coinbaseWallets.sort((a, b) => b.balance.localeCompare(a.balance))
         };
     };
 

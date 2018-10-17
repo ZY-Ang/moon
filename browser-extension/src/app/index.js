@@ -14,6 +14,8 @@ import {Provider} from "react-redux";
 import store from "./redux/store";
 import AppRuntime from "./browser/AppRuntime";
 import axios from "axios";
+import {ACTION_SET_IS_APP_ACTIVE, ACTION_TOGGLE_IS_APP_ACTIVE} from "./redux/reducers/constants";
+import {injectButton} from "./buttonCheckout";
 
 /**
  * Load required font families from the appropriate libraries.
@@ -45,15 +47,6 @@ const reRenderApp = () => {
     }
 };
 
-// try {
-//     var promoInput = document.getElementById('spc-gcpromoinput');
-//     promoInput.value = "95UF-HDQQAT-3N62";
-// // input.remove();
-//
-//     var submitButton = document.getElementById('gcApplyButtonId');
-//     submitButton.click();
-//     // todo: check for message "You successfully redeemed your gift card"
-
 /**
  * Injects the app onto the page and uses
  * the given {@param source} to handle the
@@ -65,11 +58,12 @@ export const toggleApp = async (source) => {
     // Attempt to get the wrapper div
     let moonDiv = document.getElementById(MOON_DIV_ID);
 
-    if (source === SOURCE_MANUAL && !!moonDiv) {
+    if ((source === SOURCE_MANUAL) && !!moonDiv) {
         // If the source of the injection came from a manual click of the
-        // browserAction icon and a div already exists, destroy the div.
-        console.log("Removing existing moonDiv...");
-        moonDiv.remove();
+        // browserAction icon or moon pay buttons and a div already exists,
+        // toggle the render state.
+        console.log("Toggling existing moonDiv...");
+        store.dispatch({type: ACTION_TOGGLE_IS_APP_ACTIVE});
         return true;
 
     } else if (source !== SOURCE_NONE && !moonDiv) {
@@ -101,6 +95,9 @@ export const toggleApp = async (source) => {
 
         // Append styles after rendering application (has to be done after the application render)
         moonShadow.appendChild(moonStyles);
+
+        // Dispatch application active action
+        store.dispatch({type: ACTION_SET_IS_APP_ACTIVE, isAppActive: true});
         return true;
     }
 };
@@ -109,3 +106,4 @@ export const toggleApp = async (source) => {
 
 reRenderApp();
 AppRuntime.run();
+injectButton();

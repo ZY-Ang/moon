@@ -3,7 +3,7 @@
  */
 
 import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../constants/url";
-import supportedSites from "../../supportedSites";
+import supportedSites from "../../../backend/supportedSites";
 
 /**
  * @return {boolean} {@code true} if

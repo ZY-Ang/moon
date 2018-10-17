@@ -33,13 +33,19 @@ const messageCenter = (request, sender, sendResponse) => {
         [REQUEST_INJECT_APP]() {
             toggleApp(request.source)
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
-                .catch(() => sendFailure(`toggleApp(${request.source}) failed`));
+                .catch(err => {
+                    console.error(err);
+                    sendFailure(`toggleApp(${request.source}) failed`);
+                });
             return true;
         },
         [REQUEST_UPDATE_AUTH_USER]() {
             updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${JSON.stringify(request.authUser)}) completed`))
-                .catch(() => sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`));
+                .catch(err => {
+                    console.error(err);
+                    sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
+                });
             return true;
         },
         [REQUEST_COINBASE_EXTRACT_API_KEYS]() {
