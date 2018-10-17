@@ -33,34 +33,32 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
 
     // TODO: FIGURE OUT WHAT HONEY is doing with 'applyCodesClick'
     const executable = require("harp-minify").js(`
-function injectMoonAmazonGiftCode(code){
-    return fetch("https://www.amazon.com/gp/buy/spc/handlers/add-giftcard-promotion.html/ref=ox_pay_page_gc_add", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "x-amz-checkout-page": "spc"
-        },
-        redirect: "follow",
-        referrer: "no-referrer",
-        body: JSON.stringify({
-            claimcode: code
-        }),
-    })
-        .then(function(res){return res.json()});
-}
-
 var giftCards = ${JSON.stringify(giftCards)};
 var successfulGiftCards = [];
 var failedGiftCards = [];
 
-const claimInjections = giftCards
+giftCards
     .reduce(function(prev, giftCard){
         return prev
             .then(function(){
-                return injectMoonAmazonGiftCode(giftCard.gcClaimCode);
+                return (function(code){
+                    return fetch("https://www.amazon.com/gp/buy/spc/handlers/add-giftcard-promotion.html/ref=ox_pay_page_gc_add", {
+                        method: "POST",
+                        mode: "cors",
+                        cache: "no-cache",
+                        credentials: "same-origin",
+                        headers: {
+                            "Content-Type": "application/json; charset=utf-8",
+                            "x-amz-checkout-page": "spc"
+                        },
+                        redirect: "follow",
+                        referrer: "no-referrer",
+                        body: JSON.stringify({
+                            claimcode: code
+                        }),
+                    })
+                        .then(function(res){return res.json()});
+                })(giftCard.gcClaimCode);
             })
             .then(function(result){
                 if (result.errors.length > 0) {
@@ -78,9 +76,7 @@ const claimInjections = giftCards
                     result: errorResult
                 });
             });
-    }, Promise.resolve());
-
-claimInjections
+    }, Promise.resolve())
     .then(function(){
         return new Promise(function(resolve, reject){
             const browserMessage = {
