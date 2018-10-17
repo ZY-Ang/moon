@@ -43,21 +43,6 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
 
-    SupportedSitesDynamoDBTable:
-      # Table that stores supported sites.
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${{self:service}}-${{self:provider.stage}}-supported-sites
-        AttributeDefinitions:
-        - AttributeName: host
-          AttributeType: S
-        KeySchema:
-        - AttributeName: host
-          KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
-
     SiteSupportRequestDynamoDBTable:
       # Table that stores site support requests from users.
       Type: AWS::DynamoDB::Table
@@ -164,6 +149,24 @@ functions:
     description: 'Returns the exchange rate given a quote and base currency.'
     handler: Lambda/index.exchangeRate
     timeout: 30
+  getPaymentPayload:
+    name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
+    description: 'Exchanges client information for a payment payload to be executed on the client'
+    handler: Lambda/index.getPaymentPayload
+    timeout: 180
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:GetItem"
+      Resource:
+      - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
+      - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+  siteInformation:
+    name: ${{self:service}}-${{self:provider.stage}}-siteInformation
+    description: 'Returns information about a supported site or null if unsupported'
+    handler: Lambda/index.siteInformation
+    timeout: 30
   user:
     name: ${{self:service}}-${{self:provider.stage}}-user
     description: 'Returns information about a moon user.'
@@ -176,21 +179,6 @@ functions:
       Resource:
       - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
       - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
-  getPaymentPayload:
-    name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
-    description: 'Exchanges client information for a payment payload to be executed on the client'
-    handler: Lambda/index.getPaymentPayload
-    iamRoleStatementsInherit: true
-    iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-      - "dynamodb:GetItem"
-      Resource:
-      - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
-      - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
-    environment:
-      # specify custom config directory for agcod
-      NODE_CONFIG_DIR: "./Lambda/src/services/paymentProviders/amazonIncentives/config"
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
@@ -226,19 +214,6 @@ custom:
             Resource:
             - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
-      # SupportedSitesDynamoDBTable
-      - type: AMAZON_DYNAMODB
-        name: SupportedSitesDynamoDBTable
-        description: 'DynamoDB table that stores supported sites for Pay with Moon'
-        config:
-          tableName: ${{self:resources.Resources.SupportedSitesDynamoDBTable.Properties.TableName}}
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "dynamodb:GetItem"
-            Resource:
-            - { Fn::GetAtt: [SupportedSitesDynamoDBTable, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [SupportedSitesDynamoDBTable, Arn] }, '/*']] }
       # SiteSupportRequestDynamoDBTable
       - type: AMAZON_DYNAMODB
         name: SiteSupportRequestDynamoDBTable
@@ -293,6 +268,19 @@ custom:
             Resource:
             - { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }, ':*']] }
+      # siteInformation
+      - type: AWS_LAMBDA
+        name: SiteInformationLambdaFunction
+        description: ${{self:functions.siteInformation.description}}
+        config:
+          lambdaFunctionArn: { Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - { Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }, ':*']] }
     # ============== None ==============
       # identity
       - type: NONE
@@ -322,7 +310,7 @@ custom:
         request: Query/exchangeRate/request.vm
         response: Query/exchangeRate/response.vm
       # Query/siteInformation
-      - dataSource: SupportedSitesDynamoDBTable
+      - dataSource: SiteInformationLambdaFunction
         type: Query
         field: siteInformation
         request: Query/siteInformation/request.vm

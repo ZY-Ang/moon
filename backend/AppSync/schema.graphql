@@ -64,6 +64,22 @@ enum Currency {
     MNR
 }
 
+# Base Currencies (denominator currencies) supported by GDAX
+enum CoinbaseProBaseCurrency {
+    USD
+    EUR
+    GBP
+}
+
+# Quote Currencies (numerator currencies) supported by GDAX
+enum CoinbaseProQuoteCurrency {
+    BTC
+    BCH
+    ETC
+    ETH
+    LTC
+}
+
 type Error {
     message: String!
     code: ID!
@@ -75,24 +91,10 @@ type ExchangeRate {
     base: Currency!
     # numerator currency
     quote: Currency!
-    # (numerator currency)/(denominator currency)
-    amount: String!
-}
-
-# Base Currencies (denominator currencies) supported by GDAX
-enum GdaxBaseCurrency {
-    USD
-    EUR
-    GBP
-}
-
-# Quote Currencies (numerator currencies) supported by GDAX
-enum GdaxQuoteCurrency {
-    BTC
-    BCH
-    ETC
-    ETH
-    LTC
+    # Bid price (numerator currency)/(denominator currency)
+    bid: String!
+    # Ask Price (numerator currency)/(denominator currency)
+    ask: String!
 }
 
 # Input for getPaymentPayload mutation
@@ -158,7 +160,7 @@ type PaymentPayload {
     # ID associated with the transaction
     id: ID
     # The magical data that makes it all happen
-    data: String
+    data: [String!]
     # Balance of said magical data
     balance: String
     # currency of the card
@@ -174,7 +176,7 @@ type Query {
     # Returns user information belonging to the callee
     user: User
     # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD)
-    exchangeRate(quote: GdaxQuoteCurrency!, base: GdaxBaseCurrency=USD): ExchangeRate
+    exchangeRate(quote: CoinbaseProQuoteCurrency!, base: CoinbaseProBaseCurrency=USD): ExchangeRate
     # Returns information about the URL of the current site.
     siteInformation(host: String!): SiteInformation
 }

@@ -3,11 +3,8 @@
     "name": "Amazon",
     "logoURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png",
     "isSupported": true,
-    "pathnameCheckout": "/gp/buy/spc/handlers",
-    "pathnameProduct": "/gp/product",
-    "endpointPaymentPayloadApply": "/gp/buy/spc/handlers/add-giftcard-promotion.html/ref=ox_pay_page_gc_add",
-    "querySelectorPaymentPayloadDataInject": "#spc-gcpromoinput",
-    "querySelectorPaymentPayloadSubmit": ""
+    "pathnameCheckout": "/gp/buy/spc/handlers/display.html",
+    "pathnameProduct": "/gp/product"
   },
   "paywithmoon.com": {
     "name": "Moon",

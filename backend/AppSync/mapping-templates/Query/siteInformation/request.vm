@@ -1,7 +1,5 @@
 {
     "version" : "2017-02-28",
-    "operation" : "GetItem",
-    "key" : {
-        "host": $util.dynamodb.toDynamoDBJson($ctx.args.host)
-    }
+    "operation" : "Invoke",
+    "payload" : $util.toJson($ctx.args)
 }

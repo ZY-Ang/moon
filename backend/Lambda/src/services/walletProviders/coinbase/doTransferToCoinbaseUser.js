@@ -10,21 +10,22 @@ const logTail = require("../../../utils/logTail");
  *
  * @param sourceWallet - Source Coinbase wallet (account) object
  * @param targetAccountEmail - The email address of the destination Coinbase user
- * @param amountCrypto - The amount of funds to send to the target user from the source wallet
+ * @param amount - The amount of funds to send to the target user from the source wallet
  * @return {Promise<object>}
  */
-const transferToCoinbaseUser = async (sourceWallet, targetAccountEmail, amountCrypto) => {
-    logHead("transferToCoinbaseUser", {sourceWallet, targetAccountEmail, amountCrypto});
+const doTransferToCoinbaseUser = async (sourceWallet, targetAccountEmail, amount) => {
+    logHead("doTransferToCoinbaseUser", {sourceWallet, targetAccountEmail, amount});
 
     const params = {
         to: targetAccountEmail,
-        amount: amountCrypto,
+        amount,
         currency: sourceWallet.balance.currency,
         description: "Your purchase through Moon"
     };
     const transferToCoinbaseUserInfo = await new Promise((resolve, reject) => {
         sourceWallet.sendMoney(params, (err, transferInfo) => {
             if (err) {
+                console.error(err);
                 reject(err);
             } else if (transferInfo.status !== 'completed') {
                 reject(new Error(`The transaction from user\'s Coinbase account to Moon\'s Coinbase account failed.` +
@@ -39,4 +40,4 @@ const transferToCoinbaseUser = async (sourceWallet, targetAccountEmail, amountCr
     return transferToCoinbaseUserInfo;
 };
 
-module.exports = transferToCoinbaseUser;
+module.exports = doTransferToCoinbaseUser;

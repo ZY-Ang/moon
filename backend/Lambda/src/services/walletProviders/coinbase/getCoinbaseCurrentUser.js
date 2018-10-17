@@ -17,6 +17,7 @@ const getCoinbaseCurrentUser = async (coinbaseClient) => {
     const coinbaseUser = await new Promise((resolve, reject) =>
         coinbaseClient.getCurrentUser((err, currentUser) => {
             if (err) {
+                console.error(err);
                 reject(err);
             } else if (!currentUser) {
                 reject(new Error(`Coinbase returned malformed currentUser: ${currentUser}`));

@@ -1,168 +1,86 @@
 /*
  * Copyright (c) 2018 moon
  */
-const Decimal = require("decimal.js");
-const CoinbaseClient = require("coinbase").Client;
-const gdax = require("gdax");
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
-const baseCurrencies = require("./constants/exchanges/coinbasePro/currencies").base;
-const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").quote;
-const walletProviders = require("./constants/walletProviders");
-const getAmazonGiftCard = require("./services/paymentProviders/amazonIncentives/getAmazonGiftCard");
-const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
-const getCoinbaseWallet = require("./services/walletProviders/coinbase/getCoinbaseWallet");
-const transferToCoinbasePro = require("./services/walletProviders/coinbase/transferToCoinbasePro");
-const transferToCoinbaseUser = require("./services/walletProviders/coinbase/transferToCoinbaseUser");
-const getCoinbaseProExchangeRate = require("./services/exchangeRateProviders/coinbasePro/getExchangeRate");
-const placeCoinbaseProSellMarketOrder = require("./services/exchanges/coinbasePro/placeSellMarketOrder");
-const {coinbaseProUri, coinbaseProKey, coinbaseProSecret, coinbaseProPassphrase} = require("./constants/exchanges/coinbasePro/config");
+const {URL} = require('url');
 const getUser = require("./user").handler;
-const moonCoinbaseWalletIds = require("./constants/exchanges/coinbasePro/config").coinbaseWalletIds;
-const moonCoinbaseAccountEmail = require("./constants/exchanges/coinbasePro/config").coinbaseAccountEmail;
+const {base: supportedCartCurrencies} = require("./constants/exchanges/coinbasePro/currencies");
+const validateWallet = require("./services/walletProviders/validateWallet");
+const doTransferToMoon = require("./services/walletProviders/doTransferToMoon");
+const isSupportedSite = require("./services/paymentPayloaders/isSupportedSite");
+const getAmazonPaymentPayload = require("./services/paymentPayloaders/amazon/getAmazonPaymentPayload");
 
-// Round up the 8th digit of an amount of currency if necessary. This is Coinbase's standard. Returns a string
-const roundCurrency = (amount) => {
-    amount = new Decimal(amount);
-    const fixedDecimal = 8; // round up the 8th digit (Coinbase's standard)
-    const ten = new Decimal(10);
-    const mask = ten.pow(fixedDecimal);
-    const roundedAmount = mask.times(amount).ceil().dividedBy(mask);
-    console.log(amount.toFixed(10), mask.toFixed(10), roundedAmount.toFixed(10));
-    return roundedAmount.toFixed(8);
+/**
+ * Validates {@param getPaymentPayloadInput} for
+ * {@function getPaymentPayload}
+ */
+const validateInput = (getPaymentPayloadInput) => {
+    if (!getPaymentPayloadInput) {
+        throw new Error("Invalid getPaymentPayloadInput: No input supplied");
+    }
+    const {cartInfo, pageInfo, wallet} = getPaymentPayloadInput;
+    validateCartInfo(cartInfo);
+    validateWallet(wallet);
+    validatePageInfo(pageInfo);
 };
 
-// Calculate the amount of crypto that is needed to transfer from the user's account to complete the sale
-// For now this is simple, but more sophisticated techniques can be used in the future
-const calculateNeededCrypto = (amountFiat, exchangeRate) => {
-    // deal with decimal stuff, round correctly
-    amountFiat = new Decimal(amountFiat);
-    exchangeRate = new Decimal(exchangeRate);
-    return roundCurrency(amountFiat.dividedBy(exchangeRate));
+/**
+ * Validates {@param cartInfo}
+ */
+const validateCartInfo = (cartInfo) => {
+    if (!cartInfo) {
+        throw new Error("Invalid cartInfo: No cart info supplied");
+    } else if (!cartInfo.amount) {
+        throw new Error("Invalid cartInfo: Cart amount is not supplied");
+    } else if (!cartInfo.currency) {
+        throw new Error("Invalid cartInfo: Cart currency is not supplied");
+    } else if (!supportedCartCurrencies[cartInfo.currency]) {
+        throw new Error(`Invalid cartInfo: ${cartInfo.currency} is not a valid cart currency`);
+    }
 };
 
-module.exports.handler = async (event) => {
+/**
+ * Validates {@param pageInfo}
+ */
+const validatePageInfo = (pageInfo) => {
+    if (!pageInfo) {
+        throw new Error("Invalid pageInfo: No page info supplied");
+    } else if (!pageInfo.url) {
+        throw new Error("Invalid pageInfo: No url supplied");
+    } else if (!isSupportedSite(pageInfo.url)) {
+        throw new Error(`${pageInfo.url} is not a supported site.`);
+    } else if (!pageInfo.content) {
+        throw new Error("Invalid pageInfo: No content supplied");
+    }
+};
+
+const getPaymentPayload = async (event) => {
     logHead("getPaymentPayload", event);
 
-    const {identity} = event;
-    // the provider (e.g. Coinbase) with which the wallet is associated
-    const userWalletProvider = event.arguments.input.wallet.provider;
-    // id of the Coinbase wallet from which the user would like to pay
-    const userCoinbaseWalletId = event.arguments.input.wallet.id;
-    // amount of the purchase in local (base) currency
-    const amountFiat = event.arguments.input.cartInfo.amount;
-    // local currency of the purchase
-    const baseCurrency = event.arguments.input.cartInfo.currency;
+    const {arguments: args, identity} = event;
+    validateInput(args.input);
+    const {cartInfo, wallet, pageInfo} = args.input;
 
-    if (!amountFiat) {
-        throw new Error("Please supply a purchase amount.");
+    // 1. Pay Moon. If payment fails, function should break.
+    await doTransferToMoon(identity, cartInfo, wallet);
 
-    // only check if amount < 10 in production so we can test with .01USD in development
-    } else if ((process.env.NODE_ENV === 'production' && amountFiat < 10) || amountFiat > 2000) {
-        // Coinbase Pro has a min sell order of $10 USD and Amazon Incentives issues a maximum of a $2000 USD gift card
-        throw new Error(`${amountFiat} is an invalid purchase amount.`);
+    // 2. Handle payment payload logic TODO: REFUND user if error
+    const getPaymentPayloadHostMap = {
+        "www.amazon.com": getAmazonPaymentPayload
+    };
+    const {host} = new URL(pageInfo.url);
+    const hostPaymentPayload = await getPaymentPayloadHostMap[host](cartInfo, pageInfo);
 
-    } else if (!baseCurrency) {
-        throw new Error('Please supply a valid base currency.');
-
-    } else if (!userWalletProvider) {
-        throw new Error('Please supply a valid wallet provider.');
-
-    } else if (!walletProviders[userWalletProvider]) {
-        throw new Error(`${userWalletProvider} is invalid or a currently unsupported wallet provider.`);
-
-    } else if (!baseCurrencies[baseCurrency]) {
-        throw new Error(`${baseCurrency} is invalid or a currently unsupported base currency.`);
-
-    } else if (!userCoinbaseWalletId) {
-        throw new Error('Please supply a valid Coinbase wallet id.');
-
-    }
-
-    // get authenticated client to Moon's Coinbase Pro account
-    const authedGdaxClient = new gdax.AuthenticatedClient(
-        coinbaseProKey,
-        coinbaseProSecret,
-        coinbaseProPassphrase,
-        coinbaseProUri
-    );
-
-    // get the user's Coinbase API keys from dynamodb
-    const userCoinbaseApiKeys = await getCoinbaseApiKeys(identity.sub);
-
-    // get Coinbase client to user's Coinbase account
-    const userCoinbaseClient = new CoinbaseClient({
-        apiKey: userCoinbaseApiKeys.key,
-        apiSecret: userCoinbaseApiKeys.secret
+    // 3. Get the updated user object after the money has been sent
+    const user = await getUser(event);
+    const paymentPayload = Object.assign(hostPaymentPayload, {
+        id: `TEST-TRANSACTION-${require("randomstring").generate(8)}`,
+        user
     });
 
-    // get the user's Coinbase wallet from which we want to draw funds
-    const userCoinbaseWallet = await getCoinbaseWallet(userCoinbaseClient, userCoinbaseWalletId);
-
-    const currencyToSell = userCoinbaseWallet.balance.currency;
-
-    if (!quoteCurrencies[currencyToSell]) {
-        throw new Error('Selected wallet is not denominated in a currency we support');
-    }
-
-    // get the exchange rate between the base and quote currencies
-    const exchangeRate = await getCoinbaseProExchangeRate(currencyToSell, baseCurrency);
-
-    // calculate how much crypto is needed to complete the exchange - the amount to transfer from the user and sell
-    const amountCrypto = calculateNeededCrypto(amountFiat, exchangeRate.bid);
-    console.log('Amount in fiat of the purchase = $' + amountFiat);
-    console.log('Exchange rate = $' + exchangeRate);
-    console.log('Amount in crypto to withdraw from user\'s Coinbase account = ' + amountCrypto);
-
-    // check if there is enough crypto in the user's account to fund the purchase
-    let userAccountBalance = userCoinbaseWallet.balance.amount;
-    if (userAccountBalance < amountCrypto) {
-        throw new Error(`Insufficient funds! The user only has ${userAccountBalance} available.`);
-    } else {
-        console.log(`Sufficient funds! The user has ${userAccountBalance} available.`);
-    }
-
-    // send the crypto to Moon's Coinbase account from the user's Coinbase account
-    const transaction = await transferToCoinbaseUser(userCoinbaseWallet, moonCoinbaseAccountEmail, amountCrypto.toString());
-
-    console.log('transaction: ' + JSON.stringify(transaction, 3));
-
-    let transactionId = transaction.id;
-    //todo: store the whole transaction in the db somewhere associated with transaction id and purchase id
-
-    // transfer the money from moon's coinbase account to moon's coinbasePro account
-    const moonCoinbaseAccountId = moonCoinbaseWalletIds[currencyToSell];
-    const depositInfo = await transferToCoinbasePro(authedGdaxClient, amountCrypto, currencyToSell, moonCoinbaseAccountId);
-    // todo: log this in db? kinda useless info, but nice to have for the sake of completion
-
-    console.log('deposit info: ' + JSON.stringify(depositInfo, 3));
-
-    // Sell the crypto that is now in Moon's Coinbase Pro account
-    const orderInfo = await placeCoinbaseProSellMarketOrder(authedGdaxClient, amountFiat, baseCurrency, currencyToSell);
-
-    console.log('order info: ' + JSON.stringify(orderInfo, 3));
-
-    // as long as sellCrypto did not throw an error, we assume that the sell order has been sent and all is well
-    // now extract the amount that was actually sold, including fee info and send to the database
-    // todo: extract order info and store in database
-
-    // issue the gift card
-    const giftcardInfo = await getAmazonGiftCard(amountFiat, baseCurrency);
-
-    const giftcardClaimCode = giftcardInfo['gcClaimCode'];
-
-    // get the updated user object after the money has been
-    const user = await getUser(event);
-
-    const paymentPayload = {
-        id: 'id_tbd',
-        data: giftcardClaimCode,
-        balance: amountFiat,
-        currency: baseCurrency,
-        user
-    };
-
-    logTail("getPaymentPayload", paymentPayload);
-
+    logTail("paymentPayload", paymentPayload);
     return paymentPayload;
 };
+
+module.exports.handler = getPaymentPayload;

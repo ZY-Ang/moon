@@ -13,11 +13,12 @@ const logTail = require("../../../utils/logTail");
  * @returns {Promise<Object>}
  */
 const getCoinbaseWallet = async (coinbaseClient, coinbaseWalletId) => {
-    logHead("getCoinbaseWallet", coinbaseClient);
+    logHead("getCoinbaseWallet", {coinbaseClient, coinbaseWalletId});
 
     const coinbaseWallet = await new Promise((resolve, reject) =>
         coinbaseClient.getAccount(coinbaseWalletId, (err, account) => {
             if (err) {
+                console.error(err);
                 reject(err);
             } else if (!account) {
                 reject(new Error(`Coinbase returned malformed account: ${account}`));

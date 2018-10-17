@@ -9,7 +9,7 @@ const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinb
 const getCoinbaseCurrentUser = require("./services/walletProviders/coinbase/getCoinbaseCurrentUser");
 const getCoinbaseWallets = require("./services/walletProviders/coinbase/getCoinbaseWallets");
 
-module.exports.handler = async (event) => {
+const user = async (event) => {
     logHead("user", event);
     const {identity} = event;
 
@@ -47,3 +47,5 @@ module.exports.handler = async (event) => {
     logTail("user", user);
     return user;
 };
+
+module.exports.handler = user;

@@ -7,7 +7,7 @@ const baseCurrencies = require("./constants/exchanges/coinbasePro/currencies").b
 const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").quote;
 const getCoinbaseProExchangeRate = require('./services/exchangeRateProviders/coinbasePro/getExchangeRate');
 
-module.exports.handler = async (event) => {
+const exchangeRate = async (event) => {
     logHead("exchangeRate", event);
 
     if (!event.quote) {
@@ -28,3 +28,5 @@ module.exports.handler = async (event) => {
     logTail("exchangeRate", exchangeRate);
     return exchangeRate;
 };
+
+module.exports.handler = exchangeRate;

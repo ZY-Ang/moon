@@ -20,7 +20,7 @@ const getCoinbaseApiKeys = async (sub) => {
     }
 
     let dynamodb = new AWS.DynamoDB.DocumentClient();
-    let params = {
+    const params = {
         TableName: COINBASE_API_KEY_TABLE,
         Key: {sub}
     };

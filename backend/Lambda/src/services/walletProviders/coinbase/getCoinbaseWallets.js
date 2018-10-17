@@ -17,6 +17,7 @@ const getCoinbaseWallets = async (coinbaseClient) => {
     const coinbaseWallets = await new Promise((resolve, reject) =>
         coinbaseClient.getAccounts({}, (err, accounts) => {
             if (err) {
+                console.error(err);
                 reject(err);
             } else if (!accounts) {
                 reject(new Error(`Coinbase returned malformed accounts: ${accounts}`));

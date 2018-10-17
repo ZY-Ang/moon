@@ -17,13 +17,14 @@ const getExchangeRate = async (quote, base) => {
     logHead("coinbasePro.getExchangeRate", {quote, base});
     const publicClient = new PublicClient();
 
-    const {bid} = await publicClient.getProductTicker(`${quote}-${base}`);
+    const {bid, ask} = await publicClient.getProductTicker(`${quote}-${base}`);
     // We return the bid price since we are selling and this is closer to what will be executed
     // TODO: In marketing, you want to give your user the higher exchange rate so there is a perception of superiority
     const exchangeRate = {
         base,
         quote,
-        bid
+        bid,
+        ask
     };
 
     logTail("coinbasePro.exchangeRate", exchangeRate);
