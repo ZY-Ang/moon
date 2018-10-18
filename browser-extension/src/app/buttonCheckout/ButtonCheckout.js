@@ -5,7 +5,7 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {ACTION_SET_IS_APP_ACTIVE} from "../redux/reducers/constants";
 import AppRuntime from "../browser/AppRuntime";
-import whiteLogo from "../../../../assets/icons/logo_300_text.png";
+import whiteLogo from "../../../../assets/icons/logo_text.svg";
 
 const defaultStyle = {
     backgroundColor: '#0F62BD',

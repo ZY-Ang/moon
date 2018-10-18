@@ -17,6 +17,13 @@ class MoonGraphQL {
     static _publicClient = null; // TODO: new AWSAppSyncClient(AppSyncPublicConfig) once AppSyncPublicConfig has been configured properly
 
     /**
+     * Remove {@static _authClient} instance on sign out
+     */
+    static signOut = () => {
+        MoonGraphQL._authClient = null;
+    };
+
+    /**
      * The authenticated AppSync client with valid credentials.
      * Automatically refreshes JWT them when necessary.
      *

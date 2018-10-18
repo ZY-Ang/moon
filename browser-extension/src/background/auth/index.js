@@ -133,6 +133,9 @@ export const doUpdateAuthUserEvent = async () => {
     console.log("doUpdateAuthUserEvent");
     try {
         const authUser = await AuthUser.getCurrent();
+        if (!authUser) {
+            return Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null});
+        }
         return Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: (await authUser.trim())});
     } catch (error) {
         Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null});

@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import {WEBIDENTITY_IAM_ROLE_ARN} from "../config/aws/iam";
 import {getUser} from "../api/moon";
+import MoonGraphQL from "../api/MoonGraphQL";
 
 /**
  * Singleton {@class AuthUser}
@@ -176,6 +177,7 @@ class AuthUser {
 
     signOut = () => {
         AuthUser.setInstance(null);
+        MoonGraphQL.signOut();
         return this.clearTokensFromStorage()
             .then(() => axios.get(URL_SIGN_OUT))
             .then(response => {
@@ -186,6 +188,7 @@ class AuthUser {
 
     globalSignOut = () => {
         const body = getRevokeTokenParams(this.refreshToken);
+        MoonGraphQL.signOut();
         return this.signOut()
             .then(() => axios.post(URL_REVOKE_REFRESH_TOKENS, body));
     };
@@ -202,7 +205,6 @@ class AuthUser {
         const body = getRefreshTokenParams(this.refreshToken);
         return axios.post(URL_TOKEN_FLOW, body)
             .then(({data}) => {
-                console.log("Retrieved new tokens");
                 if (!AuthUser.isValidTokens({...data, refresh_token: this.refreshToken})) {
                     throw new Error("Tokens are not valid");
 
