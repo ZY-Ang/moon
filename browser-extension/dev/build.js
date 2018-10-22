@@ -87,7 +87,7 @@ const build = async () => {
     shell.env.AWS_REGION = process.env.AWS_REGION || DEFAULT_AWS_REGION;
 
     // AWS_APPSYNC_ENDPOINT_AUTH
-    shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getAWSAppSyncEndpoint(credentials, `moon-${shell.env.NODE_ENV}`);
+    shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getAWSAppSyncEndpoint(credentials, `moon-backend-${shell.env.NODE_ENV}`);
     console.log(`AWS_APPSYNC_ENDPOINT_AUTH:\t${(shell.env.AWS_APPSYNC_ENDPOINT_AUTH)}`);
 
     // AWS_APPSYNC_ENDPOINT_PUBLIC
