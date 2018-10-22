@@ -23,8 +23,8 @@ const CONFIG_AGCOD = process.env.NODE_ENV === 'production'
         },
         partnerId: "Ken60", // TODO: Enable
         credentials: {
-            accessKeyId: "AKIAJ2STY2SNIRBSDSSA", // TODO: Enable
-            secretAccessKey: "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" // TODO: Enable
+            accessKeyId: "AKIAJNYXZ23O2LLQAR3Q",
+            secretAccessKey: "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" 
         }
     } : {
         partnerId: "Ken60",
