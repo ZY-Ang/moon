@@ -24,7 +24,7 @@ const CONFIG_AGCOD = process.env.NODE_ENV === 'production'
         partnerId: "Ken60",
         credentials: {
             accessKeyId: "AKIAJNYXZ23O2LLQAR3Q",
-            secretAccessKey: "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"
+            secretAccessKey: "U2y2MPMlRy/2Z0ToB7aepcG6ia3kq+zm309vuKj8" 
         }
     } : {
         partnerId: "Ken60",
