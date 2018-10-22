@@ -10,7 +10,7 @@ export const REQUEST_TEST_FUNCTION = "MOON_TEST_FUNCTION";
 export const REQUEST_GET_ID_JWTOKEN = "MOON_GET_ID_TOKEN";
 
 // --------------------- Launch Web Auth Flow ---------------------
-/** Used to request an injection of the moon extension onto the page */
+/** Used to request launch of the auth flow */
 export const REQUEST_LAUNCH_WEB_AUTH_FLOW = "MOON_LAUNCH_AUTH_FLOW";
 
 /** Used to notify of sign in via email and password */

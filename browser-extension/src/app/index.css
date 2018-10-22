@@ -62,7 +62,11 @@
     float: right !important;
 }
 
-.text-danger {
+.text-error {
+    color: #d30000 !important;
+}
+
+.text-error * {
     color: #d30000 !important;
 }
 
@@ -70,7 +74,15 @@
     color: white !important;
 }
 
+.text-white * {
+    color: white !important;
+}
+
 .text-black {
+    color: black !important;
+}
+
+.text-black * {
     color: black !important;
 }
 

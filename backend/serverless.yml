@@ -40,8 +40,8 @@ resources:
         - AttributeName: sub
           KeyType: HASH
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+          ReadCapacityUnits: 20000  # TODO: Contact AWS Support beyond 40000 for an increase
+          WriteCapacityUnits: 5000 # TODO: Contact AWS Support beyond 40000 for an increase
 
     SiteSupportRequestDynamoDBTable:
       # Table that stores site support requests from users.

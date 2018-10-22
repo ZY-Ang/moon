@@ -70,7 +70,7 @@ const getPaymentPayload = async (event) => {
         "www.amazon.com": getAmazonPaymentPayload
     };
     const {host} = new URL(pageInfo.url);
-    const hostPaymentPayload = await getPaymentPayloadHostMap[host](cartInfo, pageInfo);
+    let hostPaymentPayload = await getPaymentPayloadHostMap[host](cartInfo, pageInfo);
 
     // 3. Get the updated user object after the money has been sent
     const user = await getUser(event);

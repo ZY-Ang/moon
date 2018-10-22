@@ -4,26 +4,39 @@
 const logHead = require("../../../utils/logHead");
 const logTail = require("../../../utils/logTail");
 const Decimal = require("decimal.js");
-const getAmazonGiftCard = require("./getAmazonGiftCard");
+const {URL} = require('url');
+const doCreateAmazonGiftCard = require("./doCreateAmazonGiftCard");
 
 const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
     logHead("getAmazonPaymentPayload", {cartInfo, pageInfo});
     const {amount: purchaseAmount, currency: purchaseCurrency} = cartInfo;
     // TODO: Store {@code pageInfo} in a database somewhere so we can debug
     const {url, content} = pageInfo;
+    const {host} = new URL(url);
 
-    // TODO: Add Host Router - Host 'www.amazon.com' is only in 'NA' (North America - inclusive of Mexico, Canada).
-    const REGION = 'NA';
+    const regionHostMap = {
+        "www.amazon.com": "NA",
+        "www.amazon.ca": "NA",
+        "www.amazon.com.mx": "NA",
+        "www.amazon.it": "EU",
+        "www.amazon.es": "EU",
+        "www.amazon.de": "EU",
+        "www.amazon.fr": "EU",
+        "www.amazon.co.uk": "EU",
+        "www.amazon.co.jp": "FE",
+        "www.amazon.com.au": "FE"
+    };
+    const REGION = regionHostMap[host];
 
     // 1. Issue Amazon gift card(s)
     let giftCards = [];
     let remaining = new Decimal(purchaseAmount);
     while (remaining.gt(0)) {
         if (remaining.gt(2000)) {
-            giftCards.push(await getAmazonGiftCard("2000", purchaseCurrency, REGION));
+            giftCards.push(await doCreateAmazonGiftCard("2000", purchaseCurrency, REGION));
             remaining = remaining.minus(2000);
         } else {
-            giftCards.push(await getAmazonGiftCard(remaining.toString(), purchaseCurrency, REGION));
+            giftCards.push(await doCreateAmazonGiftCard(remaining.toString(), purchaseCurrency, REGION));
             remaining = new Decimal(0);
         }
     }
@@ -33,45 +46,47 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
 
     // TODO: FIGURE OUT WHAT HONEY is doing with 'applyCodesClick'
     const executable = require("harp-minify").js(`
-var giftCards = ${JSON.stringify(giftCards)};
-var successfulGiftCards = [];
-var failedGiftCards = [];
+var pwmApplyGiftCards = function(gcClaimCode){
+    return fetch("https://www.amazon.com/gp/buy/spc/handlers/add-giftcard-promotion.html/ref=ox_pay_page_gc_add", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "x-amz-checkout-page": "spc"
+        },
+        redirect: "follow",
+        referrer: "no-referrer",
+        body: JSON.stringify({
+            claimcode: gcClaimCode
+        }),
+    })
+        .then(function(res){return res.json()});
+};
 
-giftCards
+var pwmGiftCards = ${JSON.stringify(giftCards)};
+var pwmSuccessfulGiftCards = [];
+var pwmFailedGiftCards = [];
+
+pwmGiftCards
     .reduce(function(prev, giftCard){
         return prev
             .then(function(){
-                return (function(code){
-                    return fetch("https://www.amazon.com/gp/buy/spc/handlers/add-giftcard-promotion.html/ref=ox_pay_page_gc_add", {
-                        method: "POST",
-                        mode: "cors",
-                        cache: "no-cache",
-                        credentials: "same-origin",
-                        headers: {
-                            "Content-Type": "application/json; charset=utf-8",
-                            "x-amz-checkout-page": "spc"
-                        },
-                        redirect: "follow",
-                        referrer: "no-referrer",
-                        body: JSON.stringify({
-                            claimcode: code
-                        }),
-                    })
-                        .then(function(res){return res.json()});
-                })(giftCard.gcClaimCode);
+                return pwmApplyGiftCards(giftCard.gcClaimCode);
             })
             .then(function(result){
                 if (result.errors.length > 0) {
                     throw result;
                 } else {
-                    return successfulGiftCards.push({
+                    return pwmSuccessfulGiftCards.push({
                         giftCard: giftCard,
                         result: result
                     });
                 }
             })
             .catch(function(errorResult){
-                return failedGiftCards.push({
+                return pwmFailedGiftCards.push({
                     giftCard: giftCard,
                     result: errorResult
                 });
@@ -81,10 +96,10 @@ giftCards
         return new Promise(function(resolve, reject){
             const browserMessage = {
                 message: "MOON_NOTIFY_PAYMENT_COMPLETION",
-                giftCards: giftCards,
-                successfulGiftCards: successfulGiftCards,
-                failedGiftCards: failedGiftCards
-            }
+                pwmGiftCards: pwmGiftCards,
+                pwmSuccessfulGiftCards: pwmSuccessfulGiftCards,
+                pwmFailedGiftCards: pwmFailedGiftCards
+            };
             if (chrome && chrome.runtime) {
                 chrome.runtime.sendMessage(browserMessage, function(response){
                     if (chrome.runtime.lastError) {

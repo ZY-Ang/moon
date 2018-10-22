@@ -16,8 +16,8 @@ const {CONFIG_AGCOD} = require("../../../constants/paymentPayloaders/amazon/conf
  *      FE - Asian Pacific (JP/AU)      (us-west-2)
  * @returns {Promise<any>}
  */
-const getAmazonGiftCard  = async (amount, currency, region) => {
-    logHead("getAmazonGiftCard", {amount, currency, region});
+const doCreateAmazonGiftCard  = async (amount, currency, region) => {
+    logHead("doCreateAmazonGiftCard", {amount, currency, region});
 
     const amazonGiftCardClient = new AmazonGiftCardClient(CONFIG_AGCOD);
 
@@ -32,8 +32,8 @@ const getAmazonGiftCard  = async (amount, currency, region) => {
         });
     });
 
-    logTail("getAmazonGiftCard", giftCardInfo);
+    logTail("doCreateAmazonGiftCard", giftCardInfo);
     return giftCardInfo;
 };
 
-module.exports = getAmazonGiftCard;
+module.exports = doCreateAmazonGiftCard;

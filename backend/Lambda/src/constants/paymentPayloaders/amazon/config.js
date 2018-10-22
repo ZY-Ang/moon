@@ -21,10 +21,10 @@ const CONFIG_AGCOD = process.env.NODE_ENV === 'production'
                 countries: ["JP", "AU"]
             }
         },
-        partnerId: "Ken60",
+        partnerId: "Ken60", // TODO: Enable
         credentials: {
-            accessKeyId: "AKIAJ2STY2SNIRBSDSSA",
-            secretAccessKey: "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"
+            accessKeyId: "AKIAJ2STY2SNIRBSDSSA", // TODO: Enable
+            secretAccessKey: "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" // TODO: Enable
         }
     } : {
         partnerId: "Ken60",

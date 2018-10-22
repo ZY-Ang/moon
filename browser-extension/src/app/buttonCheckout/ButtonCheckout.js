@@ -6,6 +6,9 @@ import {connect} from "react-redux";
 import {ACTION_SET_IS_APP_ACTIVE} from "../redux/reducers/constants";
 import AppRuntime from "../browser/AppRuntime";
 import whiteLogo from "../../../../assets/icons/logo_text.svg";
+import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
+import {toggleApp} from "../index";
+import {handleErrors} from "../../utils/errors";
 
 const defaultStyle = {
     backgroundColor: '#0F62BD',
@@ -52,7 +55,7 @@ class ButtonCheckout extends Component {
         return this.props.isAppActive ? null : (
             <div
                 style={this.state.style}
-                onClick={() => this.props.onSetIsAppActive(true)}
+                onClick={() => toggleApp(SOURCE_MANUAL).catch(handleErrors)}
                 onMouseEnter={this.setHoverStyle}
                 onMouseLeave={this.setDefaultStyle}
                 onMouseDown={this.setActiveStyle}

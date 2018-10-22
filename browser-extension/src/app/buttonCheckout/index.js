@@ -21,18 +21,30 @@ export const injectButton = () => {
         "www.amazon.com": (pathname) => {
             if (pathname.startsWith(supportedSites["www.amazon.com"].pathnameCheckout)) {
                 const querySelectors = "#order-summary-box .a-box-inner, #subtotals .a-box-inner";
-                document.querySelectorAll(querySelectors)[0]
-                    .insertBefore(moonButton, document.querySelectorAll(querySelectors)[0].children[1]);
+                const destinationBox = document.querySelectorAll(querySelectors)[0];
+                if (destinationBox && destinationBox.children[1]) {
+                    destinationBox.insertBefore(moonButton, destinationBox.children[1]);
+                }
+            } else if (pathname.startsWith(supportedSites["www.amazon.com"].pathnameProduct)) {
+                const querySelectors = "#unifiedPrice_feature_div,#mediaPrice_feature_div";
+                const destinationBox = document.querySelector(querySelectors);
+                if (destinationBox) {
+                    moonButton.style.maxWidth = '160px';
+                    destinationBox.appendChild(moonButton);
+                }
             }
         }
     };
 
     if (window && window.location && elementInsertionScriptHostMap[window.location.host]) {
         elementInsertionScriptHostMap[window.location.host](window.location.pathname);
-        ReactDOM.render((
-            <Provider store={store}>
-                <ButtonCheckout/>
-            </Provider>
-        ), document.getElementById(ID_BUTTON_CHECKOUT));
+        const moonButtonRoot = document.getElementById(ID_BUTTON_CHECKOUT);
+        if (!!moonButtonRoot) {
+            ReactDOM.render((
+                <Provider store={store}>
+                    <ButtonCheckout/>
+                </Provider>
+            ), document.getElementById(ID_BUTTON_CHECKOUT));
+        }
     }
 };

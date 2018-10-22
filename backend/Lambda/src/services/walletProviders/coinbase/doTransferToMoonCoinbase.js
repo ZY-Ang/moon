@@ -16,23 +16,6 @@ const {base: BASE_CURRENCIES, quote: QUOTE_CURRENCIES} = require("../../../const
 const {EMAIL: MOON_COINBASE_EMAIL, WALLETS: MOON_COINBASE_WALLET_IDS} = require("../../../constants/walletProviders/coinbase/config");
 
 /**
- * Round up the 8th digit of an amount of currency if necessary to Coinbase's standard.
- * @param amount {Decimal}
- * @returns {string}
- */
-const roundAmount = (amount) => {
-    logHead("roundAmount", amount);
-
-    const fixedDecimal = 8; // round up the 8th digit (Coinbase's standard)
-    const ten = new Decimal(10);
-    const mask = ten.pow(fixedDecimal);
-    const roundedAmount = mask.times(new Decimal(amount)).ceil().dividedBy(mask).toFixed(8);
-
-    logTail("roundedAmount", roundedAmount);
-    return roundedAmount;
-};
-
-/**
  * Calculates the required amount that is needed for a transaction.
  * @param baseAmount {string} - amount in the base currency to be converted from.
  * @param exchangeRate {string} - exchange rate of the quoted currency.
@@ -45,8 +28,7 @@ const getRequiredAmount = (baseAmount, exchangeRate) => {
     exchangeRate = new Decimal(exchangeRate);
 
     const riskFactor = (baseAmount.lt(10) || baseAmount.gt(2000)) ? new Decimal(1.01) : new Decimal(1.0);
-
-    const requiredAmount = roundAmount(baseAmount.dividedBy(exchangeRate).times(riskFactor));
+    const requiredAmount = baseAmount.dividedBy(exchangeRate).times(riskFactor).toFixed(8, Decimal.ROUND_UP);
 
     logTail("getRequiredAmount", requiredAmount);
     return requiredAmount;

@@ -89,7 +89,11 @@ class AuthFlow extends Component {
                         Sign Up!
                     </a>
                 </div>
-                <hr className="sign-in-divider" data-content="or log in with" style={{width: '100%'}}/>
+                <hr
+                    className="sign-in-divider"
+                    data-content="or log in with"
+                    style={{width: '100%'}}
+                />
                 <div className="text-center">
                     <button
                         className="btn-auth-social btn-auth-social-facebook"
@@ -110,7 +114,7 @@ class AuthFlow extends Component {
                         <FaIcon icon={['fab', 'amazon']}/>
                     </button>
                 </div>
-                <p className="text-center text-danger">{this.state.error}</p>
+                <p className="text-center text-error">{this.state.error}</p>
             </div>
         );
     }

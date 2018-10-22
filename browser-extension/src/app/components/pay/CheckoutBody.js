@@ -61,7 +61,9 @@ class CheckoutCalculator extends Component {
         this.state = {
             exchangeRate: "0",
             walletBalanceInBase: "0",
-            requiredAmountInQuote: "0"
+            requiredAmountInQuote: "0",
+            isSufficient: true,
+            topUpAmountInQuote: "0"
         };
     }
 
@@ -73,10 +75,13 @@ class CheckoutCalculator extends Component {
                 base: cartCurrency
             })
                 .then(exchangeRate => {
+                    const requiredAmountInQuote = getRequiredAmountInQuote(cartAmount, exchangeRate.bid);
                     this.setState(() => ({
                         exchangeRate: exchangeRate.bid,
-                        walletBalanceInBase: getWalletAmountInBase(selectedWallet.balance, exchangeRate.bid).toString(),
-                        requiredAmountInQuote: getRequiredAmountInQuote(cartAmount, exchangeRate.bid).toString()
+                        walletBalanceInBase: getWalletAmountInBase(selectedWallet.balance, exchangeRate.bid),
+                        requiredAmountInQuote,
+                        isSufficient: (Decimal(selectedWallet.balance).gt(requiredAmountInQuote)),
+                        topUpAmountInQuote: Decimal(requiredAmountInQuote).sub(selectedWallet.balance).toString()
                     }));
                 })
                 .catch(err => console.error("Failed to get exchange rate", err));
@@ -89,7 +94,7 @@ class CheckoutCalculator extends Component {
             <div className="checkout-calculator">
                 <div className="checkout-calculator-section border-bottom">
                     <div className="text-left float-left">{selectedWallet.currency}/{cartCurrency}</div>
-                    <div className="text-right"><b>{this.state.exchangeRate}</b></div>
+                    <div className="text-right"><b>{cartCurrency} {this.state.exchangeRate}</b></div>
                 </div>
                 <div className="checkout-calculator-section border-bottom">
                     <div className="text-left float-left">{selectedWallet.name} Balance</div>
@@ -101,6 +106,16 @@ class CheckoutCalculator extends Component {
                     <div className="text-right"><b>{selectedWallet.currency} {this.state.requiredAmountInQuote}</b></div>
                     <div className="text-right"><b>{cartCurrency} {cartAmount}</b></div>
                 </div>
+                {
+                    !this.state.isSufficient &&
+                    <div className="checkout-calculator-section">
+                        <div
+                            className="text-center text-error"
+                        >
+                            Insufficient funds! You  need <b>{selectedWallet.currency}{this.state.topUpAmountInQuote}</b> more to complete this purchase!
+                        </div>
+                    </div>
+                }
             </div>
         ) : null;
     }
@@ -125,7 +140,7 @@ class CheckoutBody extends Component {
                         id="checkout-cart-icon"
                         role="img"
                         aria-label="Checkout"
-                        style={{fontSize: 100}}
+                        style={{fontSize: 80}}
                     >
                         🛒
                     </span>
