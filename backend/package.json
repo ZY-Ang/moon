@@ -38,6 +38,7 @@
     "serverless": "^1.31.0",
     "serverless-appsync-plugin": "^1.0.5",
     "serverless-cloudformation-changesets": "0.0.2",
+    "serverless-dynamodb-autoscaling": "^0.6.2",
     "serverless-iam-roles-per-function": "^1.0.4"
   }
 }
