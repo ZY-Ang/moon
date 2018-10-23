@@ -25,7 +25,7 @@ export const injectButton = () => {
                 if (destinationBox && destinationBox.children[1]) {
                     destinationBox.insertBefore(moonButton, destinationBox.children[1]);
                 }
-            } else if (pathname.startsWith(supportedSites["www.amazon.com"].pathnameProduct)) {
+            } else if (!pathname.startsWith(supportedSites["www.amazon.com"].pathnameCheckout)) {
                 const querySelectors = "#unifiedPrice_feature_div,#mediaPrice_feature_div";
                 const destinationBox = document.querySelector(querySelectors);
                 if (destinationBox) {

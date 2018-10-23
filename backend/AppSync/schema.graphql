@@ -126,15 +126,16 @@ input NotifyPaymentCompletionInput {
 type OIDCClaims {
     aud: String!
     email: AWSEmail!
-    email_verified: Boolean!
+    # Email verified claim for OIDC providers. Might not exist.
+    email_verified: Boolean
     exp: Int!
     iat: Int!
     iss: AWSURL!
-    name: String!
-    nickname: String!
-    picture: AWSURL!
+    name: String
+    nickname: String
+    picture: AWSURL
     sub: String!
-    updated_at: AWSDateTime!
+    updated_at: AWSDateTime
 }
 
 type OIDCIdentity {

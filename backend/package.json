@@ -4,7 +4,7 @@
   "description": "Backend for all moon services",
   "scripts": {
     "package": "serverless package",
-    "deploy": "serverless deploy",
+    "deploy": "cross-env SLS_DEBUG=* serverless deploy",
     "deploy-production": "serverless deploy --stage production",
     "deploy-changeset-production": "serverless deploy --changeset --stage production"
   },

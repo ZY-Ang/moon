@@ -18,7 +18,9 @@ import {isValidAuthUser} from "../../utils/auth";
 const INITIAL_STATE = {
     isAppActive: false,
     authUser: null,
-    siteInformation: null
+    siteInformation: {
+        isLoading: true
+    }
 };
 
 

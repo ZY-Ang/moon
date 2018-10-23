@@ -64,6 +64,14 @@
     border-bottom-right-radius: 3px !important;
 }
 
+#product-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: calc(100% - 42px);
+    margin: 0 auto;
+}
+
 #wallet-selector {
     background: white;
     margin: 0 16px;
