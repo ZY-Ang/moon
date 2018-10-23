@@ -21,7 +21,7 @@ const CONFIG_AGCOD = process.env.NODE_ENV === 'production'
                 countries: ["JP", "AU"]
             }
         },
-        partnerId: "Ken60", // TODO: Enable
+        partnerId: "Ken60",
         credentials: {
             accessKeyId: "AKIAJNYXZ23O2LLQAR3Q",
             secretAccessKey: "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" 
