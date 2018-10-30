@@ -145,6 +145,10 @@ resources:
 #     the function 'exchangeRate' will have a CloudFormation logical ID of
 #     'ExchangeRateLambdaFunction'
 functions:
+  issueAmazonGiftCard:
+    name: ${{self:service}}-${{self:provider.stage}}-issueAmazonGiftCard
+    description: 'Issues an amazon gift card using the agcod API. Accepts {@param amount}, {@param currency}, {@param region}'
+    handler: Lambda/src/issueAmazonGiftCard.handler
   exchangeRate:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRate
     description: 'Returns the exchange rate given a quote and base currency.'

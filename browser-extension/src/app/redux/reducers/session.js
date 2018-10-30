@@ -3,10 +3,8 @@
  */
 
 import {
-    ACTION_SET_IS_APP_ACTIVE,
     ACTION_SET_AUTH_USER,
-    ACTION_SET_SITE_INFORMATION,
-    ACTION_TOGGLE_IS_APP_ACTIVE
+    ACTION_SET_SITE_INFORMATION
 } from "./constants";
 import {isValidAuthUser} from "../../utils/auth";
 
@@ -16,7 +14,6 @@ import {isValidAuthUser} from "../../utils/auth";
  * Initial/ Fallback state
  */
 const INITIAL_STATE = {
-    isAppActive: false,
     authUser: null,
     siteInformation: {
         isLoading: true
@@ -25,14 +22,6 @@ const INITIAL_STATE = {
 
 
 /* -----------------     Actions     ------------------ */
-/**
- * Action to set {@code isAppActive} in the store based on the specified action
- */
-const applySetIsAppActive = (state, action) => ({
-    ...state,
-    isAppActive: !!action.isAppActive
-});
-
 /**
  * Action to set the {@code authUser} in the store based on the specified action
  */
@@ -64,10 +53,6 @@ const applySetSiteInformation = (state, action) => ({
  */
 function sessionReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
-        case ACTION_SET_IS_APP_ACTIVE:
-            return applySetIsAppActive(state, action);
-        case ACTION_TOGGLE_IS_APP_ACTIVE:
-            return applySetIsAppActive(state, {isAppActive: !state.isAppActive});
         case ACTION_SET_AUTH_USER:
             return applySetAuthUser(state, action);
         case ACTION_SET_SITE_INFORMATION:

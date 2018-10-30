@@ -14,9 +14,10 @@ import {
     REQUEST_MOON_SITE_SUPPORT
 } from "../../../constants/events/appEvents";
 import {handleErrors} from "../../../utils/errors";
-import {ACTION_SET_SITE_INFORMATION} from "../../redux/reducers/constants";
+import {ACTION_SET_IS_UI_BLOCKER_ACTIVE, ACTION_SET_SITE_INFORMATION} from "../../redux/reducers/constants";
 import Throbber from "../misc/throbber/Throbber";
 import {observeDOM} from "../../utils/dom";
+import ProductBody from "./ProductBody";
 
 const SettingsIcon = ({changeTab}) => (
     <div
@@ -50,76 +51,7 @@ const PayBanner = ({siteInformation, changeTab}) => (siteInformation && siteInfo
         </div>
     );
 
-/**
- * The product body parses a supported site and displays
- * the product and a message to redirect to checkout
- */
-const ProductBody = ({pathnameCheckout, product}) => {
-    return (
-        !!product.title ||
-        !!product.imageAlt ||
-        !!product.imageURL ||
-        !!product.amount
-    )
-        ? (
-            <div>
-                <div>
-                    {
-                        product.imageURL &&
-                        <img
-                            className="site-logo"
-                            src={product.imageURL}
-                            alt={product.title || product.imageAlt}
-                            style={{height: 200}}
-                        />
-                    }
-                    {
-                        !product.imageURL &&
-                        <span
-                            className="site-logo unsupported"
-                            role="img"
-                            aria-label="Checkout"
-                            style={{fontSize: 100}}
-                        >
-                            🛒
-                        </span>
-                    }
-                    <h4 id="product-title">{product.title || product.imageAlt}</h4>
-                    {
-                        !!product.amount &&
-                        <p>{`$${product.amount}`}</p>
-                    }
-                    {
-                        !product.amount &&
-                        <p>For items with many sizes and/or colors, you'll need to first choose a specific version of this item so we can show you the right price info.</p>
-                    }
-                </div>
-                <div className="btn-group mb-10">
-                    <button
-                        className="btn btn-pay btn-primary"
-                        onClick={() => window.location.replace(pathnameCheckout)}
-                    >
-                        Checkout
-                    </button>
-                </div>
-            </div>
-        ) : (
-            <div>
-                <div>
-                    <span
-                        className="site-logo unsupported"
-                        role="img"
-                        aria-label="Unsupported Site"
-                        style={{fontSize: 100}}
-                    >
-                        🤔
-                    </span>
-                </div>
-                <h2>Not at checkout page</h2>
-                <p>Head over to the checkout page with a loaded cart to get shoppin with cryptocurrency!</p>
-            </div>
-        )
-};
+// TODO: (Important) https://www.amazon.com/gp/dmusic/purchase/purchaseReview/ref=dm_ws_ec_pc_fl
 
 const LoadingBody = () => (
     <div
@@ -185,7 +117,13 @@ class PayTab extends Component {
                 const productImage = document.getElementById("landingImage");
                 const productPrice = document.getElementById("priceblock_ourprice");
                 this.setState(state => ({
-                    cartAmount: cartAmountElements && cartAmountElements.length && cartAmountElements[0].value,
+                    cartAmount: (
+                        process.env.NODE_ENV === 'production' &&
+                        cartAmountElements &&
+                        cartAmountElements.length
+                    )
+                        ? cartAmountElements[0].value
+                        : "0.01",
                     cartCurrency: cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value,
                     product: {
                         ...state.product,
@@ -213,16 +151,18 @@ class PayTab extends Component {
     };
 
     pay = () => {
-        // TODO: this.onUIBlockingModal()
+        this.props.onSetIsUIBlockerActive(true);
         this.getPaymentPayload() // TODO: Background script has to execute injection of code. Can't be done here. Best we can do is wait for new content script to send a success message
-        // TODO: .then(this.offUIBlockingModal)
-            .catch(handleErrors);
+            .catch(err => {
+                handleErrors(err);
+                this.props.onSetIsUIBlockerActive(false);
+            });
     };
 
     getPaymentPayload = () => {
         return AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
             cartCurrency: this.state.cartCurrency,
-            cartAmount: (process.env.NODE_ENV === 'production') ? this.state.cartAmount : "0.01",
+            cartAmount: this.state.cartAmount,
 
             walletProvider: this.state.selectedWallet.provider,
             walletID: this.state.selectedWallet.id,
@@ -295,6 +235,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     onSetSiteInformation: (siteInformation) => dispatch({type: ACTION_SET_SITE_INFORMATION, siteInformation}),
+    onSetIsUIBlockerActive: (isUIBlockerActive) => dispatch({type: ACTION_SET_IS_UI_BLOCKER_ACTIVE, isUIBlockerActive})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PayTab);

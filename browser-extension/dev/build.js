@@ -23,6 +23,29 @@ const getAWSAccountId = (credentials) => new Promise((resolve, reject) =>
         })
 );
 
+const getCloudFormationExport = async (credentials, exportName) => {
+    const exports = await new Promise((resolve, reject) =>
+        (new AWS.CloudFormation({credentials}))
+            .listExports({}, (err, data) => {
+                if (err) {
+                    console.error("Error while listing cloudformation exports.");
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            })
+    );
+    if (exports.Exports) {
+        for (let exp of exports.Exports) {
+            if (exp.Name === exportName) {
+                return exp.Value;
+            }
+        }
+    }
+    throw new Error(`Export ${exportName} not found in exports: \n${JSON.stringify(exports)}`);
+};
+
+// TODO: Get AppSync endpoint from cloudformation stack output as opposed to listing and matching GraphQL APIs
 const getAWSAppSyncEndpoint = (credentials, apiName) => new Promise((resolve, reject) =>
     (new AWS.AppSync({credentials}))
         .listGraphqlApis((err, data) => {

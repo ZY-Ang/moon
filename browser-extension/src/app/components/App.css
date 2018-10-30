@@ -3,7 +3,48 @@
  */
 
 #moon-wrapper {
-    width: 100%;
+    width:360px;
+    -webkit-font-smoothing:initial;
+    position:fixed;
+    line-height:normal;
+    letter-spacing:normal;
+    font-size:14px;
+    top:15px;
+    right:25px;
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
+    border-radius:3px;
+    background-color: #ffffff;
+    box-sizing:border-box;
+    z-index:21474836467 !important;
+}
+
+#moon-ui-blocker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index:2147483647 !important;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#moon-ui-blocker-ui {
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    height: 77vh;
+    -webkit-font-smoothing: initial;
+    position: fixed;
+    line-height: normal;
+    letter-spacing: normal;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 ::-webkit-scrollbar {

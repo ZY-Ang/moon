@@ -8,16 +8,11 @@
     display:-moz-flex;
     display:-ms-flexbox;
     display:flex;
-    /*height:624px;*/
-    width:360px;
     -webkit-font-smoothing:initial;
     position:fixed;
     line-height:normal;
     letter-spacing:normal;
     font-size:14px;
-    top:15px;
-    right:25px;
-    z-index:2147483648 !important;
 }
 
 #moon-div-shadow {
@@ -26,20 +21,6 @@
     display:-moz-flex;
     display:-ms-flexbox;
     display:flex;
-    width:360px;
-    -webkit-font-smoothing:initial;
-    position:fixed;
-    line-height:normal;
-    letter-spacing:normal;
-    font-size:14px;
-    top:15px;
-    right:25px;
-    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
-    border-radius:3px;
-    background-color: #ffffff;
-    box-sizing:border-box;
-    color: #21304d;
-    z-index:2147483648 !important;
 }
 
 .text-center {
@@ -84,6 +65,28 @@
 
 .text-black * {
     color: black !important;
+}
+
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+    }
+}
+@media (min-width: 992px) {
+    .container {
+        width: 970px;
+    }
+}
+@media (min-width: 1200px) {
+    .container {
+        width: 1170px;
+    }
 }
 
 .react-swipeable-view-container {

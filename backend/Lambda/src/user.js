@@ -31,6 +31,9 @@ const user = async (event) => {
         : [null, null];
 
     const user = {
+        signUpState: {
+            referredBy: null
+        },
         coinbaseInfo: coinbaseApiKeys ? {
             user: coinbaseUser,
             wallets: coinbaseWallets && coinbaseWallets

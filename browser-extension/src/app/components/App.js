@@ -10,7 +10,8 @@ import AuthFlow from "./auth/AuthFlow";
 import SwipeableViews from "react-swipeable-views";
 import AppRuntime from "../browser/AppRuntime";
 import FaIcon from "./misc/fontawesome/FaIcon";
-import {ACTION_SET_IS_APP_ACTIVE} from "../redux/reducers/constants";
+import {ACTION_SET_IS_APP_ACTIVE, ACTION_SET_IS_UI_BLOCKER_ACTIVE} from "../redux/reducers/constants";
+import Throbber from "./misc/throbber/Throbber";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -72,78 +73,94 @@ class App extends Component {
 
     render() {
         const CLASS_MOON_BODY = this.state.isMaximized ? "moon-body-maximized" : "moon-body-minimized";
-        return this.props.isAppActive ? (
+        return (
             <div id="moon-div-shadow">
-                <div id="moon-wrapper">
-                    <div id="moon-header">
-                        <img id="moon-header-img" src={AppRuntime.getURL(logo)} alt="Moon"/>
-                        <div
-                            id="moon-header-buttons-div"
-                            onMouseEnter={this.onMouseEnterHeaderButtons}
-                            onMouseLeave={this.onMouseLeaveHeaderButtons}
-                        >
+                {
+                    this.props.isAppActive &&
+                    <div id="moon-wrapper">
+                        <div id="moon-header">
+                            <img id="moon-header-img" src={AppRuntime.getURL(logo)} alt="Moon"/>
                             <div
-                                id="moon-header-toggle-button"
-                                className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
-                                onClick={this.onToggleMaximize}
+                                id="moon-header-buttons-div"
+                                onMouseEnter={this.onMouseEnterHeaderButtons}
+                                onMouseLeave={this.onMouseLeaveHeaderButtons}
                             >
-                                {
-                                    this.state.isHoverHeaderButtons
-                                        ? <FaIcon icon="chevron-circle-up"/>
-                                        : <FaIcon icon="circle"/>
-                                }
+                                <div
+                                    id="moon-header-toggle-button"
+                                    className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
+                                    onClick={this.onToggleMaximize}
+                                >
+                                    {
+                                        this.state.isHoverHeaderButtons
+                                            ? <FaIcon icon="chevron-circle-up"/>
+                                            : <FaIcon icon="circle"/>
+                                    }
+                                </div>
+                                <div
+                                    id="moon-header-close-button"
+                                    className="moon-header-button"
+                                    onClick={this.onClose}
+                                >
+                                    {
+                                        this.state.isHoverHeaderButtons
+                                            ? <FaIcon icon="dot-circle"/>
+                                            : <FaIcon icon="circle"/>
+                                    }
+                                </div>
                             </div>
-                            <div
-                                id="moon-header-close-button"
-                                className="moon-header-button"
-                                onClick={this.onClose}
-                            >
-                                {
-                                    this.state.isHoverHeaderButtons
-                                        ? <FaIcon icon="dot-circle"/>
-                                        : <FaIcon icon="circle"/>
-                                }
+                        </div>
+                        {
+                            !!this.props.authUser && // && isOnboardingFlowCompleteOrSkipped(this.props.authUser)
+                            <div id="moon-body" className={CLASS_MOON_BODY}>
+                                <SwipeableViews
+                                    animateHeight
+                                    ref={c => (this.tabSwiper = c)}
+                                    disabled
+                                    style={{height: '100%', overflowY: 'hidden !important'}}
+                                    index={this.state.currentTabIndex}
+                                >
+                                    {
+                                        TAB_GROUP_AUTH.components.map((AuthTab, index) =>
+                                            <AuthTab key={index} changeTab={this.changeTab}/>
+                                        )
+                                    }
+                                </SwipeableViews>
+                                {/*<Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>*/}
+                            </div>
+                        }
+                        {
+                            !this.props.authUser &&
+                            <div id="moon-body" className={CLASS_MOON_BODY}>
+                                <AuthFlow/>
+                            </div>
+                        }
+                    </div>
+                }
+                {
+                    this.props.isUIBlockerActive &&
+                    <div id="moon-ui-blocker">
+                        <div id="moon-ui-blocker-ui" className="container">
+                            <div className="text-center">
+                                <Throbber/>
+                                <p>Maybe refactor blocker to separate component so we can control messages through redux</p>
                             </div>
                         </div>
                     </div>
-                    {
-                        !!this.props.authUser && // && isOnboardingFlowCompleteOrSkipped(this.props.authUser)
-                        <div id="moon-body" className={CLASS_MOON_BODY}>
-                            <SwipeableViews
-                                animateHeight
-                                ref={c => (this.tabSwiper = c)}
-                                disabled
-                                style={{height: '100%', overflowY: 'hidden !important'}}
-                                index={this.state.currentTabIndex}
-                            >
-                                {
-                                    TAB_GROUP_AUTH.components.map((AuthTab, index) =>
-                                        <AuthTab key={index} changeTab={this.changeTab}/>
-                                    )
-                                }
-                            </SwipeableViews>
-                            {/*<Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>*/}
-                        </div>
-                    }
-                    {
-                        !this.props.authUser &&
-                        <div id="moon-body" className={CLASS_MOON_BODY}>
-                            <AuthFlow/>
-                        </div>
-                    }
-                </div>
+                }
             </div>
-        ) : null;
+        );
     }
 }
 
 const mapStateToProps = (state) => ({
-    isAppActive: state.sessionState.isAppActive,
+    isAppActive: state.appState.isAppActive,
+    isUIBlockerActive: state.appState.isUIBlockerActive,
     authUser: state.sessionState.authUser
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    onSetIsAppActive: (isAppActive) => dispatch({type: ACTION_SET_IS_APP_ACTIVE, isAppActive})
+    onSetIsAppActive: (isAppActive) => dispatch({type: ACTION_SET_IS_APP_ACTIVE, isAppActive}),
+    onSetIsUIBlockerActive: (isUIBlockerActive) => dispatch({type: ACTION_SET_IS_UI_BLOCKER_ACTIVE, isUIBlockerActive})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

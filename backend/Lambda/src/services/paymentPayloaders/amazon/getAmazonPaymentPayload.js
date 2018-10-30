@@ -4,7 +4,7 @@
 const logHead = require("../../../utils/logHead");
 const logTail = require("../../../utils/logTail");
 const Decimal = require("decimal.js");
-const {URL} = require('url');
+const {URL} = require("url");
 const doCreateAmazonGiftCard = require("./doCreateAmazonGiftCard");
 
 const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
@@ -46,76 +46,95 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
 
     // TODO: FIGURE OUT WHAT HONEY is doing with 'applyCodesClick'
     const executable = require("harp-minify").js(`
-var pwmApplyGiftCards = function(gcClaimCode){
-    return fetch("https://www.amazon.com/gp/buy/spc/handlers/add-giftcard-promotion.html/ref=ox_pay_page_gc_add", {
-        method: "POST",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "x-amz-checkout-page": "spc"
-        },
-        redirect: "follow",
-        referrer: "no-referrer",
-        body: JSON.stringify({
-            claimcode: gcClaimCode
-        }),
-    })
-        .then(function(res){return res.json()});
-};
-
-var pwmGiftCards = ${JSON.stringify(giftCards)};
-var pwmSuccessfulGiftCards = [];
-var pwmFailedGiftCards = [];
-
-pwmGiftCards
-    .reduce(function(prev, giftCard){
-        return prev
-            .then(function(){
-                return pwmApplyGiftCards(giftCard.gcClaimCode);
-            })
-            .then(function(result){
-                if (result.errors.length > 0) {
-                    throw result;
-                } else {
-                    return pwmSuccessfulGiftCards.push({
+(function(giftCards, environment) {
+    var applyButton = document.querySelectorAll(".a-button.a-spacing-micro .a-button-inner input")[0];
+    var txtGc = document.getElementById("spc-gcpromoinput");
+    var submitButton = document.querySelectorAll(".a-button-text.place-your-order-button")[0];
+    var successfulGiftCards = [];
+    var failedGiftCards = [];
+    return giftCards
+        .reduce(function(prev, giftCard){
+            return prev
+                .then(function(){
+                    return new Promise(function(resolve, reject){
+                        txtGc.value = giftCard.gcClaimCode;
+                        applyButton.click();
+                        var timeoutFunction = function(){
+                            setTimeout(function(){
+                                var loadingSpinner = document.getElementById("loading-spinner-blocker-doc");
+                                if (loadingSpinner && loadingSpinner.style.display !== 'none') {
+                                    timeoutFunction();
+                                } else {
+                                    var txtSuccess = document.getElementById("gc-success");
+                                    var txtError = document.getElementById("gc-error");
+                                    if (!txtSuccess) {
+                                        reject("txtSuccess does not exist");
+                                    } else if (txtSuccess.style.display === "none" && !txtError) {
+                                        reject("txtSuccess display === none and txtError missing");
+                                    } else if (txtSuccess.style.display === "none") {
+                                        reject(txtError.innerText.trim());
+                                    } else if (
+                                        txtError.style.display === "none" &&
+                                        txtSuccess.style.display === "none"
+                                    ) {
+                                        timeoutFunction();
+                                    } else {
+                                        resolve(txtSuccess.innerText.trim());
+                                    }
+                                }
+                            }, 500);
+                        };
+                        timeoutFunction();
+                    });
+                })
+                .then(function(result){
+                    return successfulGiftCards.push({
                         giftCard: giftCard,
                         result: result
                     });
+                })
+                .catch(function(errorResult){
+                    return failedGiftCards.push({
+                        giftCard: giftCard,
+                        result: errorResult
+                    });
+                });
+        }, Promise.resolve())
+        .then(function(){
+            return new Promise(function(resolve, reject){
+                const browserMessage = {
+                    message: "MOON_NOTIFY_PAYMENT_COMPLETION",
+                    giftCards: giftCards,
+                    successfulGiftCards: successfulGiftCards,
+                    failedGiftCards: failedGiftCards
+                };
+                if (environment !== 'production') {
+                    console.log("browserMessage: ", browserMessage);
                 }
-            })
-            .catch(function(errorResult){
-                return pwmFailedGiftCards.push({
-                    giftCard: giftCard,
-                    result: errorResult
-                });
+                if (chrome && chrome.runtime) {
+                    chrome.runtime.sendMessage(browserMessage, function(response){
+                        if (chrome.runtime.lastError) {
+                            reject(chrome.runtime.lastError);
+                        } else if (response.success) {
+                            resolve(response.response);
+                        } else {
+                            reject(response);
+                        }
+                    });
+                } else if (browser && browser.runtime) {
+                    resolve(browser.runtime.sendMessage(browserMessage));
+                }
             });
-    }, Promise.resolve())
-    .then(function(){
-        return new Promise(function(resolve, reject){
-            const browserMessage = {
-                message: "MOON_NOTIFY_PAYMENT_COMPLETION",
-                pwmGiftCards: pwmGiftCards,
-                pwmSuccessfulGiftCards: pwmSuccessfulGiftCards,
-                pwmFailedGiftCards: pwmFailedGiftCards
-            };
-            if (chrome && chrome.runtime) {
-                chrome.runtime.sendMessage(browserMessage, function(response){
-                    if (chrome.runtime.lastError) {
-                        reject(chrome.runtime.lastError);
-                    } else if (response.success) {
-                        resolve(response.response);
-                    } else {
-                        reject(response);
-                    }
-                });
-            } else if (browser && browser.runtime) {
-                resolve(browser.runtime.sendMessage(browserMessage));
+        })
+        .then(function(){
+            if (environment === 'production') {
+                submitButton.click();
             }
+        })
+        .catch(function(err){
+            console.error("Something seriously bad happened: ", err);
         });
-    })
-    .catch(console.error);
+})(${JSON.stringify(giftCards)}, ${process.env.NODE_ENV});
 `, {compress: false, mangle: false}); // FIXME: Click pay for user
 
     const amazonPaymentPayload = {

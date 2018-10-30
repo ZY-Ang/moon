@@ -53,4 +53,5 @@ module.exports.getAuthenticatedClient = () => new AuthenticatedClient(
     ENDPOINT_COINBASE_PRO
 );
 
-module.exports.getPublicClient = () => new PublicClient(ENDPOINT_COINBASE_PRO);
+// NOTE: {@code ENDPOINT_PRODUCTION} must be used for Public Client always.
+module.exports.getPublicClient = () => new PublicClient(ENDPOINT_PRODUCTION);

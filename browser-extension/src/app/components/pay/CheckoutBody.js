@@ -56,6 +56,49 @@ const getWalletAmountInBase = (quoteAmount, exchangeRate) => {
 };
 
 class CheckoutCalculator extends Component {
+    render() {
+        const {
+            cartAmount,
+            cartCurrency,
+            selectedWallet,
+            exchangeRate,
+            walletBalanceInBase,
+            requiredAmountInQuote,
+            isSufficient,
+            topUpAmountInQuote
+        } = this.props;
+        return selectedWallet ? (
+            <div className="checkout-calculator">
+                <div className="checkout-calculator-section border-bottom">
+                    <div className="text-left float-left">{selectedWallet.currency}/{cartCurrency}</div>
+                    <div className="text-right"><b>{cartCurrency} {exchangeRate}</b></div>
+                </div>
+                <div className="checkout-calculator-section border-bottom">
+                    <div className="text-left float-left">{selectedWallet.name} Balance</div>
+                    <div className="text-right"><b>{selectedWallet.currency} {selectedWallet.balance}</b></div>
+                    <div className="text-right"><b>{cartCurrency} {walletBalanceInBase}</b></div>
+                </div>
+                <div className="checkout-calculator-section">
+                    <div className="text-left float-left">Purchase Amount</div>
+                    <div className="text-right"><b>{selectedWallet.currency} {requiredAmountInQuote}</b></div>
+                    <div className="text-right"><b>{cartCurrency} {cartAmount}</b></div>
+                </div>
+                {
+                    !isSufficient &&
+                    <div className="checkout-calculator-section">
+                        <div
+                            className="text-center text-error"
+                        >
+                            Insufficient funds! You  need <b>{selectedWallet.currency}{topUpAmountInQuote}</b> more to complete this purchase!
+                        </div>
+                    </div>
+                }
+            </div>
+        ) : null;
+    }
+}
+
+class CheckoutBody extends Component {
     constructor() {
         super();
         this.state = {
@@ -89,40 +132,6 @@ class CheckoutCalculator extends Component {
     }
 
     render() {
-        const {cartAmount, cartCurrency, selectedWallet} = this.props;
-        return selectedWallet ? (
-            <div className="checkout-calculator">
-                <div className="checkout-calculator-section border-bottom">
-                    <div className="text-left float-left">{selectedWallet.currency}/{cartCurrency}</div>
-                    <div className="text-right"><b>{cartCurrency} {this.state.exchangeRate}</b></div>
-                </div>
-                <div className="checkout-calculator-section border-bottom">
-                    <div className="text-left float-left">{selectedWallet.name} Balance</div>
-                    <div className="text-right"><b>{selectedWallet.currency} {selectedWallet.balance}</b></div>
-                    <div className="text-right"><b>{cartCurrency} {this.state.walletBalanceInBase}</b></div>
-                </div>
-                <div className="checkout-calculator-section">
-                    <div className="text-left float-left">Purchase Amount</div>
-                    <div className="text-right"><b>{selectedWallet.currency} {this.state.requiredAmountInQuote}</b></div>
-                    <div className="text-right"><b>{cartCurrency} {cartAmount}</b></div>
-                </div>
-                {
-                    !this.state.isSufficient &&
-                    <div className="checkout-calculator-section">
-                        <div
-                            className="text-center text-error"
-                        >
-                            Insufficient funds! You  need <b>{selectedWallet.currency}{this.state.topUpAmountInQuote}</b> more to complete this purchase!
-                        </div>
-                    </div>
-                }
-            </div>
-        ) : null;
-    }
-}
-
-class CheckoutBody extends Component {
-    render() {
         const {
             cartAmount,
             cartCurrency,
@@ -146,7 +155,16 @@ class CheckoutBody extends Component {
                     </span>
                     {
                         selectedWallet &&
-                        <CheckoutCalculator cartAmount={cartAmount} cartCurrency={cartCurrency} selectedWallet={selectedWallet}/>
+                        <CheckoutCalculator
+                            cartAmount={cartAmount}
+                            cartCurrency={cartCurrency}
+                            selectedWallet={selectedWallet}
+                            exchangeRate={this.state.exchangeRate}
+                            walletBalanceInBase={this.state.walletBalanceInBase}
+                            requiredAmountInQuote={this.state.requiredAmountInQuote}
+                            isSufficient={this.state.isSufficient}
+                            topUpAmountInQuote={this.state.topUpAmountInQuote}
+                        />
                     }
                 </div>
                 {
@@ -162,12 +180,24 @@ class CheckoutBody extends Component {
                     selectedWallet
                         ? (
                             <div className="btn-group btn-group-pay">
-                                <button
-                                    className="btn btn-pay btn-primary"
-                                    onClick={pay}
-                                >
-                                    Pay with <b>{selectedWallet.name}</b>
-                                </button>
+                                {
+                                    this.state.isSufficient
+                                        ? (
+                                            <button
+                                                className="btn btn-pay btn-primary"
+                                                onClick={pay}
+                                            >
+                                                Pay with <b>{selectedWallet.name}</b>
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="btn btn-pay btn-primary"
+                                                disabled
+                                            >
+                                                Insufficient Funds
+                                            </button>
+                                        )
+                                }
                                 <button
                                     className={`btn btn-icon btn-primary-outline btn-wallet-selector${showWalletSelector ? ' inverse' : ''}`}
                                     onClick={() => setShowWalletSelector(!showWalletSelector)}

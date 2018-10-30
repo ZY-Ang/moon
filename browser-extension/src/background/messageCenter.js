@@ -16,7 +16,7 @@ import {
     REQUEST_TEST_FUNCTION,
     REQUEST_UPDATE_COINBASE_API_KEYS
 } from "../constants/events/appEvents";
-import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut} from "./auth/index";
+import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut, doUpdateAuthUserEvent} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
 import moonTestFunction from "./moonTestFunction";
@@ -87,7 +87,8 @@ const messageCenter = (request, sender, sendResponse) => {
             sendSuccess(store.getState().coinbaseState.isCoinbaseAuthFlow);
         },
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
-            doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab);
+            doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
+                .then(doUpdateAuthUserEvent);
             sendSuccess("doUpdateCoinbaseApiKey() started");
         },
         [REQUEST_GET_EXCHANGE_RATE]() {

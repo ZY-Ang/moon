@@ -21,7 +21,12 @@ const doCreateAmazonGiftCard  = async (amount, currency, region) => {
 
     const amazonGiftCardClient = new AmazonGiftCardClient(CONFIG_AGCOD);
 
-    const giftCardInfo = await new Promise((resolve, reject) => {
+    // Only issue full amount gift cards if in production
+    if (process.env.NODE_ENV !== 'production') {
+        amount = "0.01";
+    }
+
+    const giftCardInfo = await new Promise((resolve, reject) =>
         amazonGiftCardClient.createGiftCard(region, amount, currency, (error, result) => {
             if (error) {
                 console.error(error);
@@ -29,8 +34,8 @@ const doCreateAmazonGiftCard  = async (amount, currency, region) => {
             } else {
                 resolve(result);
             }
-        });
-    });
+        })
+    );
 
     logTail("doCreateAmazonGiftCard", giftCardInfo);
     return giftCardInfo;

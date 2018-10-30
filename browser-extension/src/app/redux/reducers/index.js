@@ -2,6 +2,7 @@
  * Copyright (c) 2018 moon
  */
 import {combineReducers} from 'redux';
+import appReducer from "./app";
 import sessionReducer from "./session";
 
 /**
@@ -10,6 +11,7 @@ import sessionReducer from "./session";
  * @type {Reducer<any>}
  */
 const rootReducer = combineReducers({
+    appState: appReducer,
     sessionState: sessionReducer
 });
 

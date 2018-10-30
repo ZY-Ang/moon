@@ -10,7 +10,7 @@
  * @type Knex
  */
 const environment = process.env.NODE_ENV || 'development';
-const configuration = require('../db/knexfile')[environment];
+const configuration = require('../knexfile')[environment];
 const database = require('knex')(configuration);
 
 // TODO: Organize unique columns hierarchically by table

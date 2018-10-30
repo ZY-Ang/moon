@@ -182,6 +182,12 @@ type Query {
     siteInformation(host: String!): SiteInformation
 }
 
+# Miscellaneous information related to the user's sign up and onboarding flow
+type SignUpState {
+    # The user's email of the user whom referred the current user
+    referredBy: AWSEmail
+}
+
 # Information about a specific site
 type SiteInformation {
     # The name of the site
@@ -211,6 +217,7 @@ input UpdateCoinbaseApiKeyInput {
 }
 
 type User {
+    signUpState: SignUpState
     coinbaseInfo: CoinbaseInfo
 }
 

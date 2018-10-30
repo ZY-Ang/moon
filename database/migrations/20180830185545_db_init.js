@@ -3,7 +3,7 @@ const {
     COLUMN_ID, COLUMN_AMOUNT_CRYPTOCURRENCY, COLUMN_AMOUNT_USD, COLUMN_CRYPTOCURRENCY_TYPE,
     COLUMN_UUID, COLUMN_WALLET_ID, COLUMN_WEBWITE
 
-} = require("../../constants/database");
+} = require("../constants/database");
 
 exports.up = function(knex, Promise) {
     return Promise.all([

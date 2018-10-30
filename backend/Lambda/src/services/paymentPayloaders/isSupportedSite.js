@@ -3,7 +3,7 @@
  */
 const logHead = require("../../utils/logHead");
 const logTail = require("../../utils/logTail");
-const {URL} = require('url');
+const {URL} = require("url");
 const supportedSites = require("../../../../supportedSites");
 
 /**\
