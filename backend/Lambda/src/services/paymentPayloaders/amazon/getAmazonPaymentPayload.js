@@ -47,9 +47,9 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
     // TODO: FIGURE OUT WHAT HONEY is doing with 'applyCodesClick'
     const executable = require("harp-minify").js(`
 (function(giftCards, environment) {
-    var applyButton = document.querySelectorAll(".a-button.a-spacing-micro .a-button-inner input")[0];
+    var applyButton = document.querySelectorAll(".a-button.a-spacing-micro .a-button-inner input, #gcApplyButtonId")[0];
     var txtGc = document.getElementById("spc-gcpromoinput");
-    var submitButton = document.querySelectorAll(".a-button-text.place-your-order-button")[0];
+    var submitButton = document.querySelectorAll(".a-button-text.place-your-order-button, #submitOrderButtonId")[0];
     var successfulGiftCards = [];
     var failedGiftCards = [];
     return giftCards
@@ -61,22 +61,22 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
                         applyButton.click();
                         var timeoutFunction = function(){
                             setTimeout(function(){
-                                var loadingSpinner = document.getElementById("loading-spinner-blocker-doc");
+                                var loadingSpinner = document.querySelectorAll("#payment .section-overwrap, #loading-spinner-blocker-doc")[0];
                                 if (loadingSpinner && loadingSpinner.style.display !== 'none') {
                                     timeoutFunction();
                                 } else {
                                     var txtSuccess = document.getElementById("gc-success");
                                     var txtError = document.getElementById("gc-error");
+                                    var isElementHidden = function(htmlElement){
+                                        return (!!htmlElement.hidden || htmlElement.style.display === "none");
+                                    };
                                     if (!txtSuccess) {
                                         reject("txtSuccess does not exist");
-                                    } else if (txtSuccess.style.display === "none" && !txtError) {
+                                    } else if (isElementHidden(txtSuccess) && !txtError) {
                                         reject("txtSuccess display === none and txtError missing");
-                                    } else if (txtSuccess.style.display === "none") {
+                                    } else if (isElementHidden(txtSuccess)) {
                                         reject(txtError.innerText.trim());
-                                    } else if (
-                                        txtError.style.display === "none" &&
-                                        txtSuccess.style.display === "none"
-                                    ) {
+                                    } else if (isElementHidden(txtError) && isElementHidden(txtSuccess)) {
                                         timeoutFunction();
                                     } else {
                                         resolve(txtSuccess.innerText.trim());
@@ -134,8 +134,8 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
         .catch(function(err){
             console.error("Something seriously bad happened: ", err);
         });
-})(${JSON.stringify(giftCards)}, ${process.env.NODE_ENV});
-`, {compress: false, mangle: false}); // FIXME: Click pay for user
+})(${JSON.stringify(giftCards)}, '${process.env.NODE_ENV}');
+`, {compress: true, mangle: true}); // FIXME: Click pay for user
 
     const amazonPaymentPayload = {
         data: [executable],
