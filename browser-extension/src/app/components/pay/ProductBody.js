@@ -63,19 +63,23 @@ class ProductBody extends React.Component {
             ) : (
                 <div>
                     <div>
-                    <span
-                        className="site-logo unsupported"
-                        role="img"
-                        aria-label="Unsupported Site"
-                        style={{fontSize: 100}}
-                    >
-                        🤔
-                    </span>
+                        <span
+                            className="site-logo unsupported"
+                            role="img"
+                            aria-label="Unsupported Site"
+                            style={{fontSize: 100}}
+                        >
+                            😄
+                        </span>
                     </div>
-                    <h2>Not at checkout page</h2>
-                    <p>Head over to the checkout page with a loaded cart to get shoppin with cryptocurrency!</p>
-                    <a onClick={console.log} href="#checkoutSupportRequest">Click here if you think this is a
-                        mistake</a>
+                    <h2>Not at Checkout Page</h2>
+                    <p>When you're about to checkout, you'll have the option to pay with cryptocurrency.</p>
+                    <a
+                        onClick={console.log}
+                        href="#checkoutSupportRequest"
+                    >
+                        Click here if you think this is a mistake
+                    </a>
                 </div>
             );
     }

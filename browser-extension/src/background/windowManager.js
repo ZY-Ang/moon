@@ -26,7 +26,7 @@ import {isCoinbaseSettingsApiUrl, isCoinbaseSignInUrl, isCoinbaseUrl} from "../u
  *      of the current tab.
  */
 export const doInjectAppEvent = (source) =>
-    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {source});
+    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {source}).then(doUpdateAuthUserEvent);
 
 /**
  * Handler for when a {@param tab} is updated.
