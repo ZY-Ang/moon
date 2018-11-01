@@ -49,7 +49,7 @@ class BackgroundRuntime extends Runtime {
             const manifest = BackgroundRuntime.getManifest();
             const contentScripts = manifest.content_scripts[0].js;
             Tabs.getAll()
-                .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url))))
+                .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url) && tab.status === 'complete')))
                 .then(tabs => tabs.forEach(tab =>
                     contentScripts.forEach(file =>
                         Tabs.executeScript(tab.id, {file})

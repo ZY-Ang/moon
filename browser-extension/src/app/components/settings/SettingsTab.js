@@ -4,7 +4,7 @@
 import React, {Component} from 'react';
 import './SettingsTab.css';
 import {connect} from "react-redux";
-import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
+import {ACTION_SET_APP_MODAL_STATE, ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {
     REQUEST_GLOBAL_SIGN_OUT,
     REQUEST_LAUNCH_COINBASE_AUTH_FLOW, REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_RESET_PASSWORD,
@@ -39,9 +39,18 @@ class SettingsTab extends Component {
         });
 
     changePassword = (event) => {
+        this.props.onSetAppModalState({
+            state: "loading",
+            loadingText: "Chotto matte...",
+            successText: "A password reset link has been sent to your email!",
+            errorText: "Something went wrong! Please try again or contact us for support."
+        });
         AppRuntime.sendMessage(REQUEST_RESET_PASSWORD)
-            .then(() => alert("A password reset email has been sent to your email!"))
-            .catch(handleErrors);
+            .then(() => this.props.onSetAppModalState({state: "success"}))
+            .catch(err => {
+                handleErrors(err);
+                this.props.onSetAppModalState({state: "error"});
+            });
         if (event) {
             event.preventDefault();
         }
@@ -125,6 +134,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     onSetAuthUser: (authUser) => dispatch({type: ACTION_SET_AUTH_USER, authUser}),
+    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsTab);

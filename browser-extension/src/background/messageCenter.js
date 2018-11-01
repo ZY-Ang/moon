@@ -115,8 +115,9 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION]() {
+            // FIXME: FIXME: FIXME: FIXME: FIXME: FIXME IMPLEMENT IMPLEMENT - Log to db, pageinfo, etc
             console.log("Notify payment payload completion request: ", request);
-            sendFailure("FIXME: Not implemented yet");
+            sendSuccess(true);
             return true;
         },
         [REQUEST_GET_SITE_INFORMATION]() {

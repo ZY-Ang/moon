@@ -14,8 +14,10 @@ import {
     REQUEST_MOON_SITE_SUPPORT
 } from "../../../constants/events/appEvents";
 import {handleErrors} from "../../../utils/errors";
-import {ACTION_SET_IS_UI_BLOCKER_ACTIVE, ACTION_SET_SITE_INFORMATION} from "../../redux/reducers/constants";
-import Throbber from "../misc/throbber/Throbber";
+import {
+    ACTION_SET_APP_MODAL_STATE,
+    ACTION_SET_SITE_INFORMATION, ACTION_SET_UI_BLOCKER_STATE
+} from "../../redux/reducers/constants";
 import {observeDOM} from "../../utils/dom";
 import ProductBody from "./ProductBody";
 
@@ -53,19 +55,6 @@ const PayBanner = ({siteInformation, changeTab}) => (siteInformation && siteInfo
 
 // TODO: (Important) https://www.amazon.com/gp/dmusic/purchase/purchaseReview/ref=dm_ws_ec_pc_fl
 
-const LoadingBody = () => (
-    <div
-        style={{
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-        }}
-    >
-        <Throbber style={{height: 100}}/>
-    </div>
-);
-
 const UnSupportedSiteBody = ({isRequested, requestSite}) => (
     <div>
         <p>We are working hard to make Moon available on your favourite shopping sites!</p>
@@ -97,6 +86,7 @@ class PayTab extends Component {
     }
 
     componentWillMount() {
+        this.props.onSetAppModalState({state: "loading", loadingText: "Loading..."});
         AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, {host: window.location.host})
             .then(siteInformation => {
                 this.props.onSetSiteInformation(siteInformation);
@@ -105,7 +95,12 @@ class PayTab extends Component {
             .catch(err => {
                 console.error("SITE_INFORMATION FAILED: ", err);
                 handleErrors(err);
-            });
+            })
+            .finally(() => this.props.onSetAppModalState({isActive: false}));
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState(() => ({selectedWallet: nextProps.authUser ? nextProps.authUser.wallets[0] : null}));
     }
 
     parsePage = () => {
@@ -151,12 +146,14 @@ class PayTab extends Component {
     };
 
     pay = () => {
-        this.props.onSetIsUIBlockerActive(true);
+        this.props.onSetUIBlockerState({
+            isActive: true,
+            title: "Loading...",
+            subTitle: "Completing your purchase. Please DO NOT close this tab or exit your browser 🙏"
+        });
         this.getPaymentPayload() // TODO: Background script has to execute injection of code. Can't be done here. Best we can do is wait for new content script to send a success message
-            .catch(err => {
-                handleErrors(err);
-                this.props.onSetIsUIBlockerActive(false);
-            });
+            .catch(handleErrors)
+            .finally(() => this.props.onSetUIBlockerState({}));
     };
 
     getPaymentPayload = () => {
@@ -183,48 +180,44 @@ class PayTab extends Component {
 
     render() {
         const {siteInformation} = this.props;
-        return (siteInformation && siteInformation.isLoading)
-            ? (
-                <LoadingBody/>
-            )
-            : (
-                <div className="moon-tab text-center">
-                    <PayBanner
-                        siteInformation={siteInformation}
-                        changeTab={this.props.changeTab}
+        return (
+            <div className="moon-tab text-center">
+                <PayBanner
+                    siteInformation={siteInformation}
+                    changeTab={this.props.changeTab}
+                />
+                {
+                    siteInformation &&
+                    siteInformation.isSupported &&
+                    window.location.pathname.startsWith(siteInformation.pathnameCheckout) &&
+                    <CheckoutBody
+                        cartCurrency={this.state.cartCurrency}
+                        cartAmount={this.state.cartAmount}
+                        changeWallet={this.changeWallet}
+                        pay={this.pay}
+                        selectedWallet={this.state.selectedWallet}
+                        setShowWalletSelector={this.setShowWalletSelector}
+                        showWalletSelector={this.state.showWalletSelector}
                     />
-                    {
-                        siteInformation &&
-                        siteInformation.isSupported &&
-                        window.location.pathname.startsWith(siteInformation.pathnameCheckout) &&
-                        <CheckoutBody
-                            cartCurrency={this.state.cartCurrency}
-                            cartAmount={this.state.cartAmount}
-                            changeWallet={this.changeWallet}
-                            pay={this.pay}
-                            selectedWallet={this.state.selectedWallet}
-                            setShowWalletSelector={this.setShowWalletSelector}
-                            showWalletSelector={this.state.showWalletSelector}
-                        />
-                    }
-                    {
-                        siteInformation &&
-                        siteInformation.isSupported &&
-                        !window.location.pathname.startsWith(siteInformation.pathnameCheckout) &&
-                        <ProductBody
-                            pathnameCheckout={siteInformation.pathnameCheckout}
-                            product={this.state.product}
-                        />
-                    }
-                    {
-                        (!siteInformation || !siteInformation.isSupported) &&
-                        <UnSupportedSiteBody
-                            isRequested={this.state.isRequested}
-                            requestSite={this.requestSite}
-                        />
-                    }
-                </div>
-            );
+                }
+                {
+                    siteInformation &&
+                    siteInformation.isSupported &&
+                    !window.location.pathname.startsWith(siteInformation.pathnameCheckout) &&
+                    <ProductBody
+                        pathnameCheckout={siteInformation.pathnameCheckout}
+                        product={this.state.product}
+                    />
+                }
+                {
+                    (!siteInformation || !siteInformation.isSupported) &&
+                    <UnSupportedSiteBody
+                        isRequested={this.state.isRequested}
+                        requestSite={this.requestSite}
+                    />
+                }
+            </div>
+        );
     }
 }
 
@@ -234,8 +227,9 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE}),
     onSetSiteInformation: (siteInformation) => dispatch({type: ACTION_SET_SITE_INFORMATION, siteInformation}),
-    onSetIsUIBlockerActive: (isUIBlockerActive) => dispatch({type: ACTION_SET_IS_UI_BLOCKER_ACTIVE, isUIBlockerActive})
+    onSetUIBlockerState: (state) => dispatch({...state, type: ACTION_SET_UI_BLOCKER_STATE})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PayTab);

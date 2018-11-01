@@ -37,8 +37,8 @@ class ProductBody extends React.Component {
                                 aria-label="Checkout"
                                 style={{fontSize: 100}}
                             >
-                            🛒
-                        </span>
+                                🛒
+                            </span>
                         }
                         <h4 id="product-title">{product.title || product.imageAlt}</h4>
                         {

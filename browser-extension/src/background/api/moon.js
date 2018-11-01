@@ -29,7 +29,8 @@ const user = gql`
 `;
 export const getUser = () => MoonGraphQL.authClient
     .query({
-        query: user
+        query: user,
+        fetchPolicy: 'network-only'
     });
 
 const exchangeRates = gql`

@@ -145,14 +145,19 @@ class CheckoutBody extends Component {
         return (
             <div>
                 <div>
-                    <span
-                        id="checkout-cart-icon"
-                        role="img"
-                        aria-label="Checkout"
-                        style={{fontSize: 80}}
-                    >
-                        🛒
-                    </span>
+                    {
+                        !!authUser &&
+                        !!authUser.wallets &&
+                        !!authUser.wallets.length &&
+                        <span
+                            id="checkout-cart-icon"
+                            role="img"
+                            aria-label="Checkout"
+                            style={{fontSize: 80}}
+                        >
+                            🛒
+                        </span>
+                    }
                     {
                         selectedWallet &&
                         <CheckoutCalculator
@@ -177,44 +182,65 @@ class CheckoutBody extends Component {
                     />
                 }
                 {
-                    selectedWallet
-                        ? (
-                            <div className="btn-group btn-group-pay">
-                                {
-                                    this.state.isSufficient
-                                        ? (
-                                            <button
-                                                className="btn btn-pay btn-primary"
-                                                onClick={pay}
-                                            >
-                                                Pay with <b>{selectedWallet.name}</b>
-                                            </button>
-                                        ) : (
-                                            <button
-                                                className="btn btn-pay btn-primary"
-                                                disabled
-                                            >
-                                                Insufficient Funds
-                                            </button>
-                                        )
-                                }
-                                <button
-                                    className={`btn btn-icon btn-primary-outline btn-wallet-selector${showWalletSelector ? ' inverse' : ''}`}
-                                    onClick={() => setShowWalletSelector(!showWalletSelector)}
-                                >
-                                    <FaIcon icon="caret-up"/>
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="btn-group btn-group-pay">
-                                <button
-                                    className="btn btn-pay btn-primary"
-                                    onClick={() => setShowWalletSelector(!showWalletSelector)}
-                                >
-                                    Select a wallet
-                                </button>
-                            </div>
-                        )
+                    selectedWallet &&
+                    <div className="btn-group btn-group-pay">
+                        {
+                            this.state.isSufficient
+                                ? (
+                                    <button
+                                        className="btn btn-pay btn-primary"
+                                        onClick={pay}
+                                    >
+                                        Pay with <b>{selectedWallet.name}</b>
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="btn btn-pay btn-primary"
+                                        disabled
+                                    >
+                                        Insufficient Funds
+                                    </button>
+                                )
+                        }
+                        <button
+                            className={`btn btn-icon btn-primary-outline btn-wallet-selector${showWalletSelector ? ' inverse' : ''}`}
+                            onClick={() => setShowWalletSelector(!showWalletSelector)}
+                        >
+                            <FaIcon icon="caret-up"/>
+                        </button>
+                    </div>
+                }
+                {
+                    !!authUser &&
+                    !!authUser.wallets &&
+                    !!authUser.wallets.length &&
+                    !selectedWallet &&
+                    <div className="btn-group btn-group-pay">
+                        <button
+                            className="btn btn-pay btn-primary"
+                            disabled
+                        >
+                            Insufficient Funds
+                        </button>
+                        <button
+                            className={`btn btn-icon btn-primary-outline btn-wallet-selector${showWalletSelector ? ' inverse' : ''}`}
+                            disabled
+                        >
+                            <FaIcon icon="caret-up"/>
+                        </button>
+                    </div>
+                }
+                {
+                    !!authUser &&
+                    (!authUser.wallets || !authUser.wallets.length) &&
+                    <div className="btn-group btn-group-pay">
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => {}}
+                        >
+                            No wallets available for purchase. Add one now!
+                        </button>
+                    </div>
                 }
             </div>
         );

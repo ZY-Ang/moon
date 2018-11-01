@@ -10,8 +10,10 @@ import AuthFlow from "./auth/AuthFlow";
 import SwipeableViews from "react-swipeable-views";
 import AppRuntime from "../browser/AppRuntime";
 import FaIcon from "./misc/fontawesome/FaIcon";
-import {ACTION_SET_IS_APP_ACTIVE, ACTION_SET_IS_UI_BLOCKER_ACTIVE} from "../redux/reducers/constants";
-import Throbber from "./misc/throbber/Throbber";
+import {ACTION_SET_IS_APP_ACTIVE} from "../redux/reducers/constants";
+import OnBoardingFlow, {isOnBoardingFlowCompleteOrSkipped} from "./onboarding/OnBoardingFlow";
+import AppModal from "./misc/appmodals/AppModal";
+import UIBlocker from "./uiblocker/UIBlocker";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -110,21 +112,29 @@ class App extends Component {
                             </div>
                         </div>
                         {
-                            !!this.props.authUser && // && isOnboardingFlowCompleteOrSkipped(this.props.authUser)
+                            !!this.props.authUser &&
                             <div id="moon-body" className={CLASS_MOON_BODY}>
-                                <SwipeableViews
-                                    animateHeight
-                                    ref={c => (this.tabSwiper = c)}
-                                    disabled
-                                    style={{height: '100%', overflowY: 'hidden !important'}}
-                                    index={this.state.currentTabIndex}
-                                >
-                                    {
-                                        TAB_GROUP_AUTH.components.map((AuthTab, index) =>
-                                            <AuthTab key={index} changeTab={this.changeTab}/>
+                                <AppModal/>
+                                {
+                                    isOnBoardingFlowCompleteOrSkipped(this.props.authUser)
+                                        ? (
+                                            <SwipeableViews
+                                                animateHeight
+                                                ref={c => (this.tabSwiper = c)}
+                                                disabled
+                                                style={{height: '100%', overflowY: 'hidden !important'}}
+                                                index={this.state.currentTabIndex}
+                                            >
+                                                {
+                                                    TAB_GROUP_AUTH.components.map((AuthTab, index) =>
+                                                        <AuthTab key={index} changeTab={this.changeTab}/>
+                                                    )
+                                                }
+                                            </SwipeableViews>
+                                        ) : (
+                                            <OnBoardingFlow/>
                                         )
-                                    }
-                                </SwipeableViews>
+                                }
                                 {/*<Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>*/}
                             </div>
                         }
@@ -136,17 +146,7 @@ class App extends Component {
                         }
                     </div>
                 }
-                {
-                    this.props.isUIBlockerActive &&
-                    <div id="moon-ui-blocker">
-                        <div id="moon-ui-blocker-ui" className="container">
-                            <div className="text-center">
-                                <Throbber/>
-                                <p>Maybe refactor blocker to separate component so we can control messages through redux</p>
-                            </div>
-                        </div>
-                    </div>
-                }
+                <UIBlocker/>
             </div>
         );
     }
@@ -154,13 +154,11 @@ class App extends Component {
 
 const mapStateToProps = (state) => ({
     isAppActive: state.appState.isAppActive,
-    isUIBlockerActive: state.appState.isUIBlockerActive,
     authUser: state.sessionState.authUser
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    onSetIsAppActive: (isAppActive) => dispatch({type: ACTION_SET_IS_APP_ACTIVE, isAppActive}),
-    onSetIsUIBlockerActive: (isUIBlockerActive) => dispatch({type: ACTION_SET_IS_UI_BLOCKER_ACTIVE, isUIBlockerActive})
+    onSetIsAppActive: (isAppActive) => dispatch({type: ACTION_SET_IS_APP_ACTIVE, isAppActive})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

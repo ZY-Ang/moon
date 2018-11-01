@@ -49,7 +49,6 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
 (function(giftCards, environment) {
     var applyButton = document.querySelectorAll(".a-button.a-spacing-micro .a-button-inner input, #gcApplyButtonId")[0];
     var txtGc = document.getElementById("spc-gcpromoinput");
-    var submitButton = document.querySelectorAll(".a-button-text.place-your-order-button, #submitOrderButtonId")[0];
     var successfulGiftCards = [];
     var failedGiftCards = [];
     return giftCards
@@ -127,7 +126,8 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
             });
         })
         .then(function(){
-            if (environment === 'production') {
+            var submitButton = document.querySelectorAll(".a-button-text.place-your-order-button, #submitOrderButtonId")[0];
+            if (submitButton) {
                 submitButton.click();
             }
         })

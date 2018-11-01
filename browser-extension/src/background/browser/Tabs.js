@@ -3,6 +3,7 @@
  */
 
 import {tabDidUpdate} from "../windowManager";
+import {isValidWebUrl} from "../../utils/url";
 
 /**
  * Interface for interaction with the browser's tabs API
@@ -46,10 +47,24 @@ class Tabs {
         Tabs.getActive()
             .then(tab => {
                 if (tab && tab.status === 'complete') {
-                    return Tabs.sendMessage(tab.id, message, options);
+                    return Tabs.sendMessage(tab.id, message, options)
+                        .catch(() => console.log(`Receiving end probably does not exist.`));
                 }
                 // Otherwise, page is not ready.
             });
+
+    /**
+     * Sends a {@param message} to all tabs.
+     *
+     * @param options {object} - additional parameters to be passed into the request.
+     */
+    static sendMessageToAll = (message, options) =>
+        Tabs.getAll()
+            .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url) && tab.status === 'complete')))
+            .then(tabs => tabs.forEach(tab =>
+                Tabs.sendMessage(tab.id, message, options)
+                    .catch(() => console.log(`Message broadcast: Skipping ${tab.id}. Receiving end probably does not exist.`))
+            ));
 
     /**
      * Injects scripts and css onto a page

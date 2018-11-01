@@ -52,13 +52,18 @@ const applySetSiteInformation = (state, action) => ({
  * Session Reducer that manages all actions related to the store
  */
 function sessionReducer(state = INITIAL_STATE, action) {
-    switch (action.type) {
-        case ACTION_SET_AUTH_USER:
+    const reducerMap = {
+        [ACTION_SET_AUTH_USER](){
             return applySetAuthUser(state, action);
-        case ACTION_SET_SITE_INFORMATION:
+        },
+        [ACTION_SET_SITE_INFORMATION](){
             return applySetSiteInformation(state, action);
-        default:
-            return state;
+        }
+    };
+    if (!!action.type && !!reducerMap[action.type]) {
+        return reducerMap[action.type]();
+    } else {
+        return state;
     }
 }
 

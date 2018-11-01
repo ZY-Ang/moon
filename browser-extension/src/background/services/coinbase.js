@@ -9,6 +9,7 @@ import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
 import Tabs from "../browser/Tabs";
 import MoonGraphQL from "../api/MoonGraphQL";
 import {updateCoinbaseApiKey} from "../api/coinbase";
+import {doUpdateAuthUserEvent} from "../auth";
 
 /**
  * Global timeout variable defined to
@@ -66,7 +67,8 @@ export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerHTML, senderTab) 
                 type: ACTION_SET_COINBASE_AUTH_FLOW,
                 isCoinbaseAuthFlow: false
             });
-            Tabs.remove(senderTab);
+            return Tabs.remove(senderTab)
+                .then(doUpdateAuthUserEvent);
         });
 };
 /**
