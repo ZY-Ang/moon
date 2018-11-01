@@ -25,8 +25,8 @@ const manifest = {
         "app.js", // Required for re-injection by Browser.Runtime
         "static/*",
         "app.css",
-        "logout",
-        "oauth"
+        "logout.html",
+        "oauth.html"
     ],
 
     permissions: [
