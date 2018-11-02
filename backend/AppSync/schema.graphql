@@ -106,8 +106,8 @@ input GetPaymentPayloadInput {
 
 # Mutations (actionable). Naming convention: VERBS
 type Mutation {
-    # Updates the callee's coinbase API keys
-    updateCoinbaseApiKey(input: UpdateCoinbaseApiKeyInput!): CoinbaseApiKey
+    # Updates the callee's user information
+    updateUser(input: UpdateUserInput!): User
     # Get information required to complete purchase
     getPaymentPayload(input: GetPaymentPayloadInput!): PaymentPayload
     # Notify if transaction was completed
@@ -205,15 +205,20 @@ type SiteInformation {
 }
 
 type Subscription {
-    onUpdateCoinbaseApiKey: CoinbaseApiKey
-    @aws_subscribe(mutations: ["updateCoinbaseApiKey"])
+    # Subscribes to calls to updateUser
+    onUpdateUser: User
+    @aws_subscribe(mutations: ["updateUser"])
 }
 
 # Input for updateCoinbaseApiKey
-input UpdateCoinbaseApiKeyInput {
+input UpdateCoinbaseApiKeysInput {
     key: String!
     secret: String!
     innerHTML: String!
+}
+
+input UpdateUserInput {
+    coinbaseApiKeys: UpdateCoinbaseApiKeysInput
 }
 
 type User {

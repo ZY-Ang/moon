@@ -4,8 +4,7 @@
 const logHead = require("../../../utils/logHead");
 const logTail = require("../../../utils/logTail");
 const AWS = require("aws-sdk");
-
-const COINBASE_API_KEY_TABLE = `moon-backend-${process.env.NODE_ENV}-coinbase-api-key`;
+const {USER_SECRETS_TABLE} = require("../../../constants/user/config");
 
 /**
  * Gets the coinbase API Keys of a particular
@@ -21,12 +20,12 @@ const getCoinbaseApiKeys = async (sub) => {
 
     let dynamodb = new AWS.DynamoDB.DocumentClient();
     const params = {
-        TableName: COINBASE_API_KEY_TABLE,
+        TableName: USER_SECRETS_TABLE,
         Key: {sub}
     };
 
     const coinbaseKeyData = await dynamodb.get(params).promise();
-    const coinbaseApiKeys = coinbaseKeyData.Item;
+    const {coinbaseApiKeys} = coinbaseKeyData.Item;
 
     logTail("coinbaseApiKeys", coinbaseApiKeys);
     return coinbaseApiKeys;

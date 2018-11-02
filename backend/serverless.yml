@@ -20,6 +20,7 @@ provider:
   profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
   environment:
     NODE_ENV: ${{self:provider.stage}}
+    STACK_PREFIX: ${{self:service}}-${{self:provider.stage}}
 
 plugins:
   - serverless-appsync-plugin
@@ -29,11 +30,11 @@ plugins:
 
 resources:
   Resources:
-    CoinbaseApiKeyDynamoDBTable:
-      # Table that stores coinbase API Keys for users.
+    UserSecretsDynamoDBTable:
+      # Table that stores user secrets.
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${{self:service}}-${{self:provider.stage}}-coinbase-api-key
+        TableName: ${{self:service}}-${{self:provider.stage}}-user-secrets
         AttributeDefinitions:
         - AttributeName: sub
           AttributeType: S
@@ -120,7 +121,7 @@ resources:
               Condition:
                 StringLike:
                   s3:prefix: "${{self:resources.Resources.S3Bucket.Properties.BucketName}}/${${{file(./config/auth0.json):short_iss}}:sub}/*"
-        - PolicyName: CoinbaseApiKeyDynamoDBTable-policy
+        - PolicyName: UserSecretsDynamoDBTable-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -129,8 +130,8 @@ resources:
               - "dynamodb:GetItem"
               - "dynamodb:PutItem"
               Resource:
-              - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
-              - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+              - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
+              - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
               Condition:
                 ForAllValues:StringEquals:
                   dynamodb:LeadingKeys:
@@ -145,10 +146,6 @@ resources:
 #     the function 'exchangeRate' will have a CloudFormation logical ID of
 #     'ExchangeRateLambdaFunction'
 functions:
-  issueAmazonGiftCard:
-    name: ${{self:service}}-${{self:provider.stage}}-issueAmazonGiftCard
-    description: 'Issues an amazon gift card using the agcod API. Accepts {@param amount}, {@param currency}, {@param region}'
-    handler: Lambda/src/issueAmazonGiftCard.handler
   exchangeRate:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRate
     description: 'Returns the exchange rate given a quote and base currency.'
@@ -165,13 +162,26 @@ functions:
       Action:
       - "dynamodb:GetItem"
       Resource:
-      - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
-      - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+      - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
+      - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
   siteInformation:
     name: ${{self:service}}-${{self:provider.stage}}-siteInformation
     description: 'Returns information about a supported site or null if unsupported'
     handler: Lambda/index.siteInformation
     timeout: 30
+  updateUser:
+    name: ${{self:service}}-${{self:provider.stage}}-updateUser
+    description: 'Updates a moon user with new information.'
+    handler: Lambda/index.updateUser
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:GetItem"
+      - "dynamodb:UpdateItem"
+      Resource:
+      - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
+      - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
   user:
     name: ${{self:service}}-${{self:provider.stage}}-user
     description: 'Returns information about a moon user.'
@@ -182,8 +192,8 @@ functions:
       Action:
       - "dynamodb:GetItem"
       Resource:
-      - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
-      - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
+      - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
+      - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
@@ -201,7 +211,16 @@ custom:
   # See link for more information:
   #     https://github.com/sbstjn/serverless-dynamodb-autoscaling
   capacities:
-    - table: CoinbaseApiKeyDynamoDBTable
+    - table: UserSecretsDynamoDBTable
+      read:
+        minimum: 5
+        maximum: 1000
+        usage: 0.9
+      write:
+        minimum: 5
+        maximum: 1000
+        usage: 0.9
+    - table: SiteSupportRequestDynamoDBTable
       read:
         minimum: 5
         maximum: 1000
@@ -220,19 +239,6 @@ custom:
       clientId: ${{file(./config/auth0.json):aud}}
     dataSources:
     # ============== Dynamo DB Tables ==============
-      # CoinbaseApiKeyDynamoDBTable
-      - type: AMAZON_DYNAMODB
-        name: CoinbaseApiKeyDynamoDBTable
-        description: 'DynamoDB table that stores user coinbase API keys'
-        config:
-          tableName: ${{self:resources.Resources.CoinbaseApiKeyDynamoDBTable.Properties.TableName}}
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "dynamodb:PutItem"
-            Resource:
-            - { Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [CoinbaseApiKeyDynamoDBTable, Arn] }, '/*']] }
       # SiteSupportRequestDynamoDBTable
       - type: AMAZON_DYNAMODB
         name: SiteSupportRequestDynamoDBTable
@@ -261,6 +267,19 @@ custom:
             Resource:
             - { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
             - { Fn::Join: ['', [{ Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }, ':*']] }
+      # updateUser
+      - type: AWS_LAMBDA
+        name: UpdateUserLambdaFunction
+        description: ${{self:functions.updateUser.description}}
+        config:
+          lambdaFunctionArn: { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
+            - { Fn::Join: ['', [{ Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }, ':*']] }
       # user
       - type: AWS_LAMBDA
         name: UserLambdaFunction
@@ -335,12 +354,12 @@ custom:
         request: Query/siteInformation/request.vm
         response: Query/siteInformation/response.vm
     # ============== Mutation ==============
-      # Mutation/updateCoinbaseApiKey
-      - dataSource: CoinbaseApiKeyDynamoDBTable
+      # Mutation/updateUser
+      - dataSource: UpdateUserLambdaFunction
         type: Mutation
-        field: updateCoinbaseApiKey
-        request: Mutation/updateCoinbaseApiKey/request.vm
-        response: Mutation/updateCoinbaseApiKey/response.vm
+        field: updateUser
+        request: Mutation/updateUser/request.vm
+        response: Mutation/updateUser/response.vm
       # Mutation/addSiteSupportRequest
       - dataSource: SiteSupportRequestDynamoDBTable
         type: Mutation

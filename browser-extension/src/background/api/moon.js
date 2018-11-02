@@ -33,6 +33,20 @@ export const getUser = () => MoonGraphQL.authClient
         fetchPolicy: 'network-only'
     });
 
+export const onUpdateUser = gql`
+    subscription onUpdateUser {
+        onUpdateUser {
+            coinbaseInfo {
+                wallets {
+                    id
+                    currency
+                    balance
+                }
+            }
+        }
+    }
+`;
+
 const exchangeRates = gql`
     query exchangeRates(
     $quote: CoinbaseProQuoteCurrency!,

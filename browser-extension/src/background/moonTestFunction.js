@@ -3,7 +3,7 @@
  */
 
 import MoonGraphQL from "./api/MoonGraphQL";
-import {onUpdateCoinbaseApiKey} from "./api/coinbase";
+import {onUpdateUser} from "./api/moon";
 
 let subscription = null;
 
@@ -21,7 +21,7 @@ const moonTestFunction = (params) => {
         subscription = null;
     } else {
         subscription = awsAppSyncClient
-            .subscribe({query: onUpdateCoinbaseApiKey})
+            .subscribe({query: onUpdateUser})
             .subscribe({
                 next: ({data}) => console.log("next-data: ", data),
                 complete: console.log,
