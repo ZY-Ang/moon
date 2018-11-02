@@ -3,7 +3,6 @@
  */
 
 import {tabDidUpdate} from "../windowManager";
-import {isValidWebUrl} from "../../utils/url";
 
 /**
  * Interface for interaction with the browser's tabs API
@@ -46,7 +45,7 @@ class Tabs {
     static sendMessageToActive = (message, options) =>
         Tabs.getActive()
             .then(tab => {
-                if (tab && tab.status === 'complete') {
+                if (!!tab) {
                     return Tabs.sendMessage(tab.id, message, options)
                         .catch(() => console.log(`Receiving end probably does not exist.`));
                 }
@@ -60,7 +59,7 @@ class Tabs {
      */
     static sendMessageToAll = (message, options) =>
         Tabs.getAll()
-            .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url) && tab.status === 'complete')))
+            .then(tabs => tabs.filter(tab => (!!tab)))
             .then(tabs => tabs.forEach(tab =>
                 Tabs.sendMessage(tab.id, message, options)
                     .catch(() => console.log(`Message broadcast: Skipping ${tab.id}. Receiving end probably does not exist.`))
@@ -157,7 +156,6 @@ class Tabs {
          * @see {@link https://developer.chrome.com/extensions/tabs#event-onUpdated}
          */
         chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-            console.log("onUpdated changeInfo:", changeInfo);
             if (changeInfo.status === "complete") {
                 tabDidUpdate(tab);
             }

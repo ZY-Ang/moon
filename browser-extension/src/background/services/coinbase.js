@@ -67,8 +67,7 @@ export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerHTML, senderTab) 
                 type: ACTION_SET_COINBASE_AUTH_FLOW,
                 isCoinbaseAuthFlow: false
             });
-            return Tabs.remove(senderTab)
-                .then(doUpdateAuthUserEvent);
+            return Tabs.remove(senderTab);
         });
 };
 /**
