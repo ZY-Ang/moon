@@ -21,6 +21,7 @@ import {
 import {observeDOM} from "../../utils/dom";
 import ProductBody from "./ProductBody";
 import {isCheckoutPage} from "../../../utils/url";
+import Decimal from "decimal.js";
 
 const SettingsIcon = ({changeTab}) => (
     <div
@@ -115,10 +116,10 @@ class PayTab extends Component {
                 const cartAmount = !!cartAmountElements && !!cartAmountElements.length && (
                     (
                         !!cartAmountElements[0].value &&
-                        Number(cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toLocaleString("en-us", {style:"currency",currency:"USD"})
+                        Decimal(cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toFixed(2)
                     ) || (
                         !!cartAmountElements[0].innerText &&
-                        Number(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toLocaleString("en-us", {style:"currency",currency:"USD"})
+                        Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
                     )
                 );
                 this.setState(state => ({
