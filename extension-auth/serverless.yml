@@ -1,0 +1,116 @@
+service: moon-extension-auth
+
+plugins:
+- serverless-single-page-app-plugin
+
+custom:
+  bucketNames:
+    default: moon.extension.auth.${{self:provider.stage}}
+    production: moon.extension.auth
+  defaultStage: development
+  defaultRegion: us-east-1
+  profiles:
+    production: moon-production
+    development: moon-development
+  accountId: ${AWS::AccountId}
+  s3Bucket: ${{self:custom.bucketNames.${{self:provider.stage}}, self:custom.bucketNames.default}}
+  s3LocalPath: src/
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
+  stage: ${{opt:stage, self:custom.defaultStage}}
+  region: ${{opt:region, self:custom.defaultRegion}}
+  profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
+  environment:
+    NODE_ENV: ${{self:provider.stage}}
+
+resources:
+  Resources:
+    ## Specifying the S3 Bucket
+    WebSiteS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${{self:custom.s3Bucket}}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    WebSiteS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: WebSiteS3Bucket
+        PolicyDocument:
+          Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+            - s3:GetObject
+            Resource: arn:aws:s3:::${{self:custom.s3Bucket}}/*
+    ## Specifying the CloudFront Distribution to server your Web Application
+    WebSiteCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+          - DomainName: ${{self:custom.s3Bucket}}.s3-website-us-east-1.amazonaws.com
+            ## An identifier for the origin which must be unique within the distribution
+            Id: WebSite
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+            ## In case you want to restrict the bucket access use S3OriginConfig and remove CustomOriginConfig
+            # S3OriginConfig:
+            #   OriginAccessIdentity: origin-access-identity/cloudfront/E127EXAMPLE51Z
+          Enabled: 'true'
+          ## Uncomment the following section in case you are using a custom domain
+          Aliases:
+          - extension.auth.paywithmoon.com
+          DefaultRootObject: index.html
+          ## Since the Single Page App is taking care of the routing we need to make sure ever path is served with index.html
+          ## The only exception are files that actually exist e.h. app.js, reset.css
+#          CustomErrorResponses:
+#          - ErrorCode: 404
+#            ResponseCode: 200
+#            ResponsePagePath: /index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+            - DELETE
+            - GET
+            - HEAD
+            - OPTIONS
+            - PATCH
+            - POST
+            - PUT
+            ## The origin id defined above
+            TargetOriginId: WebSite
+            ## Defining if and how the QueryString and Cookies are forwarded to the origin which in this case is S3
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ## The protocol that users can use to access the files in the origin. To allow HTTP use `allow-all`
+            ViewerProtocolPolicy: redirect-to-https
+          ## The certificate to use when viewers use HTTPS to request objects.
+          ViewerCertificate:
+            AcmCertificateArn: "arn:aws:acm:us-east-1:325751747533:certificate/809efa34-3a62-49ab-97fb-792ef87057fd"
+            SslSupportMethod: 'sni-only'
+#            CloudFrontDefaultCertificate: 'true'
+          ## Uncomment the following section in case you want to enable logging for CloudFront requests
+          # Logging:
+          #   IncludeCookies: 'false'
+          #   Bucket: mylogs.s3.amazonaws.com
+          #   Prefix: myprefix
+
+  ## In order to print out the hosted domain via `serverless info` we need to define the DomainName output for CloudFormation
+  Outputs:
+    WebSiteS3BucketOutput:
+      Value:
+        Ref: WebSiteS3Bucket
+    WebSiteCloudFrontDistributionOutput:
+      Value: { Fn::GetAtt: [WebSiteCloudFrontDistribution, DomainName] }
