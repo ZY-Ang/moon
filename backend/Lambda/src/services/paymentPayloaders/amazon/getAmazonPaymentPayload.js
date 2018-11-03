@@ -47,8 +47,8 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
     // TODO: FIGURE OUT WHAT HONEY is doing with 'applyCodesClick'
     const executable = require("harp-minify").js(`
 (function(giftCards, environment) {
-    var applyButton = document.querySelectorAll(".a-button.a-spacing-micro .a-button-inner input, #gcApplyButtonId")[0];
-    var txtGc = document.getElementById("spc-gcpromoinput");
+    var applyButton = document.querySelectorAll(".a-button.a-spacing-micro .a-button-inner input,#gcApplyButtonId,.PromoEntryButton input[type='submit']")[0];
+    var txtGc = document.querySelectorAll("#spc-gcpromoinput,input[name='code'].PromoEntryField")[0];
     var successfulGiftCards = [];
     var failedGiftCards = [];
     return giftCards
@@ -60,19 +60,19 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
                         applyButton.click();
                         var timeoutFunction = function(){
                             setTimeout(function(){
-                                var loadingSpinner = document.querySelectorAll("#payment .section-overwrap, #loading-spinner-blocker-doc")[0];
+                                var loadingSpinner = document.querySelectorAll("#payment .section-overwrap,#loading-spinner-blocker-doc")[0];
                                 if (loadingSpinner && loadingSpinner.style.display !== 'none') {
                                     timeoutFunction();
                                 } else {
-                                    var txtSuccess = document.getElementById("gc-success");
-                                    var txtError = document.getElementById("gc-error");
+                                    var txtSuccess = document.querySelectorAll("#gc-success,.PromoEntrySuccess")[0];
+                                    var txtError = document.querySelectorAll("#gc-error,.PromoEntryError")[0];
                                     var isElementHidden = function(htmlElement){
                                         return (!!htmlElement.hidden || htmlElement.style.display === "none");
                                     };
                                     if (!txtSuccess) {
                                         reject("txtSuccess does not exist");
                                     } else if (isElementHidden(txtSuccess) && !txtError) {
-                                        reject("txtSuccess display === none and txtError missing");
+                                        reject("txtSuccess is hidden and txtError missing");
                                     } else if (isElementHidden(txtSuccess)) {
                                         reject(txtError.innerText.trim());
                                     } else if (isElementHidden(txtError) && isElementHidden(txtSuccess)) {
@@ -126,7 +126,7 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
             });
         })
         .then(function(){
-            var submitButton = document.querySelectorAll(".a-button-text.place-your-order-button, #submitOrderButtonId")[0];
+            var submitButton = document.querySelectorAll(".a-button-text.place-your-order-button,#submitOrderButtonId,.MusicCartReviewButtonSection input[type='submit']")[0];
             if (submitButton) {
                 submitButton.click();
             }
