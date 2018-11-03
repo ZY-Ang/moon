@@ -21,6 +21,7 @@ import {
 import {observeDOM} from "../../utils/dom";
 import ProductBody from "./ProductBody";
 import {isCheckoutPage} from "../../../utils/url";
+import Decimal from "decimal.js";
 
 const SettingsIcon = ({changeTab}) => (
     <div
@@ -104,6 +105,17 @@ class PayTab extends Component {
         this.setState(() => ({selectedWallet: nextProps.authUser ? nextProps.authUser.wallets[0] : null}));
     }
 
+    parseCartAmount = (cartAmountElements) => {
+        try {
+            return (!!cartAmountElements && !!cartAmountElements.length) && (
+                (!!cartAmountElements[0].value && Decimal(cartAmountElements[0].value.replace(/[^0-9.-]+/g, ''))) ||
+                (!!cartAmountElements[0].innerText && Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')))
+            );
+        } catch (e) {
+            return NaN;
+        }
+    };
+
     parsePage = (siteInformation) => {
         const parserHostMap = {
             "www.amazon.com": () => {
@@ -112,18 +124,15 @@ class PayTab extends Component {
                 const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
                 const productImageElements = document.querySelectorAll(siteInformation.querySelectorProductImage);
                 const productPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
+                const cartAmountDecimal = this.parseCartAmount(cartAmountElements);
                 this.setState(state => ({
                     cartAmount: (
-                        !!cartAmountElements &&
-                        !!cartAmountElements.length
+                        !!cartAmountDecimal &&
+                        cartAmountDecimal.gt("0") &&
+                        process.env.NODE_ENV !== 'production'
                     )
-                        ? (
-                            process.env.NODE_ENV === 'production'
-                                ? (
-                                    (!!cartAmountElements[0].value && cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')) ||
-                                    (!!cartAmountElements[0].innerText && cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, ''))
-                                ) : "0.01"
-                        ) : "0.00",
+                        ? "0.01"
+                        : cartAmountDecimal.toFixed(2),
                     cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD",
                     product: {
                         ...state.product,
@@ -141,7 +150,7 @@ class PayTab extends Component {
                                 amount: productPriceElements[0].innerText && !!price &&
                                     price.toLocaleString("en-us", {style:"currency",currency:"USD"})
                             }
-                        }))
+                        }));
                     };
                     updatePrice();
                     observeDOM(productPriceElements[0], updatePrice);

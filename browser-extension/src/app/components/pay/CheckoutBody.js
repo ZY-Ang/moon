@@ -215,7 +215,7 @@ class CheckoutBody extends Component {
                                 className="btn btn-pay btn-primary"
                                 disabled
                             >
-                                Such free stuff, wow
+                                Stuff, such free, wow
                             </button>
                         }
                         <button
