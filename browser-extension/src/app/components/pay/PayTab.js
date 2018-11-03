@@ -21,7 +21,6 @@ import {
 import {observeDOM} from "../../utils/dom";
 import ProductBody from "./ProductBody";
 import {isCheckoutPage} from "../../../utils/url";
-import Decimal from "decimal.js";
 
 const SettingsIcon = ({changeTab}) => (
     <div
@@ -105,17 +104,6 @@ class PayTab extends Component {
         this.setState(() => ({selectedWallet: nextProps.authUser ? nextProps.authUser.wallets[0] : null}));
     }
 
-    parseCartAmount = (cartAmountElements) => {
-        try {
-            return (!!cartAmountElements && !!cartAmountElements.length) && (
-                (!!cartAmountElements[0].value && Decimal(cartAmountElements[0].value.replace(/[^0-9.-]+/g, ''))) ||
-                (!!cartAmountElements[0].innerText && Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')))
-            );
-        } catch (e) {
-            return NaN;
-        }
-    };
-
     parsePage = (siteInformation) => {
         const parserHostMap = {
             "www.amazon.com": () => {
@@ -124,15 +112,23 @@ class PayTab extends Component {
                 const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
                 const productImageElements = document.querySelectorAll(siteInformation.querySelectorProductImage);
                 const productPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
-                const cartAmountDecimal = this.parseCartAmount(cartAmountElements);
+                const cartAmount = !!cartAmountElements && !!cartAmountElements.length && (
+                    (
+                        !!cartAmountElements[0].value &&
+                        Number(cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toLocaleString("en-us", {style:"currency",currency:"USD"})
+                    ) || (
+                        !!cartAmountElements[0].innerText &&
+                        Number(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toLocaleString("en-us", {style:"currency",currency:"USD"})
+                    )
+                );
                 this.setState(state => ({
                     cartAmount: (
-                        !!cartAmountDecimal &&
-                        cartAmountDecimal.gt("0") &&
+                        !!cartAmount &&
+                        (Number(cartAmount) > 0) &&
                         process.env.NODE_ENV !== 'production'
                     )
                         ? "0.01"
-                        : cartAmountDecimal.toFixed(2),
+                        : cartAmount,
                     cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD",
                     product: {
                         ...state.product,
