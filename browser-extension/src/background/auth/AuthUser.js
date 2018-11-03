@@ -223,7 +223,6 @@ class AuthUser {
      */
     trim = async () => {
         const {data} = await getUser();
-        console.log("USER TRIMMED DATA: ", data);
         const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets)
             ? data.user.coinbaseInfo.wallets.map(coinbaseWallet => ({
                 ...coinbaseWallet,

@@ -12,6 +12,7 @@ import AppRuntime from "./browser/AppRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
 import {doExtractCoinbaseApiKeys} from "./wallets/coinbase";
 import {updateAuthUser} from "./utils/auth";
+import {injectButton} from "./buttonMoon";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -37,6 +38,7 @@ const messageCenter = (request, sender, sendResponse) => {
                     console.error(err);
                     sendFailure(`toggleApp(${request.source}) failed`);
                 });
+            injectButton();
             return true;
         },
         [REQUEST_UPDATE_AUTH_USER]() {

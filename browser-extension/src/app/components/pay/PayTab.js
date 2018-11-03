@@ -110,8 +110,8 @@ class PayTab extends Component {
                 const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
                 const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
                 const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
-                const productImage = document.querySelectorAll(siteInformation.querySelectorProductImage);
-                const productPrice = document.querySelectorAll(siteInformation.querySelectorProductPrice);
+                const productImageElements = document.querySelectorAll(siteInformation.querySelectorProductImage);
+                const productPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
                 this.setState(state => ({
                     cartAmount: (
                         !!cartAmountElements &&
@@ -128,21 +128,23 @@ class PayTab extends Component {
                     product: {
                         ...state.product,
                         title: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
-                        imageURL: productImage && productImage[0] && productImage[0].src,
-                        imageAlt: productImage && productImage[0] && productImage[0].alt
+                        imageURL: productImageElements && productImageElements[0] && productImageElements[0].src,
+                        imageAlt: productImageElements && productImageElements[0] && productImageElements[0].alt
                     }
                 }));
-                if (productPrice && productPrice[0]) {
-                    const price = Number(productPrice[0].innerText.replace(/[^0-9.-]+/g, ""));
-                    const updatePrice = () => this.setState(({product}) => ({
-                        product: {
-                            ...product,
-                            amount: productPrice[0].innerText && !!price &&
-                                price.toLocaleString("en-us", {style:"currency",currency:"USD"})
-                        }
-                    }));
+                if (productPriceElements && productPriceElements[0]) {
+                    const updatePrice = () => {
+                        const price = Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""));
+                        this.setState(({product}) => ({
+                            product: {
+                                ...product,
+                                amount: productPriceElements[0].innerText && !!price &&
+                                    price.toLocaleString("en-us", {style:"currency",currency:"USD"})
+                            }
+                        }))
+                    };
                     updatePrice();
-                    observeDOM(productPrice[0], updatePrice);
+                    observeDOM(productPriceElements[0], updatePrice);
                 }
             }
         };

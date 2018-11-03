@@ -45,6 +45,7 @@ const reRenderApp = () => {
                 }
             });
     }
+    injectButton();
 };
 
 /**
@@ -106,4 +107,3 @@ export const toggleApp = async (source) => {
 
 reRenderApp();
 AppRuntime.run();
-injectButton();

@@ -14,6 +14,7 @@ const ID_BUTTON_PAY_WITH_MOON = "button-pay-with-moon";
 export const injectButton = () => {
     const existingButton = document.getElementById(ID_BUTTON_PAY_WITH_MOON);
     if (!!existingButton) {
+        ReactDOM.unmountComponentAtNode(existingButton);
         existingButton.remove();
     }
     let moonButton=document.createElement("div");
