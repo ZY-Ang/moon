@@ -42,8 +42,24 @@ export const isSupportedSite = (urlString) => {
  * @returns {boolean} {@code true} if
  * {@param urlString} matches a {@code regexCheckoutURL}
  * of a supported site.
+ *
+ * If {@param pathnameCheckout} is supplied, it will override
+ * {@code supportedSites[host].pathnameCheckout}.
  */
-export const isCheckoutPage = (urlString) => {
+export const isCheckoutPage = (urlString, pathnameCheckout) => {
     const {host, pathname} = new URL(urlString);
-    return supportedSites[host] && pathname.startsWith(supportedSites[host].pathnameCheckout);
+    if (!!pathnameCheckout) {
+        return (
+            !!pathnameCheckout &&
+            !!pathnameCheckout.length &&
+            pathnameCheckout.reduce((prev, curPathname) => (pathname.startsWith(curPathname) || prev), false)
+        );
+    } else {
+        return (
+            supportedSites[host] &&
+            !!supportedSites[host].pathnameCheckout &&
+            !!supportedSites[host].pathnameCheckout.length &&
+            supportedSites[host].pathnameCheckout.reduce((prev, curPathname) => (pathname.startsWith(curPathname) || prev), false)
+        );
+    }
 };

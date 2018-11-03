@@ -15,7 +15,7 @@ import store from "./redux/store";
 import AppRuntime from "./browser/AppRuntime";
 import axios from "axios";
 import {ACTION_SET_IS_APP_ACTIVE, ACTION_TOGGLE_IS_APP_ACTIVE} from "./redux/reducers/constants";
-import {injectButton} from "./buttonCheckout";
+import {injectButton} from "./buttonMoon";
 
 /**
  * Load required font families from the appropriate libraries.

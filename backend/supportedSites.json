@@ -3,8 +3,17 @@
     "name": "Amazon",
     "logoURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png",
     "isSupported": true,
-    "pathnameCheckout": "/gp/buy/spc/handlers/display.html",
-    "pathnameProduct": "/gp/product"
+    "pathnameCheckout": [
+      "/gp/buy/spc/handlers/display.html",
+      "/gp/dmusic/purchase/purchaseReview/ref=dm_ws_ec_pc_fl"
+    ],
+    "querySelectorMoonButton": "#order-summary-box .a-box-inner,#subtotals .a-box-inner,.MusicCartReviewButtonSection .a-box-inner,#unifiedPrice_feature_div,#mediaPrice_feature_div",
+    "querySelectorCartAmount": "input[name='purchaseTotal'][value],.MusicCartReviewSubtotalSection span.a-color-price",
+    "querySelectorCartCurrency": "input[name='purchaseTotalCurrency'][value]",
+    "querySelectorProductTitle": "#productTitle",
+    "querySelectorProductImage": "#landingImage",
+    "querySelectorAddToCart": "#add-to-cart-button",
+    "querySelectorProductPrice": "#priceblock_ourprice"
   },
   "paywithmoon.com": {
     "name": "Moon",

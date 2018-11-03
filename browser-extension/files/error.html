@@ -1,0 +1,113 @@
+<!--
+  ~ Copyright (c) 2018 moon
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <style>
+        h1, p, a {
+            font-family: "Helvetica Neue", "Segoe UI", sans-serif, Helvetica, Arial;
+            color: white;
+        }
+        body {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #2E2F33;
+        }
+        @-webkit-keyframes animateErrorIcon {
+            0% {
+                transform: rotateX(100deg);
+                -webkit-transform: rotateX(100deg);
+                opacity: 0;
+            }
+            100% {
+                transform: rotateX(0deg);
+                -webkit-transform: rotateX(0deg);
+                opacity: 1;
+            }
+        }
+        @keyframes animateErrorIcon {
+            0% {
+                transform: rotateX(100deg);
+                -webkit-transform: rotateX(100deg);
+                opacity: 0;
+            }
+            100% {
+                transform: rotateX(0deg);
+                -webkit-transform: rotateX(0deg);
+                opacity: 1;
+            }
+        }
+        @-webkit-keyframes animateXMark {
+            0% {
+                transform: scale(0.4);
+                -webkit-transform: scale(0.4);
+                margin-top: 26px;
+                opacity: 0;
+            }
+            50% {
+                transform: scale(0.4);
+                -webkit-transform: scale(0.4);
+                margin-top: 26px;
+                opacity: 0;
+            }
+            80% {
+                transform: scale(1.15);
+                -webkit-transform: scale(1.15);
+                margin-top: -6px;
+            }
+            100% {
+                transform: scale(1);
+                -webkit-transform: scale(1);
+                margin-top: 0;
+                opacity: 1;
+            }
+        }
+        @keyframes animateXMark {
+            0% {
+                transform: scale(0.4);
+                -webkit-transform: scale(0.4);
+                margin-top: 26px;
+                opacity: 0;
+            }
+            50% {
+                transform: scale(0.4);
+                -webkit-transform: scale(0.4);
+                margin-top: 26px;
+                opacity: 0;
+            }
+            80% {
+                transform: scale(1.15);
+                -webkit-transform: scale(1.15);
+                margin-top: -6px;
+            }
+            100% {
+                transform: scale(1);
+                -webkit-transform: scale(1);
+                margin-top: 0;
+                opacity: 1;
+            }
+        }
+        @-webkit-keyframes pulseWarning {
+            0% {
+                border-color: #F8D486;
+            }
+            100% {
+                border-color: #F8BB86;
+            }
+        }
+    </style>
+</head>
+<body>
+<div style="width: 80px; height: 80px; border-width: 4px; border-style: solid; border-color: rgb(242,69,64); border-radius: 50%; margin: 20px auto; position: relative; box-sizing: content-box; animation: animateErrorIcon 0.5s ease 0s 1 normal none running;"><span style="position: relative; display: block; animation: animateXMark 0.5s ease 0s 1 normal none running;"><span style="position: absolute; height: 5px; width: 47px; background-color: rgb(247,85,81); display: block; top: 37px; border-radius: 2px; transform: rotate(45deg); left: 17px;"></span><span style="position: absolute; height: 5px; width: 47px; background-color: rgb(247,85,83); display: block; top: 37px; border-radius: 2px; transform: rotate(-45deg); right: 16px;"></span></span></div>
+<h1>404</h1>
+<p>Why hello there, it's time to go <a href="https://paywithmoon.com">home</a>. You're drunk.</p>
+</body>
+</html>

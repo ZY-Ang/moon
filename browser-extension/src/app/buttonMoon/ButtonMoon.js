@@ -24,7 +24,8 @@ const defaultStyle = {
     textAlign: 'center',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    marginBottom: 5
 };
 
 const hoverStyle = {
@@ -39,7 +40,7 @@ const activeStyle = {
     border: '2px solid #1B264F'
 };
 
-class ButtonCheckout extends Component {
+class ButtonMoon extends Component {
     constructor() {
         super();
         this.state = {
@@ -79,4 +80,4 @@ const mapDispatchToProps = (dispatch) => ({
     onSetIsAppActive: (isAppActive) => dispatch({type: ACTION_SET_IS_APP_ACTIVE, isAppActive})
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ButtonCheckout);
+export default connect(mapStateToProps, mapDispatchToProps)(ButtonMoon);

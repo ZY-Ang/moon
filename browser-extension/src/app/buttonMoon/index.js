@@ -5,29 +5,27 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from "react-redux";
 import store from "../redux/store";
-import ButtonCheckout from "./ButtonCheckout";
+import ButtonMoon from "./ButtonMoon";
 import supportedSites from "../../../../backend/supportedSites.json";
+import {isCheckoutPage} from "../../utils/url";
 
-const ID_BUTTON_CHECKOUT = "button-pay-with-moon";
+const ID_BUTTON_PAY_WITH_MOON = "button-pay-with-moon";
 
 export const injectButton = () => {
-    const existingButton = document.getElementById(ID_BUTTON_CHECKOUT);
+    const existingButton = document.getElementById(ID_BUTTON_PAY_WITH_MOON);
     if (!!existingButton) {
         existingButton.remove();
     }
     let moonButton=document.createElement("div");
-    moonButton.id=ID_BUTTON_CHECKOUT;
+    moonButton.id=ID_BUTTON_PAY_WITH_MOON;
     const elementInsertionScriptHostMap = {
         "www.amazon.com": (pathname) => {
-            if (pathname.startsWith(supportedSites["www.amazon.com"].pathnameCheckout)) {
-                const querySelectors = "#order-summary-box .a-box-inner, #subtotals .a-box-inner";
-                const destinationBox = document.querySelectorAll(querySelectors)[0];
+            const destinationBox = document.querySelectorAll(supportedSites["www.amazon.com"].querySelectorMoonButton)[0];
+            if (isCheckoutPage(window.location.href)) {
                 if (destinationBox && destinationBox.children[1]) {
                     destinationBox.insertBefore(moonButton, destinationBox.children[1]);
                 }
-            } else if (!pathname.startsWith(supportedSites["www.amazon.com"].pathnameCheckout)) {
-                const querySelectors = "#unifiedPrice_feature_div,#mediaPrice_feature_div";
-                const destinationBox = document.querySelector(querySelectors);
+            } else {
                 if (destinationBox) {
                     moonButton.style.maxWidth = '160px';
                     destinationBox.appendChild(moonButton);
@@ -38,13 +36,13 @@ export const injectButton = () => {
 
     if (window && window.location && elementInsertionScriptHostMap[window.location.host]) {
         elementInsertionScriptHostMap[window.location.host](window.location.pathname);
-        const moonButtonRoot = document.getElementById(ID_BUTTON_CHECKOUT);
+        const moonButtonRoot = document.getElementById(ID_BUTTON_PAY_WITH_MOON);
         if (!!moonButtonRoot) {
             ReactDOM.render((
                 <Provider store={store}>
-                    <ButtonCheckout/>
+                    <ButtonMoon/>
                 </Provider>
-            ), document.getElementById(ID_BUTTON_CHECKOUT));
+            ), document.getElementById(ID_BUTTON_PAY_WITH_MOON));
         }
     }
 };

@@ -20,6 +20,7 @@ import {
 } from "../../redux/reducers/constants";
 import {observeDOM} from "../../utils/dom";
 import ProductBody from "./ProductBody";
+import {isCheckoutPage} from "../../../utils/url";
 
 const SettingsIcon = ({changeTab}) => (
     <div
@@ -78,10 +79,10 @@ class PayTab extends Component {
                 title: null,
                 imageAlt: null,
                 imageURL: null,
-                amount: null,
+                amount: null
             },
             cartAmount: "0",
-            cartCurrency: ""
+            cartCurrency: null
         };
     }
 
@@ -90,7 +91,7 @@ class PayTab extends Component {
         AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, {host: window.location.host})
             .then(siteInformation => {
                 this.props.onSetSiteInformation(siteInformation);
-                this.parsePage();
+                this.parsePage(siteInformation);
             })
             .catch(err => {
                 console.error("SITE_INFORMATION FAILED: ", err);
@@ -103,40 +104,45 @@ class PayTab extends Component {
         this.setState(() => ({selectedWallet: nextProps.authUser ? nextProps.authUser.wallets[0] : null}));
     }
 
-    parsePage = () => {
+    parsePage = (siteInformation) => {
         const parserHostMap = {
             "www.amazon.com": () => {
-                const cartAmountElements = document.getElementsByName("purchaseTotal");
-                const cartCurrencyElements = document.getElementsByName("purchaseTotalCurrency");
-                const productTitleElement = document.getElementById("productTitle");
-                const productImage = document.getElementById("landingImage");
-                const productPrice = document.getElementById("priceblock_ourprice");
+                const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
+                const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
+                const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
+                const productImage = document.querySelectorAll(siteInformation.querySelectorProductImage);
+                const productPrice = document.querySelectorAll(siteInformation.querySelectorProductPrice);
                 this.setState(state => ({
                     cartAmount: (
-                        process.env.NODE_ENV === 'production' &&
-                        cartAmountElements &&
-                        cartAmountElements.length
+                        !!cartAmountElements &&
+                        !!cartAmountElements.length
                     )
-                        ? cartAmountElements[0].value
-                        : "0.01",
-                    cartCurrency: cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value,
+                        ? (
+                            process.env.NODE_ENV === 'production'
+                                ? (
+                                    (!!cartAmountElements[0].value && cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')) ||
+                                    (!!cartAmountElements[0].innerText && cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, ''))
+                                ) : "0.01"
+                        ) : "0.00",
+                    cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD",
                     product: {
                         ...state.product,
-                        title: productTitleElement && productTitleElement.innerText,
-                        imageURL: productImage && productImage.src,
-                        imageAlt: productImage && productImage.alt
+                        title: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
+                        imageURL: productImage && productImage[0] && productImage[0].src,
+                        imageAlt: productImage && productImage[0] && productImage[0].alt
                     }
                 }));
-                if (productPrice) {
+                if (productPrice && productPrice[0]) {
+                    const price = Number(productPrice[0].innerText.replace(/[^0-9.-]+/g, ""));
                     const updatePrice = () => this.setState(({product}) => ({
                         product: {
                             ...product,
-                            amount: productPrice.innerText &&
-                                Number(productPrice.innerText.replace(/[^0-9.-]+/g,""))
+                            amount: productPrice[0].innerText && !!price &&
+                                price.toLocaleString("en-us", {style:"currency",currency:"USD"})
                         }
                     }));
                     updatePrice();
-                    observeDOM(productPrice, updatePrice);
+                    observeDOM(productPrice[0], updatePrice);
                 }
             }
         };
@@ -189,7 +195,7 @@ class PayTab extends Component {
                 {
                     siteInformation &&
                     siteInformation.isSupported &&
-                    window.location.pathname.startsWith(siteInformation.pathnameCheckout) &&
+                    isCheckoutPage(window.location.href, siteInformation.pathnameCheckout) &&
                     <CheckoutBody
                         cartCurrency={this.state.cartCurrency}
                         cartAmount={this.state.cartAmount}
@@ -203,10 +209,10 @@ class PayTab extends Component {
                 {
                     siteInformation &&
                     siteInformation.isSupported &&
-                    !window.location.pathname.startsWith(siteInformation.pathnameCheckout) &&
+                    !isCheckoutPage(window.location.href, siteInformation.pathnameCheckout) &&
                     <ProductBody
-                        pathnameCheckout={siteInformation.pathnameCheckout}
                         product={this.state.product}
+                        siteInformation={siteInformation}
                     />
                 }
                 {

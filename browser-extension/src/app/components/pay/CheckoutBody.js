@@ -64,6 +64,7 @@ class CheckoutCalculator extends Component {
             exchangeRate,
             walletBalanceInBase,
             requiredAmountInQuote,
+            isZero,
             isSufficient,
             topUpAmountInQuote
         } = this.props;
@@ -85,6 +86,7 @@ class CheckoutCalculator extends Component {
                 </div>
                 {
                     !isSufficient &&
+                    !isZero &&
                     <div className="checkout-calculator-section">
                         <div
                             className="text-center text-error"
@@ -105,6 +107,7 @@ class CheckoutBody extends Component {
             exchangeRate: "0",
             walletBalanceInBase: "0",
             requiredAmountInQuote: "0",
+            isZero: false,
             isSufficient: true,
             topUpAmountInQuote: "0"
         };
@@ -123,6 +126,7 @@ class CheckoutBody extends Component {
                         exchangeRate: exchangeRate.bid,
                         walletBalanceInBase: getWalletAmountInBase(selectedWallet.balance, exchangeRate.bid),
                         requiredAmountInQuote,
+                        isZero: (Decimal(requiredAmountInQuote).eq("0")),
                         isSufficient: (Decimal(selectedWallet.balance).gt(requiredAmountInQuote)),
                         topUpAmountInQuote: Decimal(requiredAmountInQuote).sub(selectedWallet.balance).toString()
                     }));
@@ -167,6 +171,7 @@ class CheckoutBody extends Component {
                             exchangeRate={this.state.exchangeRate}
                             walletBalanceInBase={this.state.walletBalanceInBase}
                             requiredAmountInQuote={this.state.requiredAmountInQuote}
+                            isZero={this.state.isZero}
                             isSufficient={this.state.isSufficient}
                             topUpAmountInQuote={this.state.topUpAmountInQuote}
                         />
@@ -185,22 +190,33 @@ class CheckoutBody extends Component {
                     selectedWallet &&
                     <div className="btn-group btn-group-pay">
                         {
-                            this.state.isSufficient
-                                ? (
-                                    <button
-                                        className="btn btn-pay btn-primary"
-                                        onClick={pay}
-                                    >
-                                        Pay with <b>{selectedWallet.name}</b>
-                                    </button>
-                                ) : (
-                                    <button
-                                        className="btn btn-pay btn-primary"
-                                        disabled
-                                    >
-                                        Insufficient Funds
-                                    </button>
-                                )
+                            this.state.isSufficient &&
+                            !this.state.isZero &&
+                            <button
+                                className="btn btn-pay btn-primary"
+                                onClick={pay}
+                            >
+                                Pay with <b>{selectedWallet.name}</b>
+                            </button>
+                        }
+                        {
+                            !this.state.isSufficient &&
+                            !this.state.isZero &&
+                            <button
+                                className="btn btn-pay btn-primary"
+                                disabled
+                            >
+                                Insufficient Funds
+                            </button>
+                        }
+                        {
+                            this.state.isZero &&
+                            <button
+                                className="btn btn-pay btn-primary"
+                                disabled
+                            >
+                                Such free stuff, wow
+                            </button>
                         }
                         <button
                             className={`btn btn-icon btn-primary-outline btn-wallet-selector${showWalletSelector ? ' inverse' : ''}`}

@@ -24,8 +24,8 @@ const getCoinbaseApiKeys = async (sub) => {
         Key: {sub}
     };
 
-    const coinbaseKeyData = await dynamodb.get(params).promise();
-    const {coinbaseApiKeys} = coinbaseKeyData.Item;
+    const {Item} = await dynamodb.get(params).promise();
+    const coinbaseApiKeys = Item && Item.coinbaseApiKeys;
 
     logTail("coinbaseApiKeys", coinbaseApiKeys);
     return coinbaseApiKeys;

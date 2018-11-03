@@ -22,7 +22,6 @@ const INITIAL_STATE = {
         errorText: "",
         successText: ""
     },
-    isUIBlockerActive: false,
     uiBlockerState: {
         isActive: false,
         title: "",

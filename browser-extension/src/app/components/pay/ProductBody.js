@@ -9,8 +9,21 @@ import React from "react";
  * the product and a message to redirect to checkout
  */
 class ProductBody extends React.Component {
+    addToCart = () => {
+        const {siteInformation} = this.props;
+        const addToCartButtonElements = siteInformation && document.querySelectorAll(siteInformation.querySelectorAddToCart);
+        if (
+            !!addToCartButtonElements &&
+            !!addToCartButtonElements.length &&
+            !!addToCartButtonElements[0]
+        ) {
+            addToCartButtonElements[0].click();
+        }
+    };
+
     render() {
-        const {pathnameCheckout, product} = this.props;
+        const {product, siteInformation} = this.props;
+        const addToCartButtonElements = siteInformation && document.querySelectorAll(siteInformation.querySelectorAddToCart);
         return (
             !!product.title ||
             !!product.imageAlt ||
@@ -41,24 +54,25 @@ class ProductBody extends React.Component {
                             </span>
                         }
                         <h4 id="product-title">{product.title || product.imageAlt}</h4>
-                        {
-                            !!product.amount &&
-                            <p>{`$${product.amount}`}</p>
-                        }
+                        <p>{product.amount}</p>
                         {
                             !product.amount &&
                             <p>For items with many sizes and/or colors, you'll need to first choose a specific version
                                 of this item so we can show you the right price info.</p>
                         }
                     </div>
-                    <div className="btn-group mb-10">
-                        <button
-                            className="btn btn-pay btn-primary"
-                            onClick={() => window.location.replace(pathnameCheckout)}
-                        >
-                            Checkout
-                        </button>
-                    </div>
+                    {
+                        !!addToCartButtonElements &&
+                        !!addToCartButtonElements.length &&
+                        <div className="btn-group mb-10">
+                            <button
+                                className="btn btn-pay btn-primary"
+                                onClick={this.addToCart}
+                            >
+                                Add To Cart
+                            </button>
+                        </div>
+                    }
                 </div>
             ) : (
                 <div>

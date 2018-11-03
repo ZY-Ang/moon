@@ -197,11 +197,21 @@ type SiteInformation {
     # Whether the site is supported
     isSupported: Boolean
     # The checkout pathname of the site
-    pathnameCheckout: String
-    # The product pathname of the site
-    pathnameProduct: String
-    # Endpoint of the URL to apply the payment payload
-    endpointPaymentPayloadApply: String
+    pathnameCheckout: [String]
+    # Query selector for where a moon button should be inserted into
+    querySelectorMoonButton: String
+    # Query selector for cart amount, to be resolved via attribute 'value' or innerText
+    querySelectorCartAmount: String
+    # Query selector for cart currency, to be resolved via attribute 'value'
+    querySelectorCartCurrency: String
+    # Query selector for any arbitrary product's title,  to be resolved via innerText
+    querySelectorProductTitle: String
+    # Query selector for any arbitrary product's product <img/>, with standard html attributes
+    querySelectorProductImage: String
+    # Query selector for any arbitrary add to cart button, to be resolved via click()
+    querySelectorAddToCart: String
+    # Query selector for any arbitrary product's price indicator, to be resolved via innerText
+    querySelectorProductPrice: String
 }
 
 type Subscription {

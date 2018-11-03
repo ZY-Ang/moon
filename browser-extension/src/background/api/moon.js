@@ -71,8 +71,13 @@ const siteInformation = gql`
             logoURL
             isSupported
             pathnameCheckout
-            pathnameProduct
-            endpointPaymentPayloadApply
+            querySelectorMoonButton
+            querySelectorCartAmount
+            querySelectorCartCurrency
+            querySelectorProductTitle
+            querySelectorProductImage
+            querySelectorAddToCart
+            querySelectorProductPrice
         }
     }
 `;
