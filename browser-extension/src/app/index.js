@@ -16,7 +16,6 @@ import AppRuntime from "./browser/AppRuntime";
 import axios from "axios";
 import {ACTION_SET_IS_APP_ACTIVE, ACTION_TOGGLE_IS_APP_ACTIVE} from "./redux/reducers/constants";
 import {injectButton} from "./buttonMoon";
-import loadPageInformation from "./pageInformation";
 
 /**
  * Re-renders app if div already exists.
@@ -108,4 +107,3 @@ WebFont.load({
 AppRuntime.run();
 initializeApp();
 injectButton();
-loadPageInformation();

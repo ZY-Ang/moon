@@ -16,6 +16,7 @@ import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
 import {isCoinbaseSettingsApiUrl, isCoinbaseSignInUrl, isCoinbaseUrl} from "../utils/coinbase";
+import {doUpdatePageInfoEvent} from "./pageInformation";
 
 /**
  * Sends an app injection event message to the
@@ -26,7 +27,7 @@ import {isCoinbaseSettingsApiUrl, isCoinbaseSignInUrl, isCoinbaseUrl} from "../u
  *      of the current tab.
  */
 export const doInjectAppEvent = (source) =>
-    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {source}).then(doUpdateAuthUserEvent);
+    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {source});
 
 /**
  * Handler for when a {@param tab} is updated.
@@ -64,16 +65,23 @@ export const tabDidUpdate = (tab) => {
         // URL on the current tab is a supported site - set to valid browser icon.
         BrowserAction.setValidIcon(tab.id).catch(handleErrors);
         BrowserAction.setBadgeText('1', tab.id).catch(handleErrors);
-        if (isCheckoutPage(tab.url)) {
-            // URL on the current tab is supported and is a checkout page - auto render the extension
-            doInjectAppEvent(tab.url).catch(handleErrors);
-        }
-        doUpdateAuthUserEvent().catch(handleErrors);
+
+        // URL on the current tab is supported and is a checkout page - auto render the extension
+        const injectAppConditionalPromise = isCheckoutPage(tab.url)
+            ? doInjectAppEvent(tab.url)
+            : Promise.resolve();
+
+        injectAppConditionalPromise
+            .then(doUpdateAuthUserEvent)
+            .then(() => doUpdatePageInfoEvent(tab.url))
+            .catch(handleErrors);
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
         BrowserAction.setInvalidIcon(tab.id).catch(handleErrors);
-        doUpdateAuthUserEvent().catch(handleErrors);
+        doUpdateAuthUserEvent()
+            .then(() => doUpdatePageInfoEvent(tab.url))
+            .catch(handleErrors);
 
     }
 };

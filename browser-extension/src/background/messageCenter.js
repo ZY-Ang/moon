@@ -28,6 +28,7 @@ import {doPasswordReset} from "./auth";
 import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
 import {doGetPaymentPayload, getSiteInformation} from "./api/moon";
+import {doUpdatePageInfoEvent} from "./pageInformation";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -88,7 +89,8 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
             doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
-                .then(doUpdateAuthUserEvent);
+                .then(doUpdateAuthUserEvent)
+                .then(doUpdatePageInfoEvent);
             sendSuccess("doUpdateCoinbaseApiKey() started");
         },
         [REQUEST_GET_EXCHANGE_RATE]() {

@@ -5,7 +5,7 @@
 import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
     REQUEST_INJECT_APP,
-    REQUEST_UPDATE_AUTH_USER
+    REQUEST_UPDATE_AUTH_USER, REQUEST_UPDATE_PAGE_INFORMATION
 } from "../constants/events/backgroundEvents";
 import {toggleApp} from "./index";
 import AppRuntime from "./browser/AppRuntime";
@@ -13,8 +13,8 @@ import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "..
 import {doExtractCoinbaseApiKeys} from "./wallets/coinbase";
 import {updateAuthUser} from "./utils/auth";
 import {injectButton} from "./buttonMoon";
-import loadPageInformation from "./pageInformation";
 import {handleErrors} from "../utils/errors";
+import loadPageInformation from "./pageInformation";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -41,7 +41,6 @@ const messageCenter = (request, sender, sendResponse) => {
                     sendFailure(`toggleApp(${request.source}) failed`);
                 });
             injectButton();
-            loadPageInformation();
             return true;
         },
         [REQUEST_UPDATE_AUTH_USER]() {
@@ -50,6 +49,15 @@ const messageCenter = (request, sender, sendResponse) => {
                 .catch(err => {
                     handleErrors(err);
                     sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
+                });
+            return true;
+        },
+        [REQUEST_UPDATE_PAGE_INFORMATION]() {
+            loadPageInformation(request.siteInformation)
+                .then(() => sendSuccess(`loadPageInformation(${JSON.stringify(request.siteInformation)}) completed`))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`loadPageInformation(${JSON.stringify(request.siteInformation)}) failed`);
                 });
             return true;
         },

@@ -10,18 +10,19 @@ import {ACTION_SET_APP_MODAL_STATE, ACTION_SET_PAGE_INFORMATION} from "../redux/
 import {isCheckoutPage} from "../../utils/url";
 import {handleErrors} from "../../utils/errors";
 
-const getSiteInformation = () => {
-    if (window && window.location && window.location.host) {
+const getSiteInformation = async (siteInformation) => {
+    if (siteInformation) {
+        return siteInformation;
+    } else if (window && window.location && window.location.host) {
         return AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, window.location);
     } else {
         return Promise.reject("window object invalid: " + JSON.stringify(window));
     }
 };
 
-const parsePageInformation = (siteInformation) => {
+const parsePageInformation = async (siteInformation) => {
     const parserHostMap = {
         "www.amazon.com": () => {
-            console.log("parsePageInformation www.amazon.com");
             const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
             const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
             const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
@@ -52,7 +53,6 @@ const parsePageInformation = (siteInformation) => {
                 productImageAlt: productImageElements && productImageElements[0] && productImageElements[0].alt,
                 productPrice: productPriceElements && productPriceElements[0] && Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, "")).toLocaleString("en-us", {style:"currency",currency:"USD"})
             };
-            console.log("parsePageInformation www.amazon.com: ", pageInformation);
             setPageInformationState(pageInformation);
             return pageInformation;
         }
@@ -76,9 +76,9 @@ const setAppModalState = (state) => {
     });
 };
 
-const loadPageInformation = () => {
+const loadPageInformation = (siteInformation) => {
     setAppModalState({state: "loading", loadingText: "Loading..."});
-    getSiteInformation()
+    return getSiteInformation(siteInformation)
         .then(parsePageInformation)
         .catch(handleErrors)
         .finally(() => setAppModalState({isActive: false}));

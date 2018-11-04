@@ -9,7 +9,6 @@ import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
 import Tabs from "../browser/Tabs";
 import MoonGraphQL from "../api/MoonGraphQL";
 import {updateCoinbaseApiKey} from "../api/coinbase";
-import {doUpdateAuthUserEvent} from "../auth";
 
 /**
  * Global timeout variable defined to
