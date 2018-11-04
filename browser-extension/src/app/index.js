@@ -16,16 +16,7 @@ import AppRuntime from "./browser/AppRuntime";
 import axios from "axios";
 import {ACTION_SET_IS_APP_ACTIVE, ACTION_TOGGLE_IS_APP_ACTIVE} from "./redux/reducers/constants";
 import {injectButton} from "./buttonMoon";
-
-/**
- * Load required font families from the appropriate libraries.
- * For more information, @see {@link https://www.npmjs.com/package/webfontloader}
- */
-WebFont.load({
-    google: {
-        families: ['Quicksand', 'Raleway']
-    }
-});
+import loadPageInformation from "./pageInformation";
 
 /**
  * Re-renders app if div already exists.
@@ -33,7 +24,7 @@ WebFont.load({
  * If content window already exists, re-render a new version of it or do nothing.
  * NOTE: This is not the same as {@code toggleApp} where the render is toggled.
  */
-const reRenderApp = () => {
+const initializeApp = () => {
     const moonDiv = document.getElementById(MOON_DIV_ID);
     if (!!moonDiv) {
         console.log("moonDiv found, re-rendering app");
@@ -45,7 +36,6 @@ const reRenderApp = () => {
                 }
             });
     }
-    injectButton();
 };
 
 /**
@@ -59,7 +49,7 @@ export const toggleApp = async (source) => {
     // Attempt to get the wrapper div
     let moonDiv = document.getElementById(MOON_DIV_ID);
 
-    if ((source === SOURCE_MANUAL) && !!moonDiv) {
+    if (source === SOURCE_MANUAL && !!moonDiv) {
         // If the source of the injection came from a manual click of the
         // browserAction icon or moon pay buttons and a div already exists,
         // toggle the render state.
@@ -105,5 +95,17 @@ export const toggleApp = async (source) => {
 
 // TODO: handle orphaned content script @see {@link https://stackoverflow.com/questions/7792552/how-to-detect-chrome-extension-uninstall}
 
-reRenderApp();
+
+/**
+ * Load required font families from the appropriate libraries.
+ * For more information, @see {@link https://www.npmjs.com/package/webfontloader}
+ */
+WebFont.load({
+    google: {
+        families: ['Quicksand', 'Raleway']
+    }
+});
 AppRuntime.run();
+initializeApp();
+injectButton();
+loadPageInformation();

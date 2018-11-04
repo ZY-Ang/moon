@@ -10,18 +10,13 @@ import {TAB_GROUP_AUTH, TAB_SETTINGS} from "../nav/constants";
 import AppRuntime from "../../browser/AppRuntime";
 import {
     REQUEST_GET_PAYMENT_PAYLOAD,
-    REQUEST_GET_SITE_INFORMATION,
     REQUEST_MOON_SITE_SUPPORT
 } from "../../../constants/events/appEvents";
 import {handleErrors} from "../../../utils/errors";
 import {
-    ACTION_SET_APP_MODAL_STATE,
-    ACTION_SET_SITE_INFORMATION, ACTION_SET_UI_BLOCKER_STATE
+    ACTION_SET_UI_BLOCKER_STATE
 } from "../../redux/reducers/constants";
-import {observeDOM} from "../../utils/dom";
 import ProductBody from "./ProductBody";
-import {isCheckoutPage} from "../../../utils/url";
-import Decimal from "decimal.js";
 
 const SettingsIcon = ({changeTab}) => (
     <div
@@ -32,10 +27,10 @@ const SettingsIcon = ({changeTab}) => (
     </div>
 );
 
-const PayBanner = ({siteInformation, changeTab}) => (siteInformation && siteInformation.isSupported)
+const PayBanner = ({pageInformation, changeTab}) => (pageInformation && pageInformation.isSupported)
     ? (
         <div>
-            <img className="site-logo" src={siteInformation.logoURL} alt={siteInformation.name}/>
+            <img className="site-logo" src={pageInformation.logoURL} alt={pageInformation.name}/>
             <SettingsIcon changeTab={changeTab}/>
         </div>
     ) : (
@@ -75,93 +70,13 @@ class PayTab extends Component {
         this.state = {
             isRequested: false,
             showWalletSelector: false,
-            selectedWallet: props.authUser ? props.authUser.wallets[0] : null,
-            product: {
-                title: null,
-                imageAlt: null,
-                imageURL: null,
-                amount: null
-            },
-            cartAmount: "0",
-            cartCurrency: null
+            selectedWallet: props.authUser ? props.authUser.wallets[0] : null
         };
     }
-
-    componentWillMount() {
-        this.handlePageUpdate();
-    }
-
-    handlePageUpdate = () => {
-        this.props.onSetAppModalState({state: "loading", loadingText: "Loading..."});
-        AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, {host: window.location.host})
-            .then(siteInformation => {
-                this.props.onSetSiteInformation(siteInformation);
-                this.parsePage(siteInformation);
-            })
-            .catch(err => {
-                console.error("SITE_INFORMATION FAILED: ", err);
-                handleErrors(err);
-            })
-            .finally(() => this.props.onSetAppModalState({isActive: false}));
-    };
 
     componentWillReceiveProps(nextProps) {
         this.setState(() => ({selectedWallet: nextProps.authUser ? nextProps.authUser.wallets[0] : null}));
     }
-
-    parsePage = (siteInformation) => {
-        const parserHostMap = {
-            "www.amazon.com": () => {
-                const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
-                const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
-                const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
-                const productImageElements = document.querySelectorAll(siteInformation.querySelectorProductImage);
-                const productPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
-                const cartAmount = !!cartAmountElements && !!cartAmountElements.length && (
-                    (
-                        !!cartAmountElements[0].value &&
-                        Decimal(cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toFixed(2)
-                    ) || (
-                        !!cartAmountElements[0].innerText &&
-                        Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
-                    )
-                );
-                this.setState(state => ({
-                    cartAmount: (
-                        !!cartAmount &&
-                        (Number(cartAmount) > 0) &&
-                        process.env.NODE_ENV !== 'production'
-                    )
-                        ? "0.01"
-                        : cartAmount ? cartAmount : "0.00",
-                    cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD",
-                    product: {
-                        ...state.product,
-                        title: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
-                        imageURL: productImageElements && productImageElements[0] && productImageElements[0].src,
-                        imageAlt: productImageElements && productImageElements[0] && productImageElements[0].alt
-                    }
-                }));
-                if (productPriceElements && productPriceElements[0]) {
-                    const updatePrice = () => {
-                        const price = Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""));
-                        this.setState(({product}) => ({
-                            product: {
-                                ...product,
-                                amount: productPriceElements[0].innerText && !!price &&
-                                    price.toLocaleString("en-us", {style:"currency",currency:"USD"})
-                            }
-                        }));
-                    };
-                    updatePrice();
-                    observeDOM(productPriceElements[0], updatePrice);
-                }
-            }
-        };
-        if (parserHostMap[window.location.host]) {
-            parserHostMap[window.location.host]();
-        }
-    };
 
     pay = () => {
         this.props.onSetUIBlockerState({
@@ -175,16 +90,21 @@ class PayTab extends Component {
     };
 
     getPaymentPayload = () => {
-        return AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
-            cartCurrency: this.state.cartCurrency,
-            cartAmount: this.state.cartAmount,
+        const {pageInformation} = this.props;
+        if (!!pageInformation) {
+            return AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
+                cartCurrency: this.props.pageInformation.cartCurrency,
+                cartAmount: this.props.pageInformation.cartAmount,
 
-            walletProvider: this.state.selectedWallet.provider,
-            walletID: this.state.selectedWallet.id,
+                walletProvider: this.state.selectedWallet.provider,
+                walletID: this.state.selectedWallet.id,
 
-            pageContent: document.documentElement.innerHTML,
-            pageURL: window.location.href,
-        });
+                pageContent: document.documentElement.innerHTML,
+                pageURL: window.location.href,
+            });
+        } else {
+            this.setState(() => ({error: "Page not loaded yet!"}));
+        }
     };
 
     requestSite = () =>
@@ -197,20 +117,20 @@ class PayTab extends Component {
     setShowWalletSelector = (showWalletSelector) => this.setState(() => ({showWalletSelector}));
 
     render() {
-        const {siteInformation} = this.props;
+        const {pageInformation} = this.props;
         return (
             <div className="moon-tab text-center">
                 <PayBanner
-                    siteInformation={siteInformation}
+                    pageInformation={pageInformation}
                     changeTab={this.props.changeTab}
                 />
                 {
-                    siteInformation &&
-                    siteInformation.isSupported &&
-                    isCheckoutPage(window.location.href, siteInformation.pathnameCheckout) &&
+                    pageInformation &&
+                    pageInformation.isSupported &&
+                    pageInformation.isCheckoutPage &&
                     <CheckoutBody
-                        cartCurrency={this.state.cartCurrency}
-                        cartAmount={this.state.cartAmount}
+                        cartCurrency={pageInformation.cartCurrency}
+                        cartAmount={pageInformation.cartAmount}
                         changeWallet={this.changeWallet}
                         pay={this.pay}
                         selectedWallet={this.state.selectedWallet}
@@ -219,16 +139,15 @@ class PayTab extends Component {
                     />
                 }
                 {
-                    siteInformation &&
-                    siteInformation.isSupported &&
-                    !isCheckoutPage(window.location.href, siteInformation.pathnameCheckout) &&
+                    pageInformation &&
+                    pageInformation.isSupported &&
+                    !pageInformation.isCheckoutPage &&
                     <ProductBody
-                        product={this.state.product}
-                        siteInformation={siteInformation}
+                        pageInformation={pageInformation}
                     />
                 }
                 {
-                    (!siteInformation || !siteInformation.isSupported) &&
+                    (!pageInformation || !pageInformation.isSupported) &&
                     <UnSupportedSiteBody
                         isRequested={this.state.isRequested}
                         requestSite={this.requestSite}
@@ -241,12 +160,10 @@ class PayTab extends Component {
 
 const mapStateToProps = (state) => ({
     authUser: state.sessionState.authUser,
-    siteInformation: state.sessionState.siteInformation
+    pageInformation: state.sessionState.pageInformation
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE}),
-    onSetSiteInformation: (siteInformation) => dispatch({type: ACTION_SET_SITE_INFORMATION, siteInformation}),
     onSetUIBlockerState: (state) => dispatch({...state, type: ACTION_SET_UI_BLOCKER_STATE})
 });
 

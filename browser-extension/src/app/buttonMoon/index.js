@@ -19,7 +19,7 @@ export const injectButton = () => {
     }
     let moonButton=document.createElement("div");
     moonButton.id=ID_BUTTON_PAY_WITH_MOON;
-    const elementInsertionScriptHostMap = {
+    const moonButtonInjectionScriptHostMap = {
         "www.amazon.com": (pathname) => {
             const destinationBox = document.querySelectorAll(supportedSites["www.amazon.com"].querySelectorMoonButton)[0];
             if (isCheckoutPage(window.location.href)) {
@@ -35,8 +35,8 @@ export const injectButton = () => {
         }
     };
 
-    if (window && window.location && elementInsertionScriptHostMap[window.location.host]) {
-        elementInsertionScriptHostMap[window.location.host](window.location.pathname);
+    if (window && window.location && moonButtonInjectionScriptHostMap[window.location.host]) {
+        moonButtonInjectionScriptHostMap[window.location.host](window.location.pathname);
         const moonButtonRoot = document.getElementById(ID_BUTTON_PAY_WITH_MOON);
         if (!!moonButtonRoot) {
             ReactDOM.render((

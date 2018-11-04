@@ -13,6 +13,8 @@ import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "..
 import {doExtractCoinbaseApiKeys} from "./wallets/coinbase";
 import {updateAuthUser} from "./utils/auth";
 import {injectButton} from "./buttonMoon";
+import loadPageInformation from "./pageInformation";
+import {handleErrors} from "../utils/errors";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -35,17 +37,18 @@ const messageCenter = (request, sender, sendResponse) => {
             toggleApp(request.source)
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
                 .catch(err => {
-                    console.error(err);
+                    handleErrors(err);
                     sendFailure(`toggleApp(${request.source}) failed`);
                 });
             injectButton();
+            loadPageInformation();
             return true;
         },
         [REQUEST_UPDATE_AUTH_USER]() {
             updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${JSON.stringify(request.authUser)}) completed`))
                 .catch(err => {
-                    console.error(err);
+                    handleErrors(err);
                     sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
                 });
             return true;

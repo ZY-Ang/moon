@@ -10,4 +10,4 @@ export const ACTION_SET_UI_BLOCKER_STATE = 'UI_BLOCKER_STATE_SET';
 
 /* -----------------    Authentication Action Identifiers     ------------------ */
 export const ACTION_SET_AUTH_USER = 'AUTH_USER_SET';
-export const ACTION_SET_SITE_INFORMATION = 'SITE_INFORMATION_SET';
+export const ACTION_SET_PAGE_INFORMATION = 'PAGE_INFORMATION_SET';

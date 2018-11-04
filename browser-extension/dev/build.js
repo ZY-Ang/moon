@@ -188,8 +188,6 @@ const build = async () => {
         console.log("Skipping folder zip...");
     }
     console.log("===========================================================\n");
-
-// TODO: Implement publishing to chrome webstore via {@link https://developer.chrome.com/webstore/using_webstore_api}
 };
 
 module.exports = build;

@@ -101,13 +101,12 @@ class CheckoutCalculator extends Component {
 }
 
 class CheckoutBody extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             exchangeRate: "0",
             walletBalanceInBase: "0",
             requiredAmountInQuote: "0",
-            isZero: false,
             isSufficient: true,
             topUpAmountInQuote: "0"
         };
@@ -126,7 +125,6 @@ class CheckoutBody extends Component {
                         exchangeRate: exchangeRate.bid,
                         walletBalanceInBase: getWalletAmountInBase(selectedWallet.balance, exchangeRate.bid),
                         requiredAmountInQuote,
-                        isZero: (Decimal(requiredAmountInQuote).eq("0")),
                         isSufficient: (Decimal(selectedWallet.balance).gt(requiredAmountInQuote)),
                         topUpAmountInQuote: Decimal(requiredAmountInQuote).sub(selectedWallet.balance).toString()
                     }));
@@ -146,6 +144,7 @@ class CheckoutBody extends Component {
             selectedWallet,
             showWalletSelector
         } = this.props;
+        const isZero = !cartAmount || Number(cartAmount) === 0;
         return (
             <div>
                 <div>
@@ -171,7 +170,7 @@ class CheckoutBody extends Component {
                             exchangeRate={this.state.exchangeRate}
                             walletBalanceInBase={this.state.walletBalanceInBase}
                             requiredAmountInQuote={this.state.requiredAmountInQuote}
-                            isZero={this.state.isZero}
+                            isZero={isZero}
                             isSufficient={this.state.isSufficient}
                             topUpAmountInQuote={this.state.topUpAmountInQuote}
                         />
@@ -191,7 +190,7 @@ class CheckoutBody extends Component {
                     <div className="btn-group btn-group-pay">
                         {
                             this.state.isSufficient &&
-                            !this.state.isZero &&
+                            !isZero &&
                             <button
                                 className="btn btn-pay btn-primary"
                                 onClick={pay}
@@ -201,7 +200,7 @@ class CheckoutBody extends Component {
                         }
                         {
                             !this.state.isSufficient &&
-                            !this.state.isZero &&
+                            !isZero &&
                             <button
                                 className="btn btn-pay btn-primary"
                                 disabled
@@ -210,7 +209,7 @@ class CheckoutBody extends Component {
                             </button>
                         }
                         {
-                            this.state.isZero &&
+                            isZero &&
                             <button
                                 className="btn btn-pay btn-primary"
                                 disabled

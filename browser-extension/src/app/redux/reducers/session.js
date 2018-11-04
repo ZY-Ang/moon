@@ -4,7 +4,7 @@
 
 import {
     ACTION_SET_AUTH_USER,
-    ACTION_SET_SITE_INFORMATION
+    ACTION_SET_PAGE_INFORMATION
 } from "./constants";
 import {isValidAuthUser} from "../../utils/auth";
 
@@ -15,8 +15,14 @@ import {isValidAuthUser} from "../../utils/auth";
  */
 const INITIAL_STATE = {
     authUser: null,
-    siteInformation: {
-        isLoading: true
+    pageInformation: {
+        isCheckoutPage: false,
+        cartAmount: null,
+        cartCurrency: null,
+        productTitle: null,
+        productImageURL: null,
+        productImageAlt: null,
+        productPrice: null
     }
 };
 
@@ -40,11 +46,14 @@ const applySetAuthUser = (state, action) => {
 };
 
 /**
- * Action to set the {@code siteInformation} in the store based on the specified action
+ * Action to set the {@code pageInformation} in the store based on the specified action
  */
 const applySetSiteInformation = (state, action) => ({
     ...state,
-    siteInformation: action.siteInformation
+    pageInformation: {
+        ...state.pageInformation,
+        ...action.pageInformation
+    }
 });
 
 /* -----------------     Session Reducer     ------------------ */
@@ -56,7 +65,7 @@ function sessionReducer(state = INITIAL_STATE, action) {
         [ACTION_SET_AUTH_USER](){
             return applySetAuthUser(state, action);
         },
-        [ACTION_SET_SITE_INFORMATION](){
+        [ACTION_SET_PAGE_INFORMATION](){
             return applySetSiteInformation(state, action);
         }
     };

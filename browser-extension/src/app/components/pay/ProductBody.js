@@ -22,28 +22,34 @@ class ProductBody extends React.Component {
     };
 
     render() {
-        const {product, siteInformation} = this.props;
-        const addToCartButtonElements = siteInformation && document.querySelectorAll(siteInformation.querySelectorAddToCart);
+        const {
+            productTitle,
+            productImageAlt,
+            productImageURL,
+            productPrice,
+            querySelectorAddToCart
+        } = this.props.pageInformation;
+        const addToCartButtonElements = document.querySelectorAll(querySelectorAddToCart);
         return (
-            !!product.title ||
-            !!product.imageAlt ||
-            !!product.imageURL ||
-            !!product.amount
+            !!productTitle ||
+            !!productImageAlt ||
+            !!productImageURL ||
+            !!productPrice
         )
             ? (
                 <div>
                     <div>
                         {
-                            product.imageURL &&
+                            productImageURL &&
                             <img
                                 className="site-logo"
-                                src={product.imageURL}
-                                alt={product.title || product.imageAlt}
+                                src={productImageURL}
+                                alt={productImageURL || productImageAlt}
                                 style={{height: 200}}
                             />
                         }
                         {
-                            !product.imageURL &&
+                            !productImageURL &&
                             <span
                                 className="site-logo unsupported"
                                 role="img"
@@ -53,10 +59,10 @@ class ProductBody extends React.Component {
                                 🛒
                             </span>
                         }
-                        <h4 id="product-title">{product.title || product.imageAlt}</h4>
-                        <p>{product.amount}</p>
+                        <h4 id="product-title">{productTitle || productImageAlt}</h4>
+                        <p>{productPrice}</p>
                         {
-                            !product.amount &&
+                            !productPrice &&
                             <p>For items with many sizes and/or colors, you'll need to first choose a specific version
                                 of this item so we can show you the right price info.</p>
                         }
