@@ -91,7 +91,7 @@ class CheckoutCalculator extends Component {
                         <div
                             className="text-center text-error"
                         >
-                            Insufficient funds! You  need <b>{selectedWallet.currency}{topUpAmountInQuote}</b> more to complete this purchase!
+                            Insufficient funds! You need <b>{selectedWallet.currency} {topUpAmountInQuote}</b> more to complete this purchase!
                         </div>
                     </div>
                 }

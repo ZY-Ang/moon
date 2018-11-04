@@ -5,7 +5,7 @@
     "isSupported": true,
     "pathnameCheckout": [
       "/gp/buy/spc/handlers/display.html",
-      "/gp/dmusic/purchase/purchaseReview/ref=dm_ws_ec_pc_fl"
+      "/gp/dmusic/purchase/purchaseReview/ref="
     ],
     "querySelectorMoonButton": "#order-summary-box .a-box-inner,#subtotals .a-box-inner,.MusicCartReviewButtonSection .a-box-inner,#unifiedPrice_feature_div,#mediaPrice_feature_div",
     "querySelectorCartAmount": "input[name='purchaseTotal'][value],.MusicCartReviewSubtotalSection span.a-color-price",

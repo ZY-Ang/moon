@@ -89,6 +89,10 @@ class PayTab extends Component {
 
     componentWillMount() {
         this.props.onSetAppModalState({state: "loading", loadingText: "Loading..."});
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState(() => ({selectedWallet: nextProps.authUser ? nextProps.authUser.wallets[0] : null}));
         AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, {host: window.location.host})
             .then(siteInformation => {
                 this.props.onSetSiteInformation(siteInformation);
@@ -99,10 +103,6 @@ class PayTab extends Component {
                 handleErrors(err);
             })
             .finally(() => this.props.onSetAppModalState({isActive: false}));
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setState(() => ({selectedWallet: nextProps.authUser ? nextProps.authUser.wallets[0] : null}));
     }
 
     parsePage = (siteInformation) => {
@@ -129,7 +129,7 @@ class PayTab extends Component {
                         process.env.NODE_ENV !== 'production'
                     )
                         ? "0.01"
-                        : cartAmount,
+                        : cartAmount ? cartAmount : "0.00",
                     cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD",
                     product: {
                         ...state.product,
