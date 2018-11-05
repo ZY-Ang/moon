@@ -73,14 +73,14 @@ export const tabDidUpdate = (tab) => {
 
         injectAppConditionalPromise
             .then(doUpdateAuthUserEvent)
-            .then(() => doUpdatePageInfoEvent(tab.url))
+            .then(isAuthenticated => (isAuthenticated && doUpdatePageInfoEvent(tab.url)))
             .catch(handleErrors);
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
         BrowserAction.setInvalidIcon(tab.id).catch(handleErrors);
         doUpdateAuthUserEvent()
-            .then(() => doUpdatePageInfoEvent(tab.url))
+            .then(isAuthenticated => (isAuthenticated && doUpdatePageInfoEvent(tab.url)))
             .catch(handleErrors);
 
     }

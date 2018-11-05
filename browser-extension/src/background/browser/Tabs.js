@@ -21,7 +21,7 @@ class Tabs {
      */
     static sendMessage = (tabId, request, options) => new Promise((resolve, reject) => {
         const message = {
-            ...options,
+            ...(options || {}),
             message: request
         };
 

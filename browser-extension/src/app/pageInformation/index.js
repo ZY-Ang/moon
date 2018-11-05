@@ -15,7 +15,7 @@ const getSiteInformation = async (siteInformation) => {
     if (siteInformation) {
         return siteInformation;
     } else if (window && window.location && window.location.host) {
-        return AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, window.location);
+        return AppRuntime.sendMessage(REQUEST_GET_SITE_INFORMATION, {host: window.location.host});
     } else {
         return Promise.reject("window object invalid: " + JSON.stringify(window));
     }
@@ -25,6 +25,7 @@ const parsePageInformation = async (siteInformation) => {
     const parserHostMap = {
         "www.amazon.com": () => {
             const parse = () => {
+                setAppModalState({state: "loading", loadingText: "Loading..."});
                 const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
                 const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
                 const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
@@ -58,6 +59,7 @@ const parsePageInformation = async (siteInformation) => {
                         Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
                 };
                 setPageInformationState(pageInformation);
+                setAppModalState({isActive: false});
                 return pageInformation;
             };
 
@@ -88,11 +90,9 @@ const setAppModalState = (state) => {
 };
 
 const loadPageInformation = (siteInformation) => {
-    setAppModalState({state: "loading", loadingText: "Loading..."});
     return getSiteInformation(siteInformation)
         .then(parsePageInformation)
-        .catch(handleErrors)
-        .finally(() => setAppModalState({isActive: false}));
+        .catch(handleErrors);
 };
 
 export default loadPageInformation;

@@ -6,16 +6,16 @@ import {REQUEST_UPDATE_PAGE_INFORMATION} from "../../constants/events/background
 import {getSiteInformation} from "../api/moon";
 
 export const doUpdatePageInfoEvent = async (url) => {
-    console.log("doUpdatePageInfoEvent");
     try {
-        if (url) {
-            const {host} = new URL(url);
-            const {siteInformation} = (await getSiteInformation(host)).data;
-            return Tabs.sendMessageToActive(REQUEST_UPDATE_PAGE_INFORMATION, {siteInformation});
-        } else {
-            return Tabs.sendMessageToActive(REQUEST_UPDATE_PAGE_INFORMATION);
+        const {host} = new URL(url);
+        const {siteInformation} = (await getSiteInformation(host)).data;
+        console.log("doUpdatePageInfoEvent: ", siteInformation);
+        if (!siteInformation) {
+            throw new Error(`Site information using ${url} was invalid`);
         }
-    } catch (e) {
-        return Tabs.sendMessageToActive(REQUEST_UPDATE_PAGE_INFORMATION);
+        return Tabs.sendMessageToActive(REQUEST_UPDATE_PAGE_INFORMATION, {siteInformation});
+    } catch (error) {
+        console.error("doUpdatePageInfoEvent: ", error);
+        return Tabs.sendMessageToActive(REQUEST_UPDATE_PAGE_INFORMATION, {siteInformation: null});
     }
 };

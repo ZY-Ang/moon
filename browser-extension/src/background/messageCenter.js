@@ -90,7 +90,7 @@ const messageCenter = (request, sender, sendResponse) => {
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
             doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
                 .then(doUpdateAuthUserEvent)
-                .then(doUpdatePageInfoEvent);
+                .then(isAuthenticated => (isAuthenticated && doUpdatePageInfoEvent()));
             sendSuccess("doUpdateCoinbaseApiKey() started");
         },
         [REQUEST_GET_EXCHANGE_RATE]() {
