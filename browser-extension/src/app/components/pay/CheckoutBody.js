@@ -110,10 +110,14 @@ class CheckoutBody extends Component {
             isSufficient: true,
             topUpAmountInQuote: "0"
         };
+        this.updateExchangeRate(props);
     }
 
     componentWillReceiveProps(nextProps) {
-        const {cartAmount, cartCurrency, selectedWallet} = nextProps;
+        this.updateExchangeRate(nextProps);
+    }
+
+    updateExchangeRate = ({cartAmount, cartCurrency, selectedWallet}) => {
         if (cartCurrency && selectedWallet) {
             AppRuntime.sendMessage(REQUEST_GET_EXCHANGE_RATE, {
                 quote: selectedWallet.currency,
@@ -131,7 +135,7 @@ class CheckoutBody extends Component {
                 })
                 .catch(err => console.error("Failed to get exchange rate", err));
         }
-    }
+    };
 
     render() {
         const {
