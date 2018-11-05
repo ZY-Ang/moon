@@ -46,7 +46,9 @@ class WalletSelector extends Component {
 const getRequiredAmountInQuote = (baseAmount, exchangeRate) => {
     baseAmount = new Decimal(baseAmount);
     exchangeRate = new Decimal(exchangeRate);
-    const riskFactor = (baseAmount.lt(10) || baseAmount.gt(2000)) ? new Decimal(1.01) : new Decimal(1.0);
+    const riskFactor = (baseAmount.lt(10) || baseAmount.gt(2000))
+        ? new Decimal(1.0)
+        : new Decimal(1.0);
     return baseAmount.dividedBy(exchangeRate).times(riskFactor).toFixed(8, Decimal.ROUND_UP);
 };
 const getWalletAmountInBase = (quoteAmount, exchangeRate) => {

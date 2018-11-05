@@ -27,7 +27,9 @@ const getRequiredAmount = (baseAmount, exchangeRate) => {
     baseAmount = new Decimal(baseAmount);
     exchangeRate = new Decimal(exchangeRate);
 
-    const riskFactor = (baseAmount.lt(10) || baseAmount.gt(2000)) ? new Decimal(1.01) : new Decimal(1.0);
+    const riskFactor = (baseAmount.lt(10) || baseAmount.gt(2000))
+        ? new Decimal(1.0)
+        : new Decimal(1.0);
     const requiredAmount = baseAmount.dividedBy(exchangeRate).times(riskFactor).toFixed(8, Decimal.ROUND_UP);
 
     logTail("getRequiredAmount", requiredAmount);
