@@ -30,21 +30,23 @@ class MoonGraphQL {
      * @returns {AWSAppSyncClient} (authenticated endpoint) or,
      * @throws {Error} if application is not authenticated.
      */
-    static async get authClient() {
-        const authUser = await AuthUser.getCurrent();
-        if (!authUser) {
-            throw new Error("User is not authenticated");
+    static get authClient() {
+        return async () => {
+            const authUser = await AuthUser.getCurrent();
+            if (!authUser) {
+                throw new Error("User is not authenticated");
 
-        } else if (MoonGraphQL._authClient) {
-            return MoonGraphQL._authClient;
-
-        } else {
-            try {
-                MoonGraphQL._authClient = new AWSAppSyncClient(AppSyncAuthConfig);
+            } else if (MoonGraphQL._authClient) {
                 return MoonGraphQL._authClient;
-            } catch (error) {
-                MoonGraphQL._authClient = null;
-                throw error;
+
+            } else {
+                try {
+                    MoonGraphQL._authClient = new AWSAppSyncClient(AppSyncAuthConfig);
+                    return MoonGraphQL._authClient;
+                } catch (error) {
+                    MoonGraphQL._authClient = null;
+                    throw error;
+                }
             }
         }
     };
