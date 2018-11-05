@@ -60,7 +60,7 @@ class ProductBody extends React.Component {
                             </span>
                         }
                         <h4 id="product-title">{productTitle || productImageAlt}</h4>
-                        <p>{productPrice}</p>
+                        <p>{productPrice.toLocaleString("en-us", {style:"currency",currency:"USD"})}</p>
                         {
                             !productPrice &&
                             <p>For items with many sizes and/or colors, you'll need to first choose a specific version

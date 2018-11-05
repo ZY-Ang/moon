@@ -56,7 +56,6 @@ const parsePageInformation = async (siteInformation) => {
                     productPrice: productPriceElements &&
                         productPriceElements[0] &&
                         Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
-                            .toLocaleString("en-us", {style:"currency",currency:"USD"})
                 };
                 setPageInformationState(pageInformation);
                 return pageInformation;
