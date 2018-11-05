@@ -21,7 +21,7 @@ export const observeDOM = (obj, callback) => {
                 callback(mutations[0]);
         });
         // have the observer observe foo for changes in children
-        obs.observe(obj, {childList: true, subtree: true});
+        obs.observe(obj, {attributes: true, childList: true, subtree: true});
 
     } else if (window.addEventListener) {
         obj.addEventListener('DOMNodeInserted', callback, false);

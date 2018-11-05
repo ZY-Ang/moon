@@ -198,6 +198,8 @@ type SiteInformation {
     isSupported: Boolean
     # The checkout pathname of the site
     pathnameCheckout: [String]
+    # Query selector for DOMs to observe that will require the re-parsing of data
+    querySelectorParseObserver: String
     # Query selector for where a moon button should be inserted into
     querySelectorMoonButton: String
     # Query selector for cart amount, to be resolved via attribute 'value' or innerText

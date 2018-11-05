@@ -24,73 +24,49 @@ const getSiteInformation = async (siteInformation) => {
 const parsePageInformation = async (siteInformation) => {
     const parserHostMap = {
         "www.amazon.com": () => {
-            const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
-            const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
-            const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
-            const productImageElements = document.querySelectorAll(siteInformation.querySelectorProductImage);
-            const productPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
-            const cartAmount = !!cartAmountElements && !!cartAmountElements.length && (
-                (
-                    !!cartAmountElements[0].value &&
-                    Decimal(cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toFixed(2)
-                ) || (
-                    !!cartAmountElements[0].innerText &&
-                    Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
-                )
-            );
-            const pageInformation = {
-                ...siteInformation,
-                isCheckoutPage: isCheckoutPage(window.location.href, siteInformation.pathnameCheckout),
-                cartAmount: (
-                    !!cartAmount &&
-                    (Number(cartAmount) > 0) &&
-                    process.env.NODE_ENV !== 'production'
-                )
-                    ? "0.01"
-                    : cartAmount ? cartAmount : "0.00",
-                cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD",
-                productTitle: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
-                productImageURL: productImageElements && productImageElements[0] && productImageElements[0].src,
-                productImageAlt: productImageElements && productImageElements[0] && productImageElements[0].alt,
-                productPrice: productPriceElements &&
-                    productPriceElements[0] &&
-                    Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
-                        .toLocaleString("en-us", {style:"currency",currency:"USD"})
-            };
-            setPageInformationState(pageInformation);
-            const updateCartAmount = () => {
-                const newCartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
-                const newCartAmount = !!newCartAmountElements && !!newCartAmountElements.length && (
+            const parse = () => {
+                const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
+                const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
+                const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
+                const productImageElements = document.querySelectorAll(siteInformation.querySelectorProductImage);
+                const productPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
+                const cartAmount = !!cartAmountElements && !!cartAmountElements.length && (
                     (
-                        !!newCartAmountElements[0].value &&
-                        Decimal(newCartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toFixed(2)
+                        !!cartAmountElements[0].value &&
+                        Decimal(cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toFixed(2)
                     ) || (
-                        !!newCartAmountElements[0].innerText &&
-                        Decimal(newCartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
+                        !!cartAmountElements[0].innerText &&
+                        Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
                     )
                 );
-                setPageInformationState({
+                const pageInformation = {
+                    ...siteInformation,
+                    isCheckoutPage: isCheckoutPage(window.location.href, siteInformation.pathnameCheckout),
                     cartAmount: (
-                        !!newCartAmount &&
-                        (Number(newCartAmount) > 0) &&
+                        !!cartAmount &&
+                        (Number(cartAmount) > 0) &&
                         process.env.NODE_ENV !== 'production'
                     )
                         ? "0.01"
-                        : newCartAmount ? newCartAmount : "0.00"
-                });
-            };
-            observeDOM(cartAmountElements[0], updateCartAmount);
-            const updateProductPrice = () => {
-                const newProductPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
-                setPageInformationState({
-                    productPrice: newProductPriceElements &&
-                        newProductPriceElements[0] &&
-                        Number(newProductPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
+                        : cartAmount ? cartAmount : "0.00",
+                    cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD",
+                    productTitle: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
+                    productImageURL: productImageElements && productImageElements[0] && productImageElements[0].src,
+                    productImageAlt: productImageElements && productImageElements[0] && productImageElements[0].alt,
+                    productPrice: productPriceElements &&
+                        productPriceElements[0] &&
+                        Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
                             .toLocaleString("en-us", {style:"currency",currency:"USD"})
-                });
+                };
+                setPageInformationState(pageInformation);
+                return pageInformation;
             };
-            observeDOM(productPriceElements[0], updateProductPrice);
-            return pageInformation;
+
+            const elementTreesToObserve = document.querySelectorAll(siteInformation.querySelectorParseObserver);
+            for (let element of elementTreesToObserve) {
+                observeDOM(element, parse);
+            }
+            return parse();
         }
     };
     if (parserHostMap[window.location.host]) {

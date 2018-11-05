@@ -71,6 +71,7 @@ const siteInformation = gql`
             logoURL
             isSupported
             pathnameCheckout
+            querySelectorParseObserver
             querySelectorMoonButton
             querySelectorCartAmount
             querySelectorCartCurrency
