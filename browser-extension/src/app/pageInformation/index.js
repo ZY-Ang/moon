@@ -9,6 +9,7 @@ import store from "../redux/store";
 import {ACTION_SET_APP_MODAL_STATE, ACTION_SET_PAGE_INFORMATION} from "../redux/reducers/constants";
 import {isCheckoutPage} from "../../utils/url";
 import {handleErrors} from "../../utils/errors";
+import {observeDOM} from "../utils/dom";
 
 const getSiteInformation = async (siteInformation) => {
     if (siteInformation) {
@@ -51,9 +52,44 @@ const parsePageInformation = async (siteInformation) => {
                 productTitle: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
                 productImageURL: productImageElements && productImageElements[0] && productImageElements[0].src,
                 productImageAlt: productImageElements && productImageElements[0] && productImageElements[0].alt,
-                productPrice: productPriceElements && productPriceElements[0] && Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, "")).toLocaleString("en-us", {style:"currency",currency:"USD"})
+                productPrice: productPriceElements &&
+                    productPriceElements[0] &&
+                    Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
+                        .toLocaleString("en-us", {style:"currency",currency:"USD"})
             };
             setPageInformationState(pageInformation);
+            const updateCartAmount = () => {
+                const newCartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
+                const newCartAmount = !!newCartAmountElements && !!newCartAmountElements.length && (
+                    (
+                        !!newCartAmountElements[0].value &&
+                        Decimal(newCartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toFixed(2)
+                    ) || (
+                        !!newCartAmountElements[0].innerText &&
+                        Decimal(newCartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
+                    )
+                );
+                setPageInformationState({
+                    cartAmount: (
+                        !!newCartAmount &&
+                        (Number(newCartAmount) > 0) &&
+                        process.env.NODE_ENV !== 'production'
+                    )
+                        ? "0.01"
+                        : newCartAmount ? newCartAmount : "0.00"
+                });
+            };
+            observeDOM(cartAmountElements[0], updateCartAmount);
+            const updateProductPrice = () => {
+                const newProductPriceElements = document.querySelectorAll(siteInformation.querySelectorProductPrice);
+                setPageInformationState({
+                    productPrice: newProductPriceElements &&
+                        newProductPriceElements[0] &&
+                        Number(newProductPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
+                            .toLocaleString("en-us", {style:"currency",currency:"USD"})
+                });
+            };
+            observeDOM(productPriceElements[0], updateProductPrice);
             return pageInformation;
         }
     };
