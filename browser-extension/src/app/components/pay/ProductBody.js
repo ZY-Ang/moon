@@ -9,18 +9,6 @@ import React from "react";
  * the product and a message to redirect to checkout
  */
 class ProductBody extends React.Component {
-    addToCart = () => {
-        const {siteInformation} = this.props;
-        const addToCartButtonElements = siteInformation && document.querySelectorAll(siteInformation.querySelectorAddToCart);
-        if (
-            !!addToCartButtonElements &&
-            !!addToCartButtonElements.length &&
-            !!addToCartButtonElements[0]
-        ) {
-            addToCartButtonElements[0].click();
-        }
-    };
-
     render() {
         const {
             productTitle,
@@ -42,10 +30,9 @@ class ProductBody extends React.Component {
                         {
                             productImageURL &&
                             <img
-                                className="site-logo"
+                                className="product-image"
                                 src={productImageURL}
                                 alt={productImageURL || productImageAlt}
-                                style={{height: 200}}
                             />
                         }
                         {
@@ -60,7 +47,10 @@ class ProductBody extends React.Component {
                             </span>
                         }
                         <h4 id="product-title">{productTitle || productImageAlt}</h4>
-                        <p>{productPrice.toLocaleString("en-us", {style:"currency",currency:"USD"})}</p>
+                        {
+                            !!productPrice &&
+                            <p>{productPrice.toLocaleString("en-us", {style:"currency",currency:"USD"})}</p>
+                        }
                         {
                             !productPrice &&
                             <p>For items with many sizes and/or colors, you'll need to first choose a specific version
@@ -73,7 +63,7 @@ class ProductBody extends React.Component {
                         <div className="btn-group mb-10">
                             <button
                                 className="btn btn-pay btn-primary"
-                                onClick={this.addToCart}
+                                onClick={() => addToCartButtonElements[0].click()}
                             >
                                 Add To Cart
                             </button>
