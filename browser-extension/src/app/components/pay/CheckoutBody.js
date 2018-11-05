@@ -168,6 +168,8 @@ class CheckoutBody extends Component {
                         </span>
                     }
                     {
+                        cartAmount &&
+                        cartCurrency &&
                         selectedWallet &&
                         <CheckoutCalculator
                             cartAmount={cartAmount}

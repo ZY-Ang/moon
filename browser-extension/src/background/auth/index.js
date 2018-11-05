@@ -130,14 +130,13 @@ export const doGlobalSignOut = () => {
  * active tab in the current window to be rendered.
  */
 export const doUpdateAuthUserEvent = async () => {
-    console.log("doUpdateAuthUserEvent");
     try {
-        const authUser = await AuthUser.getCurrent();
-        if (!authUser) {
-            return Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null});
-        }
-        return Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: (await authUser.trim())});
+        const currentAuthUser = await AuthUser.getCurrent();
+        const authUser = currentAuthUser && (await currentAuthUser.trim());
+        console.log("doUpdateAuthUserEvent: ", !!authUser);
+        return Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser});
     } catch (error) {
+        console.log("doUpdateAuthUserEvent: ", null);
         Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null});
         throw error;
     }
