@@ -31,7 +31,7 @@ class MoonGraphQL {
      * @throws {Error} if application is not authenticated.
      */
     static get authClient() {
-        const authUser = AuthUser.getInstance();
+        const authUser = AuthUser.getCurrent();
         if (!authUser) {
             throw new Error("User is not authenticated");
 
