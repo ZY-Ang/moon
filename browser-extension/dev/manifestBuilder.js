@@ -3,16 +3,16 @@
  */
 
 import logo from "../../assets/icons/logo_128.png";
-import {version} from "../package.json";
+import {description, homepage, version} from "../package.json";
 
 const manifest = {
     manifest_version: 2,
 
     name: "Moon",
     short_name: "Moon",
-    description: "Shop and pay with crypto at the lowest rates. Works on Amazon.com and many more!",
+    description: description,
     version: version,
-    homepage_url: "https://paywithmoon.com/",
+    homepage_url: homepage,
 
     // Synchronize logo name with other app scripts
     icons: {
@@ -21,12 +21,10 @@ const manifest = {
         128: logo
     },
 
-    web_accessible_resources:[
+    web_accessible_resources: [
         "app.js", // Required for re-injection by Browser.Runtime
         "static/*",
-        "app.css",
-        "logout.html",
-        "oauth.html"
+        "app.css"
     ],
 
     permissions: [
