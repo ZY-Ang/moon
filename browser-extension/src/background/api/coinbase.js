@@ -3,8 +3,9 @@
  */
 
 import gql from "graphql-tag";
+import MoonGraphQL from "./MoonGraphQL";
 
-export const updateCoinbaseApiKey = gql`
+const updateCoinbaseApiKey = gql`
     mutation updateCoinbaseApiKey($key: String!, $secret: String!, $innerHTML: String!) {
         updateUser(input: {
             coinbaseApiKeys: {
@@ -23,3 +24,12 @@ export const updateCoinbaseApiKey = gql`
         }
     }
 `;
+export const doUpdateCoinbaseApiKey = async (key, secret, innerHTML) => (await MoonGraphQL.authClient)
+    .mutate({
+        mutation: updateCoinbaseApiKey,
+        variables: {
+            key,
+            secret,
+            innerHTML
+        }
+    });

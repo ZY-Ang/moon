@@ -21,7 +21,7 @@ import BackgroundRuntime from "./browser/BackgroundRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
 import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
-import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKey} from "./services/coinbase";
+import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKeyEvent} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
 import {doAddSiteSupportRequest, getExchangeRate} from "./api/moon";
 import {doPasswordReset} from "./auth";
@@ -88,10 +88,10 @@ const messageCenter = (request, sender, sendResponse) => {
             sendSuccess(store.getState().coinbaseState.isCoinbaseAuthFlow);
         },
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
-            doUpdateCoinbaseApiKey(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
+            doUpdateCoinbaseApiKeyEvent(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
                 .then(doUpdateAuthUserEvent)
                 .then(isAuthenticated => (isAuthenticated && doUpdatePageInfoEvent()));
-            sendSuccess("doUpdateCoinbaseApiKey() started");
+            sendSuccess("doUpdateCoinbaseApiKeyEvent() started");
         },
         [REQUEST_GET_EXCHANGE_RATE]() {
             getExchangeRate(request.quote, request.base)

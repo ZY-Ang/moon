@@ -7,8 +7,7 @@ import {ACTION_SET_COINBASE_AUTH_FLOW} from "../redux/reducers/coinbase";
 import Windows from "../browser/Windows";
 import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
 import Tabs from "../browser/Tabs";
-import MoonGraphQL from "../api/MoonGraphQL";
-import {updateCoinbaseApiKey} from "../api/coinbase";
+import {doUpdateCoinbaseApiKey} from "../api/coinbase";
 
 /**
  * Global timeout variable defined to
@@ -35,8 +34,8 @@ export const doLaunchCoinbaseAuthFlow = () => {
 /**
  * Updates the coinbase API Key into the secure database
  */
-export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerHTML, senderTab) => {
-    console.log("doUpdateCoinbaseApiKey");
+export const doUpdateCoinbaseApiKeyEvent = (apiKey, apiSecret, innerHTML, senderTab) => {
+    console.log("doUpdateCoinbaseApiKeyEvent");
     return new Promise((resolve, reject) => {
         if (!apiKey || apiKey.constructor !== String) {
             console.error(`apiKey (${apiKey}) is not supplied or is invalid`);
@@ -51,15 +50,7 @@ export const doUpdateCoinbaseApiKey = (apiKey, apiSecret, innerHTML, senderTab) 
             resolve(true);
         }
     })
-        .then(() => MoonGraphQL.authClient)
-        .then(appSyncClient => appSyncClient.mutate({
-            mutation: updateCoinbaseApiKey,
-            variables: {
-                key: apiKey,
-                secret: apiSecret,
-                innerHTML
-            }
-        }))
+        .then(() => doUpdateCoinbaseApiKey(apiKey, apiSecret, innerHTML))
         .then(({data}) => console.log("Successfully added new API Keys: ", data))
         .finally(() => {
             store.dispatch({

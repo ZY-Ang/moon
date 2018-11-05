@@ -27,7 +27,7 @@ const user = gql`
         }
     }
 `;
-export const getUser = () => MoonGraphQL.authClient
+export const getUser = async () => (await MoonGraphQL.authClient)
     .query({
         query: user,
         fetchPolicy: 'network-only'
@@ -58,7 +58,7 @@ const exchangeRates = gql`
         }
     }
 `;
-export const getExchangeRate = (quote, base) => MoonGraphQL.authClient
+export const getExchangeRate = async (quote, base) => (await MoonGraphQL.authClient)
     .query({
         query: exchangeRates,
         variables: {quote, base}
@@ -82,7 +82,7 @@ const siteInformation = gql`
         }
     }
 `;
-export const getSiteInformation = (host) => MoonGraphQL.authClient
+export const getSiteInformation = async (host) => (await MoonGraphQL.authClient)
     .query({
         query: siteInformation,
         variables: {host}
@@ -127,7 +127,7 @@ const getPaymentPayload = gql`
         }
     }
 `;
-export const doGetPaymentPayload = (variables) => MoonGraphQL.authClient
+export const doGetPaymentPayload = async (variables) => (await MoonGraphQL.authClient)
     .mutate({
         mutation: getPaymentPayload,
         variables
@@ -138,7 +138,7 @@ const addSiteSupportRequest = gql`
         addSiteSupportRequest(host: $host)
     }
 `;
-export const doAddSiteSupportRequest = (host) => MoonGraphQL.authClient
+export const doAddSiteSupportRequest = async (host) => (await MoonGraphQL.authClient)
     .mutate({
         mutation: addSiteSupportRequest,
         variables: {host}

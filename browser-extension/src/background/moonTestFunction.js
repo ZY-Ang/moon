@@ -11,9 +11,9 @@ let subscription = null;
  * A test function to be used for prototyping new APIs.
  * This will be automatically tree-shaken out in production.
  */
-const moonTestFunction = (params) => {
+const moonTestFunction = async (params) => {
     console.log("moonTestFunction");
-    const awsAppSyncClient = MoonGraphQL.authClient;
+    const awsAppSyncClient = await MoonGraphQL.authClient;
 
     if (subscription) {
         console.log("subscription: ", subscription);
