@@ -55,6 +55,9 @@ export const REQUEST_GET_SITE_INFORMATION = "MOON_GET_SITE_INFORMATION";
 /** Used to request for support for the current host that the user is on */
 export const REQUEST_MOON_SITE_SUPPORT = "MOON_I_WANT_TO_SHOP_ON_THIS_SITE";
 
+/** Used to report a valid checkout page that is currently invalid on the client */
+export const REQUEST_MOON_VALID_CHECKOUT_REPORT = "MOON_THIS_IS_A_CHECKOUT_PAGE";
+
 // --------------------- Reset Password ---------------------
 export const REQUEST_RESET_PASSWORD = "MOON_RESET_PASSWORD";
 

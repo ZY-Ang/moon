@@ -143,3 +143,20 @@ export const doAddSiteSupportRequest = async (host) => (await MoonGraphQL.authCl
         mutation: addSiteSupportRequest,
         variables: {host}
     });
+
+const addNonCheckoutReport = gql`
+    mutation addNonCheckoutReport($url: AWSURL!, $content: String!) {
+        addNonCheckoutReport(input: {
+            url: $url,
+            content: $content
+        })
+    }
+`;
+export const doAddNonCheckoutReport = async (url, content) => (await MoonGraphQL.authClient)
+    .mutate({
+        mutation:addNonCheckoutReport,
+        variables: {
+            url,
+            content
+        }
+    });

@@ -10,7 +10,7 @@ import {
     REQUEST_GLOBAL_SIGN_OUT,
     REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
     REQUEST_LAUNCH_WEB_AUTH_FLOW,
-    REQUEST_MOON_SITE_SUPPORT, REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
+    REQUEST_MOON_SITE_SUPPORT, REQUEST_MOON_VALID_CHECKOUT_REPORT, REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
     REQUEST_RESET_PASSWORD,
     REQUEST_SIGN_OUT,
     REQUEST_TEST_FUNCTION,
@@ -23,7 +23,7 @@ import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKeyEvent} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
-import {doAddSiteSupportRequest, getExchangeRate} from "./api/moon";
+import {doAddNonCheckoutReport, doAddSiteSupportRequest, getExchangeRate} from "./api/moon";
 import {doPasswordReset} from "./auth";
 import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
@@ -139,6 +139,15 @@ const messageCenter = (request, sender, sendResponse) => {
                 .catch(err => {
                     handleErrors(err);
                     sendFailure(`doAddSiteSupportRequest(${request.host}) failed`);
+                });
+            return true;
+        },
+        [REQUEST_MOON_VALID_CHECKOUT_REPORT]() {
+            doAddNonCheckoutReport(request.url, request.content)
+                .then(({data}) => sendSuccess(data))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doAddNonCheckoutReport(${request.url}, ${request.content}) failed`);
                 });
             return true;
         },

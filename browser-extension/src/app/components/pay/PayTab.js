@@ -115,8 +115,9 @@ class PayTab extends Component {
     requestSite = () => {
         this.props.onSetAppModalState({
             state: "loading",
+            loadingText: "Submitting ❤",
             successText: `Hang tight! We've gotten your request and are getting to work on ${window.location.host}!`,
-            errorText: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call us!"
+            errorText: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call us ❤!"
         });
         AppRuntime.sendMessage(REQUEST_MOON_SITE_SUPPORT, {host: window.location.host})
             .then(() => {
