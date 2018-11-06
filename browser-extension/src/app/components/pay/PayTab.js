@@ -112,10 +112,22 @@ class PayTab extends Component {
         }
     };
 
-    requestSite = () =>
+    requestSite = () => {
+        this.props.onSetAppModalState({
+            state: "loading",
+            successText: `Hang tight! We've gotten your request and are getting to work on ${window.location.host}!`,
+            errorText: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call us!"
+        });
         AppRuntime.sendMessage(REQUEST_MOON_SITE_SUPPORT, {host: window.location.host})
-            .then(() => this.setState(() => ({isRequested: true})))
-            .catch(handleErrors);
+            .then(() => {
+                this.props.onSetAppModalState({state: "success"});
+                this.setState(() => ({isRequested: true}));
+            })
+            .catch(err => {
+                handleErrors(err);
+                this.props.onSetAppModalState({state: "error"});
+            });
+    };
 
     changeWallet = (selectedWallet) => this.setState(() => ({selectedWallet}));
 
