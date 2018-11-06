@@ -14,6 +14,7 @@ import {
 } from "../../../constants/events/appEvents";
 import {handleErrors} from "../../../utils/errors";
 import {
+    ACTION_SET_APP_MODAL_STATE,
     ACTION_SET_UI_BLOCKER_STATE
 } from "../../redux/reducers/constants";
 import ProductBody from "./ProductBody";
@@ -84,9 +85,18 @@ class PayTab extends Component {
             title: "Loading...",
             subTitle: "Completing your purchase. Please DO NOT close this tab or exit your browser 🙏"
         });
+        this.props.onSetAppModalState({
+            state: "loading",
+            loadingText: "Completing your purchase...",
+            successText: "Paid!",
+            errorText: "Something went wrong! Please try again or contact us for support."
+        });
         this.getPaymentPayload() // TODO: Background script has to execute injection of code. Can't be done here. Best we can do is wait for new content script to send a success message
-            .catch(handleErrors)
-            .finally(() => this.props.onSetUIBlockerState({}));
+            .catch(err => {
+                handleErrors(err);
+                this.props.onSetUIBlockerState({});
+                this.props.onSetAppModalState({state: "error"});
+            });
     };
 
     getPaymentPayload = () => {
@@ -164,6 +174,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE}),
     onSetUIBlockerState: (state) => dispatch({...state, type: ACTION_SET_UI_BLOCKER_STATE})
 });
 

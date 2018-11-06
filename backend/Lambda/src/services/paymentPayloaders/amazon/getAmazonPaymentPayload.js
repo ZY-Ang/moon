@@ -81,7 +81,7 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
                                         resolve(txtSuccess.innerText.trim());
                                     }
                                 }
-                            }, 500);
+                            }, 1000);
                         };
                         timeoutFunction();
                     });
@@ -135,7 +135,7 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
             console.error("Something seriously bad happened: ", err);
         });
 })(${JSON.stringify(giftCards)}, '${process.env.NODE_ENV}');
-`, {compress: true, mangle: true}); // FIXME: Click pay for user
+`, {compress: true, mangle: true});
 
     const amazonPaymentPayload = {
         data: [executable],
