@@ -1,0 +1,17 @@
+{
+  "name": "moon-database-site-support-requests",
+  "version": "1.0.0",
+  "description": "DynamoDB table that stores new shopping site request",
+  "main": "serverless.yml",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "deploy-production": "serverless deploy --changeset --stage production"
+  },
+  "author": "Moon",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "serverless": "^1.32.0",
+    "serverless-cloudformation-changesets": "0.0.2",
+    "serverless-dynamodb-autoscaling": "^0.6.2"
+  }
+}
