@@ -27,11 +27,11 @@ class MoonGraphQL {
      * The authenticated AppSync client with valid credentials.
      * Automatically refreshes JWT them when necessary.
      *
-     * @returns {AWSAppSyncClient} (authenticated endpoint) or,
+     * @returns {Promise<AWSAppSyncClient>} (authenticated endpoint) or,
      * @throws {Error} if application is not authenticated.
      */
     static get authClient() {
-        return async () => {
+        return (async () => {
             const authUser = await AuthUser.getCurrent();
             if (!authUser) {
                 throw new Error("User is not authenticated");
@@ -48,7 +48,7 @@ class MoonGraphQL {
                     throw error;
                 }
             }
-        }
+        })();
     };
 
     /**
