@@ -5,7 +5,9 @@
 import {
     ACTION_SET_IS_APP_ACTIVE,
     ACTION_TOGGLE_IS_APP_ACTIVE,
-    ACTION_SET_APP_MODAL_STATE, ACTION_SET_UI_BLOCKER_STATE
+    ACTION_SET_UI_BLOCKER_STATE,
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE, ACTION_SET_APP_MODAL_SUCCESS_STATE
 } from "./constants";
 
 /* -----------------     Initial State     ------------------ */
@@ -15,12 +17,17 @@ import {
  */
 const INITIAL_STATE = {
     isAppActive: false,
-    appModalState: {
+    appModalLoadingState: {
         isActive: false,
-        state: "loading",
-        loadingText: "",
-        errorText: "",
-        successText: ""
+        text: ""
+    },
+    appModalErrorState: {
+        isActive: false,
+        text: ""
+    },
+    appModalSuccessState: {
+        isActive: false,
+        text: ""
     },
     uiBlockerState: {
         isActive: false,
@@ -40,17 +47,35 @@ const applySetIsAppActive = (state, action) => ({
 });
 
 /**
- * Action to set {@code appModalState} in the store based on the specified action
+ * Action to set {@code appModalLoadingState} in the store based on the specified action
  */
-const applySetAppModalState = (state, action) => ({
+const applySetAppModalLoadingState = (state, action) => ({
     ...state,
-    appModalState: {
-        // Resets all state to initial on any reducer call if not explicitly specified, but retain truth if state is specified
-        isActive: !!action.isActive || !!action.state,
-        state: action.state || INITIAL_STATE.appModalState.state,
-        loadingText: action.loadingText || state.appModalState.loadingText,
-        errorText: action.errorText || state.appModalState.errorText,
-        successText: action.successText || state.appModalState.successText
+    appModalLoadingState: {
+        isActive: action.isActive,
+        text: action.text
+    }
+});
+
+/**
+ * Action to set {@code appModalSuccessState} in the store based on the specified action
+ */
+const applySetAppModalSuccessState = (state, action) => ({
+    ...state,
+    appModalSuccessState: {
+        isActive: action.isActive,
+        text: action.text
+    }
+});
+
+/**
+ * Action to set {@code appModalErrorState} in the store based on the specified action
+ */
+const applySetAppModalErrorState = (state, action) => ({
+    ...state,
+    appModalErrorState: {
+        isActive: action.isActive,
+        text: action.text
     }
 });
 
@@ -75,8 +100,14 @@ function appReducer(state = INITIAL_STATE, action) {
         [ACTION_SET_IS_APP_ACTIVE](){
             return applySetIsAppActive(state, action);
         },
-        [ACTION_SET_APP_MODAL_STATE](){
-            return applySetAppModalState(state, action);
+        [ACTION_SET_APP_MODAL_LOADING_STATE](){
+            return applySetAppModalLoadingState(state, action);
+        },
+        [ACTION_SET_APP_MODAL_SUCCESS_STATE](){
+            return applySetAppModalSuccessState(state, action);
+        },
+        [ACTION_SET_APP_MODAL_ERROR_STATE](){
+            return applySetAppModalErrorState(state, action);
         },
         [ACTION_TOGGLE_IS_APP_ACTIVE](){
             return applySetIsAppActive(state, {isAppActive: !state.isAppActive});

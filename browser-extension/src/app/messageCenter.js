@@ -16,7 +16,11 @@ import {updateAuthUser} from "./utils/auth";
 import {injectButton} from "./buttonMoon";
 import {handleErrors} from "../utils/errors";
 import loadPageInformation from "./pageInformation";
-import {ACTION_SET_APP_MODAL_STATE, ACTION_SET_UI_BLOCKER_STATE} from "./redux/reducers/constants";
+import {
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE,
+    ACTION_SET_UI_BLOCKER_STATE
+} from "./redux/reducers/constants";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -55,14 +59,21 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_PAYMENT_COMPLETED_OFF_MODAL]() {
-            store.dispatch({
-                type: ACTION_SET_APP_MODAL_STATE,
-                state: (request.isSuccess) ? "success" : "error"
-            });
             if (!request.isSuccess) {
                 store.dispatch({
                     type: ACTION_SET_UI_BLOCKER_STATE,
                     isActive: false
+                });
+                store.dispatch({
+                    type: ACTION_SET_APP_MODAL_ERROR_STATE,
+                    isActive: true,
+                    text: "Something went wrong! Please try again or contact us for support."
+                });
+            } else {
+                store.dispatch({
+                    type: ACTION_SET_APP_MODAL_SUCCESS_STATE,
+                    isActive: true,
+                    text: "Success! Thank you for spreading the ❤ of cryptocurrency!"
                 });
             }
             sendSuccess(true);

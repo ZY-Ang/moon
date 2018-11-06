@@ -6,7 +6,10 @@ import AppRuntime from "../browser/AppRuntime";
 import {REQUEST_GET_SITE_INFORMATION} from "../../constants/events/appEvents";
 import Decimal from "decimal.js";
 import store from "../redux/store";
-import {ACTION_SET_APP_MODAL_STATE, ACTION_SET_PAGE_INFORMATION} from "../redux/reducers/constants";
+import {
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_PAGE_INFORMATION
+} from "../redux/reducers/constants";
 import {isCheckoutPage} from "../../utils/url";
 import {handleErrors} from "../../utils/errors";
 import {observeDOM} from "../utils/dom";
@@ -25,7 +28,7 @@ const parsePageInformation = async (siteInformation) => {
     const parserHostMap = {
         "www.amazon.com": () => {
             const parse = () => {
-                setAppModalState({state: "loading", loadingText: "Loading..."});
+                setAppModalLoadingState({isActive: true, loadingText: "Loading..."});
                 const cartAmountElements = document.querySelectorAll(siteInformation.querySelectorCartAmount);
                 const cartCurrencyElements = document.querySelectorAll(siteInformation.querySelectorCartCurrency);
                 const productTitleElements = document.querySelectorAll(siteInformation.querySelectorProductTitle);
@@ -59,7 +62,7 @@ const parsePageInformation = async (siteInformation) => {
                         Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
                 };
                 setPageInformationState(pageInformation);
-                setAppModalState({isActive: false});
+                setAppModalLoadingState({isActive: false});
                 return pageInformation;
             };
 
@@ -82,11 +85,11 @@ const setPageInformationState = (pageInformation) => {
     });
 };
 
-const setAppModalState = (state) => {
+const setAppModalLoadingState = (state) => {
     return store.dispatch({
         ...state,
-        type: ACTION_SET_APP_MODAL_STATE
-    });
+        type: ACTION_SET_APP_MODAL_LOADING_STATE
+    })
 };
 
 const loadPageInformation = (siteInformation) => {

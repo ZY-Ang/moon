@@ -4,7 +4,12 @@
 import React, {Component} from 'react';
 import './SettingsTab.css';
 import {connect} from "react-redux";
-import {ACTION_SET_APP_MODAL_STATE, ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
+import {
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE,
+    ACTION_SET_AUTH_USER
+} from "../../redux/reducers/constants";
 import {
     REQUEST_GLOBAL_SIGN_OUT,
     REQUEST_LAUNCH_COINBASE_AUTH_FLOW, REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_RESET_PASSWORD,
@@ -39,18 +44,14 @@ class SettingsTab extends Component {
         });
 
     changePassword = (event) => {
-        this.props.onSetAppModalState({
-            state: "loading",
-            loadingText: "Chotto matte...",
-            successText: "A password reset link has been sent to your email!",
-            errorText: "Something went wrong! Please try again or contact us for support."
-        });
+        this.props.onSetAppModalLoadingState({isActive: true, text: "Chotto matte..."});
         AppRuntime.sendMessage(REQUEST_RESET_PASSWORD)
-            .then(() => this.props.onSetAppModalState({state: "success"}))
+            .then(() => this.props.onSetAppModalSuccessState({isActive: true, text: "A password reset link has been sent to your email!"}))
             .catch(err => {
                 handleErrors(err);
-                this.props.onSetAppModalState({state: "error"});
-            });
+                this.props.onSetAppModalErrorState({isActive: true, text: "Something went wrong! Please try again or contact us for support."});
+            })
+            .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
         if (event) {
             event.preventDefault();
         }
@@ -134,7 +135,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     onSetAuthUser: (authUser) => dispatch({type: ACTION_SET_AUTH_USER, authUser}),
-    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE})
+    onSetAppModalLoadingState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_LOADING_STATE}),
+    onSetAppModalSuccessState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_SUCCESS_STATE}),
+    onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsTab);

@@ -7,7 +7,11 @@ import AppRuntime from "../../browser/AppRuntime";
 import {connect} from "react-redux";
 import {REQUEST_MOON_VALID_CHECKOUT_REPORT} from "../../../constants/events/appEvents";
 import {handleErrors} from "../../../utils/errors";
-import {ACTION_SET_APP_MODAL_STATE} from "../../redux/reducers/constants";
+import {
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE
+} from "../../redux/reducers/constants";
 
 /**
  * The product body parses a supported site and displays
@@ -15,23 +19,25 @@ import {ACTION_SET_APP_MODAL_STATE} from "../../redux/reducers/constants";
  */
 class ProductBody extends React.Component {
     reportIsCheckout = () => {
-        this.props.onSetAppModalState({
-            state: "loading",
-            loadingText: "✈ Sending us a bug report...",
-            successText: `Hang tight! Getting Moon working everywhere is definitely on the top of our priorities!`,
-            errorText: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call to tell us ❤!"
-        });
+        this.props.onSetAppModalLoadingState({isActive: true, text: "✈ Sending us a bug report..."});
         AppRuntime.sendMessage(REQUEST_MOON_VALID_CHECKOUT_REPORT, {
             url: window.location.href,
             content: "Unknown Content. Prevent large payload"
         })
             .then(() => {
-                this.props.onSetAppModalState({state: "success"});
+                this.props.onSetAppModalSuccessState({
+                    isActive: true,
+                    text: "Hang tight! Support is on the way to you! 🚀🚀🚀"
+                });
             })
             .catch(err => {
                 handleErrors(err);
-                this.props.onSetAppModalState({state: "error"});
-            });
+                this.props.onSetAppModalErrorState({
+                    isActive: true,
+                    text: "Hmmm... Something went wrong, try again! If that doesn't work either, you can always call to tell us ❤!"
+                });
+            })
+            .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
     };
 
     render() {
@@ -121,7 +127,9 @@ class ProductBody extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE})
+    onSetAppModalLoadingState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_LOADING_STATE}),
+    onSetAppModalSuccessState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_SUCCESS_STATE}),
+    onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE})
 });
 
 export default connect(null, mapDispatchToProps)(ProductBody);

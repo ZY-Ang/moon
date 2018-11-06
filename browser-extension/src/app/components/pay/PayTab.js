@@ -14,7 +14,9 @@ import {
 } from "../../../constants/events/appEvents";
 import {handleErrors} from "../../../utils/errors";
 import {
-    ACTION_SET_APP_MODAL_STATE,
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE,
     ACTION_SET_UI_BLOCKER_STATE
 } from "../../redux/reducers/constants";
 import ProductBody from "./ProductBody";
@@ -85,13 +87,12 @@ class PayTab extends Component {
             title: "Loading...",
             subTitle: "Completing your purchase. Please DO NOT close this tab or exit your browser 🙏"
         });
-        this.props.onSetAppModalState({
-            state: "loading",
-            loadingText: "Completing your purchase...",
-            successText: "Paid!",
-            errorText: "Something went wrong! Please try again or contact us for support."
+        this.props.onSetAppModalLoadingState({
+            isActive: true,
+            text: "Completing your purchase..."
         });
-        this.getPaymentPayload();
+        this.getPaymentPayload()
+            .then(() => this.props.onSetAppModalLoadingState({isActive: false}));
     };
 
     getPaymentPayload = () => {
@@ -108,26 +109,28 @@ class PayTab extends Component {
                 pageURL: window.location.href,
             });
         } else {
-            this.setState(() => ({error: "Page not loaded yet!"}));
+            return new Promise(resolve => this.setState(() => ({error: "Page not loaded yet!"}), resolve));
         }
     };
 
     requestSite = () => {
-        this.props.onSetAppModalState({
-            state: "loading",
-            loadingText: "Submitting ❤",
-            successText: `Hang tight! We've gotten your request and are getting to work on ${window.location.host}!`,
-            errorText: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call us ❤!"
-        });
+        this.props.onSetAppModalLoadingState({isActive: true, text: "Submitting ❤"});
         AppRuntime.sendMessage(REQUEST_MOON_SITE_SUPPORT, {host: window.location.host})
             .then(() => {
-                this.props.onSetAppModalState({state: "success"});
+                this.props.onSetAppModalSuccessState({
+                    isActive: true,
+                    text: `Hang tight! We've gotten your request and are getting to work on ${window.location.host}!`
+                });
                 this.setState(() => ({isRequested: true}));
             })
             .catch(err => {
                 handleErrors(err);
-                this.props.onSetAppModalState({state: "error"});
-            });
+                this.props.onSetAppModalErrorState({
+                    isActive: true,
+                    text: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call us ❤!"
+                });
+            })
+            .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
     };
 
     changeWallet = (selectedWallet) => this.setState(() => ({selectedWallet}));
@@ -182,7 +185,9 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE}),
+    onSetAppModalLoadingState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_LOADING_STATE}),
+    onSetAppModalSuccessState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_SUCCESS_STATE}),
+    onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE}),
     onSetUIBlockerState: (state) => dispatch({...state, type: ACTION_SET_UI_BLOCKER_STATE})
 });
 

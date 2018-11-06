@@ -3,10 +3,10 @@
  */
 import React from "react";
 import './ErrorBody.css';
-import {ACTION_SET_APP_MODAL_STATE} from "../../../../redux/reducers/constants";
-import connect from "react-redux/es/connect/connect";
+import {connect} from "react-redux";
+import {ACTION_SET_APP_MODAL_ERROR_STATE} from "../../../../redux/reducers/constants";
 
-const ErrorBody = ({errorText, onSetAppModalState}) => (
+const ErrorBody = ({isActive, text, onSetAppModalErrorState}) => !!isActive && !!onSetAppModalErrorState ? (
     <div className="app-modal">
         <div
             style={{width: 80, height: 80, borderWidth: 4, borderStyle: 'solid', borderColor: 'rgb(212, 63, 58)', borderRadius: '50%', margin: '20px auto', position: 'relative', boxSizing: 'content-box', animation: 'animateErrorIcon 0.5s'}}
@@ -17,19 +17,24 @@ const ErrorBody = ({errorText, onSetAppModalState}) => (
             </span>
         </div>
         <div className="text-center" style={{padding:'0 30px'}}>
-            <p>{errorText}</p>
+            <p>{text}</p>
         </div>
         <button
             className="btn"
-            onClick={() => {if (onSetAppModalState) {onSetAppModalState({isActive: false})}}}
+            onClick={() => onSetAppModalErrorState({isActive: false})}
         >
             Oh man
         </button>
     </div>
-);
+) : null;
 
-const mapDispatchToProps = (dispatch) => ({
-    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE})
+const mapStateToProps = (state) => ({
+    isActive: state.appState.appModalErrorState.isActive,
+    text: state.appState.appModalErrorState.text
 });
 
-export default connect(null, mapDispatchToProps)(ErrorBody);
+const mapDispatchToProps = (dispatch) => ({
+    onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE})
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ErrorBody);

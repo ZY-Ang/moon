@@ -5,7 +5,9 @@
 /* -----------------    Application Action Identifiers     ------------------ */
 export const ACTION_SET_IS_APP_ACTIVE = 'APP_IS_ACTIVE_SET';
 export const ACTION_TOGGLE_IS_APP_ACTIVE = 'APP_IS_ACTIVE_TOGGLE';
-export const ACTION_SET_APP_MODAL_STATE = 'APP_MODAL_STATE_SET';
+export const ACTION_SET_APP_MODAL_LOADING_STATE = 'APP_MODAL_LOADING_STATE_SET';
+export const ACTION_SET_APP_MODAL_SUCCESS_STATE = 'APP_MODAL_SUCCESS_STATE_SET';
+export const ACTION_SET_APP_MODAL_ERROR_STATE = 'APP_MODAL_ERROR_STATE_SET';
 export const ACTION_SET_UI_BLOCKER_STATE = 'UI_BLOCKER_STATE_SET';
 
 /* -----------------    Authentication Action Identifiers     ------------------ */

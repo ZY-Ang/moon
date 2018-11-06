@@ -3,14 +3,20 @@
  */
 import React from "react";
 import Throbber from "../../throbber/Throbber";
+import {connect} from "react-redux";
 
-const LoadingBody = ({loadingText}) => (
+const LoadingBody = ({isActive, text}) => !!isActive ? (
     <div className="app-modal">
         <Throbber style={{height: 100}}/>
         <div className="text-center" style={{padding:'0 30px'}}>
-            <p>{loadingText}</p>
+            <p>{text}</p>
         </div>
     </div>
-);
+) : null;
 
-export default LoadingBody;
+const mapStateToProps = (state) => ({
+    isActive: state.appState.appModalLoadingState.isActive,
+    text: state.appState.appModalLoadingState.text
+});
+
+export default connect(mapStateToProps)(LoadingBody);

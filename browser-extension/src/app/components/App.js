@@ -12,8 +12,10 @@ import AppRuntime from "../browser/AppRuntime";
 import FaIcon from "./misc/fontawesome/FaIcon";
 import {ACTION_SET_IS_APP_ACTIVE} from "../redux/reducers/constants";
 import OnBoardingFlow, {isOnBoardingFlowCompleteOrSkipped} from "./onboarding/OnBoardingFlow";
-import AppModal from "./misc/appmodals/AppModal";
 import UIBlocker from "./uiblocker/UIBlocker";
+import ErrorBody from "./misc/appmodals/error/ErrorBody";
+import SuccessBody from "./misc/appmodals/success/SuccessBody";
+import LoadingBody from "./misc/appmodals/loading/LoadingBody";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -114,7 +116,9 @@ class App extends Component {
                         {
                             !!this.props.authUser &&
                             <div id="moon-body" className={CLASS_MOON_BODY}>
-                                <AppModal/>
+                                <ErrorBody/>
+                                <SuccessBody/>
+                                <LoadingBody/>
                                 {
                                     isOnBoardingFlowCompleteOrSkipped(this.props.authUser)
                                         ? (

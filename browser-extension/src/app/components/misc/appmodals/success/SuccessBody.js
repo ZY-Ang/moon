@@ -4,9 +4,9 @@
 import React from "react";
 import './SuccessBody.css';
 import {connect} from "react-redux";
-import {ACTION_SET_APP_MODAL_STATE} from "../../../../redux/reducers/constants";
+import {ACTION_SET_APP_MODAL_SUCCESS_STATE} from "../../../../redux/reducers/constants";
 
-const SuccessBody = ({successText, onSetAppModalState}) => (
+const SuccessBody = ({isActive, text, onSetAppModalSuccessState}) => !!isActive && !!onSetAppModalSuccessState ? (
     <div className="app-modal">
         <div
             style={{width: 80, height: 80, borderWidth: 4, borderStyle: 'solid', borderColor: 'rgb(76, 174, 76)', borderRadius: '50%', margin: '20px auto', position: 'relative', boxSizing: 'content-box'}}
@@ -19,19 +19,24 @@ const SuccessBody = ({successText, onSetAppModalState}) => (
             <div style={{borderRadius: '0px 120px 120px 0px', position: 'absolute', width: 60, height: 120, background: 'white', transform: 'rotate(-45deg)', top: -11, left: 30, transformOrigin: '0px 60px 0px', animation: 'rotatePlaceholder 4.25s ease-in'}}/>
         </div>
         <div className="text-center" style={{padding:'0 30px'}}>
-            <p>{successText}</p>
+            <p>{text}</p>
         </div>
         <button
             className="btn btn-primary-outline"
-            onClick={() => {if (onSetAppModalState) {onSetAppModalState({isActive: false})}}}
+            onClick={() => onSetAppModalSuccessState({isActive: false})}
         >
-            Cool
+            <span role="img" aria-label="Ok">👍</span> Ok
         </button>
     </div>
-);
+) : null;
 
-const mapDispatchToProps = (dispatch) => ({
-    onSetAppModalState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_STATE})
+const mapStateToProps = (state) => ({
+    isActive: state.appState.appModalSuccessState.isActive,
+    text: state.appState.appModalSuccessState.text
 });
 
-export default connect(null, mapDispatchToProps)(SuccessBody);
+const mapDispatchToProps = (dispatch) => ({
+    onSetAppModalSuccessState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_SUCCESS_STATE})
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SuccessBody);
