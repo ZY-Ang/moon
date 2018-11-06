@@ -183,6 +183,9 @@ custom:
     SiteSupportRequests:
       Name: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableName" }
       Arn: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableArn" }
+    NonCheckoutReports:
+      Name: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableName" }
+      Arn: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableArn" }
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}
@@ -195,7 +198,7 @@ custom:
     # ============== Dynamo DB Tables ==============
       # SiteSupportRequestDynamoDBTable
       - type: AMAZON_DYNAMODB
-        name: SiteSupportRequestDynamoDBTable
+        name: SiteSupportRequestsDynamoDBTable
         description: 'DynamoDB table that stores user site support feature requests'
         config:
           tableName: ${{self:custom.dynamoDBTables.SiteSupportRequests.Name}}
@@ -207,6 +210,20 @@ custom:
             Resource:
             - ${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}
             - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}", '/*']] }
+      # NonCheckoutReportsDynamoDBTable
+      - type: AMAZON_DYNAMODB
+        name: NonCheckoutReportsDynamoDBTable
+        description: 'DynamoDB table that stores bug reports for valid checkout pages'
+        config:
+          tableName: ${{self:custom.dynamoDBTables.NonCheckoutReports.Name}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "dynamodb:GetItem"
+            - "dynamodb:UpdateItem"
+            Resource:
+            - ${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}
+            - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}", '/*']] }
     # ============== Lambda Functions ==============
       # exchangeRate
       - type: AWS_LAMBDA
@@ -315,11 +332,17 @@ custom:
         request: Mutation/updateUser/request.vm
         response: Mutation/updateUser/response.vm
       # Mutation/addSiteSupportRequest
-      - dataSource: SiteSupportRequestDynamoDBTable
+      - dataSource: SiteSupportRequestsDynamoDBTable
         type: Mutation
         field: addSiteSupportRequest
         request: Mutation/addSiteSupportRequest/request.vm
         response: Mutation/addSiteSupportRequest/response.vm
+      # Mutation/addNonCheckoutReport
+      - dataSource: NonCheckoutReportsDynamoDBTable
+        type: Mutation
+        field: addNonCheckoutReport
+        request: Mutation/addNonCheckoutReport/request.vm
+        response: Mutation/addNonCheckoutReport/response.vm
       # Mutation/getPaymentPayload
       - dataSource: GetPaymentPayloadLambdaFunction
         type: Mutation

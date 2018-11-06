@@ -113,7 +113,9 @@ type Mutation {
     # Notify if transaction was completed
     notifyPaymentCompletion(input: NotifyPaymentCompletionInput!): PaymentCompletionPayload
     # Request a site to be added to the list of sites to be supported
-    addSiteSupportRequest(host: String!): AWSJSON
+    addSiteSupportRequest(host: String!): Boolean
+    # Reports a web page is a valid checkout page detected as invalid
+    addNonCheckoutReport(input: PageInfo!): Boolean
 }
 
 input NotifyPaymentCompletionInput {
