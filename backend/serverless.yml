@@ -24,42 +24,11 @@ provider:
 
 plugins:
   - serverless-appsync-plugin
-  - serverless-dynamodb-autoscaling
   - serverless-iam-roles-per-function
   - serverless-cloudformation-changesets
 
 resources:
   Resources:
-    UserSecretsDynamoDBTable:
-      # Table that stores user secrets.
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${{self:service}}-${{self:provider.stage}}-user-secrets
-        AttributeDefinitions:
-        - AttributeName: sub
-          AttributeType: S
-        KeySchema:
-        - AttributeName: sub
-          KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5  # TODO: Contact AWS Support beyond 40000 for an increase
-          WriteCapacityUnits: 5 # TODO: Contact AWS Support beyond 40000 for an increase
-
-    SiteSupportRequestDynamoDBTable:
-      # Table that stores site support requests from users.
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${{self:service}}-${{self:provider.stage}}-site-support-request
-        AttributeDefinitions:
-        - AttributeName: email
-          AttributeType: S
-        KeySchema:
-        - AttributeName: email
-          KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
-
     S3Bucket:
       # Generic S3 bucket to store shit in TODO: Delete or specialize for a purpose
       Type: AWS::S3::Bucket
@@ -130,8 +99,8 @@ resources:
               - "dynamodb:GetItem"
               - "dynamodb:PutItem"
               Resource:
-              - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
-              - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
+              - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
+              - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
               Condition:
                 ForAllValues:StringEquals:
                   dynamodb:LeadingKeys:
@@ -162,8 +131,8 @@ functions:
       Action:
       - "dynamodb:GetItem"
       Resource:
-      - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
-      - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
+      - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
   siteInformation:
     name: ${{self:service}}-${{self:provider.stage}}-siteInformation
     description: 'Returns information about a supported site or null if unsupported'
@@ -180,8 +149,8 @@ functions:
       - "dynamodb:GetItem"
       - "dynamodb:UpdateItem"
       Resource:
-      - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
-      - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
+      - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
   user:
     name: ${{self:service}}-${{self:provider.stage}}-user
     description: 'Returns information about a moon user.'
@@ -192,8 +161,8 @@ functions:
       Action:
       - "dynamodb:GetItem"
       Resource:
-      - { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
-      - { Fn::Join: ['', [{ Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }, '/*']] }
+      - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
@@ -207,28 +176,13 @@ custom:
 
   accountId: ${AWS::AccountId}
 
-  # DynamoDB autoscaling plugin config
-  # See link for more information:
-  #     https://github.com/sbstjn/serverless-dynamodb-autoscaling
-  capacities:
-    - table: UserSecretsDynamoDBTable
-      read:
-        minimum: 5
-        maximum: 1000
-        usage: 0.9
-      write:
-        minimum: 5
-        maximum: 1000
-        usage: 0.9
-    - table: SiteSupportRequestDynamoDBTable
-      read:
-        minimum: 5
-        maximum: 1000
-        usage: 0.9
-      write:
-        minimum: 5
-        maximum: 1000
-        usage: 0.9
+  dynamoDBTables:
+    UserSecrets:
+      Name: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableName" }
+      Arn: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableArn" }
+    SiteSupportRequests:
+      Name: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableName" }
+      Arn: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableArn" }
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}
@@ -244,15 +198,15 @@ custom:
         name: SiteSupportRequestDynamoDBTable
         description: 'DynamoDB table that stores user site support feature requests'
         config:
-          tableName: ${{self:resources.Resources.SiteSupportRequestDynamoDBTable.Properties.TableName}}
+          tableName: ${{self:custom.dynamoDBTables.SiteSupportRequests.Name}}
           iamRoleStatements:
           - Effect: "Allow"
             Action:
             - "dynamodb:GetItem"
             - "dynamodb:UpdateItem"
             Resource:
-            - { Fn::GetAtt: [SiteSupportRequestDynamoDBTable, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [SiteSupportRequestDynamoDBTable, Arn] }, '/*']] }
+            - ${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}
+            - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}", '/*']] }
     # ============== Lambda Functions ==============
       # exchangeRate
       - type: AWS_LAMBDA

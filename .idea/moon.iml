@@ -12,6 +12,8 @@
       <excludeFolder url="file://$MODULE_DIR$/browser-extension/.cache" />
       <excludeFolder url="file://$MODULE_DIR$/browser-extension/build" />
       <excludeFolder url="file://$MODULE_DIR$/browser-extension/src/build" />
+      <excludeFolder url="file://$MODULE_DIR$/database/siteSupportRequest/.serverless" />
+      <excludeFolder url="file://$MODULE_DIR$/database/userSecrets/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/extension-auth/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
