@@ -81,7 +81,7 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
                                         resolve(txtSuccess.innerText.trim());
                                     }
                                 }
-                            }, 500);
+                            }, 1000);
                         };
                         timeoutFunction();
                     });
@@ -110,19 +110,21 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
                 if (environment !== 'production') {
                     console.log("browserMessage: ", browserMessage);
                 }
-                if (chrome && chrome.runtime) {
-                    chrome.runtime.sendMessage(browserMessage, function(response){
-                        if (chrome.runtime.lastError) {
-                            reject(chrome.runtime.lastError);
-                        } else if (response.success) {
-                            resolve(response.response);
-                        } else {
-                            reject(response);
-                        }
-                    });
-                } else if (browser && browser.runtime) {
-                    resolve(browser.runtime.sendMessage(browserMessage));
-                }
+                setTimeout(function(){
+                    if (chrome && chrome.runtime) {
+                        chrome.runtime.sendMessage(browserMessage, function(response){
+                            if (chrome.runtime.lastError) {
+                                reject(chrome.runtime.lastError);
+                            } else if (response.success) {
+                                resolve(response.response);
+                            } else {
+                                reject(response);
+                            }
+                        });
+                    } else if (browser && browser.runtime) {
+                        resolve(browser.runtime.sendMessage(browserMessage));
+                    }
+                }, 3000);
             });
         })
         .then(function(){
