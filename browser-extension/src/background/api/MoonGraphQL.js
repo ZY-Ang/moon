@@ -3,7 +3,6 @@
  */
 
 import AWSAppSyncClient from "aws-appsync";
-import AuthUser from "../auth/AuthUser";
 import {AppSyncAuthConfig, AppSyncPublicConfig} from "../config/aws/appsync";
 
 /**
@@ -31,24 +30,18 @@ class MoonGraphQL {
      * @throws {Error} if application is not authenticated.
      */
     static get authClient() {
-        return (async () => {
-            const authUser = await AuthUser.getCurrent();
-            if (!authUser) {
-                throw new Error("User is not authenticated");
+        if (MoonGraphQL._authClient) {
+            return MoonGraphQL._authClient;
 
-            } else if (MoonGraphQL._authClient) {
+        } else {
+            try {
+                MoonGraphQL._authClient = new AWSAppSyncClient(AppSyncAuthConfig);
                 return MoonGraphQL._authClient;
-
-            } else {
-                try {
-                    MoonGraphQL._authClient = new AWSAppSyncClient(AppSyncAuthConfig);
-                    return MoonGraphQL._authClient;
-                } catch (error) {
-                    MoonGraphQL._authClient = null;
-                    throw error;
-                }
+            } catch (error) {
+                MoonGraphQL._authClient = null;
+                throw error;
             }
-        })();
+        }
     };
 
     /**

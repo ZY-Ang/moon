@@ -29,7 +29,14 @@ export const AppSyncAuthConfig = {
     auth: {
         type: AUTH_TYPE.OPENID_CONNECT,
         // Jwt automatically refreshes according to promise implementation.
-        jwtToken: () => AuthUser.getInstance().getRefreshedIdJWToken()
+        jwtToken: async () => {
+            const authUser = await AuthUser.getCurrent();
+            if (!!authUser) {
+                return authUser.getRefreshedIdJWToken();
+            } else {
+                throw new Error("AppSync auth configuration error: User is not authenticated or waiting to authenticate");
+            }
+        }
     },
     disableOffline: true
 };
