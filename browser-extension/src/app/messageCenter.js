@@ -4,9 +4,10 @@
 
 import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
-    REQUEST_INJECT_APP,
+    REQUEST_INJECT_APP, REQUEST_PAYMENT_COMPLETED_OFF_MODAL,
     REQUEST_UPDATE_AUTH_USER, REQUEST_UPDATE_PAGE_INFORMATION
 } from "../constants/events/backgroundEvents";
+import store from "./redux/store";
 import {toggleApp} from "./index";
 import AppRuntime from "./browser/AppRuntime";
 import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "../browser/utils";
@@ -15,6 +16,7 @@ import {updateAuthUser} from "./utils/auth";
 import {injectButton} from "./buttonMoon";
 import {handleErrors} from "../utils/errors";
 import loadPageInformation from "./pageInformation";
+import {ACTION_SET_APP_MODAL_STATE, ACTION_SET_UI_BLOCKER_STATE} from "./redux/reducers/constants";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -51,6 +53,19 @@ const messageCenter = (request, sender, sendResponse) => {
                     sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
                 });
             return true;
+        },
+        [REQUEST_PAYMENT_COMPLETED_OFF_MODAL]() {
+            store.dispatch({
+                type: ACTION_SET_APP_MODAL_STATE,
+                state: (request.isSuccess) ? "success" : "error"
+            });
+            if (!request.isSuccess) {
+                store.dispatch({
+                    type: ACTION_SET_UI_BLOCKER_STATE,
+                    isActive: false
+                });
+            }
+            sendSuccess(true);
         },
         [REQUEST_UPDATE_PAGE_INFORMATION]() {
             loadPageInformation(request.siteInformation)

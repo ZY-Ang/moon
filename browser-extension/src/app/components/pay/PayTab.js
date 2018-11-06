@@ -91,12 +91,7 @@ class PayTab extends Component {
             successText: "Paid!",
             errorText: "Something went wrong! Please try again or contact us for support."
         });
-        this.getPaymentPayload() // TODO: Background script has to execute injection of code. Can't be done here. Best we can do is wait for new content script to send a success message
-            .catch(err => {
-                handleErrors(err);
-                this.props.onSetUIBlockerState({});
-                this.props.onSetAppModalState({state: "error"});
-            });
+        this.getPaymentPayload();
     };
 
     getPaymentPayload = () => {

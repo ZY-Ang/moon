@@ -29,6 +29,7 @@ import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
 import {doGetPaymentPayload, getSiteInformation} from "./api/moon";
 import {doUpdatePageInfoEvent} from "./pageInformation";
+import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -119,7 +120,8 @@ const messageCenter = (request, sender, sendResponse) => {
         [REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION]() {
             // FIXME: FIXME: FIXME: FIXME: FIXME: FIXME IMPLEMENT IMPLEMENT - Log to db, pageinfo, etc
             console.log("Notify payment payload completion request: ", request);
-            sendSuccess(true);
+            Tabs.sendMessage(sender.tab.id, REQUEST_PAYMENT_COMPLETED_OFF_MODAL, {isSuccess: true}) // TODO: Only send success if all success or something
+                .finally(() => sendSuccess(true));
             return true;
         },
         [REQUEST_GET_SITE_INFORMATION]() {

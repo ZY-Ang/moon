@@ -13,6 +13,10 @@ export const SOURCE_MANUAL = "MOON_SOURCE_MANUAL";
 /** Used to notify that the injected app was triggered by non-critical events and no rendering should occur */
 export const SOURCE_NONE = "MOON_SOURCE_NONE";
 
+// --------------------- Notify Payment Completion ---------------------
+/** Used to notify a completion of the payment payload script and shut off UI blocker */
+export const REQUEST_PAYMENT_COMPLETED_OFF_MODAL = "MOON_REQUEST_PAYMENT_COMPLETED_OFF_MODAL";
+
 // --------------------- Auth User Update ---------------------
 /** Used to request an update to the current authenticated user from the background script */
 export const REQUEST_UPDATE_AUTH_USER = "MOON_REQUEST_UPDATE_AUTH_USER";
