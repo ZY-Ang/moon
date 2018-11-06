@@ -16,7 +16,9 @@ const ErrorBody = ({errorText, onSetAppModalState}) => (
                 <span style={{position: 'absolute', height: 5, width: 47, backgroundColor: 'rgb(217, 83, 79)', display: 'block', top: 37, borderRadius: 2, transform: 'rotate(-45deg)', right: 16}}/>
             </span>
         </div>
-        <p>{errorText}</p>
+        <div className="text-center" style={{padding:'0 30px'}}>
+            <p>{errorText}</p>
+        </div>
         <button
             className="btn"
             onClick={() => {if (onSetAppModalState) {onSetAppModalState({isActive: false})}}}

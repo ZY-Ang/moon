@@ -18,7 +18,9 @@ const SuccessBody = ({successText, onSetAppModalState}) => (
             <div style={{width: 5, height: 90, backgroundColor: 'rgb(255, 255, 255)', position: 'absolute', left: 28, top: 8, zIndex: 1, transform: 'rotate(-45deg)'}}/>
             <div style={{borderRadius: '0px 120px 120px 0px', position: 'absolute', width: 60, height: 120, background: 'white', transform: 'rotate(-45deg)', top: -11, left: 30, transformOrigin: '0px 60px 0px', animation: 'rotatePlaceholder 4.25s ease-in'}}/>
         </div>
-        <p>{successText}</p>
+        <div className="text-center" style={{padding:'0 30px'}}>
+            <p>{successText}</p>
+        </div>
         <button
             className="btn btn-primary-outline"
             onClick={() => {if (onSetAppModalState) {onSetAppModalState({isActive: false})}}}
