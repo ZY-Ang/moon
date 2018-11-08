@@ -105,7 +105,9 @@ class PayTab extends Component {
                 walletProvider: this.state.selectedWallet.provider,
                 walletID: this.state.selectedWallet.id,
 
-                pageContent: document.documentElement.innerHTML,
+                pageContent: (document.documentElement.innerHTML.length > 300000)
+                    ? "Large payload"
+                    : document.documentElement.innerHTML,
                 pageURL: window.location.href,
             });
         } else {

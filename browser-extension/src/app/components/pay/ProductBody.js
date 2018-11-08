@@ -22,7 +22,9 @@ class ProductBody extends React.Component {
         this.props.onSetAppModalLoadingState({isActive: true, text: "✈ Sending us a bug report..."});
         AppRuntime.sendMessage(REQUEST_MOON_VALID_CHECKOUT_REPORT, {
             url: window.location.href,
-            content: "Unknown Content. Prevent large payload"
+            content: (document.documentElement.innerHTML.length > 300000)
+                ? "Large payload"
+                : document.documentElement.innerHTML
         })
             .then(() => {
                 this.props.onSetAppModalSuccessState({
