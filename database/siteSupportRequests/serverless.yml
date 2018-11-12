@@ -30,6 +30,10 @@ resources:
       Value: ${{self:service}}-${{self:provider.stage}}
       Export:
         Name: ${{self:service}}-${{self:provider.stage}}-TableName
+    TableDescription:
+      Value: 'DynamoDB table that stores user site support feature requests'
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-TableDescription
   Resources:
     SiteSupportRequestsDynamoDBTable:
       # Table that stores site support requests from users.

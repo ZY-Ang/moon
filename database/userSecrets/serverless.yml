@@ -30,6 +30,10 @@ resources:
       Value: ${{self:service}}-${{self:provider.stage}}
       Export:
         Name: ${{self:service}}-${{self:provider.stage}}-TableName
+    TableDescription:
+      Value: 'DynamoDB table that stores user secrets'
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-TableDescription
   Resources:
     UserSecretsDynamoDBTable:
       # Table that stores user secrets.
