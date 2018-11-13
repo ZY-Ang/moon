@@ -30,17 +30,17 @@ resources:
   Outputs:
     ApiId:
       Value:
-        { Fn::GetAtt: [GraphQLApi, ApiId] }
+        { Fn::GetAtt: [GraphQlApi, ApiId] }
       Export:
         Name: ${{self:service}}-${{self:provider.stage}}-ApiId
     ApiArn:
       Value:
-        { Fn::GetAtt: [GraphQLApi, Arn] }
+        { Fn::GetAtt: [GraphQlApi, Arn] }
       Export:
         Name: ${{self:service}}-${{self:provider.stage}}-ApiArn
     ApiUrl:
       Value:
-        { Fn::GetAtt: [GraphQLApi, GraphQLUrl] }
+        { Fn::GetAtt: [GraphQlApi, GraphQLUrl] }
       Export:
         Name: ${{self:service}}-${{self:provider.stage}}-ApiUrl
     ApiKey:

@@ -34,7 +34,7 @@
   "homepage": "https://github.com/paywithmoon/moon#readme",
   "devDependencies": {
     "serverless": "^1.32.0",
-    "serverless-appsync-plugin": "^1.0.7",
+    "serverless-appsync-plugin": "^1.0.8",
     "serverless-cloudformation-changesets": "0.0.2",
     "serverless-dynamodb-autoscaling": "^0.6.2",
     "serverless-iam-roles-per-function": "^1.0.4"

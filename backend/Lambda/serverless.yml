@@ -28,6 +28,10 @@ provider:
 plugins:
   - serverless-iam-roles-per-function
   - serverless-cloudformation-changesets
+  - serverless-webpack
+
+package:
+  individually: true
 
 resources:
   Outputs:
@@ -84,12 +88,12 @@ functions:
   exchangeRate:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRate
     description: 'Returns the exchange rate given a quote and base currency.'
-    handler: index.exchangeRate
+    handler: src/exchangeRate.handler
     timeout: 30
   getPaymentPayload:
     name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
     description: 'Exchanges client information for a payment payload to be executed on the client'
-    handler: index.getPaymentPayload
+    handler: src/getPaymentPayload.handler
     timeout: 180
     iamRoleStatementsInherit: true
     iamRoleStatements:
@@ -102,12 +106,12 @@ functions:
   siteInformation:
     name: ${{self:service}}-${{self:provider.stage}}-siteInformation
     description: 'Returns information about a supported site or null if unsupported'
-    handler: index.siteInformation
+    handler: src/siteInformation.handler
     timeout: 30
   updateUser:
     name: ${{self:service}}-${{self:provider.stage}}-updateUser
     description: 'Updates a moon user with new information.'
-    handler: index.updateUser
+    handler: src/updateUser.handler
     iamRoleStatementsInherit: true
     iamRoleStatements:
     - Effect: "Allow"
@@ -120,7 +124,7 @@ functions:
   user:
     name: ${{self:service}}-${{self:provider.stage}}-user
     description: 'Returns information about a moon user.'
-    handler: index.user
+    handler: src/user.handler
     iamRoleStatementsInherit: true
     iamRoleStatements:
     - Effect: "Allow"
@@ -141,6 +145,11 @@ custom:
     development: moon-development
 
   accountId: ${AWS::AccountId}
+
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+    packager: npm
 
   dynamoDBTables:
     UserSecrets:

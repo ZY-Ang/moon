@@ -11,8 +11,8 @@
     "clean-and-build-extension-production": "cd browser-extension && npm run clean && npm run build-production",
     "backend-deploy-all": "cd backend && npm run deploy-all",
     "backend-deploy-all-production": "cd backend && npm run deploy-all-production",
-    "deploy-and-build": "npm run backend-deploy && npm run build-extension",
-    "deploy-and-build-production": "npm run backend-deploy-production && npm run build-extension-production",
+    "deploy-and-build": "npm run backend-deploy-all && npm run build-extension",
+    "deploy-and-build-production": "npm run backend-deploy-all-production && npm run build-extension-production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
