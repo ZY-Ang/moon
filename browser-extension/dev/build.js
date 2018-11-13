@@ -45,35 +45,6 @@ const getCloudFormationExport = async (credentials, exportName) => {
     throw new Error(`Export ${exportName} not found in exports: \n${JSON.stringify(exports)}`);
 };
 
-// TODO: Get AppSync endpoint from cloudformation stack output as opposed to listing and matching GraphQL APIs
-const getAWSAppSyncEndpoint = (credentials, apiName) => new Promise((resolve, reject) =>
-    (new AWS.AppSync({credentials}))
-        .listGraphqlApis((err, data) => {
-            if (err) {
-                console.error("Error while listing GraphQL APIs. You most likely have not deployed your backend");
-                reject(err);
-            } else if (!data.graphqlApis) {
-                console.error("Error while getting data.graphqlApis. This is unexpected.");
-                reject(data);
-            } else {
-                const filteredGraphqlApis = data.graphqlApis.filter(({name}) => (name === apiName));
-                if (filteredGraphqlApis.length !== 1) {
-                    console.error(`Error: No GraphQL APIs match expected name: ${apiName}`);
-                    reject(data);
-                } else if (
-                    !filteredGraphqlApis[0] ||
-                    !filteredGraphqlApis[0].uris ||
-                    !filteredGraphqlApis[0].uris.GRAPHQL
-                ) {
-                    console.error(`Error: filteredGraphqlApis[0] malformed: ${filteredGraphqlApis[0]}`);
-                    reject(data);
-                } else {
-                    resolve(filteredGraphqlApis[0].uris.GRAPHQL);
-                }
-            }
-        })
-);
-
 const build = async () => {
     // TODO: Seed backend with supportedSites
     console.log("================== ENVIRONMENT VARIABLES ==================");
@@ -110,12 +81,18 @@ const build = async () => {
     shell.env.AWS_REGION = process.env.AWS_REGION || DEFAULT_AWS_REGION;
 
     // AWS_APPSYNC_ENDPOINT_AUTH
-    shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getAWSAppSyncEndpoint(credentials, `moon-backend-${shell.env.NODE_ENV}`);
+    shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getCloudFormationExport(credentials, `moon-backend-appsync-authenticated-${shell.env.NODE_ENV}-ApiUrl`);
     console.log(`AWS_APPSYNC_ENDPOINT_AUTH:\t${(shell.env.AWS_APPSYNC_ENDPOINT_AUTH)}`);
 
     // AWS_APPSYNC_ENDPOINT_PUBLIC
-    shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC = undefined;
+    shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC = await getCloudFormationExport(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}-ApiUrl`);
     console.log(`AWS_APPSYNC_ENDPOINT_PUBLIC:\t${(shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC)}`);
+
+    shell.env.AWS_APPSYNC_API_ID_PUBLIC = await getCloudFormationExport(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}-ApiId`);
+    console.log(`AWS_APPSYNC_API_ID_PUBLIC:\t${(shell.env.AWS_APPSYNC_API_ID_PUBLIC)}`);
+
+    shell.env.AWS_APPSYNC_API_KEY_PUBLIC = await getCloudFormationExport(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}-ApiKey`);
+    console.log(`AWS_APPSYNC_API_KEY_PUBLIC:\t${(shell.env.AWS_APPSYNC_API_KEY_PUBLIC)}`);
 
     // BROWSER
     const DEFAULT_BROWSER = 'chrome';

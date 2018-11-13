@@ -3,7 +3,7 @@
  */
 const logHead = require("./utils/logHead");
 const logTail = require("./utils/logTail");
-const supportedSites = require("../../supportedSites");
+const supportedSites = require("../supportedSites");
 
 const siteInformation = async (event) => {
     logHead("siteInformation", event);

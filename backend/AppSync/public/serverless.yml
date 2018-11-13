@@ -1,0 +1,170 @@
+# For full config options, check the docs:
+#    docs.serverless.com
+service: moon-backend-appsync-public
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  # Custom syntax: Use double curly braces to define variables
+  # See link for more information:
+  #     https://serverless.com/framework/docs/providers/aws/guide/variables/#reference-variables-in-javascript-files
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
+  # See link for more information:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  stage: ${{opt:stage, self:custom.defaultStage}}
+  region: ${{opt:region, self:custom.defaultRegion}}
+  profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
+  environment:
+    NODE_ENV: ${{self:provider.stage}}
+    STACK_PREFIX: ${{self:service}}-${{self:provider.stage}}
+
+plugins:
+  - serverless-appsync-plugin
+  - serverless-cloudformation-changesets
+
+resources:
+  Outputs:
+    ApiId:
+      Value:
+        { Fn::GetAtt: [GraphQLApi, ApiId] }
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-ApiId
+    ApiArn:
+      Value:
+        { Fn::GetAtt: [GraphQLApi, Arn] }
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-ApiArn
+    ApiUrl:
+      Value:
+        { Fn::GetAtt: [GraphQLApi, GraphQLUrl] }
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-ApiUrl
+    ApiKey:
+      Value:
+        { Fn::GetAtt: [GraphQlApiKeyDefault, ApiKey] }
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-ApiKey
+
+custom:
+  # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
+  # See link for credentials documentation:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  defaultStage: development
+  defaultRegion: us-east-1
+  profiles:
+    production: moon-production
+    development: moon-development
+
+  accountId: ${AWS::AccountId}
+
+  lambdaFunctions:
+    ExchangeRate:
+      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-ExchangeRateArn" }
+      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-ExchangeRateDescription" }
+    SiteInformation:
+      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-SiteInformationArn" }
+      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-SiteInformationDescription" }
+
+  dynamoDBTables:
+    SiteSupportRequests:
+      Arn: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableArn" }
+      Name: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableName" }
+      Description: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableDescription" }
+    NonCheckoutReports:
+      Arn: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableArn" }
+      Name: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableName" }
+      Description: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableDescription" }
+
+  appSync:
+    name: ${{self:service}}-${{self:provider.stage}}
+    schema: schema.graphql
+    authenticationType: API_KEY
+    dataSources:
+    # ============== Dynamo DB Tables ==============
+      # SiteSupportRequestDynamoDBTable
+      - type: AMAZON_DYNAMODB
+        name: SiteSupportRequestsDynamoDBTable
+        description: ${{self:custom.dynamoDBTables.SiteSupportRequests.Description}}
+        config:
+          tableName: ${{self:custom.dynamoDBTables.SiteSupportRequests.Name}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "dynamodb:GetItem"
+            - "dynamodb:UpdateItem"
+            Resource:
+            - ${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}
+            - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}", '/*']] }
+      # NonCheckoutReportsDynamoDBTable
+      - type: AMAZON_DYNAMODB
+        name: NonCheckoutReportsDynamoDBTable
+        description: ${{self:custom.dynamoDBTables.NonCheckoutReports.Description}}
+        config:
+          tableName: ${{self:custom.dynamoDBTables.NonCheckoutReports.Name}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "dynamodb:GetItem"
+            - "dynamodb:UpdateItem"
+            Resource:
+            - ${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}
+            - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}", '/*']] }
+    # ============== Lambda Functions ==============
+      # exchangeRate
+      - type: AWS_LAMBDA
+        name: ExchangeRateLambdaFunction
+        description: "TODO: Reference lambda output description"
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.ExchangeRate.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - ${{self:custom.lambdaFunctions.ExchangeRate.Arn}}
+      # siteInformation
+      - type: AWS_LAMBDA
+        name: SiteInformationLambdaFunction
+        description: "TODO: Reference lambda output description"
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.SiteInformation.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - ${{self:custom.lambdaFunctions.SiteInformation.Arn}}
+
+    mappingTemplatesLocation: mapping-templates
+
+    mappingTemplates:
+    # ============== Query ==============
+      # Query/exchangeRate
+      - dataSource: ExchangeRateLambdaFunction
+        type: Query
+        field: exchangeRate
+        request: Query/exchangeRate/request.vm
+        response: Query/exchangeRate/response.vm
+      # Query/siteInformation
+      - dataSource: SiteInformationLambdaFunction
+        type: Query
+        field: siteInformation
+        request: Query/siteInformation/request.vm
+        response: Query/siteInformation/response.vm
+    # ============== Mutation ==============
+      # Mutation/addSiteSupportRequest
+      - dataSource: SiteSupportRequestsDynamoDBTable
+        type: Mutation
+        field: addSiteSupportRequest
+        request: Mutation/addSiteSupportRequest/request.vm
+        response: Mutation/addSiteSupportRequest/response.vm
+      # Mutation/addNonCheckoutReport
+      - dataSource: NonCheckoutReportsDynamoDBTable
+        type: Mutation
+        field: addNonCheckoutReport
+        request: Mutation/addNonCheckoutReport/request.vm
+        response: Mutation/addNonCheckoutReport/response.vm

@@ -58,7 +58,7 @@ const exchangeRates = gql`
         }
     }
 `;
-export const getExchangeRate = async (quote, base) => (await MoonGraphQL.authClient)
+export const getExchangeRate = async (quote, base) => (MoonGraphQL.publicClient)
     .query({
         query: exchangeRates,
         variables: {quote, base}
@@ -82,7 +82,7 @@ const siteInformation = gql`
         }
     }
 `;
-export const getSiteInformation = async (host) => (await MoonGraphQL.authClient)
+export const getSiteInformation = async (host) => (MoonGraphQL.publicClient)
     .query({
         query: siteInformation,
         variables: {host}
@@ -138,7 +138,7 @@ const addSiteSupportRequest = gql`
         addSiteSupportRequest(host: $host)
     }
 `;
-export const doAddSiteSupportRequest = async (host) => (await MoonGraphQL.authClient)
+export const doAddSiteSupportRequest = async (host) => (MoonGraphQL.publicClient)
     .mutate({
         mutation: addSiteSupportRequest,
         variables: {host}
@@ -152,7 +152,7 @@ const addNonCheckoutReport = gql`
         })
     }
 `;
-export const doAddNonCheckoutReport = async (url, content) => (await MoonGraphQL.authClient)
+export const doAddNonCheckoutReport = async (url, content) => (MoonGraphQL.publicClient)
     .mutate({
         mutation:addNonCheckoutReport,
         variables: {

@@ -1,0 +1,106 @@
+﻿# All known currencies
+enum Currency {
+    USD
+    SGD
+    EUR
+    GBP
+    BTC
+    ETC
+    ETH
+    LTC
+    BCH
+    MNR
+}
+
+# Base Currencies (denominator currencies) supported by GDAX
+enum CoinbaseProBaseCurrency {
+    USD
+    EUR
+    GBP
+}
+
+# Quote Currencies (numerator currencies) supported by GDAX
+enum CoinbaseProQuoteCurrency {
+    BTC
+    BCH
+    ETC
+    ETH
+    LTC
+}
+
+# An exchange rate object
+type ExchangeRate {
+    # denominator currency
+    base: Currency!
+    # numerator currency
+    quote: Currency!
+    # Bid price (numerator currency)/(denominator currency)
+    bid: String!
+    # Ask Price (numerator currency)/(denominator currency)
+    ask: String!
+}
+
+# Mutations (actionable). Naming convention: VERBS
+type Mutation {
+    # Request a site to be added to the list of sites to be supported
+    addSiteSupportRequest(host: String!): Boolean
+    # Reports a web page is a valid checkout page detected as invalid
+    addNonCheckoutReport(input: PageInfo!): Boolean
+    # Updates the exchange rate to be propagated to the attached exchange rate subscribers
+    updateExchangeRate(credentials: String!): ExchangeRate
+}
+
+# Information about a page
+input PageInfo {
+    # Fully qualified URL of the page
+    url: AWSURL!
+    # HTML content of the page
+    content: String!
+}
+
+# Queries (static). Naming convention: NOUNS
+type Query {
+    # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD)
+    exchangeRate(quote: CoinbaseProQuoteCurrency!, base: CoinbaseProBaseCurrency=USD): ExchangeRate
+    # Returns information about the URL of the current site.
+    siteInformation(host: String!): SiteInformation
+}
+
+# Information about a specific site
+type SiteInformation {
+    # The name of the site
+    name: String
+    # The URL of the logo for the site
+    logoURL: AWSURL
+    # Whether the site is supported
+    isSupported: Boolean
+    # The checkout pathname of the site
+    pathnameCheckout: [String]
+    # Query selector for DOMs to observe that will require the re-parsing of data
+    querySelectorParseObserver: String
+    # Query selector for where a moon button should be inserted into
+    querySelectorMoonButton: String
+    # Query selector for cart amount, to be resolved via attribute 'value' or innerText
+    querySelectorCartAmount: String
+    # Query selector for cart currency, to be resolved via attribute 'value'
+    querySelectorCartCurrency: String
+    # Query selector for any arbitrary product's title,  to be resolved via innerText
+    querySelectorProductTitle: String
+    # Query selector for any arbitrary product's product <img/>, with standard html attributes
+    querySelectorProductImage: String
+    # Query selector for any arbitrary add to cart button, to be resolved via click()
+    querySelectorAddToCart: String
+    # Query selector for any arbitrary product's price indicator, to be resolved via innerText
+    querySelectorProductPrice: String
+}
+
+type Subscription {
+    onExchangeRateUpdate: ExchangeRate
+    @aws_subscribe(mutations: ["updateExchangeRate"])
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}

@@ -2,7 +2,7 @@
     "version" : "2017-02-28",
     "operation" : "UpdateItem",
     "key" : {
-        "email": $util.dynamodb.toDynamoDBJson($context.identity.claims.email)
+        "email": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrEmpty($context.identity.claims.email, "guest@paywithmoon.com"))
     },
     "update" : {
         "expression" : "SET #host = :value",

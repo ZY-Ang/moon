@@ -4,7 +4,7 @@
 const logHead = require("../../utils/logHead");
 const logTail = require("../../utils/logTail");
 const {URL} = require("url");
-const supportedSites = require("../../../../supportedSites");
+const supportedSites = require("../../../supportedSites");
 
 /**\
  * @return {boolean} {@code true} if {@param url} is supported,

@@ -2,19 +2,10 @@
 #    docs.serverless.com
 service: moon-backend
 
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
-# frameworkVersion: "=X.X.X"
-
 provider:
   name: aws
   runtime: nodejs8.10
-  # Custom syntax: Use double curly braces to define variables
-  # See link for more information:
-  #     https://serverless.com/framework/docs/providers/aws/guide/variables/#reference-variables-in-javascript-files
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
-  # See link for more information:
-  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
   stage: ${{opt:stage, self:custom.defaultStage}}
   region: ${{opt:region, self:custom.defaultRegion}}
   profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
@@ -23,8 +14,6 @@ provider:
     STACK_PREFIX: ${{self:service}}-${{self:provider.stage}}
 
 plugins:
-  - serverless-appsync-plugin
-  - serverless-iam-roles-per-function
   - serverless-cloudformation-changesets
 
 resources:
@@ -69,7 +58,7 @@ resources:
               Action:
               - "appsync:GraphQL"
               Resource:
-              - { Fn::Join: ['', [{ Fn::GetAtt: [GraphQlApi, Arn] }, '/*']] }
+              - { Fn::Join: ['', ["${{self:custom.appSyncAPIs.authenticated.Arn}}", '/*']] }
         - PolicyName: S3Bucket-policy
           PolicyDocument:
             Version: "2012-10-17"
@@ -106,64 +95,6 @@ resources:
                   dynamodb:LeadingKeys:
                     - "${${{file(./config/auth0.json):short_iss}}:sub}"
 
-# See Link for functions documentation:
-#     https://serverless.com/framework/docs/providers/aws/guide/functions/
-#
-# IMPORTANT NOTE: CloudFormation logical IDs for functions are converted
-#     to camel case with first character capitalized, then appended with
-#     "LambdaFunction" at the end. For example,
-#     the function 'exchangeRate' will have a CloudFormation logical ID of
-#     'ExchangeRateLambdaFunction'
-functions:
-  exchangeRate:
-    name: ${{self:service}}-${{self:provider.stage}}-exchangeRate
-    description: 'Returns the exchange rate given a quote and base currency.'
-    handler: Lambda/index.exchangeRate
-    timeout: 30
-  getPaymentPayload:
-    name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
-    description: 'Exchanges client information for a payment payload to be executed on the client'
-    handler: Lambda/index.getPaymentPayload
-    timeout: 180
-    iamRoleStatementsInherit: true
-    iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-      - "dynamodb:GetItem"
-      Resource:
-      - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
-      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
-  siteInformation:
-    name: ${{self:service}}-${{self:provider.stage}}-siteInformation
-    description: 'Returns information about a supported site or null if unsupported'
-    handler: Lambda/index.siteInformation
-    timeout: 30
-  updateUser:
-    name: ${{self:service}}-${{self:provider.stage}}-updateUser
-    description: 'Updates a moon user with new information.'
-    handler: Lambda/index.updateUser
-    iamRoleStatementsInherit: true
-    iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-      - "dynamodb:GetItem"
-      - "dynamodb:UpdateItem"
-      Resource:
-      - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
-      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
-  user:
-    name: ${{self:service}}-${{self:provider.stage}}-user
-    description: 'Returns information about a moon user.'
-    handler: Lambda/index.user
-    iamRoleStatementsInherit: true
-    iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-      - "dynamodb:GetItem"
-      Resource:
-      - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
-      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
-
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
   # See link for credentials documentation:
@@ -176,6 +107,10 @@ custom:
 
   accountId: ${AWS::AccountId}
 
+  appSyncAPIs:
+    authenticated:
+      Arn: { Fn::ImportValue: "moon-backend-appsync-authenticated-${{self:provider.stage}}-ApiArn" }
+
   dynamoDBTables:
     UserSecrets:
       Name: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableName" }
@@ -186,166 +121,3 @@ custom:
     NonCheckoutReports:
       Name: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableName" }
       Arn: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableArn" }
-
-  appSync:
-    name: ${{self:service}}-${{self:provider.stage}}
-    schema: AppSync/schema.graphql
-    authenticationType: OPENID_CONNECT
-    openIdConnectConfig:
-      issuer: ${{file(./config/auth0.json):iss}}
-      clientId: ${{file(./config/auth0.json):aud}}
-    dataSources:
-    # ============== Dynamo DB Tables ==============
-      # SiteSupportRequestDynamoDBTable
-      - type: AMAZON_DYNAMODB
-        name: SiteSupportRequestsDynamoDBTable
-        description: 'DynamoDB table that stores user site support feature requests'
-        config:
-          tableName: ${{self:custom.dynamoDBTables.SiteSupportRequests.Name}}
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "dynamodb:GetItem"
-            - "dynamodb:UpdateItem"
-            Resource:
-            - ${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}
-            - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}", '/*']] }
-      # NonCheckoutReportsDynamoDBTable
-      - type: AMAZON_DYNAMODB
-        name: NonCheckoutReportsDynamoDBTable
-        description: 'DynamoDB table that stores bug reports for valid checkout pages'
-        config:
-          tableName: ${{self:custom.dynamoDBTables.NonCheckoutReports.Name}}
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "dynamodb:GetItem"
-            - "dynamodb:UpdateItem"
-            Resource:
-            - ${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}
-            - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}", '/*']] }
-    # ============== Lambda Functions ==============
-      # exchangeRate
-      - type: AWS_LAMBDA
-        name: ExchangeRateLambdaFunction
-        description: ${{self:functions.exchangeRate.description}}
-        config:
-          lambdaFunctionArn: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "lambda:invokeFunction"
-            Resource:
-            - { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }, ':*']] }
-      # updateUser
-      - type: AWS_LAMBDA
-        name: UpdateUserLambdaFunction
-        description: ${{self:functions.updateUser.description}}
-        config:
-          lambdaFunctionArn: { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "lambda:invokeFunction"
-            Resource:
-            - { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }, ':*']] }
-      # user
-      - type: AWS_LAMBDA
-        name: UserLambdaFunction
-        description: ${{self:functions.user.description}}
-        config:
-          lambdaFunctionArn: { Fn::GetAtt: [UserLambdaFunction, Arn] }
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "lambda:invokeFunction"
-            Resource:
-            - { Fn::GetAtt: [UserLambdaFunction, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [UserLambdaFunction, Arn] }, ':*']] }
-      # getPaymentPayload
-      - type: AWS_LAMBDA
-        name: GetPaymentPayloadLambdaFunction
-        description: ${{self:functions.getPaymentPayload.description}}
-        config:
-          lambdaFunctionArn: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "lambda:invokeFunction"
-            Resource:
-            - { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }, ':*']] }
-      # siteInformation
-      - type: AWS_LAMBDA
-        name: SiteInformationLambdaFunction
-        description: ${{self:functions.siteInformation.description}}
-        config:
-          lambdaFunctionArn: { Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "lambda:invokeFunction"
-            Resource:
-            - { Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }
-            - { Fn::Join: ['', [{ Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }, ':*']] }
-    # ============== None ==============
-      # identity
-      - type: NONE
-        name: identityNone
-        description: 'Returns information about the callee'
-
-    mappingTemplatesLocation: AppSync/mapping-templates
-
-    mappingTemplates:
-    # ============== Query ==============
-      # Query/identity
-      - dataSource: identityNone
-        type: Query
-        field: identity
-        request: Query/identity/request.vm
-        response: Query/identity/response.vm
-      # Query/user
-      - dataSource: UserLambdaFunction
-        type: Query
-        field: user
-        request: Query/user/request.vm
-        response: Query/user/response.vm
-      # Query/exchangeRate
-      - dataSource: ExchangeRateLambdaFunction
-        type: Query
-        field: exchangeRate
-        request: Query/exchangeRate/request.vm
-        response: Query/exchangeRate/response.vm
-      # Query/siteInformation
-      - dataSource: SiteInformationLambdaFunction
-        type: Query
-        field: siteInformation
-        request: Query/siteInformation/request.vm
-        response: Query/siteInformation/response.vm
-    # ============== Mutation ==============
-      # Mutation/updateUser
-      - dataSource: UpdateUserLambdaFunction
-        type: Mutation
-        field: updateUser
-        request: Mutation/updateUser/request.vm
-        response: Mutation/updateUser/response.vm
-      # Mutation/addSiteSupportRequest
-      - dataSource: SiteSupportRequestsDynamoDBTable
-        type: Mutation
-        field: addSiteSupportRequest
-        request: Mutation/addSiteSupportRequest/request.vm
-        response: Mutation/addSiteSupportRequest/response.vm
-      # Mutation/addNonCheckoutReport
-      - dataSource: NonCheckoutReportsDynamoDBTable
-        type: Mutation
-        field: addNonCheckoutReport
-        request: Mutation/addNonCheckoutReport/request.vm
-        response: Mutation/addNonCheckoutReport/response.vm
-      # Mutation/getPaymentPayload
-      - dataSource: GetPaymentPayloadLambdaFunction
-        type: Mutation
-        field: getPaymentPayload
-        request: Mutation/getPaymentPayload/request.vm
-        response: Mutation/getPaymentPayload/response.vm

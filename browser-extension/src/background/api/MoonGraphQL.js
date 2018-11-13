@@ -13,7 +13,7 @@ class MoonGraphQL {
     static _authClient = null;
 
     /** @readonly */
-    static _publicClient = null; // TODO: new AWSAppSyncClient(AppSyncPublicConfig) once AppSyncPublicConfig has been configured properly
+    static _publicClient = new AWSAppSyncClient(AppSyncPublicConfig);
 
     /**
      * Remove {@static _authClient} instance on sign out

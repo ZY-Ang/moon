@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import {Provider} from "react-redux";
 import store from "../redux/store";
 import ButtonMoon from "./ButtonMoon";
-import supportedSites from "../../../../backend/supportedSites.json";
+import supportedSites from "../../../../backend/Lambda/supportedSites.json";
 import {isCheckoutPage} from "../../utils/url";
 
 const ID_BUTTON_PAY_WITH_MOON = "button-pay-with-moon";

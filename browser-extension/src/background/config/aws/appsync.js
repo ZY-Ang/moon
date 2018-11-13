@@ -19,6 +19,18 @@ const ENDPOINT_APPSYNC_MOON_AUTH = process.env.AWS_APPSYNC_ENDPOINT_AUTH;
 const ENDPOINT_APPSYNC_MOON_PUBLIC = process.env.AWS_APPSYNC_ENDPOINT_PUBLIC;
 
 /**
+ * Public graphql API ID for AWS AppSync
+ * @type {string}
+ */
+const API_ID_APPSYNC_MOON_PUBLIC = process.env.AWS_APPSYNC_API_ID_PUBLIC;
+
+/**
+ * Public graphql API Key for AWS AppSync
+ * @type {string}
+ */
+const API_KEY_APPSYNC_MOON_PUBLIC = process.env.AWS_APPSYNC_API_KEY_PUBLIC;
+
+/**
  * Dynamic configuration for AWS AppSync authenticated client.
  *
  * @type {{url: string, region: string, auth: {type: AUTH_TYPE.OPENID_CONNECT, jwtToken: (function(): Promise<*>)}, disableOffline: boolean}}
@@ -51,8 +63,9 @@ export const AppSyncPublicConfig = {
     region: AWS.config.region,
     auth: {
         type: AUTH_TYPE.API_KEY,
-        apiKey: "" // TODO: implement
-    }
+        apiKey: API_KEY_APPSYNC_MOON_PUBLIC
+    },
+    disableOffline: true
 };
 
 export default AppSyncPublicConfig;

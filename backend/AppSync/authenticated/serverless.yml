@@ -1,0 +1,150 @@
+# For full config options, check the docs:
+#    docs.serverless.com
+service: moon-backend-appsync-authenticated
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  # Custom syntax: Use double curly braces to define variables
+  # See link for more information:
+  #     https://serverless.com/framework/docs/providers/aws/guide/variables/#reference-variables-in-javascript-files
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
+  # See link for more information:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  stage: ${{opt:stage, self:custom.defaultStage}}
+  region: ${{opt:region, self:custom.defaultRegion}}
+  profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
+  environment:
+    NODE_ENV: ${{self:provider.stage}}
+    STACK_PREFIX: ${{self:service}}-${{self:provider.stage}}
+
+plugins:
+  - serverless-appsync-plugin
+  - serverless-cloudformation-changesets
+
+resources:
+  Outputs:
+    ApiId:
+      Value:
+        { Fn::GetAtt: [GraphQLApi, ApiId] }
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-ApiId
+    ApiArn:
+      Value:
+        { Fn::GetAtt: [GraphQLApi, Arn] }
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-ApiArn
+    ApiUrl:
+      Value:
+        { Fn::GetAtt: [GraphQLApi, GraphQLUrl] }
+      Export:
+        Name: ${{self:service}}-${{self:provider.stage}}-ApiUrl
+
+custom:
+  # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
+  # See link for credentials documentation:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  defaultStage: development
+  defaultRegion: us-east-1
+  profiles:
+    production: moon-production
+    development: moon-development
+
+  accountId: ${AWS::AccountId}
+
+  lambdaFunctions:
+    UpdateUser:
+      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UpdateUserArn" }
+      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UpdateUserDescription" }
+    User:
+      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UserArn" }
+      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UserDescription" }
+    GetPaymentPayload:
+      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-GetPaymentPayloadArn" }
+      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-GetPaymentPayloadDescription" }
+
+  appSync:
+    name: ${{self:service}}-${{self:provider.stage}}
+    schema: schema.graphql
+    authenticationType: OPENID_CONNECT
+    openIdConnectConfig:
+      issuer: ${{file(../../config/auth0.json):iss}}
+      clientId: ${{file(../../config/auth0.json):aud}}
+    dataSources:
+    # ============== Dynamo DB Tables ==============
+    # ============== Lambda Functions ==============
+      # updateUser
+      - type: AWS_LAMBDA
+        name: UpdateUserLambdaFunction
+        description: "TODO: Reference lambda output description"
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.UpdateUser.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - ${{self:custom.lambdaFunctions.UpdateUser.Arn}}
+      # user
+      - type: AWS_LAMBDA
+        name: UserLambdaFunction
+        description: "TODO: Reference lambda output description"
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.User.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - ${{self:custom.lambdaFunctions.User.Arn}}
+      # getPaymentPayload
+      - type: AWS_LAMBDA
+        name: GetPaymentPayloadLambdaFunction
+        description: "TODO: Reference lambda output description"
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.GetPaymentPayload.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - ${{self:custom.lambdaFunctions.GetPaymentPayload.Arn}}
+    # ============== None ==============
+      # identity
+      - type: NONE
+        name: identityNone
+        description: 'Returns information about the callee'
+
+    mappingTemplatesLocation: mapping-templates
+
+    mappingTemplates:
+    # ============== Query ==============
+      # Query/identity
+      - dataSource: identityNone
+        type: Query
+        field: identity
+        request: Query/identity/request.vm
+        response: Query/identity/response.vm
+      # Query/user
+      - dataSource: UserLambdaFunction
+        type: Query
+        field: user
+        request: Query/user/request.vm
+        response: Query/user/response.vm
+    # ============== Mutation ==============
+      # Mutation/updateUser
+      - dataSource: UpdateUserLambdaFunction
+        type: Mutation
+        field: updateUser
+        request: Mutation/updateUser/request.vm
+        response: Mutation/updateUser/response.vm
+      # Mutation/getPaymentPayload
+      - dataSource: GetPaymentPayloadLambdaFunction
+        type: Mutation
+        field: getPaymentPayload
+        request: Mutation/getPaymentPayload/request.vm
+        response: Mutation/getPaymentPayload/response.vm
