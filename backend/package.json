@@ -11,7 +11,7 @@
     "deploy-backend-production-force": "serverless deploy --stage production",
     "deploy-lambda": "cd Lambda && cross-env SLS_DEBUG=* serverless deploy",
     "deploy-lambda-production": "cd Lambda && serverless deploy --changeset --stage production",
-    "deploy-lambda-production-force": "serverless deploy --stage production",
+    "deploy-lambda-production-force": "cd Lambda && serverless deploy --stage production",
     "deploy-appsync-authenticated": "cd AppSync/authenticated && cross-env SLS_DEBUG=* serverless deploy",
     "deploy-appsync-authenticated-production": "cd AppSync/authenticated && serverless deploy --changeset --stage production",
     "deploy-appsync-authenticated-production-force": "cd AppSync/authenticated && serverless deploy --stage production",
