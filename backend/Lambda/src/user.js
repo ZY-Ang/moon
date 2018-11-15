@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("./utils/logHead");
-const logTail = require("./utils/logTail");
-const supportedCurrencies = require("./constants/walletProviders/coinbase/currencies");
-const CoinbaseClient = require("coinbase").Client;
-const getCoinbaseApiKeys = require("./services/walletProviders/coinbase/getCoinbaseApiKeys");
-const getCoinbaseCurrentUser = require("./services/walletProviders/coinbase/getCoinbaseCurrentUser");
-const getCoinbaseWallets = require("./services/walletProviders/coinbase/getCoinbaseWallets");
+import logHead from "./utils/logHead";
+import logTail from "./utils/logTail";
+import supportedCurrencies from "./constants/walletProviders/coinbase/currencies";
+import {Client as CoinbaseClient} from "coinbase";
+import getCoinbaseApiKeys from "./services/walletProviders/coinbase/getCoinbaseApiKeys";
+import getCoinbaseCurrentUser from "./services/walletProviders/coinbase/getCoinbaseCurrentUser";
+import getCoinbaseWallets from "./services/walletProviders/coinbase/getCoinbaseWallets";
 
 const user = async (event) => {
     logHead("user", event);
@@ -51,4 +51,4 @@ const user = async (event) => {
     return user;
 };
 
-module.exports.handler = user;
+export default user;

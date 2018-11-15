@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
 
 /**
  * Executes a market sell order on Coinbase Pro.
@@ -31,4 +31,4 @@ const placeSellMarketOrder = async (authedGdaxClient, amount, baseCurrency, quot
     return sellMarketOrderInfo;
 };
 
-module.exports = placeSellMarketOrder;
+export default placeSellMarketOrder;

@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("./utils/logHead");
-const logTail = require("./utils/logTail");
-const supportedSites = require("../supportedSites");
+import logHead from "./utils/logHead";
+import logTail from "./utils/logTail";
+import supportedSites from "../supportedSites";
 
 const siteInformation = async (event) => {
     logHead("siteInformation", event);
@@ -18,4 +18,4 @@ const siteInformation = async (event) => {
     return site;
 };
 
-module.exports.handler = siteInformation;
+export default siteInformation;

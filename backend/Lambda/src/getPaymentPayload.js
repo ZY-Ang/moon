@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("./utils/logHead");
-const logTail = require("./utils/logTail");
-const {URL} = require("url");
-const getUser = require("./user").handler;
-const {base: supportedCartCurrencies} = require("./constants/exchanges/coinbasePro/currencies");
-const validateWallet = require("./services/walletProviders/validateWallet");
-const doTransferToMoon = require("./services/walletProviders/doTransferToMoon");
-const isSupportedSite = require("./services/paymentPayloaders/isSupportedSite");
-const getAmazonPaymentPayload = require("./services/paymentPayloaders/amazon/getAmazonPaymentPayload");
+import logHead from "./utils/logHead";
+import logTail from "./utils/logTail";
+import {URL} from "url";
+import getUser from "./user";
+import {base as supportedCartCurrencies} from "./constants/exchanges/coinbasePro/currencies";
+import validateWallet from "./services/walletProviders/validateWallet";
+import doTransferToMoon from "./services/walletProviders/doTransferToMoon";
+import isSupportedSite from "./services/paymentPayloaders/isSupportedSite";
+import getAmazonPaymentPayload from "./services/paymentPayloaders/amazon/getAmazonPaymentPayload";
 
 /**
  * Validates {@param getPaymentPayloadInput} for
@@ -75,7 +75,7 @@ const getPaymentPayload = async (event) => {
     // 3. Get the updated user object after the money has been sent
     const user = await getUser(event);
     const paymentPayload = Object.assign(hostPaymentPayload, {
-        id: `TEST-TRANSACTION-${require("randomstring").generate(8)}`,
+        id: `TEST-TRANSACTION-${require("randomstring").generate(8)}`, // FIXME: Update transaction ID
         user
     });
 
@@ -83,4 +83,4 @@ const getPaymentPayload = async (event) => {
     return paymentPayload;
 };
 
-module.exports.handler = getPaymentPayload;
+export default getPaymentPayload;

@@ -10,4 +10,4 @@
  */
 const logTail = (returnName, returnValue) => console.log(`${returnName}:`, JSON.stringify(returnValue, 3));
 
-module.exports = logTail;
+export default logTail;

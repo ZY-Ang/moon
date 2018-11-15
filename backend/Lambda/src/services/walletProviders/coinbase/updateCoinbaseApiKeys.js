@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
-const AWS = require("aws-sdk");
-const {USER_SECRETS_TABLE} = require("../../../constants/user/config");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
+import AWS from "aws-sdk";
+import {USER_SECRETS_TABLE} from "../../../constants/user/config";
 
 const updateCoinbaseApiKeys = async (sub, coinbaseApiKeys) => {
     logHead("updateCoinbaseApiKeys", coinbaseApiKeys);
@@ -33,4 +33,4 @@ const updateCoinbaseApiKeys = async (sub, coinbaseApiKeys) => {
     logTail("updateCoinbaseApiKeys", "skipped");
 };
 
-module.exports = updateCoinbaseApiKeys;
+export default updateCoinbaseApiKeys;

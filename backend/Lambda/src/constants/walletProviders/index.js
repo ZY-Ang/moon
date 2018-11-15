@@ -5,6 +5,8 @@
 /**
  * Map of supported wallet providers
  */
-module.exports = {
+const SUPPORTED_WALLET_PROVIDERS = {
     COINBASE: true
 };
+
+export default SUPPORTED_WALLET_PROVIDERS;

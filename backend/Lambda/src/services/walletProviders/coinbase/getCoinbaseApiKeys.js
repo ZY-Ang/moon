@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
-const AWS = require("aws-sdk");
-const {USER_SECRETS_TABLE} = require("../../../constants/user/config");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
+import AWS from "aws-sdk";
+import {USER_SECRETS_TABLE} from "../../../constants/user/config";
 
 /**
  * Gets the coinbase API Keys of a particular
@@ -31,4 +31,4 @@ const getCoinbaseApiKeys = async (sub) => {
     return coinbaseApiKeys;
 };
 
-module.exports = getCoinbaseApiKeys;
+export default getCoinbaseApiKeys;

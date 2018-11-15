@@ -25,16 +25,10 @@ const WALLETS_DEVELOPMENT = {
     ETC: '' // There is no ETC sandbox wallet :(
 };
 
-const productionConfig = {
-    EMAIL: EMAIL_PRODUCTION,
-    WALLETS: WALLETS_PRODUCTION
-};
+export const EMAIL = (process.env.NODE_ENV === 'production')
+    ? EMAIL_PRODUCTION
+    : EMAIL_DEVELOPMENT;
 
-const developmentConfig = {
-    EMAIL: EMAIL_DEVELOPMENT,
-    WALLETS: WALLETS_DEVELOPMENT
-};
-
-module.exports = process.env.NODE_ENV === 'production'
-    ? productionConfig
-    : developmentConfig;
+export const WALLETS = (process.env.NODE_ENV === 'production')
+    ? WALLETS_PRODUCTION
+    : WALLETS_DEVELOPMENT;

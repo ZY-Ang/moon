@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
-const Decimal = require("decimal.js");
-const {URL} = require("url");
-const doCreateAmazonGiftCard = require("./doCreateAmazonGiftCard");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
+import Decimal from "decimal.js";
+import {URL} from "url";
+import doCreateAmazonGiftCard from "./doCreateAmazonGiftCard";
 
 const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
     logHead("getAmazonPaymentPayload", {cartInfo, pageInfo});
@@ -148,4 +148,4 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
     return amazonPaymentPayload;
 };
 
-module.exports = getAmazonPaymentPayload;
+export default getAmazonPaymentPayload;

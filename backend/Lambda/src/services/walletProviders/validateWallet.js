@@ -1,14 +1,13 @@
 /*
  * Copyright (c) 2018 moon
  */
-
-const walletProviders = require("../../constants/walletProviders");
+import walletProviders from "../../constants/walletProviders";
 
 /**
  * Validates a {@param wallet}.
  * @throws {error} if is invalid.
  */
-module.exports = (wallet) => {
+const validateWallet = (wallet) => {
     if (!wallet) {
         throw new Error("WInvalid wallet: Wallet is not provided");
     } else if (!wallet.provider) {
@@ -19,3 +18,5 @@ module.exports = (wallet) => {
         throw new Error(`Invalid wallet: wallet.provider (${wallet.provider}) is invalid or a currently unsupported wallet provider.`);
     }
 };
+
+export default validateWallet;

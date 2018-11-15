@@ -5,10 +5,12 @@
 /**
  * Map of wallet currencies supported by coinbase
  */
-module.exports = {
+const SUPPORTED_WALLET_CURRENCIES = {
     BTC: true,
     ETH: true,
     ETC: true,
     LTC: true,
     BCH: true
 };
+
+export default SUPPORTED_WALLET_CURRENCIES;

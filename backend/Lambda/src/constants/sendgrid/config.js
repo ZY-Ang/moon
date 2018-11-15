@@ -10,4 +10,4 @@ const SENDGRID_API_KEY_SECRET = 'SG.KPITGfy7QwmeiR7KUeZvsA.tlL7GVMYqUc0_iZfv_XT1
 
 sgMail.setApiKey(SENDGRID_API_KEY_SECRET);
 
-module.exports = sgMail;
+export default sgMail;

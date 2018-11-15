@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
-const {getPublicClient} = require("../../exchanges/coinbasePro/client");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
+import {getPublicClient} from "../../exchanges/coinbasePro/client";
 
 /**
  * Gets the Coinbase Pro exchange rate for the specified currency pair
@@ -31,4 +31,4 @@ const getExchangeRate = async (quote, base) => {
     return exchangeRate;
 };
 
-module.exports = getExchangeRate;
+export default getExchangeRate;

@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
-const Decimal = require("decimal.js");
-const {Client: CoinbaseClient} = require("coinbase");
-const getCoinbaseApiKeys = require("./getCoinbaseApiKeys");
-const getCoinbaseWallet = require("./getCoinbaseWallet");
-const doTransferToCoinbaseUser = require("./doTransferToCoinbaseUser");
-const doTransferToCoinbasePro = require("./doTransferToCoinbasePro");
-const getCoinbaseProExchangeRate = require("../../exchangeRateProviders/coinbasePro/getExchangeRate");
-const placeCoinbaseProSellMarketOrder = require("../../exchanges/coinbasePro/placeSellMarketOrder");
-const {getAuthenticatedClient: getCoinbaseProAuthenticatedClient} = require("../../exchanges/coinbasePro/client");
-const {base: BASE_CURRENCIES, quote: QUOTE_CURRENCIES} = require("../../../constants/exchanges/coinbasePro/currencies");
-const {EMAIL: MOON_COINBASE_EMAIL, WALLETS: MOON_COINBASE_WALLET_IDS} = require("../../../constants/walletProviders/coinbase/config");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
+import Decimal from "decimal.js";
+import {Client as CoinbaseClient} from "coinbase";
+import getCoinbaseApiKeys from "./getCoinbaseApiKeys";
+import getCoinbaseWallet from "./getCoinbaseWallet";
+import doTransferToCoinbaseUser from "./doTransferToCoinbaseUser";
+import doTransferToCoinbasePro from "./doTransferToCoinbasePro";
+import getCoinbaseProExchangeRate from "../../exchangeRateProviders/coinbasePro/getExchangeRate";
+import placeCoinbaseProSellMarketOrder from "../../exchanges/coinbasePro/placeSellMarketOrder";
+import {getAuthenticatedClient as getCoinbaseProAuthenticatedClient} from "../../exchanges/coinbasePro/client";
+import {base as BASE_CURRENCIES, quote as QUOTE_CURRENCIES} from "../../../constants/exchanges/coinbasePro/currencies";
+import {EMAIL as MOON_COINBASE_EMAIL, WALLETS as MOON_COINBASE_WALLET_IDS} from "../../../constants/walletProviders/coinbase/config";
 
 /**
  * Calculates the required amount that is needed for a transaction.
@@ -110,4 +110,4 @@ const doTransferToMoonCoinbase = async (sub, walletID, cartInfo) => {
     return transferToMoonCoinbaseResult;
 };
 
-module.exports = doTransferToMoonCoinbase;
+export default doTransferToMoonCoinbase;

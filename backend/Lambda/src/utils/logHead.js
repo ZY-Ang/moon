@@ -10,4 +10,4 @@
  */
 const logHead = (functionName, _arguments) => console.log(`${functionName}:`, JSON.stringify(_arguments, 3));
 
-module.exports = logHead;
+export default logHead;

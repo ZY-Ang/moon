@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
 
 /**
  * Gets the coinbase wallets (accounts) using
@@ -31,4 +31,4 @@ const getCoinbaseWallets = async (coinbaseClient) => {
     return coinbaseWallets;
 };
 
-module.exports = getCoinbaseWallets;
+export default getCoinbaseWallets;

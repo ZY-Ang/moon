@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
-const AmazonGiftCardClient = require("./agcod");
-const {CONFIG_AGCOD} = require("../../../constants/paymentPayloaders/amazon/config");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
+import AmazonGiftCardClient from "./agcod";
+import {CONFIG_AGCOD} from "../../../constants/paymentPayloaders/amazon/config";
 
 /**
  * Gets an Amazon Gift Card
@@ -41,4 +41,4 @@ const doCreateAmazonGiftCard  = async (amount, currency, region) => {
     return giftCardInfo;
 };
 
-module.exports = doCreateAmazonGiftCard;
+export default doCreateAmazonGiftCard;

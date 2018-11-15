@@ -34,29 +34,27 @@
 //         }
 //     };
 
-const CONFIG_AGCOD = {
-        endpoint: {
-            NA: {
-                host: "agcod-v2.amazon.com",
-                region: "us-east-1",
-                countries: ["US", "CA", "MX"]
-            },
-            EU: {
-                host: "agcod-v2-eu.amazon.com",
-                region: "eu-west-1",
-                countries: ["IT", "ES", "DE", "FR", "UK"]
-            },
-            FE: {
-                host: "agcod-v2-fe.amazon.com",
-                region: "us-west-2",
-                countries: ["JP", "AU"]
-            }
+export const CONFIG_AGCOD = {
+    endpoint: {
+        NA: {
+            host: "agcod-v2.amazon.com",
+            region: "us-east-1",
+            countries: ["US", "CA", "MX"]
         },
-        partnerId: "Ken60",
-        credentials: {
-            accessKeyId: "AKIAJNYXZ23O2LLQAR3Q",
-            secretAccessKey: "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"
+        EU: {
+            host: "agcod-v2-eu.amazon.com",
+            region: "eu-west-1",
+            countries: ["IT", "ES", "DE", "FR", "UK"]
+        },
+        FE: {
+            host: "agcod-v2-fe.amazon.com",
+            region: "us-west-2",
+            countries: ["JP", "AU"]
         }
-    };
-
-module.exports.CONFIG_AGCOD = CONFIG_AGCOD;
+    },
+    partnerId: "Ken60",
+    credentials: {
+        accessKeyId: "AKIAJNYXZ23O2LLQAR3Q",
+        secretAccessKey: "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"
+    }
+};

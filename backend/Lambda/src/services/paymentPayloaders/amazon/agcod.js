@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2018 moon
  */
-const BigNumber = require('bignumber.js');
-const request = require('request');
-const aws4 = require('aws4');
+import BigNumber from "bignumber.js";
+import request from "request";
+import aws4 from "aws4";
 
 const roundAmount = (amount) => Math.round(amount * 100) / 100;
 
@@ -58,7 +58,7 @@ const helpers = {
  * Also @see {@link http://s3.amazonaws.com/AGCOD/tech_spec/AGCODTechSpec_WC-FAQ-Appendix_EN.pdf}
  * for official agcod documentation
  */
-module.exports = class {
+class agcod {
     constructor(cfg = {}, defaults = {
         endpoint: {
             NA: {
@@ -201,4 +201,6 @@ module.exports = class {
         let id = new BigNumber(hrTime[0]).times('1e9').plus(hrTime[1]).toString(36);
         return id
     }
-};
+}
+
+export default agcod;

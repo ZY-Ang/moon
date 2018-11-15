@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("./utils/logHead");
-const logTail = require("./utils/logTail");
-const baseCurrencies = require("./constants/exchanges/coinbasePro/currencies").base;
-const quoteCurrencies = require("./constants/exchanges/coinbasePro/currencies").quote;
-const getCoinbaseProExchangeRate = require('./services/exchangeRateProviders/coinbasePro/getExchangeRate');
+import logHead from "./utils/logHead";
+import logTail from "./utils/logTail";
+import {base as baseCurrencies} from "./constants/exchanges/coinbasePro/currencies";
+import {quote as quoteCurrencies} from "./constants/exchanges/coinbasePro/currencies";
+import getCoinbaseProExchangeRate from "./services/exchangeRateProviders/coinbasePro/getExchangeRate";
 
 const exchangeRate = async (event) => {
     logHead("exchangeRate", event);
@@ -29,4 +29,4 @@ const exchangeRate = async (event) => {
     return exchangeRate;
 };
 
-module.exports.handler = exchangeRate;
+export default exchangeRate;

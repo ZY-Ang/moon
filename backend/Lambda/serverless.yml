@@ -88,12 +88,12 @@ functions:
   exchangeRate:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRate
     description: 'Returns the exchange rate given a quote and base currency.'
-    handler: src/exchangeRate.handler
+    handler: src/exchangeRate.default
     timeout: 30
   getPaymentPayload:
     name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
     description: 'Exchanges client information for a payment payload to be executed on the client'
-    handler: src/getPaymentPayload.handler
+    handler: src/getPaymentPayload.default
     timeout: 180
     iamRoleStatementsInherit: true
     iamRoleStatements:
@@ -106,12 +106,12 @@ functions:
   siteInformation:
     name: ${{self:service}}-${{self:provider.stage}}-siteInformation
     description: 'Returns information about a supported site or null if unsupported'
-    handler: src/siteInformation.handler
+    handler: src/siteInformation.default
     timeout: 30
   updateUser:
     name: ${{self:service}}-${{self:provider.stage}}-updateUser
     description: 'Updates a moon user with new information.'
-    handler: src/updateUser.handler
+    handler: src/updateUser.default
     iamRoleStatementsInherit: true
     iamRoleStatements:
     - Effect: "Allow"
@@ -124,7 +124,7 @@ functions:
   user:
     name: ${{self:service}}-${{self:provider.stage}}-user
     description: 'Returns information about a moon user.'
-    handler: src/user.handler
+    handler: src/user.default
     iamRoleStatementsInherit: true
     iamRoleStatements:
     - Effect: "Allow"

@@ -2,9 +2,9 @@
  * Copyright (c) 2018 moon
  */
 
-const sgMail = require('../../constants/sendgrid/config');
+import sgMail from "../../constants/sendgrid/config";
 
-const doSendWelcomeEmail = (email) => {
+export const doSendWelcomeEmail = (email) => {
     const emailPayload = {
         to: email,
         from: 'donotreply@paywithmoon.com',
@@ -15,7 +15,7 @@ const doSendWelcomeEmail = (email) => {
     sgMail.send(emailPayload);
 };
 
-const doSendConnectCoinbaseCompleteEmail = (email) => {
+export const doSendConnectCoinbaseCompleteEmail = (email) => {
     const emailPayload = {
         to: email,
         from: 'donotreply@paywithmoon.com',
@@ -26,7 +26,7 @@ const doSendConnectCoinbaseCompleteEmail = (email) => {
     sgMail.send(emailPayload);
 };
 
-const doSendOrderConfirmationEmail = (email, site, baseCurrency, quoteCurrency, amountBase, amountQuote) => {
+export const doSendOrderConfirmationEmail = (email, site, baseCurrency, quoteCurrency, amountBase, amountQuote) => {
     const emailPayload = {
         to: email,
         from: 'donotreply@paywithmoon.com',
@@ -43,7 +43,3 @@ const doSendOrderConfirmationEmail = (email, site, baseCurrency, quoteCurrency, 
 
     sgMail.send(emailPayload);
 };
-
-module.exports.doSendWelcomeEmail = doSendWelcomeEmail;
-module.exports.doSendConnectCoinbaseCompleteEmail = doSendConnectCoinbaseCompleteEmail;
-module.exports.doSendOrderConfirmationEmail = doSendOrderConfirmationEmail;

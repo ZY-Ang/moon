@@ -6,4 +6,4 @@ const notifyPaymentCompletion = () => {
     return true;
 };
 
-module.exports.handler = notifyPaymentCompletion;
+export default notifyPaymentCompletion;

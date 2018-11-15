@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../utils/logHead");
-const logTail = require("../../utils/logTail");
-const {URL} = require("url");
-const supportedSites = require("../../../supportedSites");
+import logHead from "../../utils/logHead";
+import logTail from "../../utils/logTail";
+import {URL} from "url";
+import supportedSites from "../../../supportedSites";
 
 /**\
  * @return {boolean} {@code true} if {@param url} is supported,
@@ -27,4 +27,4 @@ const isSupportedSite = (url) => {
     return isSupported;
 };
 
-module.exports = isSupportedSite;
+export default isSupportedSite;

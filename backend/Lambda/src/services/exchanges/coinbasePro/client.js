@@ -2,19 +2,16 @@
  * Copyright (c) 2018 moon
  */
 
-const {AuthenticatedClient, PublicClient} = require("gdax");
+const {AuthenticatedClient, PublicClient, WebsocketClient} = require("gdax");
 
 // DO NOT EXPORT SECRETS UNLESS ABSOLUTELY NECESSARY. PREVENTS OTHER THREADS FROM ACCESSING THIS FILE.
 
 /**
- * The endpoint for CoinbasePro's API
+ * The REST endpoint for CoinbasePro's API
  * @type {string}
  */
-const ENDPOINT_PRODUCTION = 'https://api.pro.coinbase.com';
-const ENDPOINT_DEVELOPMENT = 'https://api-public.sandbox.pro.coinbase.com';
-const ENDPOINT_COINBASE_PRO = process.env.NODE_ENV === 'production'
-    ? ENDPOINT_PRODUCTION
-    : ENDPOINT_DEVELOPMENT;
+const ENDPOINT_REST_COINBASE_PRO = 'https://api.pro.coinbase.com';
+// const ENDPOINT_REST_COINBASE_PRO_SANDBOX https://api-public.sandbox.pro.coinbase.com
 
 /**
  * Moon API Key for instantiating a CoinbasePro client
@@ -46,12 +43,11 @@ const API_SECRET = process.env.NODE_ENV === 'production'
     ? API_SECRET_PRODUCTION
     : API_SECRET_DEVELOPMENT;
 
-module.exports.getAuthenticatedClient = () => new AuthenticatedClient(
+export const getAuthenticatedClient = () => new AuthenticatedClient(
     API_KEY,
     API_SECRET,
     API_PASSPHRASE,
-    ENDPOINT_COINBASE_PRO
+    ENDPOINT_REST_COINBASE_PRO
 );
 
-// NOTE: {@code ENDPOINT_PRODUCTION} must be used for Public Client always.
-module.exports.getPublicClient = () => new PublicClient(ENDPOINT_PRODUCTION);
+export const getPublicClient = () => new PublicClient(ENDPOINT_REST_COINBASE_PRO);

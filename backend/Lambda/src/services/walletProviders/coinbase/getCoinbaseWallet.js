@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
 
 /**
  * Gets the coinbase wallet (account) associated with the specified currency
@@ -32,4 +32,4 @@ const getCoinbaseWallet = async (coinbaseClient, coinbaseWalletId) => {
     return coinbaseWallet;
 };
 
-module.exports = getCoinbaseWallet;
+export default getCoinbaseWallet;

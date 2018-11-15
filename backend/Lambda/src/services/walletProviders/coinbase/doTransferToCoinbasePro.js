@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
 
 /**
  * Transfers funds from a user's Coinbase account to their Coinbase Pro account. This operation is instant.
@@ -28,4 +28,4 @@ const doTransferToCoinbasePro = async (authCoinbaseProClient, amount, currency, 
     return transferToCoinbaseProInfo;
 };
 
-module.exports = doTransferToCoinbasePro;
+export default doTransferToCoinbasePro;

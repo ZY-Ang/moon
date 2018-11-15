@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../utils/logHead");
-const logTail = require("../../utils/logTail");
-const doTransferToMoonCoinbase = require("./coinbase/doTransferToMoonCoinbase");
+import logHead from "../../utils/logHead";
+import logTail from "../../utils/logTail";
+import doTransferToMoonCoinbase from "./coinbase/doTransferToMoonCoinbase";
 
 /**
  * Get Paid. Duh.
@@ -31,4 +31,4 @@ const doTransferToMoon = async (identity, cartInfo, wallet) => {
     }
 };
 
-module.exports = doTransferToMoon;
+export default doTransferToMoon;

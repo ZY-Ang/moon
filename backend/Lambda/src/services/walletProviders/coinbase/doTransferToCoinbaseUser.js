@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2018 moon
  */
-const logHead = require("../../../utils/logHead");
-const logTail = require("../../../utils/logTail");
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
 
 /**
  * Sends funds to the specified Coinbase user from the source wallet. This operation is instant.
@@ -40,4 +40,4 @@ const doTransferToCoinbaseUser = async (sourceWallet, targetAccountEmail, amount
     return transferToCoinbaseUserInfo;
 };
 
-module.exports = doTransferToCoinbaseUser;
+export default doTransferToCoinbaseUser;
