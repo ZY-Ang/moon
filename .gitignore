@@ -141,4 +141,4 @@ browser-extension/build.pem
 .serverless/
 jspm_packages/
 
-backend/\.webpack/
+.webpack/
