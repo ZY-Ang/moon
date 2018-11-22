@@ -1,0 +1,78 @@
+service: moon-exchangerates-coinbasepro
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
+  stage: ${{opt:stage, self:custom.defaultStage}}
+  region: ${{opt:region, self:custom.defaultRegion}}
+  profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
+  versionFunctions: false
+  environment:
+    NODE_ENV: ${{self:provider.stage}}
+
+resources:
+  Outputs:
+    CoinbaseProExchangeRatesName:
+      Description: CoinbasePro exchange rates app name
+      Value:
+        Ref: CoinbaseProExchangeRates
+    CoinbaseProExchangeRatesEnvironmentName:
+      Description: CoinbasePro exchange rates app environment name
+      Value:
+        Ref: CoinbaseProExchangeRatesEnvironment
+  Resources:
+    CoinbaseProExchangeRates:
+      Type: AWS::ElasticBeanstalk::Application
+      Properties:
+        ApplicationName: ${{self:service}}-${{self:provider.stage}}
+        Description: CoinbasePro exchange rates application
+    CoinbaseProExchangeRatesEnvironment:
+      Type: AWS::ElasticBeanstalk::Environment
+      Properties:
+        ApplicationName:
+          Ref: CoinbaseProExchangeRates
+        Description: CoinbasePro exchange rates application environment
+        SolutionStackName: '64bit Amazon Linux 2018.03 v4.7.0 running Node.js'
+        OptionSettings:
+        - Namespace: aws:elasticbeanstalk:container:nodejs
+          OptionName: NodeVersion
+          Value: '10.13.0'
+        - Namespace: aws:elasticbeanstalk:container:nodejs
+          OptionName: NodeCommand
+          Value: node
+        - Namespace: aws:elasticbeanstalk:environment
+          OptionName: EnvironmentType
+          Value: LoadBalanced
+#        - Namespace: aws:elasticbeanstalk:environment
+#          OptionName: ServiceRole
+#          Value: TODO: SomeArnHere https://docs.aws.amazon.com//elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-elasticbeanstalkenvironment
+        - Namespace: aws:elasticbeanstalk:environment
+          OptionName: LoadBalancerType
+          Value: application
+        - Namespace: aws:autoscaling:launchconfiguration
+          OptionName: 
+          Value:
+        - Namespace: aws:elbv2:loadbalancer
+          OptionName:
+          Value:
+
+custom:
+  defaultStage: development
+  defaultRegion: us-east-1
+  profiles:
+    production: moon-production
+    development: moon-development
+
+  accountId: ${AWS::AccountId}
+
+  dynamoDBTables:
+    UserSecrets:
+      Name: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableName" }
+      Arn: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableArn" }
+    SiteSupportRequests:
+      Name: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableName" }
+      Arn: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableArn" }
+    NonCheckoutReports:
+      Name: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableName" }
+      Arn: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableArn" }
