@@ -134,14 +134,14 @@ export const doGetPaymentPayload = async (variables) => (await MoonGraphQL.authC
     });
 
 const addSiteSupportRequest = gql`
-    mutation addSiteSupportRequest($host: String!) {
-        addSiteSupportRequest(host: $host)
+    mutation addSiteSupportRequest($email: AWSEmail="guest@paywithmoon.com", $host: String!) {
+        addSiteSupportRequest(email: $email, host: $host)
     }
 `;
-export const doAddSiteSupportRequest = async (host) => (MoonGraphQL.publicClient)
+export const doAddSiteSupportRequest = async (email, host) => (MoonGraphQL.publicClient)
     .mutate({
         mutation: addSiteSupportRequest,
-        variables: {host}
+        variables: {email, host}
     });
 
 const addNonCheckoutReport = gql`

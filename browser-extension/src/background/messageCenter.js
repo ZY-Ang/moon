@@ -134,7 +134,7 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_MOON_SITE_SUPPORT]() {
-            doAddSiteSupportRequest(request.host)
+            doAddSiteSupportRequest(AuthUser.getEmail(), request.host)
                 .then(({data}) => sendSuccess(data))
                 .catch(err => {
                     handleErrors(err);
