@@ -47,10 +47,8 @@ class ProductBody extends React.Component {
             productTitle,
             productImageAlt,
             productImageURL,
-            productPrice,
-            querySelectorAddToCart
+            productPrice
         } = this.props.pageInformation;
-        const addToCartButtonElements = document.querySelectorAll(querySelectorAddToCart);
         return (
             !!productTitle ||
             !!productImageAlt ||
@@ -90,18 +88,6 @@ class ProductBody extends React.Component {
                                 of this item so we can show you the right price info.</p>
                         }
                     </div>
-                    {
-                        !!addToCartButtonElements &&
-                        !!addToCartButtonElements.length &&
-                        <div className="btn-group mb-10">
-                            <button
-                                className="btn btn-pay btn-primary"
-                                onClick={() => addToCartButtonElements[0].click()}
-                            >
-                                Add To Cart
-                            </button>
-                        </div>
-                    }
                 </div>
             ) : (
                 <div>
