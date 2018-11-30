@@ -10,6 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/AppSync/public/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/backend/ElasticBeanstalk/CoinbaseProExchangeRates/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/backend/ElasticBeanstalk/CoinbaseProExchangeRates/build" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/ElasticBeanstalk/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/backend/Lambda/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/backend/Lambda/.webpack" />
       <excludeFolder url="file://$MODULE_DIR$/backend/Lambda/getWalletsForUser/.cache" />
