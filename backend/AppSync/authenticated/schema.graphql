@@ -141,6 +141,8 @@ type Query {
 type SignUpState {
     # The user's email of the user whom referred the current user
     referredBy: AWSEmail
+    # The date until which the user will not be prompted to set up account connections
+    onboardingSkipExpiry: AWSDateTime
 }
 
 type Subscription {
