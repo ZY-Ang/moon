@@ -31,23 +31,16 @@ resources:
     ApiId:
       Value:
         { Fn::GetAtt: [GraphQlApi, ApiId] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ApiId
     ApiArn:
       Value:
         { Fn::GetAtt: [GraphQlApi, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ApiArn
     ApiUrl:
       Value:
         { Fn::GetAtt: [GraphQlApi, GraphQLUrl] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ApiUrl
 
 custom:
-  # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
-  # See link for credentials documentation:
-  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  # Deprecated. Need to remove these in order for ${cf:stack.value} to work.
+  # See Serverless github issues 3659 and 4311 for more information
   defaultStage: development
   defaultRegion: us-east-1
   profiles:
@@ -58,14 +51,14 @@ custom:
 
   lambdaFunctions:
     UpdateUser:
-      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UpdateUserArn" }
-      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UpdateUserDescription" }
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UpdateUserArn}}
+      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UpdateUserDescription}}
     User:
-      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UserArn" }
-      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-UserDescription" }
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UserArn}}
+      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UserDescription}}
     GetPaymentPayload:
-      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-GetPaymentPayloadArn" }
-      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-GetPaymentPayloadDescription" }
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.GetPaymentPayloadArn}}
+      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.GetPaymentPayloadDescription}}
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}

@@ -109,15 +109,15 @@ custom:
 
   appSyncAPIs:
     authenticated:
-      Arn: { Fn::ImportValue: "moon-backend-appsync-authenticated-${{self:provider.stage}}-ApiArn" }
+      Arn: ${{cf:moon-backend-appsync-authenticated-${{self:provider.stage}}.ApiArn}}
 
   dynamoDBTables:
     UserSecrets:
-      Name: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableName" }
-      Arn: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableArn" }
+      Name: ${{cf:moon-database-user-secrets-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-user-secrets-${{self:provider.stage}}.TableArn}}
     SiteSupportRequests:
-      Name: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableName" }
-      Arn: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableArn" }
+      Name: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableArn}}
     NonCheckoutReports:
-      Name: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableName" }
-      Arn: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableArn" }
+      Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}

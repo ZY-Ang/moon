@@ -22,6 +22,8 @@ const getCoinbaseCurrentUser = async (coinbaseClient) => {
             } else if (!currentUser) {
                 reject(new Error(`Coinbase returned malformed currentUser: ${currentUser}`));
             } else {
+                // Make sure users' secrets don't get logged.
+                delete currentUser.client;
                 resolve(currentUser);
             }
         })

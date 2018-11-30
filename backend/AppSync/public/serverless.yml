@@ -31,23 +31,15 @@ resources:
     ApiId:
       Value:
         { Fn::GetAtt: [GraphQlApi, ApiId] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ApiId
     ApiArn:
       Value:
         { Fn::GetAtt: [GraphQlApi, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ApiArn
     ApiUrl:
       Value:
         { Fn::GetAtt: [GraphQlApi, GraphQLUrl] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ApiUrl
     ApiKey:
       Value:
         { Fn::GetAtt: [GraphQlApiKeyDefault, ApiKey] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ApiKey
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
@@ -63,21 +55,21 @@ custom:
 
   lambdaFunctions:
     ExchangeRate:
-      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-ExchangeRateArn" }
-      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-ExchangeRateDescription" }
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRateArn}}
+      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRateDescription}}
     SiteInformation:
-      Arn: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-SiteInformationArn" }
-      Description: { Fn::ImportValue: "moon-backend-lambda-${{self:provider.stage}}-SiteInformationDescription" }
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.SiteInformationArn}}
+      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.SiteInformationDescription}}
 
   dynamoDBTables:
     SiteSupportRequests:
-      Arn: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableArn" }
-      Name: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableName" }
-      Description: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableDescription" }
+      Name: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableArn}}
+      Description: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableDescription}}
     NonCheckoutReports:
-      Arn: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableArn" }
-      Name: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableName" }
-      Description: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableDescription" }
+      Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
+      Description: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableDescription}}
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}

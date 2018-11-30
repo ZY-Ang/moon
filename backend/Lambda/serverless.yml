@@ -20,6 +20,7 @@ provider:
   profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
   # See link for more information:
   #     https://serverless.com/framework/docs/providers/aws/guide/functions#versioning-deployed-functions
+  logRetentionInDays: 30 # Set the default RetentionInDays for a CloudWatch LogGroup
   versionFunctions: false
   environment:
     NODE_ENV: ${{self:provider.stage}}
@@ -37,44 +38,24 @@ resources:
   Outputs:
     ExchangeRateArn:
       Value: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ExchangeRateArn
     ExchangeRateDescription:
       Value: ${{self:functions.exchangeRate.description}}
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-ExchangeRateDescription
     GetPaymentPayloadArn:
       Value: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-GetPaymentPayloadArn
     GetPaymentPayloadDescription:
       Value: ${{self:functions.getPaymentPayload.description}}
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-GetPaymentPayloadDescription
     SiteInformationArn:
       Value: { Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-SiteInformationArn
     SiteInformationDescription:
       Value: ${{self:functions.siteInformation.description}}
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-SiteInformationDescription
     UpdateUserArn:
       Value: { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-UpdateUserArn
     UpdateUserDescription:
       Value: ${{self:functions.updateUser.description}}
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-UpdateUserDescription
     UserArn:
       Value: { Fn::GetAtt: [UserLambdaFunction, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-UserArn
     UserDescription:
       Value: ${{self:functions.user.description}}
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-UserDescription
 
 # See Link for functions documentation:
 #     https://serverless.com/framework/docs/providers/aws/guide/functions/
@@ -119,6 +100,8 @@ functions:
       - "dynamodb:GetItem"
       - "dynamodb:UpdateItem"
       Resource:
+      - ${{self:custom.dynamoDBTables.UserInformation.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserInformation.Arn}}", '/*']] }
       - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
       - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
   user:
@@ -131,6 +114,8 @@ functions:
       Action:
       - "dynamodb:GetItem"
       Resource:
+      - ${{self:custom.dynamoDBTables.UserInformation.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserInformation.Arn}}", '/*']] }
       - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
       - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
 
@@ -152,12 +137,15 @@ custom:
     packager: npm
 
   dynamoDBTables:
+    UserInformation:
+      Name: ${{cf:moon-database-user-information-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-user-information-${{self:provider.stage}}.TableArn}}
     UserSecrets:
-      Name: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableName" }
-      Arn: { Fn::ImportValue: "moon-database-user-secrets-${{self:provider.stage}}-TableArn" }
+      Name: ${{cf:moon-database-user-secrets-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-user-secrets-${{self:provider.stage}}.TableArn}}
     SiteSupportRequests:
-      Name: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableName" }
-      Arn: { Fn::ImportValue: "moon-database-site-support-requests-${{self:provider.stage}}-TableArn" }
+      Name: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableArn}}
     NonCheckoutReports:
-      Name: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableName" }
-      Arn: { Fn::ImportValue: "moon-database-non-checkout-reports-${{self:provider.stage}}-TableArn" }
+      Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}

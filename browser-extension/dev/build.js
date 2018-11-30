@@ -45,6 +45,21 @@ const getCloudFormationExport = async (credentials, exportName) => {
     throw new Error(`Export ${exportName} not found in exports: \n${JSON.stringify(exports)}`);
 };
 
+const getCloudFormationStackOutput = async (credentials, StackName, outputName) => {
+    const {Stacks} = await new Promise((resolve, reject) =>
+        (new AWS.CloudFormation({credentials}))
+            .describeStacks({StackName}, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            })
+    );
+
+    return Stacks[0].Outputs.filter(({OutputKey}) => (OutputKey === outputName))[0].OutputValue;
+};
+
 const build = async () => {
     // TODO: Seed backend with supportedSites
     console.log("================== ENVIRONMENT VARIABLES ==================");
@@ -81,17 +96,17 @@ const build = async () => {
     shell.env.AWS_REGION = process.env.AWS_REGION || DEFAULT_AWS_REGION;
 
     // AWS_APPSYNC_ENDPOINT_AUTH
-    shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getCloudFormationExport(credentials, `moon-backend-appsync-authenticated-${shell.env.NODE_ENV}-ApiUrl`);
+    shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-authenticated-${shell.env.NODE_ENV}`, "ApiUrl");
     console.log(`AWS_APPSYNC_ENDPOINT_AUTH:\t${(shell.env.AWS_APPSYNC_ENDPOINT_AUTH)}`);
 
     // AWS_APPSYNC_ENDPOINT_PUBLIC
-    shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC = await getCloudFormationExport(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}-ApiUrl`);
+    shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}`, "ApiUrl");
     console.log(`AWS_APPSYNC_ENDPOINT_PUBLIC:\t${(shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC)}`);
 
-    shell.env.AWS_APPSYNC_API_ID_PUBLIC = await getCloudFormationExport(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}-ApiId`);
+    shell.env.AWS_APPSYNC_API_ID_PUBLIC = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}`, "ApiId");
     console.log(`AWS_APPSYNC_API_ID_PUBLIC:\t${(shell.env.AWS_APPSYNC_API_ID_PUBLIC)}`);
 
-    shell.env.AWS_APPSYNC_API_KEY_PUBLIC = await getCloudFormationExport(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}-ApiKey`);
+    shell.env.AWS_APPSYNC_API_KEY_PUBLIC = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}`, "ApiKey");
     console.log(`AWS_APPSYNC_API_KEY_PUBLIC:\t${(shell.env.AWS_APPSYNC_API_KEY_PUBLIC)}`);
 
     // BROWSER

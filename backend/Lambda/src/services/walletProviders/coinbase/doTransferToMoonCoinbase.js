@@ -5,7 +5,7 @@ import logHead from "../../../utils/logHead";
 import logTail from "../../../utils/logTail";
 import Decimal from "decimal.js";
 import {Client as CoinbaseClient} from "coinbase";
-import getCoinbaseApiKeys from "./getCoinbaseApiKeys";
+import getUserSecrets from "../../moonUser/getUserSecrets";
 import getCoinbaseWallet from "./getCoinbaseWallet";
 import doTransferToCoinbaseUser from "./doTransferToCoinbaseUser";
 import doTransferToCoinbasePro from "./doTransferToCoinbasePro";
@@ -40,7 +40,7 @@ const doTransferToMoonCoinbase = async (sub, walletID, cartInfo) => {
     logHead("doTransferToMoonCoinbase", {sub, walletID, cartInfo});
 
     // 1. Get the user's coinbase API keys that were stored
-    const userCoinbaseApiKeys = await getCoinbaseApiKeys(sub);
+    const userCoinbaseApiKeys = await getUserSecrets(sub);
     if (!userCoinbaseApiKeys || !userCoinbaseApiKeys.key || !userCoinbaseApiKeys.secret) {
         throw new Error("Coinbase credentials are missing.");
     }
