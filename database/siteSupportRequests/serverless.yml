@@ -24,16 +24,10 @@ resources:
     TableArn:
       Value:
         { Fn::GetAtt: [SiteSupportRequestsDynamoDBTable, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-TableArn
     TableName:
       Value: ${{self:service}}-${{self:provider.stage}}
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-TableName
     TableDescription:
-      Value: 'DynamoDB table that stores user site support feature requests'
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-TableDescription
+      Value: ${{file(./package.json):description}}
   Resources:
     SiteSupportRequestsDynamoDBTable:
       # Table that stores site support requests from users.

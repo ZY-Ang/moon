@@ -24,16 +24,10 @@ resources:
     TableArn:
       Value:
         { Fn::GetAtt: [NonCheckoutReportsDynamoDBTable, Arn] }
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-TableArn
     TableName:
       Value: ${{self:service}}-${{self:provider.stage}}
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-TableName
     TableDescription:
-      Value: 'DynamoDB table that stores bug reports for valid checkout pages'
-      Export:
-        Name: ${{self:service}}-${{self:provider.stage}}-TableDescription
+      Value: ${{file(./package.json):description}}
   Resources:
     NonCheckoutReportsDynamoDBTable:
       # Table that stores site support requests from users.

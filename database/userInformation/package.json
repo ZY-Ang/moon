@@ -1,7 +1,7 @@
 {
-  "name": "moon-database-site-support-requests",
+  "name": "moon-database-user-information",
   "version": "1.0.0",
-  "description": "DynamoDB table that stores user site support feature requests",
+  "description": "DynamoDB table that stores users' general information",
   "main": "serverless.yml",
   "scripts": {
     "deploy": "serverless deploy",

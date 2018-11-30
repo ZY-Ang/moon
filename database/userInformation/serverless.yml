@@ -1,4 +1,4 @@
-service: moon-database-user-secrets
+service: moon-database-user-information
 
 provider:
   name: aws
@@ -23,14 +23,14 @@ resources:
   Outputs:
     TableArn:
       Value:
-        { Fn::GetAtt: [UserSecretsDynamoDBTable, Arn] }
+        { Fn::GetAtt: [UserInformationDynamoDBTable, Arn] }
     TableName:
       Value: ${{self:service}}-${{self:provider.stage}}
     TableDescription:
       Value: ${{file(./package.json):description}}
   Resources:
-    UserSecretsDynamoDBTable:
-      # Table that stores user secrets.
+    UserInformationDynamoDBTable:
+      # Table that stores user general info.
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${{self:service}}-${{self:provider.stage}}
@@ -60,7 +60,7 @@ custom:
   # See link for more information:
   #     https://github.com/sbstjn/serverless-dynamodb-autoscaling
   capacities:
-  - table: UserSecretsDynamoDBTable
+  - table: UserInformationDynamoDBTable
     read:
       minimum: 5
       maximum: 1000
