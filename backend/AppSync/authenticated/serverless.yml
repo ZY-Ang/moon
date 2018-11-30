@@ -127,24 +127,24 @@ custom:
       - dataSource: identityNone
         type: Query
         field: identity
-        request: Query/identity/request.vm
-        response: Query/identity/response.vm
+        request: Query/identity/request.vtl
+        response: Query/identity/response.vtl
       # Query/user
       - dataSource: UserLambdaFunction
         type: Query
         field: user
-        request: Query/user/request.vm
-        response: Query/user/response.vm
+        request: Query/user/request.vtl
+        response: Query/user/response.vtl
     # ============== Mutation ==============
       # Mutation/updateUser
       - dataSource: UpdateUserLambdaFunction
         type: Mutation
         field: updateUser
-        request: Mutation/updateUser/request.vm
-        response: Mutation/updateUser/response.vm
+        request: Mutation/updateUser/request.vtl
+        response: Mutation/updateUser/response.vtl
       # Mutation/getPaymentPayload
       - dataSource: GetPaymentPayloadLambdaFunction
         type: Mutation
         field: getPaymentPayload
-        request: Mutation/getPaymentPayload/request.vm
-        response: Mutation/getPaymentPayload/response.vm
+        request: Mutation/getPaymentPayload/request.vtl
+        response: Mutation/getPaymentPayload/response.vtl

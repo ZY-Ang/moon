@@ -147,24 +147,24 @@ custom:
       - dataSource: ExchangeRateLambdaFunction
         type: Query
         field: exchangeRate
-        request: Query/exchangeRate/request.vm
-        response: Query/exchangeRate/response.vm
+        request: Query/exchangeRate/request.vtl
+        response: Query/exchangeRate/response.vtl
       # Query/siteInformation
       - dataSource: SiteInformationLambdaFunction
         type: Query
         field: siteInformation
-        request: Query/siteInformation/request.vm
-        response: Query/siteInformation/response.vm
+        request: Query/siteInformation/request.vtl
+        response: Query/siteInformation/response.vtl
     # ============== Mutation ==============
       # Mutation/addSiteSupportRequest
       - dataSource: SiteSupportRequestsDynamoDBTable
         type: Mutation
         field: addSiteSupportRequest
-        request: Mutation/addSiteSupportRequest/request.vm
-        response: Mutation/addSiteSupportRequest/response.vm
+        request: Mutation/addSiteSupportRequest/request.vtl
+        response: Mutation/addSiteSupportRequest/response.vtl
       # Mutation/addNonCheckoutReport
       - dataSource: NonCheckoutReportsDynamoDBTable
         type: Mutation
         field: addNonCheckoutReport
-        request: Mutation/addNonCheckoutReport/request.vm
-        response: Mutation/addNonCheckoutReport/response.vm
+        request: Mutation/addNonCheckoutReport/request.vtl
+        response: Mutation/addNonCheckoutReport/response.vtl
