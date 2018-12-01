@@ -68,7 +68,7 @@ class OnBoardingFlow extends React.Component {
                     }
                 </SwipeableViews>
                 <div className="onboarding-skip-wrapper">
-                    <a href="#skip" style={{cursor: 'pointer'}} onClick={this.skip}>Skip for now</a>
+                    <a href="#skip" onClick={this.skip}>Skip for now</a>
                 </div>
                 <div className="onboarding-carousel-dots onboarding-carousel-dots-draw">
                     <ul>

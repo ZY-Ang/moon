@@ -6,7 +6,7 @@
     overflow-y: auto;
 }
 .onboarding-tab {
-    padding: 0 8px;
+    padding: 0 16px;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -61,7 +61,7 @@
     position: relative;
     display: block;
     float: left;
-    margin: 0 16px;
+    margin: 0 6px;
     width: 16px;
     height: 16px;
     cursor: pointer;
