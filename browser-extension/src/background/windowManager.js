@@ -3,6 +3,7 @@
  */
 import BrowserAction from './browser/BrowserAction';
 import Tabs from './browser/Tabs';
+import AuthUser from "./auth/AuthUser";
 import {
     isCheckoutPage,
     isClearCacheUrl,
@@ -26,8 +27,8 @@ import {doUpdatePageInfoEvent} from "./pageInformation";
  *      defined in the events constants or the URL
  *      of the current tab.
  */
-export const doInjectAppEvent = (source) =>
-    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {source});
+export const doInjectAppEvent = async (source) =>
+    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {authUser: (await AuthUser.getCurrent().then(authUser => authUser.trim()).catch(() => null)), source});
 
 /**
  * Handler for when a {@param tab} is updated.
@@ -72,15 +73,14 @@ export const tabDidUpdate = (tab) => {
             : Promise.resolve();
 
         injectAppConditionalPromise
-            .then(doUpdateAuthUserEvent)
-            .then(isAuthenticated => (isAuthenticated && doUpdatePageInfoEvent(tab.url)))
+            .then(() => doUpdatePageInfoEvent(tab.url))
             .catch(handleErrors);
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
         BrowserAction.setInvalidIcon(tab.id).catch(handleErrors);
         doUpdateAuthUserEvent()
-            .then(isAuthenticated => (isAuthenticated && doUpdatePageInfoEvent(tab.url)))
+            .then(() => doUpdatePageInfoEvent(tab.url))
             .catch(handleErrors);
 
     }

@@ -90,8 +90,20 @@
     width: 100%;
 }
 
+.w-80 {
+    width: 80%;
+}
+
+.w-77 {
+    width: 77%;
+}
+
 .mb-10 {
     margin-bottom: 10px;
+}
+
+.font-weight-bold {
+    font-weight: bold;
 }
 
 #moon-body {
@@ -292,10 +304,6 @@
 .btn svg {
     height: 15px;
     padding-right: 10px;
-}
-
-.btn.full-width {
-    width: 100%;
 }
 
 .btn-group {

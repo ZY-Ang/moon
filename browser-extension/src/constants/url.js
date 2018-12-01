@@ -14,3 +14,7 @@ export const URL_OAUTH_REDIRECT = "https://extension.auth.paywithmoon.com/oauth/
  * The final redirect URL to be supplied to the OAuth Server sign out endpoint
  */
 export const URL_SIGN_OUT_REDIRECT = "https://extension.auth.paywithmoon.com/logout/";
+/**
+ * The redirect URL to be shown after updating coinbase API keys
+ */
+export const URL_COINBASE_POST_CONNECTION = "https://paywithmoon.com/coinbase-post-connection-message";

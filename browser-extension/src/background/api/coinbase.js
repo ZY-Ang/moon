@@ -4,14 +4,18 @@
 
 import gql from "graphql-tag";
 import MoonGraphQL from "./MoonGraphQL";
+import {getDelayedDate} from "../../utils/datetime";
 
 const updateCoinbaseApiKey = gql`
-    mutation updateCoinbaseApiKey($key: String!, $secret: String!, $innerHTML: String!) {
+    mutation updateCoinbaseApiKey($key: String!, $secret: String!, $innerHTML: String!, $onboardingSkipExpiry: AWSDateTime!) {
         updateUser(input: {
             coinbaseApiKeys: {
                 key: $key,
                 secret: $secret,
                 innerHTML: $innerHTML
+            },
+            userInformation: {
+                onboardingSkipExpiry: $onboardingSkipExpiry
             }
         }) {
             coinbaseInfo {
@@ -30,6 +34,7 @@ export const doUpdateCoinbaseApiKey = async (key, secret, innerHTML) => (await M
         variables: {
             key,
             secret,
-            innerHTML
+            innerHTML,
+            onboardingSkipExpiry: getDelayedDate(168).toISOString()
         }
     });

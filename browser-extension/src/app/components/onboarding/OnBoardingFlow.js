@@ -1,21 +1,26 @@
 /*
  * Copyright (c) 2018 moon
  */
-import React from 'react';
-import './OnBoardingFlow.css';
+import React from "react";
+import "./OnBoardingFlow.css";
+import {connect} from "react-redux";
 import SwipeableViews from "react-swipeable-views";
-import CoinbaseIcon from "../misc/coinbase/CoinbaseIcon";
+import ONBOARDING_PAGES from "./pages";
 import AppRuntime from "../../browser/AppRuntime";
-import {REQUEST_LAUNCH_COINBASE_AUTH_FLOW} from "../../../constants/events/appEvents";
-import {handleErrors} from "../../../utils/errors";
-import FaIcon from "../misc/fontawesome/FaIcon";
+import {REQUEST_UPDATE_ONBOARDING_SKIP} from "../../../constants/events/appEvents";
+import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../redux/reducers/constants";
 
 // TODO: Let background script handle onboarding flow state and nonreminder caching for session
 export const isOnBoardingFlowCompleteOrSkipped = (authUser) => {
-    return (
-        !!authUser &&
-        !!authUser.wallets &&
-        !!authUser.wallets.length
+    return !!authUser && (
+        (
+            !!authUser.onboardingSkipExpiry &&
+            !!(new Date(authUser.onboardingSkipExpiry)) &&
+            !!(new Date() < new Date(authUser.onboardingSkipExpiry))
+        ) || (
+            !!authUser.wallets &&
+            !!authUser.wallets.length
+        )
     );
 };
 
@@ -31,16 +36,10 @@ class OnBoardingFlow extends React.Component {
         };
     }
 
-    launchCoinbaseAuthFlow = () => {
-        AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
-            .then(response => {
-                // FIXME: Show user permission warnings and shit
-                console.log(response);
-            })
-            .catch(err => {
-                handleErrors(err);
-                // FIXME: Show user errors and shit
-            });
+    skip = () => {
+        AppRuntime.sendMessage(REQUEST_UPDATE_ONBOARDING_SKIP)
+        // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
+            .then(() => this.props.delayAuthUserOnboarding());
     };
 
     render() {
@@ -52,64 +51,57 @@ class OnBoardingFlow extends React.Component {
                     resistance
                     ref={c => (this.tabSwiper = c)}
                     style={{
-                        height: '100%',
+                        height: '85%',
                         overflowY: 'hidden !important'
                     }}
                     onChangeIndex={currentTabIndex => this.setState(() => ({currentTabIndex}))}
                     index={this.state.currentTabIndex}
                 >
-                    <div className="onboarding-tab">
-                        <span
-                            className="onboarding-emoji"
-                            role="img"
-                            aria-label="Shop Online"
-                            style={{fontSize: 100}}
-                        >
-                            🛍️
-                        </span>
-                        <p><i>How it Works</i></p>
-                        <h1>Shop Online</h1>
-                        <h4>Moon stays hidden until you need it</h4>
-                        <button
-                            className="btn btn-primary full-width"
-                            onClick={() => this.setState(() => ({currentTabIndex: 1}))}
-                        >
-                            Next
-                        </button>
-                    </div>
-                    <div className="onboarding-tab">
-                        <span
-                            className="onboarding-emoji"
-                            role="img"
-                            aria-label="Shop Online"
-                            style={{fontSize: 100}}
-                        >
-                            🛒
-                        </span>
-                        <p><i>How it Works</i></p>
-                        <h1>Checkout</h1>
-                        <h4>Opt to pay with Moon at checkout</h4>
-                        <button
-                            className="btn btn-primary full-width"
-                            onClick={() => this.setState(() => ({currentTabIndex: 2}))}
-                        >
-                            Let's Go!
-                        </button>
-                    </div>
-                    <div className="onboarding-tab">
-                        <h2>Add one of our supported wallet providers to get started</h2>
-                        <div className="mb-10 w-100">
-                            <button className="btn full-width btn-coinbase" onClick={this.launchCoinbaseAuthFlow}>
-                                <div className="btn-brand-icon"><CoinbaseIcon/></div>
-                                <div className="btn-brand-text">Connect Coinbase</div>
-                            </button>
-                        </div>
-                        <p><i>Don't worry, you can add more later!</i></p>
-                    </div>
+                    {
+                        ONBOARDING_PAGES.map(({Component}, index) =>
+                            <Component
+                                key={index}
+                                next={() => this.setState(() => ({currentTabIndex: index + 1}))}
+                                previous={() => this.setState(() => ({currentTabIndex: index - 1}))}
+                            />
+                        )
+                    }
                 </SwipeableViews>
+                <div className="onboarding-skip-wrapper">
+                    <a href="#skip" style={{cursor: 'pointer'}} onClick={this.skip}>Skip for now</a>
+                </div>
+                <div className="onboarding-carousel-dots onboarding-carousel-dots-draw">
+                    <ul>
+                        {
+                            ONBOARDING_PAGES.map((item, index) =>
+                                <li
+                                    key={index}
+                                    className={this.state.currentTabIndex === index ? "current" : ""}
+                                    onClick={() => this.setState(() => ({currentTabIndex: index}))}
+                                >
+                                    <a>{index}</a>
+                                    <svg
+                                        version="1.1"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="100%"
+                                        height="100%"
+                                        viewBox="0 0 16 16"
+                                        preserveAspectRatio="none"
+                                    >
+                                        <circle cx="8" cy="8" r="6.215"/>
+                                    </svg>
+                                </li>
+                            )
+                        }
+                    </ul>
+                </div>
             </div>
         );
     }
 }
 
-export default OnBoardingFlow;
+const mapDispatchToProps = (dispatch) => ({
+    delayAuthUserOnboarding: () => dispatch({type: ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP})
+});
+
+export default connect(null, mapDispatchToProps)(OnBoardingFlow);

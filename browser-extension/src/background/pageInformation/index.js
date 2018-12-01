@@ -9,9 +9,9 @@ export const doUpdatePageInfoEvent = async (url) => {
     try {
         const {host} = new URL(url);
         const {siteInformation} = (await getSiteInformation(host)).data;
-        console.log("doUpdatePageInfoEvent: ", siteInformation);
         if (!siteInformation) {
-            throw new Error(`Site information using ${url} was invalid`);
+            console.warn(`Site information using ${url} was invalid`);
+            return Tabs.sendMessageToActive(REQUEST_UPDATE_PAGE_INFORMATION, {siteInformation: null});
         }
         return Tabs.sendMessageToActive(REQUEST_UPDATE_PAGE_INFORMATION, {siteInformation});
     } catch (error) {

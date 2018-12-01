@@ -6,7 +6,7 @@
     overflow-y: auto;
 }
 .onboarding-tab {
-    padding: 0 16px;
+    padding: 0 8px;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -25,3 +25,102 @@
     align-items: center;
     justify-content: center;
 }
+
+.onboarding-skip-wrapper {
+    height: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*
+ * @author https://tympanus.net/Development/DotNavigationStyles/
+ */
+.onboarding-carousel-dots {
+    display: flex;
+    width: 100%;
+    height: 10%;
+    align-items: center;
+    justify-content: center;
+}
+.onboarding-carousel-dots ul {
+    position: relative;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.onboarding-carousel-dots li {
+    position: relative;
+    display: block;
+    float: left;
+    margin: 0 16px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+.onboarding-carousel-dots li a {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border-radius: 50%;
+    background-color: #0f62bd;
+    background-color: rgba(255, 255, 255, 0.3);
+    text-indent: -999em; /* make the text accessible to screen readers */
+    cursor: pointer;
+    position: absolute;
+}
+.onboarding-carousel-dots li a:focus {
+    outline: none;
+}
+.onboarding-carousel-dots-draw li {
+    width: 18px;
+    height: 18px;
+}
+.onboarding-carousel-dots-draw li a {
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    background-color: #CCCCCC;
+    -webkit-transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
+}
+
+.onboarding-carousel-dots-draw li svg {
+    z-index: 10;
+}
+.onboarding-carousel-dots-draw li svg circle {
+    opacity: 0;
+    fill: none;
+    stroke: #0f62bd;
+    stroke-width: 2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 39 39;
+    stroke-dashoffset: 39;
+    /* length of circle path (pi*2r) */
+    -webkit-transition: stroke-dashoffset 0.3s, opacity 0.3s;
+    transition: stroke-dashoffset 0.3s, opacity 0.3s;
+}
+.onboarding-carousel-dots-draw li.current a,
+.onboarding-carousel-dots-draw li a:hover,
+.onboarding-carousel-dots-draw li a:focus {
+    opacity: 0.5;
+}
+.onboarding-carousel-dots-draw li.current svg circle {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    -webkit-transition: stroke-dashoffset 0.3s, opacity 0.15s;
+    transition: stroke-dashoffset 0.3s, opacity 0.15s;
+}
+

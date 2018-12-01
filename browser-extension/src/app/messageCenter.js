@@ -40,7 +40,10 @@ const messageCenter = (request, sender, sendResponse) => {
     }
     const messageResolver = {
         [REQUEST_INJECT_APP]() {
-            toggleApp(request.source)
+            Promise.all([
+                toggleApp(request.source),
+                updateAuthUser(request.authUser).catch(handleErrors)
+            ])
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
                 .catch(err => {
                     handleErrors(err);

@@ -6,7 +6,6 @@ import store from "../redux/store";
 import {ACTION_SET_COINBASE_AUTH_FLOW} from "../redux/reducers/coinbase";
 import Windows from "../browser/Windows";
 import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
-import Tabs from "../browser/Tabs";
 import {doUpdateCoinbaseApiKey} from "../api/coinbase";
 
 /**
@@ -57,7 +56,7 @@ export const doUpdateCoinbaseApiKeyEvent = (apiKey, apiSecret, innerHTML, sender
                 type: ACTION_SET_COINBASE_AUTH_FLOW,
                 isCoinbaseAuthFlow: false
             });
-            return Tabs.remove(senderTab);
+            return true;
         });
 };
 /**

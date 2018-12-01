@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2018 moon
  */
-
 import AppRuntime from "../browser/AppRuntime";
 import {POLL_IS_COINBASE_AUTH_MODE, REQUEST_UPDATE_COINBASE_API_KEYS} from "../../constants/events/appEvents";
 import {isCoinbaseSettingsApiUrl} from "../../utils/coinbase";
@@ -16,10 +15,11 @@ import {
     QUERY_ACCOUNTS_ALL_CHECKBOX,
     QUERY_API_KEY_DISPLAY_ROOT,
     QUERY_API_KEY_FORM_SUBMIT_BUTTON,
-    QUERY_BACKGROUND_MODAL,
-    STYLE_BACKGROUND_MODAL
+    QUERY_BACKGROUND_MODAL, QUERY_MODAL_HEADER_CLOSE_BUTTON, QUERY_MODAL_HEADER_TITLE, STYLE_DISPLAY_NONE,
+    STYLE_BACKGROUND_MODAL, TEXT_MODAL_HEADER_TITLE
 } from "../../constants/coinbase";
 import {handleErrors} from "../../utils/errors";
+import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
 
 /**
  * Requested by the background script to extract the api
@@ -45,9 +45,18 @@ export const doExtractCoinbaseApiKeys = () => {
             ) {
                 // Continuously observe changes to the DOM subtree of {@code ID_API_KEYS_MODAL}
                 observeDOM(document.getElementById(ID_API_KEYS_MODAL), () => {
-                    // 1. Blur background if it exists
+                    // 1. Blur background and change other UI elements
                     if (document.querySelector(QUERY_BACKGROUND_MODAL)) {
                         document.querySelector(QUERY_BACKGROUND_MODAL).style = STYLE_BACKGROUND_MODAL;
+                    }
+                    if (
+                        document.querySelector(QUERY_MODAL_HEADER_TITLE) &&
+                        document.querySelector(QUERY_MODAL_HEADER_TITLE).innerHTML !== TEXT_MODAL_HEADER_TITLE
+                    ) {
+                        document.querySelector(QUERY_MODAL_HEADER_TITLE).innerHTML = TEXT_MODAL_HEADER_TITLE;
+                    }
+                    if (!!document.querySelector(QUERY_MODAL_HEADER_CLOSE_BUTTON)) {
+                        document.querySelector(QUERY_MODAL_HEADER_CLOSE_BUTTON).remove();
                     }
                     // 2. If the api key form exists, user has approved via 2FA and we can begin authorization
                     if (document.getElementById(ID_API_KEY_FORM)) {
@@ -102,6 +111,7 @@ export const doExtractCoinbaseApiKeys = () => {
             }
         }))
         .then(apiKeys => AppRuntime.sendMessage(REQUEST_UPDATE_COINBASE_API_KEYS, apiKeys))
+        .then(() => window.location.replace(URL_COINBASE_POST_CONNECTION))
         // Handle errors here
         .catch(handleErrors);
 };

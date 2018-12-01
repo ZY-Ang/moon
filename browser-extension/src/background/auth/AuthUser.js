@@ -234,6 +234,7 @@ class AuthUser {
             name: data.identity.claims.nickname || data.identity.claims.name || data.identity.claims.email,
             email: data.identity.claims.email,
             email_verified: data.identity.claims.email_verified,
+            onboardingSkipExpiry: data.user.signUpState && data.user.signUpState.onboardingSkipExpiry,
             picture: data.identity.claims.picture,
             // TODO: Simply concatenate additional wallets to conform to shape
             wallets: coinbaseWallets.sort((a, b) => b.balance.localeCompare(a.balance))

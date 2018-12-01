@@ -6,8 +6,6 @@
  * Observes a particular DOM element for state mutations.
  * Particularly useful when used on a React App to obtain
  * OAuth flows, etc.
- *
- * TODO: Refactor to ES6
  */
 export const observeDOM = (obj, callback) => {
     const MutationObserver = window.MutationObserver || window.WebKitMutationObserver;

@@ -14,7 +14,7 @@ import {
     REQUEST_RESET_PASSWORD,
     REQUEST_SIGN_OUT,
     REQUEST_TEST_FUNCTION,
-    REQUEST_UPDATE_COINBASE_API_KEYS
+    REQUEST_UPDATE_COINBASE_API_KEYS, REQUEST_UPDATE_ONBOARDING_SKIP
 } from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut, doUpdateAuthUserEvent} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
@@ -23,7 +23,7 @@ import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKeyEvent} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
-import {doAddNonCheckoutReport, doAddSiteSupportRequest, getExchangeRate} from "./api/moon";
+import {doAddNonCheckoutReport, doAddSiteSupportRequest, getExchangeRate, updateOnboardingSkipExpiry} from "./api/moon";
 import {doPasswordReset} from "./auth";
 import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
@@ -87,6 +87,16 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [POLL_IS_COINBASE_AUTH_MODE]() {
             sendSuccess(store.getState().coinbaseState.isCoinbaseAuthFlow);
+        },
+        [REQUEST_UPDATE_ONBOARDING_SKIP]() {
+            updateOnboardingSkipExpiry(request.delay)
+                .then(doUpdateAuthUserEvent)
+                .then(() => sendSuccess(`updateOnboardingSkipExpiry(${request.delay}) skipped`))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`updateOnboardingSkipExpiry(${request.delay}) failed`);
+                });
+            return true;
         },
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
             doUpdateCoinbaseApiKeyEvent(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)

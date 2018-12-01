@@ -105,23 +105,23 @@ class SettingsTab extends Component {
                     {
                         process.env.NODE_ENV !== 'production' &&
                         <div className="mb-10">
-                            <button className="btn full-width" onClick={() => this.props.changeTab(TAB_GROUP_AUTH[TAB_DEVELOPER].index)}>
+                            <button className="btn w-100" onClick={() => this.props.changeTab(TAB_GROUP_AUTH[TAB_DEVELOPER].index)}>
                                 <FaIcon icon="wrench"/> Developers
                             </button>
                         </div>
                     }
                     <div className="mb-10">
-                        <button className="btn full-width" onClick={() => window.open("https://paywithmoon.com/#howitworks", "_blank")}><FaIcon icon="question"/> How Moon works</button>
+                        <button className="btn w-100" onClick={() => window.open("https://paywithmoon.com/#howitworks", "_blank")}><FaIcon icon="question"/> How Moon works</button>
                     </div>
                     <div className="mb-10">
-                        <button className="btn full-width" onClick={this.launchCoinbaseAuthFlow}><CoinbaseIcon/> Update your Coinbase account</button>
+                        <button className="btn w-100" onClick={this.launchCoinbaseAuthFlow}><CoinbaseIcon/> Update your Coinbase account</button>
                     </div>
                     <div className="mb-10">
-                        <button className="btn full-width" onClick={this.changePassword}><FaIcon icon="user"/> Change Password</button>
+                        <button className="btn w-100" onClick={this.changePassword}><FaIcon icon="user"/> Change Password</button>
                     </div>
-                    {/*<div className="mb-10"><button className="btn full-width" onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button></div>*/}
+                    {/*<div className="mb-10"><button className="btn w-100" onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button></div>*/}
                     <div className="mb-10">
-                        <button className="btn full-width" onClick={this.onGlobalSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
+                        <button className="btn w-100" onClick={this.onGlobalSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
                     </div>
                 </div>
             </div>

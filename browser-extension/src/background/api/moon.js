@@ -4,10 +4,14 @@
 
 import gql from "graphql-tag";
 import MoonGraphQL from "./MoonGraphQL";
+import {getDelayedDate} from "../../utils/datetime";
 
 const user = gql`
     query user {
         user {
+            signUpState {
+                onboardingSkipExpiry
+            }
             coinbaseInfo {
                 wallets {
                     id
@@ -33,6 +37,27 @@ export const getUser = async () => (await MoonGraphQL.authClient)
         fetchPolicy: 'network-only'
     });
 
+const onboardingSkipExpiry = gql`
+    mutation updateOnboardingSkipExpiry($onboardingSkipExpiry: AWSDateTime!) {
+        updateUser(input: {
+            userInformation: {
+                onboardingSkipExpiry: $onboardingSkipExpiry
+            }
+        }) {
+            signUpState {
+                onboardingSkipExpiry
+            }
+        }
+    }
+`;
+export const updateOnboardingSkipExpiry = async (hoursOffset) => (await MoonGraphQL.authClient)
+    .mutate({
+        mutation: onboardingSkipExpiry,
+        variables: {
+            onboardingSkipExpiry: getDelayedDate(!!hoursOffset ? hoursOffset : 168).toISOString()
+        }
+    });
+
 export const onUpdateUser = gql`
     subscription onUpdateUser {
         onUpdateUser {
@@ -49,8 +74,8 @@ export const onUpdateUser = gql`
 
 const exchangeRates = gql`
     query exchangeRates(
-    $quote: CoinbaseProQuoteCurrency!,
-    $base: CoinbaseProBaseCurrency!
+        $quote: CoinbaseProQuoteCurrency!,
+        $base: CoinbaseProBaseCurrency!
     ) {
         exchangeRate(quote: $quote, base: $base) {
             bid

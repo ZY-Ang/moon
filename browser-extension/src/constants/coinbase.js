@@ -25,6 +25,10 @@ export const ID_ADD_NEW_KEY_BUTTON = "add_new_key";
  */
 export const ID_API_KEYS_MODAL = "api_keys_modal";
 /**
+ * The expected HTML class for the modal
+ */
+export const CLASS_MODAL = "modal fade hide widget modal-overflow in";
+/**
  * The HTML element ID of the api key form
  */
 export const ID_API_KEY_FORM = "api_key_form";
@@ -33,9 +37,21 @@ export const ID_API_KEY_FORM = "api_key_form";
  */
 export const QUERY_BACKGROUND_MODAL = ".modal-backdrop.fade.in";
 /**
+ * The HTML query selector for the title component of the modal header
+ */
+export const QUERY_MODAL_HEADER_TITLE = ".modal-header h4";
+/**
+ * The text of the title in the modal header to be set to.
+ */
+export const TEXT_MODAL_HEADER_TITLE = "Link Moon to your Coinbase Account";
+/**
+ * The HTML query selector for the close button of the modal header
+ */
+export const QUERY_MODAL_HEADER_CLOSE_BUTTON = ".modal-header button,.modal-header a";
+/**
  * The HTML style to be applied to the background
  */
-export const STYLE_BACKGROUND_MODAL = "opacity:1.0;background-color:white";
+export const STYLE_BACKGROUND_MODAL = "opacity:1.0;background-color:#0667d0";
 /**
  * The HTML query selector for the all accounts checkbox in the auth flow
  */
@@ -70,3 +86,11 @@ export const INNER_TEXT_API_KEY = "API Key";
  * The identifier (starting string) of the API (secret) Key
  */
 export const INNER_TEXT_API_SECRET = "API Secret";
+/**
+ * The expected HTML display style for display:block
+ */
+export const STYLE_DISPLAY_BLOCK = "block";
+/**
+ * The HTML style for display:none
+ */
+export const STYLE_DISPLAY_NONE = "none";

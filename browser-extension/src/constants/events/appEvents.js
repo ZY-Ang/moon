@@ -26,6 +26,10 @@ export const TYPE_GOOGLE = "Google";
 /** Used to notify of authentication via Login With Amazon */
 export const TYPE_AMAZON = "Amazon";
 
+// --------------------- Onboarding Expiry ---------------------
+/** Used to skip onboarding for a week */
+export const REQUEST_UPDATE_ONBOARDING_SKIP = "MOON_REQUEST_UPDATE_ONBOARDING_SKIP";
+
 // --------------------- Launch Coinbase Auth Flow ---------------------
 /** Used to launch the coinbase auth flow */
 export const REQUEST_LAUNCH_COINBASE_AUTH_FLOW = "MOON_LAUNCH_COINBASE_AUTH_FLOW";
