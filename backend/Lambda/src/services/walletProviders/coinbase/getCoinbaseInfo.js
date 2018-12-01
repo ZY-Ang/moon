@@ -4,6 +4,8 @@
 import {Client as CoinbaseClient} from "coinbase";
 import getCoinbaseWallets from "./getCoinbaseWallets";
 import getCoinbaseCurrentUser from "./getCoinbaseCurrentUser";
+import logHead from "../../../utils/logHead";
+import logTail from "../../../utils/logTail";
 
 /**
  * Obtains relevant coinbase information for a given user's
@@ -11,16 +13,17 @@ import getCoinbaseCurrentUser from "./getCoinbaseCurrentUser";
  * @return {Promise<{coinbaseWallets: *, coinbaseUser: *}>}
  */
 const getCoinbaseInfo = async (userSecrets) => {
+    logHead("getCoinbaseInfo", {userSecrets});
     const isValidCoinbaseApiKeys = (
-        userSecrets &&
-        userSecrets.coinbaseApiKeys &&
-        userSecrets.coinbaseApiKeys.key &&
-        userSecrets.coinbaseApiKeys.secret
+        !!userSecrets &&
+        !!userSecrets.coinbaseApiKeys &&
+        !!userSecrets.coinbaseApiKeys.key &&
+        !!userSecrets.coinbaseApiKeys.secret
     );
     const coinbaseClient = (isValidCoinbaseApiKeys)
         ? new CoinbaseClient({
-            apiKey: coinbaseApiKeys.key,
-            apiSecret: coinbaseApiKeys.secret
+            apiKey: userSecrets.coinbaseApiKeys.key,
+            apiSecret: userSecrets.coinbaseApiKeys.secret
         })
         : null;
     const isValidCoinbaseClient = (!!coinbaseClient && coinbaseClient instanceof CoinbaseClient);
@@ -32,10 +35,13 @@ const getCoinbaseInfo = async (userSecrets) => {
             .catch(() => [null, null])
         : [null, null];
 
-    return {
+    const coinbaseInfo = {
         coinbaseWallets,
         coinbaseUser
     };
+
+    logTail("coinbaseInfo", coinbaseInfo);
+    return coinbaseInfo;
 };
 
 export default getCoinbaseInfo;

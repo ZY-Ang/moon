@@ -17,6 +17,8 @@ enum CoinbaseCurrency {
 
 # Coinbase information associated with a user
 type CoinbaseInfo {
+    # True if api keys have been added
+    apiKeysExist: Boolean
     # Coinbase user as defined by coinbase
     user: CoinbaseUser
     # A list of Coinbase wallets
@@ -151,20 +153,27 @@ type Subscription {
     @aws_subscribe(mutations: ["updateUser"])
 }
 
-# Input for updateCoinbaseApiKey
+# Input for UpdateCoinbaseApiKeys
 input UpdateCoinbaseApiKeysInput {
     key: String!
     secret: String!
     innerHTML: String!
 }
 
+# Input for UpdateUserInformation
+input UpdateUserInformationInput {
+    referredBy: AWSEmail
+    onboardingSkipExpiry: AWSDateTime
+}
+
 input UpdateUserInput {
+    userInformation: UpdateUserInformationInput
     coinbaseApiKeys: UpdateCoinbaseApiKeysInput
 }
 
 type User {
-    signUpState: SignUpState
-    coinbaseInfo: CoinbaseInfo
+    signUpState: SignUpState!
+    coinbaseInfo: CoinbaseInfo!
 }
 
 # A cryptocurrency wallet
