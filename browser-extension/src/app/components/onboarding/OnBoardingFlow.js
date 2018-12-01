@@ -37,9 +37,9 @@ class OnBoardingFlow extends React.Component {
     }
 
     skip = () => {
-        AppRuntime.sendMessage(REQUEST_UPDATE_ONBOARDING_SKIP)
+        AppRuntime.sendMessage(REQUEST_UPDATE_ONBOARDING_SKIP);
         // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
-            .then(() => this.props.delayAuthUserOnboarding());
+        this.props.delayAuthUserOnboarding();
     };
 
     render() {
