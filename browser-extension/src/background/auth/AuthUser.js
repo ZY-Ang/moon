@@ -15,7 +15,7 @@ import {
 } from "./url";
 import axios from "axios";
 import {WEBIDENTITY_IAM_ROLE_ARN} from "../config/aws/iam";
-import {getUser} from "../api/moon";
+import {getUser} from "../api/user";
 import MoonGraphQL from "../api/MoonGraphQL";
 
 /**
@@ -231,11 +231,11 @@ class AuthUser {
             }))
             : [];
         return {
-            name: data.identity.claims.nickname || data.identity.claims.name || data.identity.claims.email,
-            email: data.identity.claims.email,
-            email_verified: data.identity.claims.email_verified,
+            name: data.user.identity.claims.nickname || data.user.identity.claims.name || data.user.identity.claims.email,
+            email: data.user.identity.claims.email,
+            email_verified: data.user.identity.claims.email_verified,
             onboardingSkipExpiry: data.user.signUpState && data.user.signUpState.onboardingSkipExpiry,
-            picture: data.identity.claims.picture,
+            picture: data.user.identity.claims.picture,
             // TODO: Simply concatenate additional wallets to conform to shape
             wallets: coinbaseWallets.sort((a, b) => b.balance.localeCompare(a.balance))
         };

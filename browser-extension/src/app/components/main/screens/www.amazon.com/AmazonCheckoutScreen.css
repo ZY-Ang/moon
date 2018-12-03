@@ -1,17 +1,43 @@
 .sequence {
-
+    padding-left: 24px;
+    position: relative;
+    margin-left: 25px;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 14px;
+    border-color: #d3d5d8;
 }
 
 .sequence li:first-child {
-
+    margin-top: 16px;
 }
 
-.sequence li:first-child::before {
-
+.sequence li::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    z-index: 2;
+    border-width: 4px;
+    border-style: solid;
+    border-color: inherit;
+    outline: 0;
 }
 
-.sequence li:first-child::after {
-
+.sequence li::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    border-style: solid;
+    border-color: inherit;
+    outline: 0;
+    border-width: 0;
+    background-color: #d3d5d8;
+    background-size: 200% 200%;
+    background-position: 0 0%;
 }
 
 .sequence li:last-child {

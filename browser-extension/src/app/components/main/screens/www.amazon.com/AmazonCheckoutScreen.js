@@ -146,7 +146,7 @@ class AmazonCheckoutScreen extends React.Component {
                     </div>
                 }
                 <ul className="sequence">
-                    <li>Conversion Rate: 1 {paymentCurrency} = {cartCurrency} {exchangeRate}</li>
+                    <li>Conversion Rate: <b><i>1 {paymentCurrency} = {cartCurrency} {exchangeRate}</i></b></li>
                 </ul>
                 <div className="checkout-section">
                     <div className="checkout-section-label">You Pay</div>
@@ -165,7 +165,7 @@ class AmazonCheckoutScreen extends React.Component {
                 </div>
                 {
                     authUserHasWallets &&
-                    <div className="checkout-payment-button">
+                    <div className="checkout-payment-button mt-2">
                         <button className="btn btn-primary btn-pay">
                             Pay with Moon
                         </button>

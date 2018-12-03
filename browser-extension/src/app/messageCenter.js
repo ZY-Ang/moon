@@ -15,7 +15,6 @@ import {doExtractCoinbaseApiKeys} from "./wallets/coinbase";
 import {updateAuthUser} from "./utils/auth";
 import {injectButton} from "./buttonMoon";
 import {handleErrors} from "../utils/errors";
-import loadPageInformation from "./pageInformation";
 import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE, ACTION_SET_TAB,

@@ -7,7 +7,7 @@ import {
     ACTION_SET_TAB, ACTION_SET_SELECTED_WALLET
 } from "./constants";
 import {isValidAuthUser} from "../../utils/auth";
-import {getDelayedDate} from "../../../utils/datetime";
+import {getDelayedHours} from "../../../utils/datetime";
 
 /* -----------------     Initial State     ------------------ */
 
@@ -72,7 +72,7 @@ function sessionReducer(state = INITIAL_STATE, action) {
             return applySetAuthUser(state, {
                 authUser: {
                     ...state.authUser,
-                    onboardingSkipExpiry: getDelayedDate(168).toISOString()
+                    onboardingSkipExpiry: getDelayedHours(168).toISOString()
                 }
             });
         },

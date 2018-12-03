@@ -3,7 +3,7 @@
  */
 import Tabs from "../browser/Tabs";
 import {REQUEST_UPDATE_PAGE_INFORMATION} from "../../constants/events/backgroundEvents";
-import {getSiteInformation} from "../api/moon";
+import {getSiteInformation} from "../api/siteInformation";
 
 export const doUpdatePageInfoEvent = async (url) => {
     try {
