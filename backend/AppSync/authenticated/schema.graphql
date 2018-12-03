@@ -133,7 +133,7 @@ type PaymentPayload {
 
 # Queries (static). Naming convention: NOUNS
 type Query {
-    # Returns information about the callee's JWT
+    # Returns information about the callee's JWT. TODO: Remove after v1.0 safely deploys
     identity: OIDCIdentity
     # Returns user information belonging to the callee
     user: User
@@ -172,8 +172,12 @@ input UpdateUserInput {
 }
 
 type User {
+    # The User's OIDC identity if operation is performed directly by the callee
+    identity: OIDCIdentity
+    # The User's sign up state
     signUpState: SignUpState!
-    coinbaseInfo: CoinbaseInfo!
+    # The User's coinbase information, if exist
+    coinbaseInfo: CoinbaseInfo
 }
 
 # A cryptocurrency wallet
