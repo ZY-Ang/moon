@@ -13,24 +13,20 @@ import {
     ROUTE_AMAZON_CHECKOUT_MUSIC
 } from "./www.amazon.com/constants/routes";
 
-const INITIAL_STATE = {
-    host: window.location.host,
-    pathname: window.location.pathname
-};
-
 /**
  * Host-ful and Pathname-ful router for the first page of the main flow
  */
 class MainScreen extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            ...INITIAL_STATE
-        };
-    }
+    parseURL = () => {
+        try {
+            return new URL(this.props.tab.url);
+        } catch (e) {
+            return new URL(window.location.href);
+        }
+    };
 
     render() {
-        const {host, pathname} = this.state;
+        const {host, pathname} = this.parseURL();
         const componentMap = {
             // TODO: Use regex in an array like Google's manifest.json to figure out which component to parse
             "www.amazon.com": [
@@ -70,8 +66,12 @@ class MainScreen extends React.Component {
     }
 }
 
+const mapStateToProps = (state) => ({
+    tab: state.sessionState.tab
+});
+
 const mapDispatchToProps = (dispatch) => ({
     onPushScreen: (screen) => dispatch({screen, type: ACTION_PUSH_SCREEN})
 });
 
-export default connect(null, mapDispatchToProps)(MainScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(MainScreen);

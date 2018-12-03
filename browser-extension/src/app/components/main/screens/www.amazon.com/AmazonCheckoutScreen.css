@@ -1,0 +1,131 @@
+.sequence {
+
+}
+
+.sequence li:first-child {
+
+}
+
+.sequence li:first-child::before {
+
+}
+
+.sequence li:first-child::after {
+
+}
+
+.sequence li:last-child {
+
+}
+
+.sequence li:last-child::before {
+
+}
+
+.sequence li:last-child::after {
+
+}
+
+.checkout-section {
+    display: flex;
+    align-items: center;
+    -webkit-font-smoothing: initial;
+    background-color: #fff;
+    border-radius: 3px;
+    box-shadow: 0 0 2px 1px rgba(0,0,0,.2);
+    box-sizing: border-box;
+}
+
+.checkout-section-label {
+    opacity: 0.75;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px 0 12px 10px;
+}
+
+.checkout-order-total-value {
+    margin-left: auto;
+    padding-right: 6px;
+}
+
+.checkout-order-total-value input {
+    /*TODO: Auto font size using React*/
+    font-family: monospace, Courier New, Courier !important;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: right;
+    background: none;
+    border: none;
+    width: fit-content;
+}
+
+.checkout-section-currency-flag {
+    cursor: pointer;
+    color: white;
+    background-color: #2E2F33;
+    align-items: center;
+    border-bottom-right-radius: 3px;
+    border-top-right-radius: 3px;
+    display: flex;
+    height: 44px;
+    padding: 0 10px;
+    -webkit-transition: background-color 0.2s ease;
+    -moz-transition: background-color 0.2s ease;
+    -ms-transition: background-color 0.2s ease;
+    -o-transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease;
+}
+
+.checkout-section-currency-flag:hover {
+    opacity: 0.9;
+    background-color: #1F3384;
+}
+
+.checkout-section-currency-flag img {
+    height: 32px;
+    padding-left: 4px;
+}
+
+.checkout-wallet-select-selected-wallet {
+
+}
+
+.checkout-wallet-select-selected-wallet-name {
+
+}
+
+.checkout-wallet-select-selected-wallet-balance {
+
+}
+
+.checkout-wallet-select-selected-wallet-balance-base {
+
+}
+
+.checkout-wallet-select-change {
+
+}
+
+.checkout-wallet-select-change button svg {
+    height: 12px;
+}
+
+.checkout-payment-total-value {
+    margin-left: auto;
+    padding-right: 6px;
+}
+
+.checkout-payment-total-value input {
+    /*TODO: Auto font size using React*/
+    font-family: monospace, Courier New, Courier !important;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: right;
+    background: none;
+    border: none;
+    width: fit-content;
+}
+
+.checkout-payment-button {
+
+}

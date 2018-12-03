@@ -4,7 +4,7 @@
 
 import {
     ACTION_SET_AUTH_USER, ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP,
-    ACTION_SET_PAGE_INFORMATION, ACTION_SET_SELECTED_WALLET
+    ACTION_SET_TAB, ACTION_SET_SELECTED_WALLET
 } from "./constants";
 import {isValidAuthUser} from "../../utils/auth";
 import {getDelayedDate} from "../../../utils/datetime";
@@ -17,15 +17,7 @@ import {getDelayedDate} from "../../../utils/datetime";
 const INITIAL_STATE = {
     authUser: null,
     selectedWallet: null,
-    pageInformation: {
-        isCheckoutPage: false,
-        cartAmount: null,
-        cartCurrency: null,
-        productTitle: null,
-        productImageURL: null,
-        productImageAlt: null,
-        productPrice: null
-    }
+    tab: {}
 };
 
 
@@ -59,12 +51,9 @@ const applySetSelectedWallet = (state, action) => ({
 /**
  * Action to set the {@code pageInformation} in the store based on the specified action
  */
-const applySetSiteInformation = (state, action) => ({
+const applySetTab = (state, action) => ({
     ...state,
-    pageInformation: {
-        ...state.pageInformation,
-        ...action.pageInformation
-    }
+    tab: action.tab
 });
 
 /* -----------------     Session Reducer     ------------------ */
@@ -87,8 +76,8 @@ function sessionReducer(state = INITIAL_STATE, action) {
                 }
             });
         },
-        [ACTION_SET_PAGE_INFORMATION]() {
-            return applySetSiteInformation(state, action);
+        [ACTION_SET_TAB]() {
+            return applySetTab(state, action);
         }
     };
     if (!!action.type && !!reducerMap[action.type]) {

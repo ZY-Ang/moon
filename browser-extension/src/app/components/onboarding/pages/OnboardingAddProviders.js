@@ -25,7 +25,7 @@ class OnboardingAddProviders extends React.Component {
         return (
             <div className="onboarding-tab">
                 <h2>Add one of our supported wallet providers to get started</h2>
-                <div className="mb-10 w-100">
+                <div className="mb-2 w-100">
                     <button className="btn w-80 btn-coinbase" onClick={this.launchCoinbaseAuthFlow}>
                         <div className="btn-brand-icon"><CoinbaseIcon/></div>
                         <div className="btn-brand-text">Connect Coinbase</div>

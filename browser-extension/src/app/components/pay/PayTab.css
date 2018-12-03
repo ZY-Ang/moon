@@ -2,26 +2,6 @@
  * Copyright (c) 2018 moon
  */
 
-.site-logo {
-    height: 36px;
-}
-
-.site-logo::selection {
-    background-color: transparent;
-}
-
-.site-logo::-moz-selection {
-    background-color: transparent;
-}
-
-.site-logo.unsupported {
-    height: auto;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .product-image {
     height: 100px;
 }

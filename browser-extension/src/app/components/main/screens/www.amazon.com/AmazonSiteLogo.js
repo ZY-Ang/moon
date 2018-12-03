@@ -1,4 +1,5 @@
 import React from "react";
+import "./AmazonSiteLogo.css";
 
 const AmazonSiteLogo = () => (
     <img

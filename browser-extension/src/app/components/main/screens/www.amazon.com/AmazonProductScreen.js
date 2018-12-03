@@ -1,4 +1,5 @@
 import React from "react";
+import "./AmazonProductScreen.css";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";

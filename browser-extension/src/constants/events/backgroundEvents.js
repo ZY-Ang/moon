@@ -13,6 +13,10 @@ export const SOURCE_MANUAL = "MOON_SOURCE_MANUAL";
 /** Used to notify that the injected app was triggered by non-critical events and no rendering should occur */
 export const SOURCE_NONE = "MOON_SOURCE_NONE";
 
+// --------------------- Tab Info Update ---------------------
+/** Used to request an update of the tab information which does not exist on the content script */
+export const REQUEST_UPDATE_TAB = "MOON_REQUEST_TAB_UPDATE";
+
 // --------------------- Notify Payment Completion ---------------------
 /** Used to notify a completion of the payment payload script and shut off UI blocker */
 export const REQUEST_PAYMENT_COMPLETED_OFF_MODAL = "MOON_REQUEST_PAYMENT_COMPLETED_OFF_MODAL";
@@ -20,10 +24,6 @@ export const REQUEST_PAYMENT_COMPLETED_OFF_MODAL = "MOON_REQUEST_PAYMENT_COMPLET
 // --------------------- Auth User Update ---------------------
 /** Used to request an update to the current authenticated user from the background script */
 export const REQUEST_UPDATE_AUTH_USER = "MOON_REQUEST_UPDATE_AUTH_USER";
-
-// --------------------- Page Info Update ---------------------
-/** Used to request an update of the page information */
-export const REQUEST_UPDATE_PAGE_INFORMATION = "MOON_REQUEST_UPDATE_PAGE_INFORMATION";
 
 // --------------------- Coinbase API Keys ---------------------
 /** Used to request an extraction of API keys */

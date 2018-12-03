@@ -4,9 +4,13 @@
 import React from "react";
 import './ErrorBody.css';
 import {connect} from "react-redux";
-import {ACTION_SET_APP_MODAL_ERROR_STATE} from "../../../../redux/reducers/constants";
+import {
+    ACTION_PUSH_SCREEN,
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    SCREEN_HELP_TAWK
+} from "../../../../redux/reducers/constants";
 
-const ErrorBody = ({isActive, text, onSetAppModalErrorState}) => !!isActive && !!onSetAppModalErrorState ? (
+const ErrorBody = ({isActive, text, onSetAppModalErrorState, onPushScreen}) => !!isActive && !!onSetAppModalErrorState && !!onPushScreen ? (
     <div className="app-modal">
         <div
             style={{width: 80, height: 80, borderWidth: 4, borderStyle: 'solid', borderColor: 'rgb(212, 63, 58)', borderRadius: '50%', margin: '20px auto', position: 'relative', boxSizing: 'content-box', animation: 'animateErrorIcon 0.5s'}}
@@ -18,12 +22,13 @@ const ErrorBody = ({isActive, text, onSetAppModalErrorState}) => !!isActive && !
         </div>
         <div className="text-center" style={{padding:'0 30px'}}>
             <p>{text}</p>
+            <p>If the error persists, <a style={{cursor: 'pointer'}} onClick={() => {onSetAppModalErrorState({isActive: false});onPushScreen(SCREEN_HELP_TAWK);}}><u><i>contact us</i></u></a> for support.</p>
         </div>
         <button
             className="btn"
             onClick={() => onSetAppModalErrorState({isActive: false})}
         >
-            Oh man
+            Got it
         </button>
     </div>
 ) : null;
@@ -34,6 +39,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    onPushScreen: (screen) => dispatch({screen, type: ACTION_PUSH_SCREEN}),
     onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE})
 });
 

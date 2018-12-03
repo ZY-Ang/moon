@@ -5,7 +5,7 @@
 import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
     REQUEST_INJECT_APP, REQUEST_PAYMENT_COMPLETED_OFF_MODAL,
-    REQUEST_UPDATE_AUTH_USER, REQUEST_UPDATE_PAGE_INFORMATION
+    REQUEST_UPDATE_AUTH_USER, REQUEST_UPDATE_TAB
 } from "../constants/events/backgroundEvents";
 import store from "./redux/store";
 import {toggleApp} from "./index";
@@ -18,7 +18,7 @@ import {handleErrors} from "../utils/errors";
 import loadPageInformation from "./pageInformation";
 import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
-    ACTION_SET_APP_MODAL_SUCCESS_STATE,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE, ACTION_SET_TAB,
     ACTION_SET_UI_BLOCKER_STATE
 } from "./redux/reducers/constants";
 
@@ -40,6 +40,7 @@ const messageCenter = (request, sender, sendResponse) => {
     }
     const messageResolver = {
         [REQUEST_INJECT_APP]() {
+            store.dispatch({type: ACTION_SET_TAB, tab: request.tab});
             Promise.all([
                 toggleApp(request.source),
                 updateAuthUser(request.authUser).catch(handleErrors)
@@ -70,7 +71,7 @@ const messageCenter = (request, sender, sendResponse) => {
                 store.dispatch({
                     type: ACTION_SET_APP_MODAL_ERROR_STATE,
                     isActive: true,
-                    text: "Something went wrong! Please try again or contact us for support."
+                    text: "Something went wrong! Please try again."
                 });
             } else {
                 store.dispatch({
@@ -81,14 +82,9 @@ const messageCenter = (request, sender, sendResponse) => {
             }
             sendSuccess(true);
         },
-        [REQUEST_UPDATE_PAGE_INFORMATION]() {
-            loadPageInformation(request.siteInformation)
-                .then(() => sendSuccess(`loadPageInformation(${JSON.stringify(request.siteInformation)}) completed`))
-                .catch(err => {
-                    handleErrors(err);
-                    sendFailure(`loadPageInformation(${JSON.stringify(request.siteInformation)}) failed`);
-                });
-            return true;
+        [REQUEST_UPDATE_TAB]() {
+            store.dispatch({type: ACTION_SET_TAB, tab: request.tab});
+            sendSuccess(true);
         },
         [REQUEST_COINBASE_EXTRACT_API_KEYS]() {
             doExtractCoinbaseApiKeys();

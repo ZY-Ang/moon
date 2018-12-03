@@ -44,7 +44,7 @@ const initializeApp = () => {
  * appropriate render logic. Or, if an app
  * already exists, remove it from the DOM.
  */
-export const toggleApp = async (source) => {
+export const toggleApp = async (source, tabInfo) => {
     console.log("toggleApp request received from ", source);
     // Attempt to get the wrapper div
     let moonDiv = document.getElementById(MOON_DIV_ID);

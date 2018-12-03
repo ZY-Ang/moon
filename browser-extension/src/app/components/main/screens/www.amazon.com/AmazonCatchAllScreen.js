@@ -1,16 +1,12 @@
 import React from "react";
-import {observeDOM} from "../../../../utils/dom";
 import {
     POSSIBLE_SCREENS,
-    SCREEN_AMAZON_CHECKOUT,
     SCREEN_AMAZON_NOT_AT_CHECKOUT, SCREEN_AMAZON_PRODUCT
 } from "../../../../redux/reducers/constants";
 import {
-    querySelectorParseObserver,
     querySelectorProductImage,
     querySelectorProductTitle
 } from "./constants/querySelectors";
-import {ROUTE_AMAZON_CHECKOUT_MUSIC} from "./constants/routes";
 
 /**
  * Parses the page and renders the appropriate screen as opposed to checking window.location.href
@@ -25,10 +21,6 @@ class AmazonCatchAllScreen extends React.Component {
 
     componentWillMount() {
         this.parse();
-        const elementTreesToObserve = document.querySelectorAll(querySelectorParseObserver);
-        for (let element of elementTreesToObserve) {
-            observeDOM(element, this.parse);
-        }
     }
 
     parse = () => {

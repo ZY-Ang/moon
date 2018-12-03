@@ -6,13 +6,17 @@
 
 .tawk-live-chat-tab-back-button-wrapper {
     padding-left: 16px;
+    position: absolute;
+    height: 45px;
+    width: 100px;
+    background: white;
 }
 
 .tawk-live-chat-iframe-wrapper {
-    height: calc(100% - 34px);
+    height: calc(100% + 12px);
     overflow: hidden;
-    padding-top: 34px;
     border-radius: 5px;
+    margin-top: -12px;
 }
 
 .tawk-live-chat-iframe-wrapper iframe {
