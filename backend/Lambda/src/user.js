@@ -32,6 +32,7 @@ const user = async (event) => {
         .catch(() => [null]);
 
     const user = {
+        identity,
         signUpState: {
             referredBy: userInformation && userInformation.referredBy,
             onboardingSkipExpiry: userInformation && userInformation.onboardingSkipExpiry && moment(userInformation.onboardingSkipExpiry, "x").toISOString()
