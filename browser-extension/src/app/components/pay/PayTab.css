@@ -34,15 +34,6 @@
     justify-content: center;
 }
 
-.settings-icon {
-    cursor: pointer;
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 5px 16px 0 0;
-    width: 20px;
-}
-
 .btn.btn-pay {
     text-overflow: ellipsis;
     overflow: hidden;

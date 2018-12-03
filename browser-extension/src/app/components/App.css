@@ -147,7 +147,7 @@
     overflow-y: auto;
 }
 
-.moon-tab .btn-nav-back {
+.btn-nav-back {
     font-weight: bold;
     cursor: pointer;
     padding-top: 5px;
@@ -156,7 +156,7 @@
     align-items: center;
 }
 
-.moon-tab .btn-nav-back svg {
+.btn-nav-back svg {
     width: 16px;
     padding-right: 5px;
 }

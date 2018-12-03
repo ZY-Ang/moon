@@ -26,6 +26,7 @@ import {injectButton} from "./buttonMoon";
 const initializeApp = () => {
     const moonDiv = document.getElementById(MOON_DIV_ID);
     if (!!moonDiv) {
+        // FIXME: On re-render, poll background for authUser to immediately update UI
         console.log("moonDiv found, re-rendering app");
         moonDiv.remove();
         toggleApp(SOURCE_MANUAL)

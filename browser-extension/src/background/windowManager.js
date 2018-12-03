@@ -17,7 +17,6 @@ import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
 import {isCoinbaseSettingsApiUrl, isCoinbaseSignInUrl, isCoinbaseUrl} from "../utils/coinbase";
-import {doUpdatePageInfoEvent} from "./pageInformation";
 
 /**
  * Sends an app injection event message to the
@@ -70,17 +69,15 @@ export const tabDidUpdate = (tab) => {
         // URL on the current tab is supported and is a checkout page - auto render the extension
         const injectAppConditionalPromise = isCheckoutPage(tab.url)
             ? doInjectAppEvent(tab.url)
-            : Promise.resolve();
+            : doUpdateAuthUserEvent();
 
         injectAppConditionalPromise
-            .then(() => doUpdatePageInfoEvent(tab.url))
             .catch(handleErrors);
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
         BrowserAction.setInvalidIcon(tab.id).catch(handleErrors);
         doUpdateAuthUserEvent()
-            .then(() => doUpdatePageInfoEvent(tab.url))
             .catch(handleErrors);
 
     }

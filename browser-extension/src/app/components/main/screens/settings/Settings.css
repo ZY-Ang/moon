@@ -1,0 +1,12 @@
+.settings-icon-parent {
+    position: relative;
+}
+
+.settings-icon {
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px 0 0 0;
+    width: 20px;
+}

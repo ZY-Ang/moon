@@ -7,7 +7,11 @@ import {
     ACTION_TOGGLE_IS_APP_ACTIVE,
     ACTION_SET_UI_BLOCKER_STATE,
     ACTION_SET_APP_MODAL_ERROR_STATE,
-    ACTION_SET_APP_MODAL_LOADING_STATE, ACTION_SET_APP_MODAL_SUCCESS_STATE
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE,
+    ACTION_POP_SCREEN,
+    ACTION_PUSH_SCREEN,
+    POSSIBLE_SCREENS, SCREEN_UNSUPPORTED, ACTION_SET_SCREEN, SCREEN_MAIN
 } from "./constants";
 
 /* -----------------     Initial State     ------------------ */
@@ -33,7 +37,11 @@ const INITIAL_STATE = {
         isActive: false,
         title: "",
         subTitle: ""
-    }
+    },
+    mainFlowIndex: 0,
+    mainFlowTabs: [
+        SCREEN_MAIN
+    ]
 };
 
 
@@ -91,6 +99,52 @@ const applySetUIBlockerState = (state, action) => ({
     }
 });
 
+/**
+ * Action to forcibly set the screen state
+ * @warning I hope you know what you're doing
+ */
+const doSetScreenState = (state, action) => ({
+    ...state,
+    mainFlowIndex: action.mainFlowIndex || state.mainFlowIndex,
+    mainFlowTabs: action.mainFlowTabs || state.mainFlowTabs
+});
+
+/**
+ * Action to pop the current tab and return to the previous tab
+ */
+const doPopScreenState = (state) => {
+    if (state.mainFlowIndex <= 0) {
+        console.warn("There are no more screens to be popped");
+        return state;
+    } else {
+        return {
+            ...state,
+            mainFlowIndex: state.mainFlowIndex - 1
+        };
+    }
+};
+
+/**
+ * Action to push a new screen onto the stack or the unsupported screen if not a known screen
+ */
+const doPushScreenState = (state, action) => {
+    const mainFlowIndex = state.mainFlowIndex + 1;
+    if (!action.screen || !POSSIBLE_SCREENS[action.screen]) {
+        // Screen invalid or unknown - push an unsupported screen
+        return {
+            ...state,
+            mainFlowIndex,
+            mainFlowTabs: [...state.mainFlowTabs.slice(0, mainFlowIndex), SCREEN_UNSUPPORTED]
+        };
+    } else {
+        return {
+            ...state,
+            mainFlowIndex,
+            mainFlowTabs: [...state.mainFlowTabs.slice(0, mainFlowIndex), action.screen]
+        };
+    }
+};
+
 /* -----------------     Session Reducer     ------------------ */
 /**
  * Session Reducer that manages all actions related to the store
@@ -114,6 +168,15 @@ function appReducer(state = INITIAL_STATE, action) {
         },
         [ACTION_SET_UI_BLOCKER_STATE](){
             return applySetUIBlockerState(state, action);
+        },
+        [ACTION_SET_SCREEN](){
+            return doSetScreenState(state, action);
+        },
+        [ACTION_POP_SCREEN](){
+            return doPopScreenState(state);
+        },
+        [ACTION_PUSH_SCREEN](){
+            return doPushScreenState(state, action);
         }
     };
     if (!!action.type && !!reducerMap[action.type]) {

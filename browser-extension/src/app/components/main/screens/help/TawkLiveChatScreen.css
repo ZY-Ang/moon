@@ -1,0 +1,20 @@
+.tawk-live-chat-tab {
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+}
+
+.tawk-live-chat-tab-back-button-wrapper {
+    padding-left: 16px;
+}
+
+.tawk-live-chat-iframe-wrapper {
+    height: calc(100% - 34px);
+    overflow: hidden;
+    padding-top: 34px;
+    border-radius: 5px;
+}
+
+.tawk-live-chat-iframe-wrapper iframe {
+    border: none;
+}
