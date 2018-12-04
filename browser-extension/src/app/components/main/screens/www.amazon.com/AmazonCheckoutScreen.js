@@ -20,7 +20,7 @@ import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../util
 import FaIcon from "../../../misc/fontawesome/FaIcon";
 import {handleErrors} from "../../../../../utils/errors";
 
-const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
+export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
 const INITIAL_STATE = {
     isShowingWallets: false,
     selectedQuickViewCurrency: QUICKVIEW_CURRENCIES[0],

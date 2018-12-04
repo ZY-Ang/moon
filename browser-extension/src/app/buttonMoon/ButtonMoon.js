@@ -5,7 +5,7 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {ACTION_SET_IS_APP_ACTIVE} from "../redux/reducers/constants";
 import AppRuntime from "../browser/AppRuntime";
-import whiteLogo from "../../../../assets/icons/logo_12_text.png";
+import whiteLogo from "../../../../assets/icons/logo_32_text_thick.png";
 import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
 import {toggleApp} from "../index";
 import {handleErrors} from "../../utils/errors";
