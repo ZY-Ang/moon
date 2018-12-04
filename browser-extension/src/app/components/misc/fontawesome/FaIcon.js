@@ -31,6 +31,7 @@ import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
 import {faCaretUp} from '@fortawesome/free-solid-svg-icons/faCaretUp';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
+import {faChevronRight} from '@fortawesome/free-solid-svg-icons/faChevronRight';
 
 library.add(faFacebook, faGoogle, faAmazon);
 library.add(
@@ -49,7 +50,8 @@ library.add(
     faChevronLeft,
     faWrench,
     faCaretUp,
-    faChevronDown
+    faChevronDown,
+    faChevronRight
 );
 
 export default FaIcon;
