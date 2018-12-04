@@ -12,12 +12,25 @@ import {
     isValidWebUrl
 } from "../utils/url";
 import {doOnAuthFlowResponse, doUpdateAuthUserEvent} from "./auth/index";
-import {REQUEST_COINBASE_EXTRACT_API_KEYS, REQUEST_INJECT_APP} from "../constants/events/backgroundEvents";
+import {
+    REQUEST_COINBASE_EXTRACT_API_KEYS,
+    REQUEST_INJECT_APP,
+    REQUEST_UPDATE_TAB
+} from "../constants/events/backgroundEvents";
 import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
 import {isCoinbaseSettingsApiUrl, isCoinbaseSignInUrl, isCoinbaseUrl} from "../utils/coinbase";
-import {doUpdatePageInfoEvent} from "./pageInformation";
+
+/**
+ * Sends a tab update event to the content script
+ * to notify of SPA changes undetectable by standard
+ * Javascript APIs
+ *
+ * @param tab - Extension API tab object
+ */
+export const doUpdateTabEvent = async (tab) =>
+    Tabs.sendMessage(tab.id, REQUEST_UPDATE_TAB, {tab});
 
 /**
  * Sends an app injection event message to the
@@ -26,9 +39,21 @@ import {doUpdatePageInfoEvent} from "./pageInformation";
  * @param source - one of the the source constants
  *      defined in the events constants or the URL
  *      of the current tab.
+ * @param tab - Extension API tab object
  */
-export const doInjectAppEvent = async (source) =>
-    Tabs.sendMessageToActive(REQUEST_INJECT_APP, {authUser: (await AuthUser.getCurrent().then(authUser => authUser.trim()).catch(() => null)), source});
+export const doInjectAppEvent = async (source, tab) => {
+    if (!tab) {
+        return Tabs.getActive()
+            .then(activeTab => {
+                if (!!activeTab) {
+                    return doInjectAppEvent(source, activeTab);
+                }
+            });
+    } else {
+        const authUser = await AuthUser.getCurrent().then(authUser => authUser.trim()).catch(() => null);
+        return Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
+    }
+};
 
 /**
  * Handler for when a {@param tab} is updated.
@@ -69,18 +94,18 @@ export const tabDidUpdate = (tab) => {
 
         // URL on the current tab is supported and is a checkout page - auto render the extension
         const injectAppConditionalPromise = isCheckoutPage(tab.url)
-            ? doInjectAppEvent(tab.url)
-            : Promise.resolve();
+            ? doInjectAppEvent(tab.url, tab)
+            : doUpdateAuthUserEvent();
 
         injectAppConditionalPromise
-            .then(() => doUpdatePageInfoEvent(tab.url))
+            .then(() => doUpdateTabEvent(tab))
             .catch(handleErrors);
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
         BrowserAction.setInvalidIcon(tab.id).catch(handleErrors);
-        doUpdateAuthUserEvent()
-            .then(() => doUpdatePageInfoEvent(tab.url))
+        doUpdateTabEvent(tab)
+            .then(doUpdateAuthUserEvent)
             .catch(handleErrors);
 
     }

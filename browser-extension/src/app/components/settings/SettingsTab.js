@@ -2,7 +2,6 @@
  * Copyright (c) 2018 moon
  */
 import React, {Component} from 'react';
-import './SettingsTab.css';
 import {connect} from "react-redux";
 import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
@@ -49,7 +48,7 @@ class SettingsTab extends Component {
             .then(() => this.props.onSetAppModalSuccessState({isActive: true, text: "A password reset link has been sent to your email!"}))
             .catch(err => {
                 handleErrors(err);
-                this.props.onSetAppModalErrorState({isActive: true, text: "Something went wrong! Please try again or contact us for support."});
+                this.props.onSetAppModalErrorState({isActive: true, text: "Something went wrong! Please try again."});
             })
             .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
         if (event) {
@@ -96,7 +95,7 @@ class SettingsTab extends Component {
                         {
                             !!this.props.authUser.name &&
                             <div>
-                                <p>Hello {this.props.authUser.name}</p>
+                                <p>Welcome, {this.props.authUser.name}</p>
                             </div>
                         }
                     </div>
@@ -104,23 +103,23 @@ class SettingsTab extends Component {
                 <div className="moon-settings-menu overflow-y-auto">
                     {
                         process.env.NODE_ENV !== 'production' &&
-                        <div className="mb-10">
+                        <div className="mb-2">
                             <button className="btn w-100" onClick={() => this.props.changeTab(TAB_GROUP_AUTH[TAB_DEVELOPER].index)}>
                                 <FaIcon icon="wrench"/> Developers
                             </button>
                         </div>
                     }
-                    <div className="mb-10">
+                    <div className="mb-2">
                         <button className="btn w-100" onClick={() => window.open("https://paywithmoon.com/#howitworks", "_blank")}><FaIcon icon="question"/> How Moon works</button>
                     </div>
-                    <div className="mb-10">
+                    <div className="mb-2">
                         <button className="btn w-100" onClick={this.launchCoinbaseAuthFlow}><CoinbaseIcon/> Update your Coinbase account</button>
                     </div>
-                    <div className="mb-10">
+                    <div className="mb-2">
                         <button className="btn w-100" onClick={this.changePassword}><FaIcon icon="user"/> Change Password</button>
                     </div>
-                    {/*<div className="mb-10"><button className="btn w-100" onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button></div>*/}
-                    <div className="mb-10">
+                    {/*<div className="mb-2"><button className="btn w-100" onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button></div>*/}
+                    <div className="mb-2">
                         <button className="btn w-100" onClick={this.onGlobalSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
                     </div>
                 </div>

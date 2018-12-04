@@ -8,6 +8,7 @@ import {connect} from "react-redux";
 import FaIcon from "../misc/fontawesome/FaIcon";
 import AppRuntime from "../../browser/AppRuntime";
 import {REQUEST_GET_EXCHANGE_RATE} from "../../../constants/events/appEvents";
+import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../utils/exchangerates";
 
 class WalletSelector extends Component {
     constructor() {
@@ -42,20 +43,6 @@ class WalletSelector extends Component {
         ) : null;
     }
 }
-
-const getRequiredAmountInQuote = (baseAmount, exchangeRate) => {
-    baseAmount = new Decimal(baseAmount);
-    exchangeRate = new Decimal(exchangeRate);
-    const riskFactor = (baseAmount.lt(10) || baseAmount.gt(2000))
-        ? new Decimal(1.0)
-        : new Decimal(1.0);
-    return baseAmount.dividedBy(exchangeRate).times(riskFactor).toFixed(8, Decimal.ROUND_UP);
-};
-const getWalletAmountInBase = (quoteAmount, exchangeRate) => {
-    quoteAmount = new Decimal(quoteAmount);
-    exchangeRate = new Decimal(exchangeRate);
-    return quoteAmount.times(exchangeRate).toFixed(2, Decimal.ROUND_DOWN);
-};
 
 class CheckoutCalculator extends Component {
     render() {
@@ -129,7 +116,7 @@ class CheckoutBody extends Component {
                     const requiredAmountInQuote = getRequiredAmountInQuote(cartAmount, exchangeRate.bid);
                     this.setState(() => ({
                         exchangeRate: exchangeRate.bid,
-                        walletBalanceInBase: getWalletAmountInBase(selectedWallet.balance, exchangeRate.bid),
+                        walletBalanceInBase: getWalletBalanceInBase(selectedWallet.balance, exchangeRate.bid),
                         requiredAmountInQuote,
                         isSufficient: (Decimal(selectedWallet.balance).gt(requiredAmountInQuote)),
                         topUpAmountInQuote: Decimal(requiredAmountInQuote).sub(selectedWallet.balance).toString()

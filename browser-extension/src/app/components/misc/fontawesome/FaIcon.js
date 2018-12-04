@@ -15,6 +15,7 @@ import {faAmazon} from "@fortawesome/free-brands-svg-icons/faAmazon";
 // import {} from '@fortawesome/free-regular-svg-icons';
 
 // Solid
+import {faHandsHelping} from "@fortawesome/free-solid-svg-icons/faHandsHelping";
 import {faChevronCircleUp} from '@fortawesome/free-solid-svg-icons/faChevronCircleUp';
 import {faDotCircle} from '@fortawesome/free-solid-svg-icons/faDotCircle';
 import {faCircle} from '@fortawesome/free-solid-svg-icons/faCircle';
@@ -29,9 +30,11 @@ import {faCog} from '@fortawesome/free-solid-svg-icons/faCog';
 import {faChevronLeft} from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
 import {faCaretUp} from '@fortawesome/free-solid-svg-icons/faCaretUp';
+import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
 
 library.add(faFacebook, faGoogle, faAmazon);
 library.add(
+    faHandsHelping,
     faChevronCircleUp,
     faDotCircle,
     faCircle,
@@ -45,7 +48,8 @@ library.add(
     faCog,
     faChevronLeft,
     faWrench,
-    faCaretUp
+    faCaretUp,
+    faChevronDown
 );
 
 export default FaIcon;

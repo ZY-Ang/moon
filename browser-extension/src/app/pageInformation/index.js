@@ -8,7 +8,7 @@ import Decimal from "decimal.js";
 import store from "../redux/store";
 import {
     ACTION_SET_APP_MODAL_LOADING_STATE,
-    ACTION_SET_PAGE_INFORMATION
+    ACTION_SET_TAB
 } from "../redux/reducers/constants";
 import {isCheckoutPage} from "../../utils/url";
 import {handleErrors} from "../../utils/errors";
@@ -80,7 +80,7 @@ const parsePageInformation = async (siteInformation) => {
 
 const setPageInformationState = (pageInformation) => {
     return store.dispatch({
-        type: ACTION_SET_PAGE_INFORMATION,
+        type: ACTION_SET_TAB,
         pageInformation
     });
 };

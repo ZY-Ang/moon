@@ -6,7 +6,7 @@ import store from "../redux/store";
 import {ACTION_SET_COINBASE_AUTH_FLOW} from "../redux/reducers/coinbase";
 import Windows from "../browser/Windows";
 import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
-import {doUpdateCoinbaseApiKey} from "../api/coinbase";
+import {doUpdateCoinbaseApiKey} from "../api/user";
 
 /**
  * Global timeout variable defined to

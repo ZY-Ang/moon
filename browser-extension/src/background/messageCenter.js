@@ -23,13 +23,14 @@ import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKeyEvent} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
-import {doAddNonCheckoutReport, doAddSiteSupportRequest, getExchangeRate, updateOnboardingSkipExpiry} from "./api/moon";
+import {updateOnboardingSkipExpiry} from "./api/user";
 import {doPasswordReset} from "./auth";
 import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
-import {doGetPaymentPayload, getSiteInformation} from "./api/moon";
-import {doUpdatePageInfoEvent} from "./pageInformation";
+import {doGetPaymentPayload} from "./api/user";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
+import {getExchangeRate} from "./api/exchangeRates";
+import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -100,8 +101,7 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
             doUpdateCoinbaseApiKeyEvent(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
-                .then(doUpdateAuthUserEvent)
-                .then(isAuthenticated => (isAuthenticated && doUpdatePageInfoEvent()));
+                .then(doUpdateAuthUserEvent);
             sendSuccess("doUpdateCoinbaseApiKeyEvent() started");
         },
         [REQUEST_GET_EXCHANGE_RATE]() {

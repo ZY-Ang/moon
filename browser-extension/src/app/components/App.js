@@ -7,7 +7,6 @@ import logo from '../../../../assets/icons/logo_300_text_dark.png';
 import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
 import {connect} from "react-redux";
 import AuthFlow from "./auth/AuthFlow";
-import SwipeableViews from "react-swipeable-views";
 import AppRuntime from "../browser/AppRuntime";
 import FaIcon from "./misc/fontawesome/FaIcon";
 import {ACTION_SET_IS_APP_ACTIVE} from "../redux/reducers/constants";
@@ -16,6 +15,7 @@ import UIBlocker from "./uiblocker/UIBlocker";
 import ErrorBody from "./misc/appmodals/error/ErrorBody";
 import SuccessBody from "./misc/appmodals/success/SuccessBody";
 import LoadingBody from "./misc/appmodals/loading/LoadingBody";
+import MainFlow from "./main/MainFlow";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -33,15 +33,6 @@ class App extends Component {
 
     componentDidMount() {
         console.log("Main App Mounted");
-        if (this.tabSwiper) {
-            setTimeout(this.tabSwiper.updateHeight, 100);
-        }
-    }
-
-    componentDidUpdate() {
-        if (this.tabSwiper) {
-            this.tabSwiper.updateHeight();
-        }
     }
 
     onToggleMaximize = () => {
@@ -58,20 +49,12 @@ class App extends Component {
         this.props.onSetIsAppActive(false);
     };
 
-    changeTab = (tabIndex) => {
-        const currentTabIndex = this.state.currentTabIndex;
-        if (tabIndex === currentTabIndex) {
-            // TODO: Pop inner stack for the currentTabIndex
-            console.log("Pop", currentTabIndex);
-        }
-        this.setState(() => ({
-            currentTabIndex: tabIndex
-        }));
-    };
-
     componentWillReceiveProps(nextProps) {
         if (!nextProps.authUser) {
             this.setState(() => INITIAL_STATE);
+        }
+        if (nextProps.isAppActive) {
+            this.onMouseLeaveHeaderButtons();
         }
     }
 
@@ -113,41 +96,23 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
-                        {
-                            !!this.props.authUser &&
-                            <div id="moon-body" className={CLASS_MOON_BODY}>
-                                <ErrorBody/>
-                                <SuccessBody/>
-                                <LoadingBody/>
-                                {
-                                    isOnBoardingFlowCompleteOrSkipped(this.props.authUser)
-                                        ? (
-                                            <SwipeableViews
-                                                animateHeight
-                                                ref={c => (this.tabSwiper = c)}
-                                                disabled
-                                                style={{height: '100%', overflowY: 'hidden !important'}}
-                                                index={this.state.currentTabIndex}
-                                            >
-                                                {
-                                                    TAB_GROUP_AUTH.components.map((AuthTab, index) =>
-                                                        <AuthTab key={index} changeTab={this.changeTab}/>
-                                                    )
-                                                }
-                                            </SwipeableViews>
-                                        ) : (
-                                            <OnBoardingFlow/>
-                                        )
-                                }
-                                {/*<Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>*/}
-                            </div>
-                        }
-                        {
-                            !this.props.authUser &&
-                            <div id="moon-body" className={CLASS_MOON_BODY}>
-                                <AuthFlow/>
-                            </div>
-                        }
+                        <div id="moon-body" className={CLASS_MOON_BODY}>
+                            <ErrorBody/>
+                            <SuccessBody/>
+                            <LoadingBody/>
+                            {
+                                !!this.props.authUser &&
+                                isOnBoardingFlowCompleteOrSkipped(this.props.authUser) &&
+                                <MainFlow/>
+                            }
+                            {
+                                !!this.props.authUser &&
+                                !isOnBoardingFlowCompleteOrSkipped(this.props.authUser) &&
+                                <OnBoardingFlow/>
+                            }
+                            {!this.props.authUser && <AuthFlow/>}
+                            {/*<Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>*/}
+                        </div>
                     </div>
                 }
                 <UIBlocker/>

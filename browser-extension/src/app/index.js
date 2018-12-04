@@ -26,6 +26,7 @@ import {injectButton} from "./buttonMoon";
 const initializeApp = () => {
     const moonDiv = document.getElementById(MOON_DIV_ID);
     if (!!moonDiv) {
+        // FIXME: On re-render, poll background for authUser to immediately update UI
         console.log("moonDiv found, re-rendering app");
         moonDiv.remove();
         toggleApp(SOURCE_MANUAL)
@@ -43,7 +44,7 @@ const initializeApp = () => {
  * appropriate render logic. Or, if an app
  * already exists, remove it from the DOM.
  */
-export const toggleApp = async (source) => {
+export const toggleApp = async (source, tabInfo) => {
     console.log("toggleApp request received from ", source);
     // Attempt to get the wrapper div
     let moonDiv = document.getElementById(MOON_DIV_ID);

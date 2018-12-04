@@ -3,7 +3,7 @@
  */
 
 import MoonGraphQL from "./api/MoonGraphQL";
-import {onUpdateUser} from "./api/moon";
+import {onUpdateUser} from "./api/user";
 
 let subscription = null;
 

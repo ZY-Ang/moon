@@ -4,10 +4,10 @@
 
 import {
     ACTION_SET_AUTH_USER, ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP,
-    ACTION_SET_PAGE_INFORMATION
+    ACTION_SET_TAB, ACTION_SET_SELECTED_WALLET
 } from "./constants";
 import {isValidAuthUser} from "../../utils/auth";
-import {getDelayedDate} from "../../../utils/datetime";
+import {getDelayedHours} from "../../../utils/datetime";
 
 /* -----------------     Initial State     ------------------ */
 
@@ -16,15 +16,8 @@ import {getDelayedDate} from "../../../utils/datetime";
  */
 const INITIAL_STATE = {
     authUser: null,
-    pageInformation: {
-        isCheckoutPage: false,
-        cartAmount: null,
-        cartCurrency: null,
-        productTitle: null,
-        productImageURL: null,
-        productImageAlt: null,
-        productPrice: null
-    }
+    selectedWallet: null,
+    tab: {}
 };
 
 
@@ -36,7 +29,8 @@ const applySetAuthUser = (state, action) => {
     if (isValidAuthUser(action.authUser)) {
         return {
             ...state,
-            authUser: action.authUser
+            authUser: action.authUser,
+            selectedWallet: state.selectedWallet || action.authUser.wallets[0]
         };
     } else {
         return {
@@ -47,14 +41,19 @@ const applySetAuthUser = (state, action) => {
 };
 
 /**
+ * Action to set the {@code selectedWallet} in the store based on the specified action or persist last known wallet
+ */
+const applySetSelectedWallet = (state, action) => ({
+    ...state,
+    selectedWallet: action.selectedWallet || state.selectedWallet
+});
+
+/**
  * Action to set the {@code pageInformation} in the store based on the specified action
  */
-const applySetSiteInformation = (state, action) => ({
+const applySetTab = (state, action) => ({
     ...state,
-    pageInformation: {
-        ...state.pageInformation,
-        ...action.pageInformation
-    }
+    tab: action.tab
 });
 
 /* -----------------     Session Reducer     ------------------ */
@@ -63,19 +62,22 @@ const applySetSiteInformation = (state, action) => ({
  */
 function sessionReducer(state = INITIAL_STATE, action) {
     const reducerMap = {
-        [ACTION_SET_AUTH_USER](){
+        [ACTION_SET_AUTH_USER]() {
             return applySetAuthUser(state, action);
+        },
+        [ACTION_SET_SELECTED_WALLET]() {
+            return applySetSelectedWallet(state, action);
         },
         [ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP]() {
             return applySetAuthUser(state, {
                 authUser: {
                     ...state.authUser,
-                    onboardingSkipExpiry: getDelayedDate(168).toISOString()
+                    onboardingSkipExpiry: getDelayedHours(168).toISOString()
                 }
             });
         },
-        [ACTION_SET_PAGE_INFORMATION](){
-            return applySetSiteInformation(state, action);
+        [ACTION_SET_TAB]() {
+            return applySetTab(state, action);
         }
     };
     if (!!action.type && !!reducerMap[action.type]) {

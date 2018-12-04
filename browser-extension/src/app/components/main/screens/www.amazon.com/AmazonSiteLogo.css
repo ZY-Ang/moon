@@ -1,0 +1,19 @@
+.site-logo {
+    height: 30px;
+}
+
+.site-logo::selection {
+    background-color: transparent;
+}
+
+.site-logo::-moz-selection {
+    background-color: transparent;
+}
+
+.site-logo.unsupported {
+    height: auto;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

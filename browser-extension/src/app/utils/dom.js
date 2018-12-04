@@ -20,10 +20,17 @@ export const observeDOM = (obj, callback) => {
         });
         // have the observer observe foo for changes in children
         obs.observe(obj, {attributes: true, childList: true, subtree: true});
+        return obs;
 
     } else if (window.addEventListener) {
         obj.addEventListener('DOMNodeInserted', callback, false);
         obj.addEventListener('DOMNodeRemoved', callback, false);
+        return {
+            disconnect: () => {
+                obj.removeEventListener('DOMNodeInserted', callback, false);
+                obj.removeEventListener('DOMNodeRemoved', callback, false);
+            }
+        };
     }
 };
 
