@@ -82,7 +82,6 @@ export const updateOnboardingSkipExpiry = async (hoursOffset) => {
     userCache = {
         cache: {
             data: {
-                identity: response.data.identity,
                 user: response.data.updateUser
             }
         },
@@ -103,8 +102,8 @@ export const onUpdateUser = gql`
 
 const mutationGetPaymentPayload = gql`
     mutation getPaymentPayload(
-        $cartCurrency: Currency!,
-        $cartAmount: String!,
+        $payloadCurrency: Currency!,
+        $payloadAmount: String!,
         $walletProvider: WalletProvider!,
         $walletID: ID!,
         $pageContent: String!,
@@ -112,8 +111,8 @@ const mutationGetPaymentPayload = gql`
     ) {
         getPaymentPayload(input: {
             cartInfo: {
-                currency: $cartCurrency,
-                amount: $cartAmount
+                currency: $payloadCurrency,
+                amount: $payloadAmount
             },
             wallet: {
                 provider: $walletProvider,
@@ -145,12 +144,13 @@ export const doGetPaymentPayload = async (variables) => {
     userCache = {
         cache: {
             data: {
-                identity: response.data.identity,
                 user: response.data.getPaymentPayload.user
             }
         },
         ttl: getDelayedHours(2).toISOString()
     };
+
+    return response;
 };
 
 const mutationUpdateCoinbaseApiKey = gql`
@@ -185,7 +185,6 @@ export const doUpdateCoinbaseApiKey = async (key, secret, innerHTML) => {
     userCache = {
         cache: {
             data: {
-                identity: response.data.identity,
                 user: response.data.updateUser
             }
         },

@@ -40,15 +40,15 @@ const doTransferToMoonCoinbase = async (sub, walletID, cartInfo) => {
     logHead("doTransferToMoonCoinbase", {sub, walletID, cartInfo});
 
     // 1. Get the user's coinbase API keys that were stored
-    const userCoinbaseApiKeys = await getUserSecrets(sub);
-    if (!userCoinbaseApiKeys || !userCoinbaseApiKeys.key || !userCoinbaseApiKeys.secret) {
+    const {coinbaseApiKeys} = await getUserSecrets(sub);
+    if (!coinbaseApiKeys || !coinbaseApiKeys.key || !coinbaseApiKeys.secret) {
         throw new Error("Coinbase credentials are missing.");
     }
 
     // 2. Instantiate coinbase client for the user
     const userCoinbaseClient = new CoinbaseClient({
-        apiKey: userCoinbaseApiKeys.key,
-        apiSecret: userCoinbaseApiKeys.secret
+        apiKey: coinbaseApiKeys.key,
+        apiSecret: coinbaseApiKeys.secret
     });
 
     // 3. Instantiate a coinbase wallet instance for the user

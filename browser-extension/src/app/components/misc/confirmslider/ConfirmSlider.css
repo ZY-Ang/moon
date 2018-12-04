@@ -1,0 +1,86 @@
+.confirm-slide-primary {
+    cursor: grab;
+    height: auto;
+}
+
+.confirm-slide-primary * {
+    cursor: grab;
+}
+.confirm-slide-primary *::selection{
+    background-color: transparent;
+}
+.confirm-slide-primary *::-moz-selection {
+    background-color: transparent;
+}
+
+.confirm-slide-primary *:active {
+    cursor: grabbing;
+}
+
+.confirm-slide-primary:active {
+    cursor: grabbing;
+}
+
+.confirm-slide-primary .slider {
+    align-items: center;
+    color: #fff;
+    background-color: #0f62bd;
+    display: flex;
+    font-size: 14px;
+    line-height: 14px;
+    height: 100%;
+    min-height: 24px;
+    padding: 9px 16px;
+}
+
+.confirm-slide-primary .slider img {
+    height: 12px;
+}
+
+.confirm-slide-primary .slider svg {
+    height: 20px;
+    padding-right: 0;
+}
+
+.confirm-slide-primary .first-chevron path {
+    animation: animate-pay-chevron 1.5s ease infinite;
+}
+.confirm-slide-primary .second-chevron path {
+    animation: animate-pay-chevron 1.5s ease infinite;
+    animation-delay: 0.25s;
+}
+.confirm-slide-primary .third-chevron path {
+    animation: animate-pay-chevron 1.5s ease infinite;
+    animation-delay: 0.5s;
+}
+
+@keyframes animate-pay-chevron {
+    0%, 100% {
+        color: #0f62bd;
+    }
+    38%, 62% {
+        color: white;
+    }
+}
+
+.confirm-slide-primary .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1B264F;
+    height: 100%;
+    min-height: 24px;
+    padding: 9px 16px;
+}
+
+.confirm-slide-primary .loading img {
+    height: 100%;
+    position: absolute;
+}
+
+.confirm-slide-primary .confirm {
+    height: 100%;
+    min-height: 24px;
+    padding: 9px 16px;
+    background-image: linear-gradient(to right, #1B264F, #0f62bd);
+}

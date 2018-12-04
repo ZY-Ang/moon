@@ -42,13 +42,15 @@ class AmazonProductScreen extends React.Component {
         const {title, imageURL, imageAlt, price} = this.state;
         return (
             <div className="moon-tab text-center">
-                <div className="settings-icon-parent">
+                <div className="settings-icon-parent mb-2">
                     <AmazonSiteLogo/>
                     <SettingsIcon/>
                 </div>
-                <div>
+                <div className="product-section">
                     {imageURL && <img className="product-image" src={imageURL} alt={imageURL || imageAlt}/>}
                     <h4 id="product-title">{title || imageAlt}</h4>
+                </div>
+                <div>
                     {!!price && <p>{price.toLocaleString("en-us", {style:"currency",currency:"USD"})}</p>}
                     {
                         !price &&
