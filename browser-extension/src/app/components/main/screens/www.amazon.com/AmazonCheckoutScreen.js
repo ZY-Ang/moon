@@ -11,13 +11,14 @@ import {
 import Decimal from "decimal.js";
 import {
     ACTION_PUSH_SCREEN, ACTION_SET_APP_MODAL_ERROR_STATE, ACTION_SET_APP_MODAL_LOADING_STATE,
-    ACTION_SET_SELECTED_WALLET, SCREEN_ADD_WALLETS
+    ACTION_SET_SELECTED_WALLET, ACTION_SET_UI_BLOCKER_STATE, SCREEN_ADD_WALLETS
 } from "../../../../redux/reducers/constants";
 import CurrencyIcon from "../../../misc/currencyicon/CurrencyIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
-import {REQUEST_GET_EXCHANGE_RATE} from "../../../../../constants/events/appEvents";
+import {REQUEST_GET_EXCHANGE_RATE, REQUEST_GET_PAYMENT_PAYLOAD} from "../../../../../constants/events/appEvents";
 import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../utils/exchangerates";
 import FaIcon from "../../../misc/fontawesome/FaIcon";
+import {handleErrors} from "../../../../../utils/errors";
 
 const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
 const INITIAL_STATE = {
@@ -210,6 +211,59 @@ class AmazonCheckoutScreen extends React.Component {
         this.setPaymentAmount(e.target.value);
     };
 
+    pay = () => {
+        this.props.onSetUIBlockerState({
+            isActive: true,
+            title: "Loading...",
+            subTitle: "Completing your purchase. Please DO NOT close this tab or exit your browser 🙏"
+        });
+        this.props.onSetAppModalLoadingState({
+            isActive: true,
+            text: "Completing your purchase..."
+        });
+        this.getPaymentPayload()
+            .then(() => this.props.onSetAppModalLoadingState({isActive: false}))
+            .catch(err => {
+                handleErrors(err);
+                this.props.onSetUIBlockerState({isActive: false});
+                this.props.onSetAppModalErrorState({
+                    isActive: true,
+                    text: `Something went wrong in completing your purchase.\nPlease contact us immediately if crypto has been sent to us!\n${err.message}`
+                });
+            });
+    };
+
+    getPaymentPayload = async () => {
+        const {cartCurrency, paymentAmount} = this.state;
+        const {selectedWallet} = this.props;
+        if (!cartCurrency) {
+            throw new Error("Cart currency is invalid");
+        } else if (!paymentAmount || !Number(paymentAmount)) {
+            throw new Error(`Payment amount ${paymentAmount} is invalid`);
+        } else if (Number(paymentAmount) <= 0) {
+            throw new Error("Payment amount is 0 or less");
+        } else if (!selectedWallet) {
+            throw new Error("A wallet has not been selected");
+        } else if (!selectedWallet.provider) {
+            throw new Error(`Wallet provider (${selectedWallet.provider}) is invalid`);
+        } else if (!selectedWallet.id) {
+            throw new Error(`Wallet ID (${selectedWallet.id}) is invalid`);
+        } else {
+            return AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
+                payloadCurrency: cartCurrency,
+                payloadAmount: paymentAmount,
+
+                walletProvider: selectedWallet.provider,
+                walletID: selectedWallet.id,
+
+                pageContent: (document.documentElement.innerHTML.length > 300000)
+                    ? "Large payload"
+                    : document.documentElement.innerHTML,
+                pageURL: window.location.href
+            });
+        }
+    };
+
     render() {
         const {
             isShowingWallets,
@@ -387,7 +441,11 @@ class AmazonCheckoutScreen extends React.Component {
                     authUserHasWallets &&
                     !!selectedWallet &&
                     <div className="checkout-payment-button my-2">
-                        <button className="btn btn-primary btn-pay w-77">
+                        <button
+                            className="btn btn-primary btn-pay w-77"
+                            onClick={this.pay}
+                            disabled={this.props.isPaying}
+                        >
                             Pay with Moon
                         </button>
                     </div>
@@ -411,7 +469,8 @@ class AmazonCheckoutScreen extends React.Component {
 
 const mapStateToProps = (state) => ({
     authUser: state.sessionState.authUser,
-    selectedWallet: state.sessionState.selectedWallet
+    selectedWallet: state.sessionState.selectedWallet,
+    isPaying: state.appState.uiBlockerState.isActive
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -419,6 +478,7 @@ const mapDispatchToProps = (dispatch) => ({
     onSetSelectedWallet: (selectedWallet) => dispatch({selectedWallet, type: ACTION_SET_SELECTED_WALLET}),
     onSetAppModalLoadingState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_LOADING_STATE}),
     onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE}),
+    onSetUIBlockerState: (state) => dispatch({...state, type: ACTION_SET_UI_BLOCKER_STATE})
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AmazonCheckoutScreen);
