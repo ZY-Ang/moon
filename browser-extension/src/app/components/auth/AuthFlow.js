@@ -82,7 +82,6 @@ class AuthFlow extends Component {
                     style={{padding: '10px 0', fontSize: 'smaller'}}
                 >
                     Don't have an account? <a
-                    href="#"
                     style={{fontStyle: 'none', textDecoration: 'none'}}
                     onClick={this.signUp}
                     >

@@ -86,6 +86,12 @@
     color: #2E2F33;
 }
 
+a {
+    cursor: pointer;
+    color: #1F3384;
+    text-decoration: underline;
+}
+
 .w-100 {
     width: 100%;
 }
@@ -241,6 +247,16 @@
 }
 .pr-5, .px-5 {
     padding-right: 3rem !important;
+}
+
+.font-size-80 {
+    font-size: 80%;
+}
+.font-size-85 {
+    font-size: 85%;
+}
+.font-size-90 {
+    font-size: 90%;
 }
 
 .font-weight-bold {

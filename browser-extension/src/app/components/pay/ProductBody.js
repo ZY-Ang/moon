@@ -105,7 +105,6 @@ class ProductBody extends React.Component {
                     <p>When you're about to checkout, you'll have the option to pay with cryptocurrency.</p>
                     <a
                         onClick={this.reportIsCheckout}
-                        href="#checkoutSupportRequest"
                     >
                         Click here if you think this is a mistake
                     </a>

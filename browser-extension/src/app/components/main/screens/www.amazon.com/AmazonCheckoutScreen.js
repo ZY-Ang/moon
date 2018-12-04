@@ -18,7 +18,6 @@ import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_GET_EXCHANGE_RATE} from "../../../../../constants/events/appEvents";
 import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../utils/exchangerates";
 import FaIcon from "../../../misc/fontawesome/FaIcon";
-import {byPropKey} from "../../../utils";
 
 const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
 const INITIAL_STATE = {
@@ -44,6 +43,12 @@ class AmazonCheckoutScreen extends React.Component {
     componentWillMount() {
         this.parse()
             .then(this.updateExchangeRate);
+    }
+
+    componentDidMount() {
+        if (!!this.txtBaseValue) {
+            this.txtBaseValue.focus();
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -76,7 +81,8 @@ class AmazonCheckoutScreen extends React.Component {
                 Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
             )
         );
-        const cartAmount = (
+        const cartAmount = actualCartAmount ? actualCartAmount : "0.00";
+        const paymentAmount = (
             !!actualCartAmount &&
             (Number(actualCartAmount) > 0) &&
             process.env.NODE_ENV !== 'production'
@@ -85,7 +91,7 @@ class AmazonCheckoutScreen extends React.Component {
             : actualCartAmount ? actualCartAmount : "0.00";
         return new Promise((resolve) => this.setState(state => ({
             cartAmount,
-            paymentAmount: state.paymentAmount || cartAmount,
+            paymentAmount: state.paymentAmount || paymentAmount,
             cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD"
         }), resolve));
     };
@@ -98,12 +104,16 @@ class AmazonCheckoutScreen extends React.Component {
                 quote: (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency,
                 base: cartCurrency
             })
-                .then(({bid, lastUpdated}) => this.setState(() => ({
-                    exchangeRate: Decimal(bid).toFixed(2, Decimal.ROUND_DOWN),
-                    exchangeRateLastUpdated: moment(lastUpdated).fromNow(),
-                    walletBalanceInBase: selectedWallet && getWalletBalanceInBase(selectedWallet.balance, bid),
-                    requiredAmountInQuote: getRequiredAmountInQuote(paymentAmount, bid)
-                })))
+                .then(({bid, lastUpdated}) => {
+                    const walletBalanceInBase = (selectedWallet && getWalletBalanceInBase(selectedWallet.balance, bid)) || "0";
+                    this.setState(() => ({
+                        exchangeRate: Decimal(bid).toFixed(2, Decimal.ROUND_DOWN),
+                        exchangeRateLastUpdated: moment(lastUpdated).fromNow(),
+                        walletBalanceInBase,
+                        paymentAmount: (!!selectedWallet && Decimal(walletBalanceInBase).lt(paymentAmount)) ? walletBalanceInBase : paymentAmount,
+                        requiredAmountInQuote: getRequiredAmountInQuote(paymentAmount, bid)
+                    }));
+                })
                 .catch(err => {
                     this.setState(() => ({
                         exchangeRate: "Error",
@@ -146,6 +156,52 @@ class AmazonCheckoutScreen extends React.Component {
 
     authUserHasWallets = () => !!this.props.authUser && !!this.props.authUser.wallets && !!this.props.authUser.wallets.length
 
+    getFontSize = (str) => {
+        if (str.length <= 10) {
+            return 24;
+        } else {
+            return Math.round(240 / str.length);
+        }
+    };
+
+    setPaymentAmount = (paymentAmountString) => {
+        const authUserHasWallets = this.authUserHasWallets();
+        const {cartAmount, walletBalanceInBase} = this.state;
+        const {selectedWallet} = this.props;
+        let paymentAmount;
+        const parsedEventTarget = Number(paymentAmountString.replace(/[^0-9.,]/g, ""));
+        if (!parsedEventTarget) {
+            paymentAmount = cartAmount || "0"
+        } else {
+            paymentAmount = parsedEventTarget.toFixed(2);
+        }
+        if (authUserHasWallets && !!selectedWallet) {
+            const validatedPaymentAmount =
+                // If user tries to set negative, minimum is 0
+                Decimal(paymentAmount).lt(0) ? "0" :
+                    // If user tries to set greater than wallet value, set to wallet value
+                    Decimal(paymentAmount).gt(walletBalanceInBase) ? walletBalanceInBase :
+                        // If user tries to set greater than cart value, set to cart value
+                        (!!cartAmount && Decimal(paymentAmount).gt(cartAmount)) ? cartAmount :
+                            // Otherwise, set to payment amount
+                            paymentAmount;
+            this.setState(() => ({paymentAmount: validatedPaymentAmount}), this.updateExchangeRate);
+        } else {
+            const validatedPaymentAmount =
+                // If user tries to set negative, minimum is 0
+                Decimal(paymentAmount).lt(0) ? "0" :
+                    // If user tries to set greater than cart value, set to cart value
+                    (!!cartAmount && Decimal(paymentAmount).gt(cartAmount)) ? cartAmount :
+                        // Otherwise, set to payment amount
+                        paymentAmount;
+            this.setState(() => ({paymentAmount: validatedPaymentAmount}), this.updateExchangeRate);
+        }
+    };
+
+    onPaymentAmountChange = (e) => {
+        this.setPaymentAmount(e.target.value);
+    };
+
     render() {
         const {
             isShowingWallets,
@@ -159,7 +215,9 @@ class AmazonCheckoutScreen extends React.Component {
             requiredAmountInQuote
         } = this.state;
         const {authUser, selectedWallet} = this.props;
-        const isZero = !cartAmount || Number(cartAmount) === 0;
+        const isFullCartAmount = Number(cartAmount) === Number(paymentAmount);
+        const isMaxWalletAmount = Number(walletBalanceInBase) === Number(paymentAmount);
+        const isZero = !paymentAmount || Number(paymentAmount) === 0;
         const authUserHasWallets = this.authUserHasWallets();
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
         return (
@@ -169,14 +227,17 @@ class AmazonCheckoutScreen extends React.Component {
                     <SettingsIcon/>
                 </div>
                 <div className="checkout-section">
-                    <div className="checkout-section-label">Order Total</div>
+                    <div className="checkout-section-label">
+                        {isFullCartAmount ? "Order Total" : "Convert"}
+                    </div>
                     <div className="checkout-order-total-value">
                         <input
+                            ref={c => (this.txtBaseValue = c)}
                             type="text"
-                            value={paymentAmount || "Calculating..."}
-                            disabled
-                            onChange={e => this.setState(byPropKey("paymentAmount", e.target.value.replace(/[^0-9.,]/g, "")))}
+                            value={paymentAmount || "Hang On..."}
+                            onChange={this.onPaymentAmountChange}
                             size="10"
+                            style={{fontSize: this.getFontSize(paymentAmount)}}
                         />
                     </div>
                     <div className="checkout-section-currency-flag disabled">
@@ -189,7 +250,14 @@ class AmazonCheckoutScreen extends React.Component {
                 {
                     authUserHasWallets &&
                     <ul className="sequence">
-                        <li className="text-left" style={{fontSize: '80%'}}>Note: If your wallet balance is insufficient, Amazon will fallback to your selected default payment method for the purchase.</li>
+                        {
+                            !isFullCartAmount &&
+                            <li
+                                className="text-left font-size-80"
+                            >
+                                <b>+ {(Number(cartAmount) - Number(paymentAmount)).toFixed(2)}</b> <b>{cartCurrency}</b> of your order total of <b><i>{cartAmount} {cartCurrency}</i></b> is paid using your Amazon payment method.
+                            </li>
+                        }
                     </ul>
                 }
                 {
@@ -228,8 +296,7 @@ class AmazonCheckoutScreen extends React.Component {
                                                 <div>
                                                     <p className="my-0 font-weight-bold">{wallet.name}</p>
                                                     <p
-                                                        className="checkout-wallet-select-change-wallet-selection-value my-0"
-                                                        style={{fontSize: "80%"}}
+                                                        className="checkout-wallet-select-change-wallet-selection-value my-0 font-size-80"
                                                     >
                                                         <i>{wallet.balance}</i>
                                                     </p>
@@ -252,11 +319,40 @@ class AmazonCheckoutScreen extends React.Component {
                         }
                         {
                             !!exchangeRateLastUpdated &&
-                            <p className="my-0" style={{fontSize: "80%"}}>
+                            <p className="my-0 font-size-80">
                                 <i>Last updated {exchangeRateLastUpdated}</i>
                             </p>
                         }
                     </li>
+                    {
+                        !!selectedWallet &&
+                        isMaxWalletAmount &&
+                        <li className="text-left">
+                            You save <b>+ {(Decimal(selectedWallet.balance).sub(requiredAmountInQuote)).toFixed(8)} {selectedWallet.currency}</b>
+                        </li>
+                    }
+                    {
+                        authUserHasWallets &&
+                        !!selectedWallet &&
+                        !isFullCartAmount &&
+                        !isMaxWalletAmount &&
+                        <li className="text-left">
+                            <p className="py-0">Looks like you are not fully optimizing your cryptocurrency!</p>
+                            <a onClick={() => this.setPaymentAmount(cartAmount)}>
+                                <b>Click here to set to the maximum</b>
+                            </a>
+                        </li>
+                    }
+                    {
+                        !authUserHasWallets &&
+                        !isFullCartAmount &&
+                        <li className="text-left">
+                            <p className="py-0">This is not the full cart amount.</p>
+                            <a onClick={() => this.setPaymentAmount(cartAmount)}>
+                                <b>Click here to set to the maximum</b>
+                            </a>
+                        </li>
+                    }
                 </ul>
                 <div className="checkout-section">
                     <div className="checkout-section-label">You Pay</div>
@@ -265,6 +361,7 @@ class AmazonCheckoutScreen extends React.Component {
                             type="text"
                             value={requiredAmountInQuote}
                             disabled
+                            style={{fontSize: this.getFontSize(requiredAmountInQuote)}}
                             size="10"
                         />
                     </div>

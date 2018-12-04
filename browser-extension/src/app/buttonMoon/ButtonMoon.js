@@ -64,7 +64,7 @@ class ButtonMoon extends Component {
             >
                 Pay With <img
                     src={AppRuntime.getURL(whiteLogo)}
-                    alt="Pay With Moon"
+                    alt="Moon"
                     style={{height: 12, paddingLeft: 5}}
                 />
             </div>
