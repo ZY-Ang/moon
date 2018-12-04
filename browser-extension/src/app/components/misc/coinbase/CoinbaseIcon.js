@@ -3,8 +3,9 @@
  */
 import React from 'react';
 
-const CoinbaseIcon = () => (
+const CoinbaseIcon = (props) => (
     <svg
+        {...props}
         aria-hidden="true"
         role="img"
         className="svg-inline--fa"

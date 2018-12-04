@@ -73,16 +73,14 @@ class SettingsScreen extends React.Component {
                     {
                         process.env.NODE_ENV !== 'production' &&
                         <div className="mb-2">
-                            <button className="btn w-100" onClick={() => this.props.onPushScreen(SCREEN_DEVELOPER)}>
-                                <FaIcon icon="wrench"/> Developers
-                            </button>
+                            <button className="btn w-100" onClick={() => this.props.onPushScreen(SCREEN_DEVELOPER)}><FaIcon icon="wrench"/> Developers</button>
                         </div>
                     }
                     <div className="mb-2">
                         <button className="btn w-100" onClick={() => window.open("https://paywithmoon.com/#howitworks", "_blank")}><FaIcon icon="question"/> How Moon works</button>
                     </div>
                     <div className="mb-2">
-                        <button className="btn w-100" onClick={() => this.props.onPushScreen(SCREEN_ADD_WALLETS)}><FaIcon icon="wallet"/> Add Wallet Providers</button>
+                        <button className="btn w-100" onClick={() => this.props.onPushScreen(SCREEN_ADD_WALLETS)}><FaIcon icon="wallet"/> Connect Wallets</button>
                     </div>
                     <div className="mb-2">
                         <button className="btn w-100" onClick={this.changePassword}><FaIcon icon="user"/> Change Password</button>
@@ -94,6 +92,7 @@ class SettingsScreen extends React.Component {
                     <div className="mb-2">
                         <button className="btn w-100" onClick={this.onGlobalSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
                     </div>
+                    <p className="my-0 text-center">Moon v{AppRuntime.getManifest().version}</p>
                 </div>
             </div>
         );

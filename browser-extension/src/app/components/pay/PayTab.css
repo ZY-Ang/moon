@@ -2,23 +2,12 @@
  * Copyright (c) 2018 moon
  */
 
-.product-image {
-    height: 100px;
-}
-
 #checkout-cart-icon {
     height: auto;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.btn.btn-pay {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    width: calc(100% - 42px);
 }
 
 .btn-group.btn-group-pay {

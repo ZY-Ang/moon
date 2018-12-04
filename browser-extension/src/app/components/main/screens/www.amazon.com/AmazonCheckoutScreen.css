@@ -1,65 +1,87 @@
 .sequence {
-    padding-left: 24px;
-    position: relative;
+    border-color: #5f6066;
+    font-size: 14px;
+    margin-bottom: 0;
     margin-left: 25px;
     margin-top: 0;
-    margin-bottom: 0;
-    font-size: 14px;
-    border-color: #d3d5d8;
+    padding-left: 24px;
+    position: relative;
+}
+
+ul.sequence:empty {
+    padding: 8px 0;
+}
+
+ul.sequence::before {
+    background-color: #5f6066;
+    background-position: 0 0;
+    background-size: 200% 200%;
+    border: 0 solid;
+    border-color: inherit;
+    content: "";
+    height: 100%;
+    outline: 0;
+    position: absolute;
+    width: 2px;
+    left: 5px;
+    top: 0;
+}
+
+.sequence li {
+    list-style: none;
 }
 
 .sequence li:first-child {
-    margin-top: 16px;
+    padding-top: 12px;
 }
 
 .sequence li::before {
+    border: 2px solid #5f6066;
+    border-radius: 50%;
+    background-color: #5f6066;
     content: "";
     display: block;
+    height: 8px;
+    outline: 0;
     position: absolute;
     width: 8px;
-    height: 8px;
-    border-radius: 50%;
     z-index: 2;
-    border-width: 4px;
-    border-style: solid;
-    border-color: inherit;
-    outline: 0;
+    left: 0;
 }
 
 .sequence li::after {
+    background-color: #5f6066;
+    background-position: 0 0;
+    background-size: 200% 200%;
+    border: 0 solid;
+    border-color: inherit;
     content: "";
+    height: 100%;
+    outline: 0;
     position: absolute;
     width: 2px;
-    height: 100%;
-    border-style: solid;
-    border-color: inherit;
-    outline: 0;
-    border-width: 0;
-    background-color: #d3d5d8;
-    background-size: 200% 200%;
-    background-position: 0 0%;
+    left: 5px;
+    top: 0;
 }
 
 .sequence li:last-child {
-
-}
-
-.sequence li:last-child::before {
-
-}
-
-.sequence li:last-child::after {
-
+    padding-bottom: 12px;
 }
 
 .checkout-section {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     -webkit-font-smoothing: initial;
     background-color: #fff;
     border-radius: 3px;
     box-shadow: 0 0 2px 1px rgba(0,0,0,.2);
     box-sizing: border-box;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .checkout-section-label {
@@ -85,16 +107,18 @@
     width: fit-content;
 }
 
+.checkout-order-total-value input:focus {
+    outline: none;
+}
+
 .checkout-section-currency-flag {
     cursor: pointer;
-    color: white;
     background-color: #2E2F33;
     align-items: center;
     border-bottom-right-radius: 3px;
     border-top-right-radius: 3px;
     display: flex;
-    height: 44px;
-    padding: 0 10px;
+    padding: 8px 10px;
     -webkit-transition: background-color 0.2s ease;
     -moz-transition: background-color 0.2s ease;
     -ms-transition: background-color 0.2s ease;
@@ -102,9 +126,25 @@
     transition: background-color 0.2s ease;
 }
 
+.checkout-section-currency-flag.disabled {
+    cursor: default;
+    background-color: #5f6066;
+}
+
+.checkout-section-currency-flag:focus,
+.checkout-section-currency-flag.disabled:hover {
+    opacity: 1.0;
+    background-color: #5f6066;
+}
+
 .checkout-section-currency-flag:hover {
     opacity: 0.9;
     background-color: #1F3384;
+}
+
+.checkout-section-currency-flag:active {
+    opacity: 1.0;
+    background-color: #0F62BD;
 }
 
 .checkout-section-currency-flag img {
@@ -112,28 +152,118 @@
     padding-left: 4px;
 }
 
-.checkout-wallet-select-selected-wallet {
+.checkout-section-currency-flag div {
+    color: white;
+    display: flex;
+    align-items: center;
+}
 
+.checkout-section.checkout-section-wallet-select {
+    -webkit-transition: height 0.2s ease;
+    -moz-transition: height 0.2s ease;
+    -ms-transition: height 0.2s ease;
+    -o-transition: height 0.2s ease;
+    transition: height 0.2s ease;
+}
+
+.checkout-wallet-select-selected-wallet {
+    margin-left: auto;
+    text-align: right;
+    padding: 12px 6px 12px 0;
 }
 
 .checkout-wallet-select-selected-wallet-name {
-
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .checkout-wallet-select-selected-wallet-balance {
-
+    font-family: monospace,Courier New,Courier!important;
 }
 
 .checkout-wallet-select-selected-wallet-balance-base {
-
+    opacity: 0.75;
+    font-family: monospace,Courier New,Courier!important;
 }
 
 .checkout-wallet-select-change {
-
+    min-height: 52px;
+    cursor: pointer;
+    align-items: center;
+    border-bottom-right-radius: 3px;
+    border-top-right-radius: 3px;
+    display: flex;
+    padding: 12px 10px;
+    -webkit-transition: background-color 0.2s ease;
+    -moz-transition: background-color 0.2s ease;
+    -ms-transition: background-color 0.2s ease;
+    -o-transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
-.checkout-wallet-select-change button svg {
-    height: 12px;
+.checkout-wallet-select-change.inverse svg {
+    transform: rotate(-180deg);
+}
+
+.checkout-wallet-select-change svg {
+    height: 16px;
+    -webkit-transition: transform 0.2s ease;
+    -moz-transition: transform 0.2s ease;
+    -ms-transition: transform 0.2s ease;
+    -o-transition: transform 0.2s ease;
+    transition: transform 0.2s ease;
+}
+
+.checkout-wallet-select-change path {
+    color: #0F62BD;
+}
+
+.checkout-wallet-select-change-wallet-selector {
+    width: 100%;
+    box-shadow: inset 0 0 5px 0px rgba(0,0,0,.2);
+    box-sizing: border-box;
+}
+
+.checkout-wallet-select-change-wallet-selection {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 6px 0;
+    cursor: pointer;
+    text-align: right;
+    -webkit-transition: background 0.2s ease;
+    -moz-transition: background 0.2s ease;
+    -ms-transition: background 0.2s ease;
+    -o-transition: background 0.2s ease;
+    transition: background 0.2s ease;
+}
+
+.checkout-wallet-select-change-wallet-selection .country-flag {
+    padding-left: 10px;
+}
+
+.checkout-wallet-select-change-wallet-selection.COINBASE:hover {
+    background: #0667D0;
+}
+
+.checkout-wallet-select-change-wallet-selection:hover {
+    background: #2E2F33;
+}
+
+.checkout-wallet-select-change-wallet-selection * {
+    -webkit-transition: color 0.2s ease;
+    -moz-transition: color 0.2s ease;
+    -ms-transition: color 0.2s ease;
+    -o-transition: color 0.2s ease;
+    transition: color 0.2s ease;
+}
+
+.checkout-wallet-select-change-wallet-selection:hover * {
+    color: white;
+}
+
+.checkout-wallet-select-change-wallet-selection-value * {
+    font-family: monospace,Courier New,Courier!important;
 }
 
 .checkout-payment-total-value {
@@ -152,6 +282,17 @@
     width: fit-content;
 }
 
-.checkout-payment-button {
+.checkout-payment-total-value input:focus {
+    outline: none;
+}
 
+.checkout-payment-button {
+    text-align: center;
+}
+
+.btn.btn-pay {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: calc(100% - 42px);
 }

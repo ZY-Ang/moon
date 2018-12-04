@@ -22,13 +22,14 @@ class AddWalletsScreen extends React.Component {
         return (
             <div className="moon-tab text-center">
                 <BackButton/>
-                <h2>Add a Wallet</h2>
+                <h2>Connect a Wallet</h2>
                 <div className="mb-2 w-100">
                     <button className="btn w-80 btn-coinbase" onClick={this.launchCoinbaseAuthFlow}>
                         <div className="btn-brand-icon"><CoinbaseIcon/></div>
                         <div className="btn-brand-text">Connect Coinbase</div>
                     </button>
                 </div>
+                <p>More coming soon...</p>
             </div>
         );
     }
