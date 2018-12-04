@@ -157,10 +157,18 @@ class AmazonCheckoutScreen extends React.Component {
     authUserHasWallets = () => !!this.props.authUser && !!this.props.authUser.wallets && !!this.props.authUser.wallets.length
 
     getFontSize = (str) => {
-        if (str.length <= 10) {
+        if (!str || str.length <= 10) {
             return 24;
         } else {
             return Math.round(240 / str.length);
+        }
+    };
+
+    getPaymentInputSize = (str) => {
+        if (!str || str.length <= 10) {
+            return 10;
+        } else {
+            return Math.round(str.length * 1.1);
         }
     };
 
@@ -236,8 +244,8 @@ class AmazonCheckoutScreen extends React.Component {
                             type="text"
                             value={paymentAmount || "Hang On..."}
                             onChange={this.onPaymentAmountChange}
-                            size="10"
                             style={{fontSize: this.getFontSize(paymentAmount)}}
+                            size={this.getPaymentInputSize(paymentAmount)}
                         />
                     </div>
                     <div className="checkout-section-currency-flag disabled">
@@ -362,7 +370,7 @@ class AmazonCheckoutScreen extends React.Component {
                             value={requiredAmountInQuote}
                             disabled
                             style={{fontSize: this.getFontSize(requiredAmountInQuote)}}
-                            size="10"
+                            size={this.getPaymentInputSize(requiredAmountInQuote)}
                         />
                     </div>
                     <div
