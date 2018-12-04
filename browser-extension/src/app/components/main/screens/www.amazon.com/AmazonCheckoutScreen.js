@@ -226,9 +226,11 @@ class AmazonCheckoutScreen extends React.Component {
             .catch(err => {
                 handleErrors(err);
                 this.props.onSetUIBlockerState({isActive: false});
+                this.props.onSetAppModalLoadingState({isActive: false});
+                const errorMessage = err.message || (err.response && err.response.graphQLErrors && err.response.graphQLErrors[0] && err.response.graphQLErrors[0].message) || "";
                 this.props.onSetAppModalErrorState({
                     isActive: true,
-                    text: `Something went wrong in completing your purchase.\nPlease contact us immediately if crypto has been sent to us!\n${err.message}`
+                    text: `Something went wrong in completing your purchase. Please contact us immediately if crypto has been sent to us! ${errorMessage}`
                 });
             });
     };

@@ -149,6 +149,8 @@ export const doGetPaymentPayload = async (variables) => {
         },
         ttl: getDelayedHours(2).toISOString()
     };
+
+    return response;
 };
 
 const mutationUpdateCoinbaseApiKey = gql`
