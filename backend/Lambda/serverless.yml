@@ -40,6 +40,10 @@ resources:
       Value: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
     ExchangeRateDescription:
       Value: ${{self:functions.exchangeRate.description}}
+    ExchangeRatesArn:
+      Value: { Fn::GetAtt: [ExchangeRatesLambdaFunction, Arn] }
+    ExchangeRatesDescription:
+      Value: ${{self:functions.exchangeRates.description}}
     GetPaymentPayloadArn:
       Value: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
     GetPaymentPayloadDescription:
@@ -70,6 +74,11 @@ functions:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRate
     description: 'Returns the exchange rate given a quote and base currency.'
     handler: src/exchangeRate.default
+    timeout: 30
+  exchangeRates:
+    name: ${{self:service}}-${{self:provider.stage}}-exchangeRates
+    description: 'Returns multiple exchange rates given multiple quote and base currencies.'
+    handler: src/exchangeRates.default
     timeout: 30
   getPaymentPayload:
     name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
