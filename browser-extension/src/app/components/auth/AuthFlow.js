@@ -13,6 +13,7 @@ import {
     TYPE_FACEBOOK, TYPE_GOOGLE
 } from "../../../constants/events/appEvents";
 import AppRuntime from "../../browser/AppRuntime";
+import moonLogo from "../../../../../assets/icons/logo_32_text_thick_infinity.png";
 import FaIcon from "../misc/fontawesome/FaIcon";
 
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
@@ -73,7 +74,9 @@ class AuthFlow extends Component {
             <div className="moon-tab moon-authflow-tab">
                 <div style={{width: '100%'}}>
                     <button className="btn-auth" onClick={this.signIn}>
-                        <div className="btn-auth-icon"><FaIcon icon="moon"/></div>
+                        <div className="btn-auth-icon">
+                            <img src={AppRuntime.getURL(moonLogo)} alt="Sign In With Moon"/>
+                        </div>
                         <div className="btn-auth-text">Sign In With Moon</div>
                     </button>
                 </div>

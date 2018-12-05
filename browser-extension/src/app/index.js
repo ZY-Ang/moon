@@ -3,8 +3,7 @@
  */
 
 import '../utils/preload.js';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import AppRuntime from "./browser/AppRuntime";
 import './index.css';
 import WebFont from 'webfontloader';
 import App from "./components/App";
@@ -12,10 +11,11 @@ import {MOON_DIV_ID} from "./constants/dom";
 import {SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/backgroundEvents";
 import {Provider} from "react-redux";
 import store from "./redux/store";
-import AppRuntime from "./browser/AppRuntime";
 import axios from "axios";
 import {ACTION_SET_IS_APP_ACTIVE, ACTION_TOGGLE_IS_APP_ACTIVE} from "./redux/reducers/constants";
 import {injectButton} from "./buttonMoon";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 /**
  * Re-renders app if div already exists.

@@ -23,7 +23,7 @@ const currencyMap = {
 
 const CurrencyIcon = (props) => {
     const flagSvg = currencyMap[props.currency] || USA;
-    return <img {...props} src={AppRuntime.getURL(flagSvg)} className="country-flag" alt={props.currency || "USA"}/>;
+    return <img {...props} src={AppRuntime.getURL(flagSvg)} alt={props.currency || "USA"}/>;
 };
 
 export default CurrencyIcon;

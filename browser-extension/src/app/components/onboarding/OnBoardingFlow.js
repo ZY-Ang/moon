@@ -37,7 +37,13 @@ class OnBoardingFlow extends React.Component {
     }
 
     skip = () => {
-        AppRuntime.sendMessage(REQUEST_UPDATE_ONBOARDING_SKIP);
+        AppRuntime.sendMessage(REQUEST_UPDATE_ONBOARDING_SKIP, {delay: 168});
+        // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
+        this.props.delayAuthUserOnboarding();
+    };
+
+    done = () => {
+        AppRuntime.sendMessage(REQUEST_UPDATE_ONBOARDING_SKIP, {delay: 168});
         // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
         this.props.delayAuthUserOnboarding();
     };
@@ -51,7 +57,7 @@ class OnBoardingFlow extends React.Component {
                     resistance
                     ref={c => (this.tabSwiper = c)}
                     style={{
-                        height: '85%',
+                        marginBottom: "0.5rem",
                         overflowY: 'hidden !important'
                     }}
                     onChangeIndex={currentTabIndex => this.setState(() => ({currentTabIndex}))}
@@ -61,6 +67,8 @@ class OnBoardingFlow extends React.Component {
                         ONBOARDING_PAGES.map(({Component}, index) =>
                             <Component
                                 key={index}
+                                skip={this.skip}
+                                done={this.done}
                                 next={() => this.setState(() => ({currentTabIndex: index + 1}))}
                                 previous={() => this.setState(() => ({currentTabIndex: index - 1}))}
                             />
@@ -68,7 +76,14 @@ class OnBoardingFlow extends React.Component {
                     }
                 </SwipeableViews>
                 <div className="onboarding-skip-wrapper">
-                    <a onClick={this.skip}>Skip for now</a>
+                    {
+                        this.state.currentTabIndex < (ONBOARDING_PAGES.length - 1)
+                            ? (
+                                <a onClick={this.skip}>Skip for now</a>
+                            ) : (
+                                <p className="my-0">{" "}</p>
+                            )
+                    }
                 </div>
                 <div className="onboarding-carousel-dots onboarding-carousel-dots-draw">
                     <ul>

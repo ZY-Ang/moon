@@ -1,9 +1,23 @@
 /*
  * Copyright (c) 2018 moon
  */
+import store from "../redux/store";
 import gql from "graphql-tag";
 import MoonGraphQL from "./MoonGraphQL";
 import {getDelayedHours} from "../../utils/datetime";
+import {ACTION_SET_USER_CACHE} from "../redux/reducers/api";
+
+const HOURS_TTL_DURATION = 2;
+
+/**
+ * Sets {@param user} to the redux in-memory cache
+ */
+const setUserToCache = (user) => store.dispatch({user, type: ACTION_SET_USER_CACHE});
+
+/**
+ * Clears the cache for the current user
+ */
+export const doClearUserCache = () => setUserToCache(null);
 
 const UserFragment = gql`
     fragment userFragment on User {
@@ -29,7 +43,6 @@ const UserFragment = gql`
     }
 `;
 
-let userCache = null;
 const queryUser = gql`
     query user {
         user {
@@ -39,6 +52,7 @@ const queryUser = gql`
     ${UserFragment}
 `;
 export const getUser = async () => {
+    const userCache = store.getState().apiState.user;
     if (!!userCache && new Date() < new Date(userCache.ttl)) {
         return userCache.cache;
 
@@ -49,10 +63,10 @@ export const getUser = async () => {
                 fetchPolicy: 'network-only'
             });
 
-        userCache = {
+        setUserToCache({
             cache: response,
-            ttl: getDelayedHours(2).toISOString()
-        };
+            ttl: getDelayedHours(HOURS_TTL_DURATION).toISOString()
+        });
 
         return response;
     }
@@ -79,14 +93,14 @@ export const updateOnboardingSkipExpiry = async (hoursOffset) => {
             }
         });
 
-    userCache = {
+    setUserToCache({
         cache: {
             data: {
                 user: response.data.updateUser
             }
         },
-        ttl: getDelayedHours(2).toISOString()
-    };
+        ttl: getDelayedHours(HOURS_TTL_DURATION).toISOString()
+    });
 
     return response;
 };
@@ -141,28 +155,25 @@ export const doGetPaymentPayload = async (variables) => {
             variables
         });
 
-    userCache = {
+    setUserToCache({
         cache: {
             data: {
                 user: response.data.getPaymentPayload.user
             }
         },
-        ttl: getDelayedHours(2).toISOString()
-    };
+        ttl: getDelayedHours(HOURS_TTL_DURATION).toISOString()
+    });
 
     return response;
 };
 
 const mutationUpdateCoinbaseApiKey = gql`
-    mutation updateCoinbaseApiKey($key: String!, $secret: String!, $innerHTML: String!, $onboardingSkipExpiry: AWSDateTime!) {
+    mutation updateCoinbaseApiKey($key: String!, $secret: String!, $innerHTML: String!) {
         updateUser(input: {
             coinbaseApiKeys: {
                 key: $key,
                 secret: $secret,
                 innerHTML: $innerHTML
-            },
-            userInformation: {
-                onboardingSkipExpiry: $onboardingSkipExpiry
             }
         }) {
             ...userFragment
@@ -177,19 +188,18 @@ export const doUpdateCoinbaseApiKey = async (key, secret, innerHTML) => {
             variables: {
                 key,
                 secret,
-                innerHTML,
-                onboardingSkipExpiry: getDelayedHours(168).toISOString()
+                innerHTML
             }
         });
 
-    userCache = {
+    setUserToCache({
         cache: {
             data: {
                 user: response.data.updateUser
             }
         },
-        ttl: getDelayedHours(2).toISOString()
-    };
+        ttl: getDelayedHours(HOURS_TTL_DURATION).toISOString()
+    });
 
     return response;
 };

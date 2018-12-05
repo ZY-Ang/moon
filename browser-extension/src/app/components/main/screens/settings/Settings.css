@@ -22,7 +22,7 @@
 
 .moon-settings-menu-header {
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: column;
     height: 60px;
     width: 100%;
 }

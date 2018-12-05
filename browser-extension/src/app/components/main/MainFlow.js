@@ -23,16 +23,16 @@ class MainFlow extends React.Component {
                 animateHeight
                 ref={c => (this.tabSwiper = c)}
                 disabled
-                style={{height: '100%', overflowY: 'hidden !important'}}
+                style={{width: '100%', overflowY: 'hidden !important'}}
                 index={this.props.mainFlowIndex}
             >
                 {
                     this.props.mainFlowTabs.map((tab, index) => {
                         const Component = POSSIBLE_SCREENS[tab];
                         if (!Component) {
-                            return <UnsupportedScreen key={index}/>
+                            return <UnsupportedScreen key={index} index={index}/>
                         } else {
-                            return <Component key={index}/>
+                            return <Component key={index} index={index}/>
                         }
                     })
                 }
