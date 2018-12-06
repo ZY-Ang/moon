@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import SwipeableViews from "react-swipeable-views";
-import {POSSIBLE_SCREENS} from "../../redux/reducers/constants";
+import {ACTION_SET_SCREEN, POSSIBLE_SCREENS} from "../../redux/reducers/constants";
 import UnsupportedScreen from "./screens/unsupported/UnsupportedScreen";
 
 class MainFlow extends React.Component {
@@ -13,17 +13,19 @@ class MainFlow extends React.Component {
 
     componentDidUpdate() {
         if (this.tabSwiper) {
-            this.tabSwiper.updateHeight();
+            setTimeout(this.tabSwiper.updateHeight, 100);
         }
     }
 
     render() {
         return (
             <SwipeableViews
-                animateHeight
                 ref={c => (this.tabSwiper = c)}
-                disabled
+                animateHeight
+                enableMouseEvents
+                resistance
                 style={{width: '100%', overflowY: 'hidden !important'}}
+                onChangeIndex={mainFlowIndex => this.props.onSetScreenState({mainFlowIndex})}
                 index={this.props.mainFlowIndex}
             >
                 {
@@ -46,4 +48,8 @@ const mapStateToProps = (state) => ({
     mainFlowTabs: state.appState.mainFlowTabs
 });
 
-export default connect(mapStateToProps)(MainFlow);
+const mapDispatchToProps = (dispatch) => ({
+    onSetScreenState: (state) => dispatch({...state, type: ACTION_SET_SCREEN})
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainFlow);

@@ -211,7 +211,7 @@ class AmazonProductScreen extends React.Component {
                                 selectedExchangeRateWallets.map(({name, balance}) => {
                                     const walletBalanceInBase = getWalletBalanceInBase(balance, selectedExchangeRate.bid);
                                     return (
-                                        <div className="product-section-user-wallets-wallet mx-auto pb-1">
+                                        <div key={name} className="product-section-user-wallets-wallet mx-auto pb-1">
                                             <div className="product-section-user-wallets-wallet-name pr-2">{name}</div>
                                             <div className={`product-section-user-wallets-wallet-balance pr-2${Number(balance) < Number(price) ? " text-error" : ""}`}>{balance}</div>
                                             <div className="product-section-user-wallets-wallet-balance-base">({selectedExchangeRate.base} {walletBalanceInBase})</div>

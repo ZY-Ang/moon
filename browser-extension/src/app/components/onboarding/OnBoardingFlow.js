@@ -55,7 +55,7 @@ class OnBoardingFlow extends React.Component {
                     animateHeight
                     enableMouseEvents
                     resistance
-                    ref={c => (this.tabSwiper = c)}
+                    ref={c => (this.onboardingSwiper = c)}
                     style={{
                         marginBottom: "0.5rem",
                         overflowY: 'hidden !important'
