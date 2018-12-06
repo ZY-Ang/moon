@@ -230,7 +230,7 @@ class AmazonProductScreen extends React.Component {
                 }
                 {
                     !authUserHasWallets &&
-                    <div className="mb-2">
+                    <div>
                         <button
                             className="btn btn-primary w-100"
                             onClick={() => this.props.onPushScreen(SCREEN_ADD_WALLETS)}
