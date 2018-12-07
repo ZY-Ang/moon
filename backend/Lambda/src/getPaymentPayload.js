@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018 moon
  */
+import moment from "moment";
 import logHead from "./utils/logHead";
 import logTail from "./utils/logTail";
 import {URL} from "url";
@@ -10,6 +11,8 @@ import validateWallet from "./services/walletProviders/validateWallet";
 import doTransferToMoon from "./services/walletProviders/doTransferToMoon";
 import isSupportedSite from "./services/paymentPayloaders/isSupportedSite";
 import getAmazonPaymentPayload from "./services/paymentPayloaders/amazon/getAmazonPaymentPayload";
+import AWS from "aws-sdk";
+import {TRANSACTION_RECORDS_TABLE} from "./constants/user/config";
 
 /**
  * Validates {@param getPaymentPayloadInput} for
@@ -55,12 +58,42 @@ const validatePageInfo = (pageInfo) => {
     }
 };
 
+const updateTransactionRecord = async (sub, transactionTime, recordset, recordsetData) => {
+    logHead("updateTransactionRecord", recordsetData);
+
+    let dynamodb = new AWS.DynamoDB.DocumentClient();
+
+    const UpdateExpression = `set ${recordset} = :value`;
+    const ExpressionAttributeValues = {':value': recordsetData};
+
+    const params = {
+        TableName: TRANSACTION_RECORDS_TABLE,
+        Key: {sub, 'datetime': transactionTime},
+        UpdateExpression,
+        ExpressionAttributeValues
+    };
+
+    logTail("updateTransactionRecordParams", {params});
+
+    const updateTransactionRecordItemOutput = await dynamodb.update(params).promise();
+
+    logTail("updateTransactionRecordItemOutput", updateTransactionRecordItemOutput);
+
+};
+
 const getPaymentPayload = async (event) => {
     logHead("getPaymentPayload", event);
 
     const {arguments: args, identity} = event;
     validateInput(args.input);
     const {cartInfo, wallet, pageInfo} = args.input;
+
+    // generate a unique id for this transaction
+    const {sub} = identity;
+    const transactionTime = moment().toISOString();
+    await updateTransactionRecord(sub, transactionTime, 'testRecordSet', {test: 'test data', test2: 'more test data'}); // todo: should remove await if the updates are atomic and sequential, which I think they are...
+
+    throw Error("GOOD ERROR!");
 
     // 1. Pay Moon. If payment fails, function should break.
     await doTransferToMoon(identity, cartInfo, wallet);

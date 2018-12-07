@@ -84,6 +84,12 @@ functions:
       Resource:
       - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
       - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:UpdateItem"
+      Resource:
+      - ${{self:custom.dynamoDBTables.TransactionRecords.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.TransactionRecords.Arn}}", '/*']] }
   siteInformation:
     name: ${{self:service}}-${{self:provider.stage}}-siteInformation
     description: 'Returns information about a supported site or null if unsupported'
@@ -149,3 +155,6 @@ custom:
     NonCheckoutReports:
       Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
+    TransactionRecords:
+      Name: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableArn}}
