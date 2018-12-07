@@ -114,7 +114,7 @@ class AmazonProductScreen extends React.Component {
                 {
                     (!!title || !!imageURL || !!imageAlt || !!price) &&
                     <div className="product-section production-section-product-header">
-                        {(!!title || !!imageAlt) && <h4 className="product-title font-weight-bold">{title || imageAlt}</h4>}
+                        {(!!title || !!imageAlt) && <h4 className="product-title font-weight-bold pb-2">{title || imageAlt}</h4>}
                         {
                             !!price &&
                             <div className="product-price pl-2 mr-auto">

@@ -35,7 +35,6 @@
     text-align: center;
     height: 1.5em;
     opacity: 1.0;
-    margin: 20px 0;
 }
 .sign-in-divider::before {
     content: '';
