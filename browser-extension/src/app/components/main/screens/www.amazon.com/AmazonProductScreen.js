@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {
-    querySelectorProductImage,
+    querySelectorProductImage, querySelectorProductObserver,
     querySelectorProductPrice,
     querySelectorProductTitle
 } from "./constants/querySelectors";
@@ -41,7 +41,7 @@ class AmazonProductScreen extends React.Component {
     componentDidMount() {
         this.parseAndUpdate()
             .then(() => this.setState(state => ({selectedExchangeRate: state.exchangeRates[`${QUICKVIEW_CURRENCIES[0]}_${AMAZON_DEFAULT_CURRENCY}`]})));
-        const elementTreesToObserve = document.querySelectorAll(`${querySelectorProductImage},${querySelectorProductPrice},${querySelectorProductTitle}`);
+        const elementTreesToObserve = document.querySelectorAll(querySelectorProductObserver);
         for (let i = 0; i < elementTreesToObserve.length ; i++) {
             const element = elementTreesToObserve[i];
             this.observers[i] = observeDOM(element, this.parseAndUpdate);
