@@ -57,6 +57,9 @@ custom:
     ExchangeRate:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRateArn}}
       Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRateDescription}}
+    ExchangeRates:
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRatesArn}}
+      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRatesDescription}}
     SiteInformation:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.SiteInformationArn}}
       Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.SiteInformationDescription}}
@@ -109,7 +112,7 @@ custom:
       # exchangeRate
       - type: AWS_LAMBDA
         name: ExchangeRateLambdaFunction
-        description: "TODO: Reference lambda output description"
+        description: ${{self:custom.lambdaFunctions.ExchangeRate.Description}}
         config:
           lambdaFunctionArn: ${{self:custom.lambdaFunctions.ExchangeRate.Arn}}
           iamRoleStatements:
@@ -118,6 +121,18 @@ custom:
             - "lambda:invokeFunction"
             Resource:
             - ${{self:custom.lambdaFunctions.ExchangeRate.Arn}}
+      # exchangeRates
+      - type: AWS_LAMBDA
+        name: ExchangeRatesLambdaFunction
+        description: ${{self:custom.lambdaFunctions.ExchangeRates.Description}}
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.ExchangeRates.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - ${{self:custom.lambdaFunctions.ExchangeRates.Arn}}
       # siteInformation
       - type: AWS_LAMBDA
         name: SiteInformationLambdaFunction
@@ -141,6 +156,12 @@ custom:
         field: exchangeRate
         request: Query/exchangeRate/request.vtl
         response: Query/exchangeRate/response.vtl
+      # Query/exchangeRates
+      - dataSource: ExchangeRatesLambdaFunction
+        type: Query
+        field: exchangeRates
+        request: Query/exchangeRates/request.vtl
+        response: Query/exchangeRates/response.vtl
       # Query/siteInformation
       - dataSource: SiteInformationLambdaFunction
         type: Query

@@ -38,6 +38,10 @@ resources:
       Value: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
     ExchangeRateDescription:
       Value: ${{self:functions.exchangeRate.description}}
+    ExchangeRatesArn:
+      Value: { Fn::GetAtt: [ExchangeRatesLambdaFunction, Arn] }
+    ExchangeRatesDescription:
+      Value: ${{self:functions.exchangeRates.description}}
     GetPaymentPayloadArn:
       Value: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
     GetPaymentPayloadDescription:

@@ -4,7 +4,8 @@
 
 /* -----------------    Coinbase Action Identifiers     ------------------ */
 
-export const ACTION_SET_COINBASE_AUTH_FLOW = 'AUTH_USER_SET';
+/** Used to set the coinbase auth flow state */
+export const ACTION_SET_COINBASE_AUTH_FLOW = 'COINBASE_AUTH_FLOW_SET';
 
 /* -----------------     Initial State     ------------------ */
 

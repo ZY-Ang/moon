@@ -3,7 +3,7 @@
  */
 
 /**
- * Map of quote currencies supported by coinbase
+ * Map of quote currencies supported by coinbasePro
  */
 export const quote = {
     ETH: true,
@@ -14,7 +14,7 @@ export const quote = {
 };
 
 /**
- * Map of base currencies supported by coinbase
+ * Map of base currencies supported by coinbasePro
  */
 export const base = {
     USD: true,

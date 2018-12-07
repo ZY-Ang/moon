@@ -4,6 +4,7 @@
 
 import AWSAppSyncClient from "aws-appsync";
 import {AppSyncAuthConfig, AppSyncPublicConfig} from "../config/aws/appsync";
+import {doClearUserCache} from "./user";
 
 /**
  * Utility class to obtain graphql client for application.
@@ -19,6 +20,7 @@ class MoonGraphQL {
      * Remove {@static _authClient} instance on sign out
      */
     static signOut = () => {
+        doClearUserCache();
         MoonGraphQL._authClient = null;
     };
 

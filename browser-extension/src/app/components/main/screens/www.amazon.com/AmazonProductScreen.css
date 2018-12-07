@@ -1,5 +1,33 @@
 .product-image {
     height: 100px;
+    max-width: 140px;
+}
+
+.product-price {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.product-price h1 {
+    font-size: 2.25em;
+}
+
+.product-price-currency-flag {
+    display: flex;
+    font-size: 14px;
+}
+
+.product-section.production-section-product-header .country-flag {
+    height: 36px
+}
+
+.product-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .product-section {
@@ -16,4 +44,170 @@
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
+}
+
+.product-section-label {
+    opacity: 0.75;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 12px 0 12px 10px;
+}
+
+.production-section-product-header {
+    padding: 12px 10px;
+}
+
+.product-section-currency-value {
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    padding-right: 6px;
+    width: 150px;
+    overflow: hidden;
+}
+
+.product-section-currency-value input {
+    font-family: monospace, Courier New, Courier !important;
+    font-weight: bold;
+    text-align: right;
+    background: none;
+    border: none;
+    width: 100%;
+}
+
+.product-section-currency-value input:focus {
+    outline: none;
+}
+
+.product-section-currency-value input[type=number]::-webkit-inner-spin-button,
+.product-section-currency-value input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.product-section-currency-flag {
+    cursor: pointer;
+    background-color: #2E2F33;
+    align-items: center;
+    border-bottom-right-radius: 3px;
+    border-top-right-radius: 3px;
+    display: flex;
+    padding: 8px 10px;
+    -webkit-transition: background-color 0.2s ease;
+    -moz-transition: background-color 0.2s ease;
+    -ms-transition: background-color 0.2s ease;
+    -o-transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease;
+}
+
+.product-section-currency-flag.disabled {
+    cursor: default;
+    background-color: #5f6066;
+}
+
+.product-section-currency-flag:focus,
+.product-section-currency-flag.disabled:hover {
+    opacity: 1.0;
+    background-color: #5f6066;
+}
+
+.product-section-currency-flag:hover {
+    opacity: 0.9;
+    background-color: #1F3384;
+}
+
+.product-section-currency-flag:active {
+    opacity: 1.0;
+    background-color: #0F62BD;
+}
+
+.product-section-currency-flag img {
+    height: 32px;
+    padding-left: 4px;
+}
+
+.product-section-currency-flag div {
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.product-section-currency-selector {
+    display: flex;
+    justify-content: start;
+    width: 100%;
+    cursor: pointer;
+    background-color: #2E2F33;
+    align-items: center;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    max-height: 144px;
+    overflow-y: auto;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.product-section-currency-selector.collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.product-section-currency-selector-currency {
+    padding: 8px 10px;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-section-currency-selector-currency img {
+    width: fit-content;
+}
+
+.product-section-currency-selector-currency:hover {
+    opacity: 0.9;
+    background-color: #1F3384;
+}
+
+.product-section-currency-selector-currency:active {
+    opacity: 1.0;
+    background-color: #0F62BD;
+}
+
+.product-section-user-wallet {
+    flex-direction: column;
+}
+
+.product-section-user-wallet.product-section-label {
+    align-self: start;
+}
+
+.product-section-user-wallets {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    padding-bottom: 12px;
+}
+
+.product-section-user-wallets-wallet {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.product-section-user-wallets-wallet-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.product-section-user-wallets-wallet-balance {
+    font-family: monospace,Courier New,Courier!important;
+}
+
+.product-section-user-wallets-wallet-balance-base {
+    opacity: 0.75;
+    font-family: monospace,Courier New,Courier!important;
 }

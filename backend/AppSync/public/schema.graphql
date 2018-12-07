@@ -40,6 +40,14 @@ type ExchangeRate {
     ask: String!
 }
 
+# Input for an exchangeRate query
+input ExchangeRateInput {
+    # Quote currency for the exchange rate request
+    quote: CoinbaseProQuoteCurrency!
+    # baseCurrency(default: USD)
+    base: CoinbaseProBaseCurrency=USD
+}
+
 # Mutations (actionable). Naming convention: VERBS
 type Mutation {
     # Request a site to be added to the list of sites to be supported
@@ -60,8 +68,10 @@ input PageInfo {
 
 # Queries (static). Naming convention: NOUNS
 type Query {
-    # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD)
+    # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD) # TODO Deprecate in favour of multiple pair specification
     exchangeRate(quote: CoinbaseProQuoteCurrency!, base: CoinbaseProBaseCurrency=USD): ExchangeRate
+    # Returns the latest exchange rate object for multiple pairs of quote currencies and base currencies at once
+    exchangeRates(pairs: [ExchangeRateInput]!): [ExchangeRate]
     # Returns information about the URL of the current site.
     siteInformation(host: String!): SiteInformation
 }

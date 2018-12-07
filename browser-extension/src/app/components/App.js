@@ -4,7 +4,6 @@
 import React, {Component} from 'react';
 import './App.css';
 import logo from '../../../../assets/icons/logo_300_text_dark.png';
-import {TAB_GROUP_AUTH, TAB_PAY} from "./nav/constants";
 import {connect} from "react-redux";
 import AuthFlow from "./auth/AuthFlow";
 import AppRuntime from "../browser/AppRuntime";
@@ -19,8 +18,7 @@ import MainFlow from "./main/MainFlow";
 
 const INITIAL_STATE = {
     isMaximized: true,
-    isHoverHeaderButtons: false,
-    currentTabIndex: TAB_GROUP_AUTH[TAB_PAY].index
+    isHoverHeaderButtons: false
 };
 
 class App extends Component {
@@ -111,7 +109,6 @@ class App extends Component {
                                 <OnBoardingFlow/>
                             }
                             {!this.props.authUser && <AuthFlow/>}
-                            {/*<Navbar changeTab={this.changeTab} activeTab={this.state.currentTabIndex}/>*/}
                         </div>
                     </div>
                 }
