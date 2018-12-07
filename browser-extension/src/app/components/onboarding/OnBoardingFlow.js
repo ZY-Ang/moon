@@ -10,7 +10,6 @@ import AppRuntime from "../../browser/AppRuntime";
 import {REQUEST_UPDATE_ONBOARDING_SKIP} from "../../../constants/events/appEvents";
 import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../redux/reducers/constants";
 
-// TODO: Let background script handle onboarding flow state and nonreminder caching for session
 export const isOnBoardingFlowCompleteOrSkipped = (authUser) => {
     return !!authUser && (
         (

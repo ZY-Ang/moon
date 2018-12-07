@@ -111,7 +111,7 @@ export const URL_AMAZON_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(AMAZON_
  */
 export const getURLFlowParams = (code) => ({
     grant_type: 'authorization_code',
-    scope: 'email openid profile', // TODO: Verify scopes alignment with client and refresh call for new scopes
+    scope: 'email openid profile',
     redirect_uri: URL_OAUTH_REDIRECT,
     client_secret: AUTH0_CLIENT_SECRET,
     client_id: AUTH0_CLIENT_ID,

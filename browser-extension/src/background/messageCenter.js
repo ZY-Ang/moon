@@ -129,7 +129,6 @@ const messageCenter = (request, sender, sendResponse) => {
                     return scripts.map(script => Tabs.executeScript(sender.tab.id, {code: script}));
                 })
                 .then(responses => sendSuccess(responses))
-                // TODO: doUpdateAuthUserEvent with new user from  payment payload
                 .catch(err => {
                     handleErrors(err);
                     sendFailure(err);

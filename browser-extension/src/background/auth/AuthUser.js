@@ -236,7 +236,6 @@ class AuthUser {
             email_verified: data.user.identity.claims.email_verified,
             onboardingSkipExpiry: data.user.signUpState && data.user.signUpState.onboardingSkipExpiry,
             picture: data.user.identity.claims.picture,
-            // TODO: Simply concatenate additional wallets to conform to shape
             wallets: coinbaseWallets.sort((a, b) => b.balance.localeCompare(a.balance))
         };
     };
