@@ -3,7 +3,9 @@
  */
 .onboarding-wrapper {
     height: 100%;
-    overflow-y: auto;
+    align-self: flex-end;
+    overflow-y: hidden;
+    padding-bottom: 1rem;
 }
 .onboarding-tab {
     padding: 0 16px;
@@ -27,7 +29,8 @@
 }
 
 .onboarding-skip-wrapper {
-    height: 5%;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -73,8 +76,6 @@
     height: 100%;
     outline: none;
     border-radius: 50%;
-    background-color: #0f62bd;
-    background-color: rgba(255, 255, 255, 0.3);
     text-indent: -999em; /* make the text accessible to screen readers */
     cursor: pointer;
     position: absolute;
@@ -116,6 +117,7 @@
 .onboarding-carousel-dots-draw li a:hover,
 .onboarding-carousel-dots-draw li a:focus {
     opacity: 0.5;
+    background-color: #eee;
 }
 .onboarding-carousel-dots-draw li.current svg circle {
     opacity: 1;

@@ -1,8 +1,14 @@
 import React from "react";
+import {connect} from "react-redux";
 import SettingsIcon from "../settings/SettingsIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_MOON_SITE_SUPPORT} from "../../../../../constants/events/appEvents";
 import {handleErrors} from "../../../../../utils/errors";
+import {
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE
+} from "../../../../redux/reducers/constants";
 
 class UnsupportedScreen extends React.Component {
     constructor(props) {
@@ -34,7 +40,7 @@ class UnsupportedScreen extends React.Component {
 
     render() {
         return (
-            <div className="moon-tab text-center">
+            <div className="moon-mainflow-screen text-center">
                 <div>
                     <div className="settings-icon-parent">
                         <span
@@ -55,7 +61,7 @@ class UnsupportedScreen extends React.Component {
                     {
                         this.state.isRequested
                             ? <button className="btn btn-primary" disabled>We're working on {window.location.host}!</button>
-                            : <button className="btn btn-primary" onClick={this.requestSite}>I want to shop here with Moon!</button>
+                            : <button className="btn btn-primary-outline" onClick={this.requestSite}>I want to shop here with Moon!</button>
                     }
                 </div>
             </div>
@@ -63,4 +69,10 @@ class UnsupportedScreen extends React.Component {
     }
 }
 
-export default UnsupportedScreen;
+const mapDispatchToProps = (dispatch) => ({
+    onSetAppModalLoadingState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_LOADING_STATE}),
+    onSetAppModalSuccessState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_SUCCESS_STATE}),
+    onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE})
+});
+
+export default connect(null, mapDispatchToProps)(UnsupportedScreen);

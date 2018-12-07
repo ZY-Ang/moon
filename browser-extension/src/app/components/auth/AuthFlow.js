@@ -13,6 +13,7 @@ import {
     TYPE_FACEBOOK, TYPE_GOOGLE
 } from "../../../constants/events/appEvents";
 import AppRuntime from "../../browser/AppRuntime";
+import moonLogo from "../../../../../assets/icons/logo_32_text_thick_infinity.png";
 import FaIcon from "../misc/fontawesome/FaIcon";
 
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
@@ -73,13 +74,15 @@ class AuthFlow extends Component {
             <div className="moon-tab moon-authflow-tab">
                 <div style={{width: '100%'}}>
                     <button className="btn-auth" onClick={this.signIn}>
-                        <div className="btn-auth-icon"><FaIcon icon="moon"/></div>
+                        <div className="btn-auth-icon">
+                            <img src={AppRuntime.getURL(moonLogo)} alt="Sign In With Moon"/>
+                        </div>
                         <div className="btn-auth-text">Sign In With Moon</div>
                     </button>
                 </div>
                 <div
-                    className="text-center"
-                    style={{padding: '10px 0', fontSize: 'smaller'}}
+                    className="text-center pt-2 font-weight-bold"
+                    style={{fontSize: 'smaller'}}
                 >
                     Don't have an account? <a
                     style={{fontStyle: 'none', textDecoration: 'none'}}
@@ -89,7 +92,7 @@ class AuthFlow extends Component {
                     </a>
                 </div>
                 <hr
-                    className="sign-in-divider"
+                    className="sign-in-divider py-2"
                     data-content="or log in with"
                     style={{width: '100%'}}
                 />
@@ -113,7 +116,7 @@ class AuthFlow extends Component {
                         <FaIcon icon={['fab', 'amazon']}/>
                     </button>
                 </div>
-                <p className="text-center text-error">{this.state.error}</p>
+                {!!this.state.error && <p className="text-center text-error">{this.state.error}</p>}
             </div>
         );
     }

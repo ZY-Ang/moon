@@ -54,18 +54,19 @@ class SettingsScreen extends React.Component {
 
     render() {
         return (
-            <div className="moon-tab overflow-hidden">
+            <div className="moon-mainflow-screen overflow-hidden">
                 <BackButton/>
                 {
                     !!this.props.authUser &&
-                    <div className="moon-settings-menu-header text-center">
-                        {
-                            !!this.props.authUser.picture &&
-                            <img src={this.props.authUser.picture} className="avatar"/>
-                        }
+                    <div className="moon-settings-menu-header">
+                        <h1 className="pr-2 ml-auto my-0">Settings</h1>
                         {
                             !!this.props.authUser.name &&
-                            <p className="pr-2">Welcome, {this.props.authUser.name}</p>
+                            <p className="pr-2 ml-auto my-0">Hi, {this.props.authUser.name}</p>
+                        }
+                        {
+                            // !!this.props.authUser.picture &&
+                            // <img src={this.props.authUser.picture} className="avatar"/>
                         }
                     </div>
                 }

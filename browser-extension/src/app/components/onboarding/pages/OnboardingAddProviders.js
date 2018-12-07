@@ -1,4 +1,5 @@
 import React from "react";
+import {connect} from "react-redux";
 import CoinbaseIcon from "../../misc/coinbase/CoinbaseIcon";
 import AppRuntime from "../../../browser/AppRuntime";
 import {REQUEST_LAUNCH_COINBASE_AUTH_FLOW} from "../../../../constants/events/appEvents";
@@ -32,9 +33,14 @@ class OnboardingAddProviders extends React.Component {
                     </button>
                 </div>
                 <p><i>Don't worry, you can add more later!</i></p>
+                <button className="btn btn-primary-outline w-77 mt-auto" onClick={this.props.done}>I'm Done</button>
             </div>
         );
     }
 }
 
-export default OnboardingAddProviders;
+const mapStateToProps = (state) => ({
+    authUser: state.sessionState.authUser
+});
+
+export default connect(mapStateToProps)(OnboardingAddProviders);

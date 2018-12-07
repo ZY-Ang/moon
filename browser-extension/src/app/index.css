@@ -49,6 +49,14 @@
     float: right !important;
 }
 
+.text-warning {
+    color: #D37C00 !important;
+}
+
+.text-warning * {
+    color: #D37C00 !important;
+}
+
 .text-error {
     color: #d30000 !important;
 }

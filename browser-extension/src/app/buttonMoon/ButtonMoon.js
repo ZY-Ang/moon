@@ -52,6 +52,7 @@ class ButtonMoon extends Component {
     setHoverStyle = () => this.setState({style: hoverStyle});
     setActiveStyle = () => this.setState({style: activeStyle});
 
+    // TODO: Feature to show price directly on PWM button
     render() {
         return this.props.isAppActive ? null : (
             <div

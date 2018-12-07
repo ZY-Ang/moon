@@ -5,7 +5,7 @@
 // This file contains the events and request types that are EMITTED FROM THE CONTENT SCRIPT.
 
 // --------------------- Developer ---------------------
-// TODO: Used in development for developer one-off functions. Will be useless in production
+// NOTE: Used in development for developer one-off functions. Will be useless in production
 export const REQUEST_TEST_FUNCTION = "MOON_TEST_FUNCTION";
 export const REQUEST_GET_ID_JWTOKEN = "MOON_GET_ID_TOKEN";
 
@@ -46,8 +46,11 @@ export const REQUEST_UPDATE_COINBASE_API_KEYS = "MOON_UPDATE_COINBASE_API_KEYS";
 /** Used to request for information to be used to checkout from the page */
 export const REQUEST_GET_PAYMENT_PAYLOAD = "MOON_GET_PAYMENT_PAYLOAD";
 
-/** Used to get the exchange rate */
+/** Used to get a single exchange rate */
 export const REQUEST_GET_EXCHANGE_RATE = "MOON_GET_EXCHANGE_RATE";
+
+/** Used to get multiple exchange rates at once */
+export const REQUEST_GET_EXCHANGE_RATES = "MOON_GET_MULTI_EXCHANGE_RATES";
 
 /** Used to notify the backend of a payment payload completion, successful or otherwise */
 export const REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION = "MOON_NOTIFY_PAYMENT_COMPLETION";

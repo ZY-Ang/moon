@@ -3,7 +3,7 @@
  */
 
 import {
-    POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_EXCHANGE_RATE,
+    POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_EXCHANGE_RATE, REQUEST_GET_EXCHANGE_RATES,
     REQUEST_GET_ID_JWTOKEN,
     REQUEST_GET_PAYMENT_PAYLOAD,
     REQUEST_GET_SITE_INFORMATION,
@@ -29,7 +29,7 @@ import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
 import {doGetPaymentPayload} from "./api/user";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
-import {getExchangeRate} from "./api/exchangeRates";
+import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
 
 /**
@@ -106,10 +106,19 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_GET_EXCHANGE_RATE]() {
             getExchangeRate(request.quote, request.base)
-                .then(({data}) => sendSuccess(data.exchangeRate))
+                .then(exchangeRate => sendSuccess(exchangeRate))
                 .catch(err => {
                     handleErrors(err);
                     sendFailure(`getExchangeRate(${request.quote}, ${request.base}) failed`);
+                });
+            return true;
+        },
+        [REQUEST_GET_EXCHANGE_RATES]() {
+            getExchangeRates(request.pairs)
+                .then(exchangeRates => sendSuccess(exchangeRates))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`getExchangeRates(${request.pairs}) failed`);
                 });
             return true;
         },
@@ -120,7 +129,6 @@ const messageCenter = (request, sender, sendResponse) => {
                     return scripts.map(script => Tabs.executeScript(sender.tab.id, {code: script}));
                 })
                 .then(responses => sendSuccess(responses))
-                // TODO: doUpdateAuthUserEvent with new user from  payment payload
                 .catch(err => {
                     handleErrors(err);
                     sendFailure(err);

@@ -20,6 +20,7 @@ import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../util
 import FaIcon from "../../../misc/fontawesome/FaIcon";
 import {handleErrors} from "../../../../../utils/errors";
 import ConfirmSlider from "../../../misc/confirmslider/ConfirmSlider";
+import {AMAZON_DEFAULT_CURRENCY} from "./AmazonProductScreen";
 
 export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
 const INITIAL_STATE = {
@@ -60,6 +61,19 @@ class AmazonCheckoutScreen extends React.Component {
             this.props.onSetAppModalLoadingState({isActive: true, text: "Loading..."});
             return new Promise((resolve, reject) => {
                 if (triesRemaining > 0) {
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
+                    // FIXME: No CartAmountElements may mean free purchase
                     setTimeout(() => resolve(this.parse(triesRemaining - 1)), 200);
                 } else {
                     reject(new Error("Unable to parse cart information! Please refresh to try again."))
@@ -88,7 +102,7 @@ class AmazonCheckoutScreen extends React.Component {
         return new Promise((resolve) => this.setState(state => ({
             cartAmount,
             paymentAmount: state.paymentAmount || paymentAmount,
-            cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || "USD"
+            cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || AMAZON_DEFAULT_CURRENCY
         }), resolve));
     };
 
@@ -117,6 +131,8 @@ class AmazonCheckoutScreen extends React.Component {
                     console.error("Failed to get exchange rate", err);
                     this.props.onSetAppModalErrorState({isActive: true, text: "Failed to get exchange rates! The server might be busy. Please try again in a few moments."});
                 });
+        } else {
+            return Promise.resolve();
         }
     };
 
@@ -151,21 +167,14 @@ class AmazonCheckoutScreen extends React.Component {
         this.setPaymentAmount(this.state.cartAmount);
     };
 
-    authUserHasWallets = () => !!this.props.authUser && !!this.props.authUser.wallets && !!this.props.authUser.wallets.length
+    authUserHasWallets = () => !!this.props.authUser && !!this.props.authUser.wallets && !!this.props.authUser.wallets.length;
 
     getFontSize = (str) => {
         if (!str || str.length <= 10) {
             return 24;
         } else {
-            return Math.round(240 / str.length);
-        }
-    };
-
-    getPaymentInputSize = (str) => {
-        if (!str || str.length <= 10) {
-            return 10;
-        } else {
-            return Math.round(str.length * 1.1);
+            // Formula created using excel manually. LOL.
+            return Math.floor(227.71 * Math.pow(str.length, -0.951));
         }
     };
 
@@ -175,10 +184,10 @@ class AmazonCheckoutScreen extends React.Component {
         const {selectedWallet} = this.props;
         let paymentAmount;
         const parsedEventTarget = Number(paymentAmountString.replace(/[^0-9.,]/g, ""));
-        if (!parsedEventTarget) {
+        if (!parsedEventTarget && parsedEventTarget !== 0) {
             paymentAmount = cartAmount || "0"
         } else {
-            paymentAmount = parsedEventTarget.toFixed(2);
+            paymentAmount = parsedEventTarget.toLocaleString("en-us", { minimumFractionDigits: 2 });
         }
         if (authUserHasWallets && !!selectedWallet) {
             const validatedPaymentAmount =
@@ -204,7 +213,7 @@ class AmazonCheckoutScreen extends React.Component {
     };
 
     onPaymentAmountChange = (e) => {
-        this.setPaymentAmount(e.target.value);
+        this.setPaymentAmount(Number(e.target.value).toFixed(2));
     };
 
     pay = () => {
@@ -274,6 +283,8 @@ class AmazonCheckoutScreen extends React.Component {
             walletBalanceInBase
         } = this.state;
         const requiredAmountInQuote = (!!paymentAmount && !!exchangeRate) ? getRequiredAmountInQuote(paymentAmount, exchangeRate) : "0";
+        const paymentAmountFontSize = this.getFontSize(paymentAmount);
+        const requiredAmountFontSize = this.getFontSize(requiredAmountInQuote);
         const {authUser, selectedWallet} = this.props;
         const isFullCartAmount = Number(cartAmount) === Number(paymentAmount);
         const isMaxWalletAmount = Number(walletBalanceInBase) === Number(paymentAmount);
@@ -281,7 +292,7 @@ class AmazonCheckoutScreen extends React.Component {
         const authUserHasWallets = this.authUserHasWallets();
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
         return (
-            <div className="moon-tab text-center">
+            <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
                     <AmazonSiteLogo/>
                     <SettingsIcon/>
@@ -293,11 +304,13 @@ class AmazonCheckoutScreen extends React.Component {
                     <div className="checkout-order-total-value">
                         <input
                             ref={c => (this.txtBaseValue = c)}
-                            type="text"
-                            value={paymentAmount || "Hang On..."}
+                            type="number"
+                            step={0.01}
+                            min={0}
+                            max={Math.min(Number(cartAmount), Number(walletBalanceInBase))}
+                            value={paymentAmount}
                             onChange={this.onPaymentAmountChange}
-                            style={{fontSize: this.getFontSize(paymentAmount)}}
-                            size={this.getPaymentInputSize(paymentAmount)}
+                            style={{fontSize: paymentAmountFontSize}}
                         />
                     </div>
                     <div className="checkout-section-currency-flag disabled">
@@ -315,7 +328,10 @@ class AmazonCheckoutScreen extends React.Component {
                             <li
                                 className="text-left font-size-80"
                             >
-                                <b>+ {(Number(cartAmount) - Number(paymentAmount)).toFixed(2)}</b> <b>{cartCurrency}</b> of your order total of <b><i>{cartAmount} {cartCurrency}</i></b> is paid using your Amazon payment method.
+                                <b>+ {(Number(cartAmount) - Number(paymentAmount))
+                                    .toLocaleString("en-us", { minimumFractionDigits: 2 })}</b> <b>{cartCurrency}</b> of
+                                your order total of <b><i>{cartAmount} {cartCurrency}</i></b> is paid using your Amazon
+                                payment method.
                             </li>
                         }
                     </ul>
@@ -363,7 +379,7 @@ class AmazonCheckoutScreen extends React.Component {
                                                 this.setState(() => ({isShowingWallets: false}));
                                             }}
                                         >
-                                            <div>
+                                            <div className="pr-2">
                                                 <p className="my-0 font-weight-bold">{wallet.name}</p>
                                                 <p
                                                     className="checkout-wallet-select-change-wallet-selection-value my-0 font-size-80"
@@ -430,8 +446,7 @@ class AmazonCheckoutScreen extends React.Component {
                             type="text"
                             value={requiredAmountInQuote}
                             disabled
-                            style={{fontSize: this.getFontSize(requiredAmountInQuote)}}
-                            size={this.getPaymentInputSize(requiredAmountInQuote)}
+                            style={{fontSize: requiredAmountFontSize}}
                         />
                     </div>
                     <div
@@ -445,32 +460,23 @@ class AmazonCheckoutScreen extends React.Component {
                     </div>
                 </div>
                 {
-                    false &&
                     authUserHasWallets &&
                     !!selectedWallet &&
-                    <div className="checkout-payment-button my-2">
-                        <button
-                            className="btn btn-primary btn-pay w-77"
-                            onClick={this.pay}
-                            disabled={this.props.isPaying}
-                        >
-                            Pay with Moon
-                        </button>
-                    </div>
-                }
-                {
-                    authUserHasWallets &&
-                    !!selectedWallet &&
-                    <div className="checkout-payment-button my-2">
+                    <div className="checkout-payment-button mt-2">
                         <ConfirmSlider action={this.pay} loading={this.props.isPaying}/>
                     </div>
                 }
                 {
                     !authUserHasWallets &&
-                    <div className="checkout-payment-button my-2">
-                        <p className="text-error">No wallets available for purchase.</p>
+                    <ul className="sequence">
+                        <li className="text-error text-right font-weight-bold">No wallets available for purchase.</li>
+                    </ul>
+                }
+                {
+                    !authUserHasWallets &&
+                    <div className="checkout-payment-button">
                         <button
-                            className="btn btn-primary w-77"
+                            className="btn btn-primary w-100"
                             onClick={() => this.props.onPushScreen(SCREEN_ADD_WALLETS)}
                         >
                             Connect One Now!

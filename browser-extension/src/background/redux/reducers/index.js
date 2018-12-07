@@ -2,6 +2,7 @@
  * Copyright (c) 2018 moon
  */
 import {combineReducers} from 'redux';
+import apiReducer from "./api";
 import coinbaseReducer from "./coinbase";
 
 /**
@@ -10,6 +11,7 @@ import coinbaseReducer from "./coinbase";
  * @type {Reducer<any>}
  */
 const rootReducer = combineReducers({
+    apiState: apiReducer,
     coinbaseState: coinbaseReducer
 });
 
