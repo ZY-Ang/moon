@@ -25,11 +25,14 @@ class MainFlow extends React.Component {
                 enableMouseEvents
                 resistance
                 style={{width: '100%', overflowY: 'hidden !important'}}
-                onChangeIndex={mainFlowIndex => this.props.onSetScreenState({mainFlowIndex})}
+                onChangeIndex={mainFlowIndex => this.props.onSetScreenState({
+                    mainFlowIndex: mainFlowIndex,
+                    mainFlowScreens: this.props.mainFlowScreens.slice(0, mainFlowIndex + 1)
+                })}
                 index={this.props.mainFlowIndex}
             >
                 {
-                    this.props.mainFlowTabs.map((tab, index) => {
+                    this.props.mainFlowScreens.map((tab, index) => {
                         const Component = POSSIBLE_SCREENS[tab];
                         if (!Component) {
                             return <UnsupportedScreen key={index} index={index}/>
@@ -45,7 +48,7 @@ class MainFlow extends React.Component {
 
 const mapStateToProps = (state) => ({
     mainFlowIndex: state.appState.mainFlowIndex,
-    mainFlowTabs: state.appState.mainFlowTabs
+    mainFlowScreens: state.appState.mainFlowScreens
 });
 
 const mapDispatchToProps = (dispatch) => ({

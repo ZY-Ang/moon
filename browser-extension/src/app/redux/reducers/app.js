@@ -13,6 +13,7 @@ import {
     ACTION_PUSH_SCREEN,
     POSSIBLE_SCREENS, SCREEN_UNSUPPORTED, ACTION_SET_SCREEN, SCREEN_MAIN
 } from "./constants";
+import store from "../store";
 
 /* -----------------     Initial State     ------------------ */
 
@@ -39,9 +40,10 @@ const INITIAL_STATE = {
         subTitle: ""
     },
     mainFlowIndex: 0,
-    mainFlowTabs: [
+    mainFlowScreens: [
         SCREEN_MAIN
-    ]
+    ],
+    mainFlowLock: false
 };
 
 
@@ -105,21 +107,33 @@ const applySetUIBlockerState = (state, action) => ({
  */
 const doSetScreenState = (state, action) => ({
     ...state,
-    mainFlowIndex: action.mainFlowIndex || state.mainFlowIndex,
-    mainFlowTabs: action.mainFlowTabs || state.mainFlowTabs
+    mainFlowIndex: (!!action.mainFlowIndex || action.mainFlowIndex === 0) ? action.mainFlowIndex : state.mainFlowIndex,
+    mainFlowScreens: action.mainFlowScreens || state.mainFlowScreens,
+    mainFlowLock: action.mainFlowLock
 });
+
+const MAINFLOW_SWIPER_ANIMATION_TIMEOUT = 300;
 
 /**
  * Action to pop the current tab and return to the previous tab
  */
 const doPopScreenState = (state) => {
-    if (state.mainFlowIndex <= 0) {
+    if (state.mainFlowLock) {
+        console.warn("Main flow is performing work.");
+        return state;
+    } if (state.mainFlowIndex <= 0) {
         console.warn("There are no more screens to be popped");
         return state;
     } else {
+        setTimeout(() => store.dispatch({
+            mainFlowScreens: state.mainFlowScreens.slice(0, state.mainFlowIndex),
+            type: ACTION_SET_SCREEN,
+            mainFlowLock: false
+        }), MAINFLOW_SWIPER_ANIMATION_TIMEOUT);
         return {
             ...state,
-            mainFlowIndex: state.mainFlowIndex - 1
+            mainFlowIndex: state.mainFlowIndex - 1,
+            mainFlowLock: true
         };
     }
 };
@@ -128,19 +142,28 @@ const doPopScreenState = (state) => {
  * Action to push a new screen onto the stack or the unsupported screen if not a known screen
  */
 const doPushScreenState = (state, action) => {
+    setTimeout(() => store.dispatch({
+        type: ACTION_SET_SCREEN,
+        mainFlowLock: false
+    }), MAINFLOW_SWIPER_ANIMATION_TIMEOUT);
     const mainFlowIndex = state.mainFlowIndex + 1;
-    if (!action.screen || !POSSIBLE_SCREENS[action.screen]) {
+    if (state.mainFlowLock) {
+        console.warn("Main flow is performing work.");
+        return state;
+    } if (!action.screen || !POSSIBLE_SCREENS[action.screen]) {
         // Screen invalid or unknown - push an unsupported screen
         return {
             ...state,
             mainFlowIndex,
-            mainFlowTabs: [...state.mainFlowTabs.slice(0, mainFlowIndex), SCREEN_UNSUPPORTED]
+            mainFlowScreens: [...state.mainFlowScreens, SCREEN_UNSUPPORTED],
+            mainFlowLock: true
         };
     } else {
         return {
             ...state,
             mainFlowIndex,
-            mainFlowTabs: [...state.mainFlowTabs.slice(0, mainFlowIndex), action.screen]
+            mainFlowScreens: [...state.mainFlowScreens, action.screen],
+            mainFlowLock: true
         };
     }
 };

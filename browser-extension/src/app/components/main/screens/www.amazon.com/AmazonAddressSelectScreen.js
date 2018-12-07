@@ -10,7 +10,11 @@ class AmazonAddressSelectScreen extends React.Component {
                     <AmazonSiteLogo/>
                     <SettingsIcon/>
                 </div>
-                Select Address!!
+                <ul className="sequence">
+                    <li>To Shop With Moon,</li>
+                    <li className="highlighted">Select a Delivery Address</li>
+                    <li>Choose a Payment Method</li>
+                </ul>
             </div>
         );
     }
