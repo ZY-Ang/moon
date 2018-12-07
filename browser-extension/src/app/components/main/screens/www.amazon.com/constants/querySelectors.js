@@ -6,3 +6,4 @@ export const querySelectorProductTitle = "#productTitle";
 export const querySelectorProductImage = "#landingImage";
 export const querySelectorAddToCart = "#add-to-cart-button";
 export const querySelectorProductPrice = "#priceblock_ourprice";
+export const querySelectorProductObserver = `#desktop_unifiedPrice${querySelectorProductTitle}${querySelectorProductImage}${querySelectorProductPrice}`;

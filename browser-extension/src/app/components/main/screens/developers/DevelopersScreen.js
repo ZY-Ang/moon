@@ -51,7 +51,7 @@ class DevelopersScreen extends React.Component {
 
     render() {
         return (
-            <div className="moon-tab">
+            <div className="moon-mainflow-screen" style={{display: 'flex', flexDirection: 'column'}}>
                 <BackButton/>
                 <h1 style={{textAlign: 'center'}}>Developers</h1>
                 <div>
@@ -77,10 +77,9 @@ class DevelopersScreen extends React.Component {
                     {this.state.isSuccess && <p style={{color: 'green'}}>Test function succeeded</p>}
                     {this.state.isError && <p style={{color: 'red'}}>Test function failed</p>}
                 </div>
-                <div>
-                    <div style={{float: 'left'}}><button onClick={this.getIdToken}>Get idToken</button></div>
-                    <div>{this.state.idJWToken}</div>
-                </div>
+
+                <button className="btn btn-primary mt-auto" onClick={this.getIdToken}>Get idToken</button>
+                <div className="text-center my-3">{this.state.idJWToken}</div>
             </div>
         );
     }

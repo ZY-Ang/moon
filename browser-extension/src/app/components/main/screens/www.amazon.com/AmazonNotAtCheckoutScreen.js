@@ -39,7 +39,7 @@ class AmazonNotAtCheckoutScreen extends React.Component {
 
     render() {
         return (
-            <div className="moon-tab text-center">
+            <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent">
                     <AmazonSiteLogo/>
                     <SettingsIcon/>

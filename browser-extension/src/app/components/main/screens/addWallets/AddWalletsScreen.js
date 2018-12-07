@@ -1,9 +1,11 @@
 import React from "react";
+import {connect} from "react-redux";
 import CoinbaseIcon from "../../../misc/coinbase/CoinbaseIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_LAUNCH_COINBASE_AUTH_FLOW} from "../../../../../constants/events/appEvents";
 import {handleErrors} from "../../../../../utils/errors";
 import BackButton from "../../BackButton";
+import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../../../redux/reducers/constants";
 
 class AddWalletsScreen extends React.Component {
     launchCoinbaseAuthFlow = () => {
@@ -16,11 +18,13 @@ class AddWalletsScreen extends React.Component {
                 handleErrors(err);
                 // FIXME: Show user errors and shit
             });
+        // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
+        this.props.delayAuthUserOnboarding();
     };
 
     render() {
         return (
-            <div className="moon-tab text-center">
+            <div className="moon-mainflow-screen text-center">
                 <BackButton/>
                 <h2>Connect a Wallet</h2>
                 <div className="mb-2 w-100">
@@ -35,4 +39,8 @@ class AddWalletsScreen extends React.Component {
     }
 }
 
-export default AddWalletsScreen;
+const mapDispatchToProps = (dispatch) => ({
+    delayAuthUserOnboarding: () => dispatch({type: ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP})
+});
+
+export default connect(null, mapDispatchToProps)(AddWalletsScreen);
