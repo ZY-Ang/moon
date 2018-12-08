@@ -21,6 +21,8 @@
       <excludeFolder url="file://$MODULE_DIR$/database/nonCheckoutReports/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/database/siteSupportRequest/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/database/siteSupportRequests/.serverless" />
+      <excludeFolder url="file://$MODULE_DIR$/database/transactionRecords/.serverless" />
+      <excludeFolder url="file://$MODULE_DIR$/database/userInformation/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/database/userSecrets/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/extension-auth/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
