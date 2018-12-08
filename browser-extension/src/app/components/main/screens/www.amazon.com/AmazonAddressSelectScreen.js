@@ -47,14 +47,7 @@ class AmazonAddressSelectScreen extends React.Component {
                 <ol className="sequence">
                     <li className="text-left pb-5 mt-4 current">Choose a Shipping Address</li>
                     <li className="text-left pb-5">
-                        Choose an Amazon Payment Method <a
-                            className="text-small"
-                            href="https://paywithmoon.com/FAQs"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Why?
-                        </a>
+                        Choose an Amazon Payment Method
                     </li>
                     <li className="text-left mb-5">Review Items and Shipping</li>
                 </ol>
