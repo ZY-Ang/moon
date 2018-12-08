@@ -38,7 +38,7 @@ class ConfirmSlider extends React.Component {
                     overflowY: 'hidden !important',
                     borderRadius: 3
                 }}
-                hysteresis={0.75}
+                hysteresis={0.85}
                 ignoreNativeScroll
                 onChangeIndex={index => this.setState(() => ({index}))}
                 index={loading ? 0 : index}

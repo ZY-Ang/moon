@@ -276,6 +276,10 @@ a {
     padding-right: 3rem !important;
 }
 
+.font-size-65,
+.text-small {
+    font-size: 65%;
+}
 .font-size-80 {
     font-size: 80%;
 }

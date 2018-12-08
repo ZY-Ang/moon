@@ -13,7 +13,6 @@ import {
 
 class AmazonNotAtCheckoutScreen extends React.Component {
     reportIsCheckout = () => {
-        // TODO: Refactor this into utilities and use store.dispatch instead of React props
         this.props.onSetAppModalLoadingState({isActive: true, text: "✈ Sending us a bug report..."});
         AppRuntime.sendMessage(REQUEST_MOON_VALID_CHECKOUT_REPORT, {
             url: window.location.href,
