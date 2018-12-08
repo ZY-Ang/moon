@@ -98,13 +98,7 @@ class AmazonCheckoutScreen extends React.Component {
                 .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
         }
         const cartAmount = this.getCartAmountFromElements(cartAmountElements);
-        const paymentAmount = (
-            !!cartAmount &&
-            (Number(cartAmount) > 0) &&
-            process.env.NODE_ENV !== 'production'
-        )
-            ? "0.01"
-            : cartAmount ? cartAmount : "0.00";
+        const paymentAmount = cartAmount ? cartAmount : "0.00";
         return new Promise((resolve) => this.setState(state => ({
             cartAmount,
             paymentAmount: state.paymentAmount || paymentAmount,
@@ -265,7 +259,7 @@ class AmazonCheckoutScreen extends React.Component {
         } else {
             return AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
                 payloadCurrency: cartCurrency,
-                payloadAmount: paymentAmount,
+                payloadAmount: process.env.NODE_ENV === 'production' ? paymentAmount : "0.01",
 
                 walletProvider: selectedWallet.provider,
                 walletID: selectedWallet.id,
