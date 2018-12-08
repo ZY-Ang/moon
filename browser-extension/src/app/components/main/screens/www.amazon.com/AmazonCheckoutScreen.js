@@ -413,8 +413,9 @@ class AmazonCheckoutScreen extends React.Component {
                     {
                         !!selectedWallet &&
                         isMaxWalletAmount &&
+                        Decimal(selectedWallet.balance).gt(requiredAmountInQuote) &&
                         <li className="text-left">
-                            You save <b>+ {(Decimal(selectedWallet.balance).sub(requiredAmountInQuote)).toFixed(8)} {selectedWallet.currency}</b>
+                            You save <b className="text-success">+ {(Decimal(selectedWallet.balance).sub(requiredAmountInQuote)).toFixed(8)} {selectedWallet.currency}</b>
                         </li>
                     }
                     {
