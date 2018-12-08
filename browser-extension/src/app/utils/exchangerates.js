@@ -5,7 +5,7 @@ export const getRequiredAmountInQuote = (baseAmount, exchangeRate) => {
         baseAmount = new Decimal(baseAmount);
         exchangeRate = new Decimal(exchangeRate);
     } catch (e) {
-        return Decimal(NaN);
+        return Decimal(NaN).toFixed(8, Decimal.ROUND_UP);
     }
     const riskFactor = (baseAmount.lt(10) || baseAmount.gt(2000))
         ? new Decimal(1.0)
@@ -17,7 +17,7 @@ export const getWalletBalanceInBase = (quoteAmount, exchangeRate) => {
         quoteAmount = new Decimal(quoteAmount);
         exchangeRate = new Decimal(exchangeRate);
     } catch (e) {
-        return Decimal(NaN);
+        return Decimal(NaN).toFixed(2, Decimal.ROUND_UP);
     }
     return quoteAmount.times(exchangeRate).toFixed(2, Decimal.ROUND_DOWN);
 };

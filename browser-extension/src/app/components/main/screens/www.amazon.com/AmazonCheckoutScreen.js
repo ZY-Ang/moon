@@ -283,13 +283,14 @@ class AmazonCheckoutScreen extends React.Component {
             exchangeRateLastUpdated,
             walletBalanceInBase
         } = this.state;
-        const requiredAmountInQuote = (!!paymentAmount && !!exchangeRate) ? getRequiredAmountInQuote(paymentAmount, exchangeRate) : "0";
+        const requiredAmountInQuoteDecimalString = getRequiredAmountInQuote(paymentAmount, exchangeRate);
+        const requiredAmountInQuote = (!!Number(requiredAmountInQuoteDecimalString) && requiredAmountInQuoteDecimalString) || "0";
         const paymentAmountFontSize = this.getFontSize(paymentAmount);
         const requiredAmountFontSize = this.getFontSize(requiredAmountInQuote);
         const {authUser, selectedWallet} = this.props;
         const isFullCartAmount = Number(cartAmount) === Number(paymentAmount);
         const isMaxWalletAmount = Number(walletBalanceInBase) === Number(paymentAmount);
-        const isZero = !paymentAmount || Number(paymentAmount) === 0;
+        const isZero = !paymentAmount || Number(paymentAmount) === 0 || !requiredAmountInQuote || Number(requiredAmountInQuote) === 0;
         const authUserHasWallets = this.authUserHasWallets();
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
         return (
