@@ -12,19 +12,6 @@ ul.sequence:empty {
     padding: 8px 0;
 }
 
-ul.sequence::before {
-    background: #5f6066 0 0;
-    background-size: 200% 200%;
-    border: 0 solid inherit;
-    content: "";
-    height: 100%;
-    outline: 0;
-    position: absolute;
-    width: 2px;
-    left: 5px;
-    top: 0;
-}
-
 ul.sequence li {
     list-style: none;
 }

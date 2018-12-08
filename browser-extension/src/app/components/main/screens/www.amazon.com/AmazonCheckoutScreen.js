@@ -335,8 +335,8 @@ class AmazonCheckoutScreen extends React.Component {
                             <li
                                 className="text-left font-size-80"
                             >
-                                <b>+ {(Number(cartAmount) - Number(paymentAmount))
-                                    .toLocaleString("en-us", { minimumFractionDigits: 2 })}</b> <b>{cartCurrency}</b> of
+                                <b className="text-warning">+ {(Number(cartAmount) - Number(paymentAmount))
+                                    .toLocaleString("en-us", { minimumFractionDigits: 2 })} {cartCurrency}</b> of
                                 your order total of <b><i>{cartAmount} {cartCurrency}</i></b> is paid using your Amazon
                                 payment method.
                             </li>
@@ -429,8 +429,8 @@ class AmazonCheckoutScreen extends React.Component {
                         !isFullCartAmount &&
                         !isMaxWalletAmount &&
                         <li className="text-left">
-                            <p className="py-0">Looks like you are not fully optimizing your cryptocurrency!</p>
-                            <a onClick={() => this.setPaymentAmount(cartAmount)}>
+                            <p className="text-warning py-0">Looks like you are not fully optimizing your cryptocurrency!</p>
+                            <a className="text-success" onClick={() => this.setPaymentAmount(cartAmount)}>
                                 <b>Click here to set to the maximum</b>
                             </a>
                         </li>

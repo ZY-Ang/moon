@@ -7,4 +7,5 @@ export const querySelectorProductImage = "#landingImage";
 export const querySelectorAddToCart = "#add-to-cart-button";
 export const querySelectorProductPrice = "#priceblock_ourprice";
 export const querySelectorProductObserver = `#desktop_unifiedPrice,${querySelectorProductTitle},${querySelectorProductImage},${querySelectorProductPrice}`;
-export const querySelectorAddressSelect = "#address-list .a-button-input";
+export const querySelectorAddressSelect = "#payChangeButtonId,#address-list .a-button-input,#subtotals .a-button-input";
+export const querySelectorPaymentSelect = "#continue-top,#spcViewButtonId,#subtotals .a-button-input";
