@@ -44,6 +44,7 @@ type CoinbaseWallet implements Wallet {
     name: String!
     currency: CoinbaseCurrency!
     balance: String!
+    provider: WalletProvider!
 }
 
 # All known currencies
@@ -185,6 +186,7 @@ interface Wallet {
     id: ID!
     name: String!
     balance: String!
+    provider: WalletProvider!
 }
 
 input WalletInput {

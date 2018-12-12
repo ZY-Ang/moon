@@ -44,9 +44,10 @@ const user = async (event) => {
                 .filter(wallet => (supportedCurrencies[wallet.balance.currency]))
                 .map(wallet => ({
                     id: wallet.id,
-                    name: wallet.name,
+                    name: `Coinbase (${wallet.balance.currency})`,
                     currency: wallet.balance && wallet.balance.currency,
-                    balance: wallet.balance && wallet.balance.amount
+                    balance: wallet.balance && wallet.balance.amount,
+                    provider: "COINBASE"
                 }))
         }
     };

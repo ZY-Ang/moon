@@ -34,30 +34,14 @@ package:
 
 resources:
   Outputs:
-    ExchangeRateArn:
-      Value: { Fn::GetAtt: [ExchangeRateLambdaFunction, Arn] }
-    ExchangeRateDescription:
-      Value: ${{self:functions.exchangeRate.description}}
     ExchangeRatesArn:
       Value: { Fn::GetAtt: [ExchangeRatesLambdaFunction, Arn] }
-    ExchangeRatesDescription:
-      Value: ${{self:functions.exchangeRates.description}}
     GetPaymentPayloadArn:
       Value: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
-    GetPaymentPayloadDescription:
-      Value: ${{self:functions.getPaymentPayload.description}}
-    SiteInformationArn:
-      Value: { Fn::GetAtt: [SiteInformationLambdaFunction, Arn] }
-    SiteInformationDescription:
-      Value: ${{self:functions.siteInformation.description}}
     UpdateUserArn:
       Value: { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
-    UpdateUserDescription:
-      Value: ${{self:functions.updateUser.description}}
     UserArn:
       Value: { Fn::GetAtt: [UserLambdaFunction, Arn] }
-    UserDescription:
-      Value: ${{self:functions.user.description}}
 
 # See Link for functions documentation:
 #     https://serverless.com/framework/docs/providers/aws/guide/functions/
@@ -68,12 +52,6 @@ resources:
 #     the function 'exchangeRate' will have a CloudFormation logical ID of
 #     'ExchangeRateLambdaFunction'
 functions:
-  exchangeRate:
-    name: ${{self:service}}-${{self:provider.stage}}-exchangeRate
-    description: 'Returns the exchange rate given a quote and base currency.'
-    logRetentionInDays: 1
-    handler: src/exchangeRate.default
-    timeout: 30
   exchangeRates:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRates
     description: 'Returns multiple exchange rates given multiple quote and base currencies.'
@@ -94,12 +72,6 @@ functions:
       Resource:
       - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
       - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
-  siteInformation:
-    name: ${{self:service}}-${{self:provider.stage}}-siteInformation
-    description: 'Returns information about a supported site or null if unsupported'
-    logRetentionInDays: 1
-    handler: src/siteInformation.default
-    timeout: 30
   updateUser:
     name: ${{self:service}}-${{self:provider.stage}}-updateUser
     description: 'Updates a moon user with new information.'
