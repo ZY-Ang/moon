@@ -302,6 +302,7 @@ class AmazonCheckoutScreen extends React.Component {
         const isFullCartAmount = Number(cartAmount) === Number(paymentAmount);
         const isMaxWalletAmount = Number(walletBalanceInBase) === Number(paymentAmount);
         const isZero = !paymentAmount || Number(paymentAmount) === 0 || !requiredAmountInQuote || Number(requiredAmountInQuote) === 0;
+        const isInsufficient = !cartAmount || !walletBalanceInBase || Number(cartAmount) > Number(walletBalanceInBase);
         const authUserHasWallets = this.authUserHasWallets();
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
         return (
@@ -477,9 +478,19 @@ class AmazonCheckoutScreen extends React.Component {
                 {
                     authUserHasWallets &&
                     !!selectedWallet &&
+                    !isInsufficient &&
                     !isZero &&
                     <div className="checkout-payment-button mt-2">
                         <ConfirmSlider action={this.pay} loading={this.props.isPaying}/>
+                    </div>
+                }
+                {
+                    authUserHasWallets &&
+                    !!selectedWallet &&
+                    isInsufficient &&
+                    !isZero &&
+                    <div className="text-center mt-2">
+                        <p className="text-error">Not enough to complete the purchase!</p>
                     </div>
                 }
                 {
