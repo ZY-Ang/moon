@@ -53,52 +53,52 @@ class AmazonCheckoutScreen extends React.Component {
         }
     }
 
+    getCartAmountFromElements = (cartAmountElements) => {
+        if (!cartAmountElements || !cartAmountElements.length) {
+            return "0.00";
+        } else {
+            const parsedAmounts = Array.from(cartAmountElements)
+                // Filter out bad values
+                .filter(({value, innerText}) =>
+                    (!!value && !!Number(value.replace(/[^0-9.-]+/g, ''))) ||
+                    (!!innerText && !!Number(innerText.replace(/[^0-9.-]+/g, '')))
+                )
+                // Convert the remaining to {@type Number} so we can do a Max operation
+                .map(({value, innerText}) =>
+                    (!!value && Number(value.replace(/[^0-9.-]+/g, ''))) ||
+                    (!!innerText && Number(innerText.replace(/[^0-9.-]+/g, '')))
+                );
+            const maximumParsedAmount = Math.max(...parsedAmounts);
+            if (maximumParsedAmount <= 0) {
+                return "0.00";
+            }
+            return maximumParsedAmount.toFixed(2);
+        }
+    };
+
     parse = (triesRemaining = 5) => {
         const cartAmountElements = document.querySelectorAll(querySelectorCartAmount);
         const cartCurrencyElements = document.querySelectorAll(querySelectorCartCurrency);
 
-        if (!cartAmountElements || !cartCurrencyElements || !cartAmountElements.length || !cartCurrencyElements.length) {
+        if (!cartAmountElements || !cartAmountElements.length) {
             this.props.onSetAppModalLoadingState({isActive: true, text: "Loading..."});
             return new Promise((resolve, reject) => {
                 if (triesRemaining > 0) {
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
-                    // FIXME: No CartAmountElements may mean free purchase
                     setTimeout(() => resolve(this.parse(triesRemaining - 1)), 200);
                 } else {
-                    reject(new Error("Unable to parse cart information! Please refresh to try again."))
+                    this.setState(() => ({
+                        cartAmount: "0.00",
+                        paymentAmount: "0.00",
+                        cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || AMAZON_DEFAULT_CURRENCY
+                    }));
+                    reject(new Error("Unable to read cart information! Please refresh to try again."))
                 }
             })
                 .catch(err => this.props.onSetAppModalErrorState({isActive: true, text: err.message}))
                 .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
         }
-        const actualCartAmount = !!cartAmountElements && !!cartAmountElements.length && (
-            (
-                !!cartAmountElements[0].value &&
-                Decimal(cartAmountElements[0].value.replace(/[^0-9.-]+/g, '')).toFixed(2)
-            ) || (
-                !!cartAmountElements[0].innerText &&
-                Decimal(cartAmountElements[0].innerText.replace(/[^0-9.-]+/g, '')).toFixed(2)
-            )
-        );
-        const cartAmount = actualCartAmount ? actualCartAmount : "0.00";
-        const paymentAmount = (
-            !!actualCartAmount &&
-            (Number(actualCartAmount) > 0) &&
-            process.env.NODE_ENV !== 'production'
-        )
-            ? "0.01"
-            : actualCartAmount ? actualCartAmount : "0.00";
+        const cartAmount = this.getCartAmountFromElements(cartAmountElements);
+        const paymentAmount = cartAmount ? cartAmount : "0.00";
         return new Promise((resolve) => this.setState(state => ({
             cartAmount,
             paymentAmount: state.paymentAmount || paymentAmount,
@@ -187,27 +187,28 @@ class AmazonCheckoutScreen extends React.Component {
         if (!parsedEventTarget && parsedEventTarget !== 0) {
             paymentAmount = cartAmount || "0"
         } else {
-            paymentAmount = parsedEventTarget.toLocaleString("en-us", { minimumFractionDigits: 2 });
+            paymentAmount = parsedEventTarget.toLocaleString("en-us", {minimumFractionDigits: 2});
         }
         if (authUserHasWallets && !!selectedWallet) {
             const validatedPaymentAmount =
                 // If user tries to set negative, minimum is 0
                 Decimal(paymentAmount).lt(0) ? "0" :
-                    // If user tries to set greater than wallet value, set to wallet value
-                    Decimal(paymentAmount).gt(walletBalanceInBase) ? walletBalanceInBase :
-                        // If user tries to set greater than cart value, set to cart value
-                        (!!cartAmount && Decimal(paymentAmount).gt(cartAmount)) ? cartAmount :
-                            // Otherwise, set to payment amount
-                            paymentAmount;
+                // If user tries to set greater than wallet value or cart amount, set to minimum of wallet value or cart amount
+                (
+                    Decimal(paymentAmount).gt(walletBalanceInBase) ||
+                    (!!cartAmount && Decimal(paymentAmount).gt(cartAmount))
+                ) ? Decimal.min(walletBalanceInBase, cartAmount).toFixed(2) :
+                // Otherwise, set to payment amount
+                paymentAmount;
             this.setState(() => ({paymentAmount: validatedPaymentAmount}), this.updateExchangeRate);
         } else {
             const validatedPaymentAmount =
                 // If user tries to set negative, minimum is 0
                 Decimal(paymentAmount).lt(0) ? "0" :
-                    // If user tries to set greater than cart value, set to cart value
-                    (!!cartAmount && Decimal(paymentAmount).gt(cartAmount)) ? cartAmount :
-                        // Otherwise, set to payment amount
-                        paymentAmount;
+                // If user tries to set greater than cart value, set to cart value
+                (!!cartAmount && Decimal(paymentAmount).gt(cartAmount)) ? cartAmount :
+                // Otherwise, set to payment amount
+                paymentAmount;
             this.setState(() => ({paymentAmount: validatedPaymentAmount}), this.updateExchangeRate);
         }
     };
@@ -258,7 +259,7 @@ class AmazonCheckoutScreen extends React.Component {
         } else {
             return AppRuntime.sendMessage(REQUEST_GET_PAYMENT_PAYLOAD, {
                 payloadCurrency: cartCurrency,
-                payloadAmount: paymentAmount,
+                payloadAmount: process.env.NODE_ENV === 'production' ? paymentAmount : "0.01",
 
                 walletProvider: selectedWallet.provider,
                 walletID: selectedWallet.id,
@@ -282,13 +283,14 @@ class AmazonCheckoutScreen extends React.Component {
             exchangeRateLastUpdated,
             walletBalanceInBase
         } = this.state;
-        const requiredAmountInQuote = (!!paymentAmount && !!exchangeRate) ? getRequiredAmountInQuote(paymentAmount, exchangeRate) : "0";
+        const requiredAmountInQuoteDecimalString = getRequiredAmountInQuote(paymentAmount, exchangeRate);
+        const requiredAmountInQuote = (!!Number(requiredAmountInQuoteDecimalString) && requiredAmountInQuoteDecimalString) || "0";
         const paymentAmountFontSize = this.getFontSize(paymentAmount);
         const requiredAmountFontSize = this.getFontSize(requiredAmountInQuote);
         const {authUser, selectedWallet} = this.props;
         const isFullCartAmount = Number(cartAmount) === Number(paymentAmount);
         const isMaxWalletAmount = Number(walletBalanceInBase) === Number(paymentAmount);
-        const isZero = !paymentAmount || Number(paymentAmount) === 0;
+        const isZero = !paymentAmount || Number(paymentAmount) === 0 || !requiredAmountInQuote || Number(requiredAmountInQuote) === 0;
         const authUserHasWallets = this.authUserHasWallets();
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
         return (
@@ -297,8 +299,8 @@ class AmazonCheckoutScreen extends React.Component {
                     <AmazonSiteLogo/>
                     <SettingsIcon/>
                 </div>
-                <div className="checkout-section">
-                    <div className="checkout-section-label">
+                <div className="checkout-section checkout-section-order-total">
+                    <div className="checkout-section-label py-0">
                         {isFullCartAmount ? "Order Total" : "Convert"}
                     </div>
                     <div className="checkout-order-total-value">
@@ -328,8 +330,8 @@ class AmazonCheckoutScreen extends React.Component {
                             <li
                                 className="text-left font-size-80"
                             >
-                                <b>+ {(Number(cartAmount) - Number(paymentAmount))
-                                    .toLocaleString("en-us", { minimumFractionDigits: 2 })}</b> <b>{cartCurrency}</b> of
+                                <b className="text-warning">+ {(Number(cartAmount) - Number(paymentAmount))
+                                    .toLocaleString("en-us", { minimumFractionDigits: 2 })} {cartCurrency}</b> of
                                 your order total of <b><i>{cartAmount} {cartCurrency}</i></b> is paid using your Amazon
                                 payment method.
                             </li>
@@ -412,8 +414,9 @@ class AmazonCheckoutScreen extends React.Component {
                     {
                         !!selectedWallet &&
                         isMaxWalletAmount &&
+                        Decimal(selectedWallet.balance).gt(requiredAmountInQuote) &&
                         <li className="text-left">
-                            You save <b>+ {(Decimal(selectedWallet.balance).sub(requiredAmountInQuote)).toFixed(8)} {selectedWallet.currency}</b>
+                            You save <b className="text-success">+ {(Decimal(selectedWallet.balance).sub(requiredAmountInQuote)).toFixed(8)} {selectedWallet.currency}</b>
                         </li>
                     }
                     {
@@ -422,8 +425,8 @@ class AmazonCheckoutScreen extends React.Component {
                         !isFullCartAmount &&
                         !isMaxWalletAmount &&
                         <li className="text-left">
-                            <p className="py-0">Looks like you are not fully optimizing your cryptocurrency!</p>
-                            <a onClick={() => this.setPaymentAmount(cartAmount)}>
+                            <p className="text-warning py-0">Looks like you are not fully optimizing your cryptocurrency!</p>
+                            <a className="text-success" onClick={() => this.setPaymentAmount(cartAmount)}>
                                 <b>Click here to set to the maximum</b>
                             </a>
                         </li>
@@ -462,6 +465,7 @@ class AmazonCheckoutScreen extends React.Component {
                 {
                     authUserHasWallets &&
                     !!selectedWallet &&
+                    !isZero &&
                     <div className="checkout-payment-button mt-2">
                         <ConfirmSlider action={this.pay} loading={this.props.isPaying}/>
                     </div>

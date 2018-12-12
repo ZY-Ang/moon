@@ -1,4 +1,4 @@
-.sequence {
+ul.sequence {
     border-color: #5f6066;
     font-size: 14px;
     margin-bottom: 0;
@@ -12,7 +12,7 @@ ul.sequence:empty {
     padding: 8px 0;
 }
 
-ul.sequence::before {
+ul.sequence:empty::before {
     background: #5f6066 0 0;
     background-size: 200% 200%;
     border: 0 solid inherit;
@@ -25,15 +25,15 @@ ul.sequence::before {
     top: 0;
 }
 
-.sequence li {
+ul.sequence li {
     list-style: none;
 }
 
-.sequence li:first-child {
+ul.sequence li:first-child {
     padding-top: 12px;
 }
 
-.sequence li::before {
+ul.sequence li::before {
     border: 2px solid #5f6066;
     border-radius: 50%;
     background-color: #5f6066;
@@ -47,7 +47,7 @@ ul.sequence::before {
     left: 0;
 }
 
-.sequence li::after {
+ul.sequence li::after {
     background: #5f6066 0 0;
     background-size: 200% 200%;
     border: 0 solid inherit;
@@ -60,7 +60,7 @@ ul.sequence::before {
     top: 0;
 }
 
-.sequence li:last-child {
+ul.sequence li:last-child {
     padding-bottom: 12px;
 }
 
@@ -87,12 +87,17 @@ ul.sequence::before {
     padding: 12px 0 12px 10px;
 }
 
+.checkout-section.checkout-section-order-total {
+    flex-wrap: nowrap;
+}
+
 .checkout-order-total-value {
     display: flex;
     flex-direction: column;
     margin-left: auto;
     padding-right: 6px;
-    width: 150px;
+    width: 100%;
+    max-width: 150px;
     overflow: hidden;
 }
 

@@ -49,20 +49,28 @@
     float: right !important;
 }
 
+.text-success {
+    color: #23821D !important;
+}
+
+.text-success * {
+    color: #23821D !important;
+}
+
 .text-warning {
-    color: #D37C00 !important;
+    color: #9F7500 !important;
 }
 
 .text-warning * {
-    color: #D37C00 !important;
+    color: #9F7500 !important;
 }
 
 .text-error {
-    color: #d30000 !important;
+    color: #82241D !important;
 }
 
 .text-error * {
-    color: #d30000 !important;
+    color: #82241D !important;
 }
 
 .text-white {

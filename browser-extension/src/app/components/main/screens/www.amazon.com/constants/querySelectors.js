@@ -1,9 +1,11 @@
 export const querySelectorParseObserver = "#subtotalsSection,#checkoutDisplayPage,.MusicCartReviewButtonSection";
 export const querySelectorMoonButton = "#order-summary-box .a-box-inner,#subtotals .a-box-inner,.MusicCartReviewButtonSection .a-box-inner,#unifiedPrice_feature_div,#mediaPrice_feature_div";
-export const querySelectorCartAmount = "input[name='purchaseTotal'][value],.MusicCartReviewSubtotalSection span.a-color-price";
+export const querySelectorCartAmount = "input[name='purchaseTotal'][value],#spc-order-summary .a-text-right,.MusicCartReviewSubtotalSection span.a-color-price,.MusicCartReviewSubtotalSection .a-box-inner .a-row .a-span-last";
 export const querySelectorCartCurrency = "input[name='purchaseTotalCurrency'][value]";
 export const querySelectorProductTitle = "#productTitle";
 export const querySelectorProductImage = "#landingImage";
 export const querySelectorAddToCart = "#add-to-cart-button";
 export const querySelectorProductPrice = "#priceblock_ourprice";
-export const querySelectorProductObserver = `#desktop_unifiedPrice${querySelectorProductTitle}${querySelectorProductImage}${querySelectorProductPrice}`;
+export const querySelectorProductObserver = `#desktop_unifiedPrice,${querySelectorProductTitle},${querySelectorProductImage},${querySelectorProductPrice}`;
+export const querySelectorAddressSelect = "#payChangeButtonId,#address-list .a-button-input,#subtotals .a-button-input";
+export const querySelectorPaymentSelect = "#continue-top,#spcViewButtonId,#subtotals .a-button-input";
