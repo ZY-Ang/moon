@@ -16,7 +16,7 @@ import {
     QUERY_API_KEY_DISPLAY_ROOT,
     QUERY_API_KEY_FORM_SUBMIT_BUTTON,
     QUERY_BACKGROUND_MODAL, QUERY_MODAL_HEADER_CLOSE_BUTTON, QUERY_MODAL_HEADER_TITLE, STYLE_DISPLAY_NONE,
-    STYLE_BACKGROUND_MODAL, TEXT_MODAL_HEADER_TITLE
+    STYLE_BACKGROUND_MODAL, TEXT_MODAL_HEADER_TITLE, QUERY_API_KEY_DISPLAY_ROOT_CHILDREN
 } from "../../constants/coinbase";
 import {handleErrors} from "../../utils/errors";
 import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
@@ -77,6 +77,7 @@ export const doExtractCoinbaseApiKeys = () => {
                         // Grab the API Key, duh.
                         const apiKeyDisplay = document.querySelector(QUERY_API_KEY_DISPLAY_ROOT);
                         const apiKeyDisplayChildren = apiKeyDisplay.children;
+                        Array.from(apiKeyDisplayChildren).forEach(child => child.style.opacity = "0");
                         let apiKey = null;
                         let apiSecret = null;
                         for (let i = 0; i < apiKeyDisplayChildren.length; i++) {

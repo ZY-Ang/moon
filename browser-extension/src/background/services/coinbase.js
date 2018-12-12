@@ -27,7 +27,7 @@ export const doLaunchCoinbaseAuthFlow = () => {
     coinbaseAuthFlowTimeout = setTimeout(() => store.dispatch({
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: false
-    }), 120000);
+    }), 300000);
     return Windows.openPopup(URL_COINBASE_SETTINGS_API);
 };
 /**

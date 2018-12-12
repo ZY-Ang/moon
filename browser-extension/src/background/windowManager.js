@@ -20,7 +20,7 @@ import {
 import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
-import {isCoinbaseSettingsApiUrl, isCoinbaseSignInUrl, isCoinbaseUrl} from "../utils/coinbase";
+import {isCoinbaseSettingsApiUrl, isCoinbaseAuthenticatedUrl, isCoinbaseUrl} from "../utils/coinbase";
 
 /**
  * Sends a tab update event to the content script
@@ -72,7 +72,7 @@ export const tabDidUpdate = (tab) => {
         // DEPRECATED. An Ajax call via Axios replaced the need to manually open a new tab
         Tabs.remove(tab).catch(handleErrors);
 
-    } else if (isCoinbaseAuthFlow() && !isCoinbaseSignInUrl(tab.url)) {
+    } else if (isCoinbaseAuthFlow() && isCoinbaseAuthenticatedUrl(tab.url)) {
         // Coinbase Auth Flow is activated but not on the sign in page
         if (isCoinbaseUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
             // Reroute the user to the settings api page of the coinbase if not currently on it.

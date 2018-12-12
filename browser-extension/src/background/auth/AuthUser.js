@@ -224,11 +224,7 @@ class AuthUser {
     trim = async () => {
         const {data} = await getUser();
         const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets)
-            ? data.user.coinbaseInfo.wallets.map(coinbaseWallet => ({
-                ...coinbaseWallet,
-                name: `Coinbase (${coinbaseWallet.currency})`,
-                provider: 'COINBASE'
-            }))
+            ? data.user.coinbaseInfo.wallets
             : [];
         return {
             name: data.user.identity.claims.nickname || data.user.identity.claims.name || data.user.identity.claims.email,
