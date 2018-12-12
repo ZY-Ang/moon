@@ -8,7 +8,7 @@ import doTransferToMoonCoinbase from "./coinbase/doTransferToMoonCoinbase";
 /**
  * Get Paid. Duh.
  */
-const doTransferToMoon = async (identity, cartInfo, wallet) => {
+const doTransferToMoon = async (identity, transactionId, cartInfo, wallet) => {
     logHead("doTransferToMoon", {identity, cartInfo, wallet});
     // TODO: Logic - imagine multiple reserve pools under multiple currencies.
     //          Transfer to moon will transfer to the base currency pool of which the transaction is to be settled.
@@ -18,7 +18,7 @@ const doTransferToMoon = async (identity, cartInfo, wallet) => {
 
     const walletProviderMap = {
         COINBASE() {
-            return doTransferToMoonCoinbase(sub, walletID, cartInfo);
+            return doTransferToMoonCoinbase(sub, transactionId, walletID, cartInfo);
         }
     };
 

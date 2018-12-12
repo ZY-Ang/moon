@@ -39,14 +39,26 @@ resources:
           AttributeType: S
         - AttributeName: datetime
           AttributeType: S
+        - AttributeName: id
+          AttributeType: S
         KeySchema:
-        - AttributeName: sub
+        - AttributeName: id
           KeyType: HASH
-        - AttributeName: datetime
-          KeyType: RANGE
         ProvisionedThroughput:
-          ReadCapacityUnits: 5  # TODO: Contact AWS Support beyond 40000 for an increase
-          WriteCapacityUnits: 5 # TODO: Contact AWS Support beyond 40000 for an increase
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+        - IndexName: transactonIdGSI
+          KeySchema:
+          - AttributeName: sub
+            KeyType: HASH
+          - AttributeName: datetime
+            KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
