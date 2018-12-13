@@ -224,6 +224,7 @@ class AuthUser {
     trim = async () => {
         const {data} = await getUser();
         const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets)
+        const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets && !!data.user.coinbaseInfo.wallets.length)
             ? data.user.coinbaseInfo.wallets
             : [];
         return {
@@ -232,7 +233,7 @@ class AuthUser {
             email_verified: data.user.identity.claims.email_verified,
             onboardingSkipExpiry: data.user.signUpState && data.user.signUpState.onboardingSkipExpiry,
             picture: data.user.identity.claims.picture,
-            wallets: coinbaseWallets.sort((a, b) => b.balance.localeCompare(a.balance))
+            wallets: coinbaseWallets
         };
     };
 
