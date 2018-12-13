@@ -4,6 +4,7 @@
     "payload": $util.toJson({
         "identity": $context.identity,
         "arguments": $context.arguments,
-        "id": $util.autoId()
+        "id": $util.autoId(),
+        "datetime": $util.time.nowISO8601()
     })
 }

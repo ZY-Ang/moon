@@ -60,13 +60,12 @@ const validatePageInfo = (pageInfo) => {
 const getPaymentPayload = async (event) => {
     logHead("getPaymentPayload", event);
 
-    const {arguments: args, identity, id} = event;
+    const {arguments: args, identity, id, datetime} = event;
     validateInput(args.input);
     const {cartInfo, wallet, pageInfo} = args.input;
 
     // generate a unique id for this transaction
     const {sub} = identity;
-    const datetime = moment().toISOString();
     const transactionRecordData = {
         sub: sub,
         datetime: datetime,
