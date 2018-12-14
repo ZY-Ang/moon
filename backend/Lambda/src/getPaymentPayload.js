@@ -1,8 +1,10 @@
 /*
  * Copyright (c) 2018 moon
  */
+import moment from "moment";
 import logHead from "./utils/logHead";
 import logTail from "./utils/logTail";
+import updateTransactionRecord from "./utils/updateTransactionRecord";
 import {URL} from "url";
 import getUser from "./user";
 import {base as supportedCartCurrencies} from "./constants/exchanges/coinbasePro/currencies";
@@ -58,12 +60,24 @@ const validatePageInfo = (pageInfo) => {
 const getPaymentPayload = async (event) => {
     logHead("getPaymentPayload", event);
 
-    const {arguments: args, identity} = event;
+    const {arguments: args, identity, id, datetime} = event;
     validateInput(args.input);
     const {cartInfo, wallet, pageInfo} = args.input;
 
+    // generate a unique id for this transaction
+    const {sub} = identity;
+    const transactionRecordData = {
+        sub: sub,
+        datetime: datetime,
+        baseCurrency: cartInfo.currency,
+        baseAmount: cartInfo.amount,
+        walletProvider: wallet.provider,
+        walletId: wallet.id
+    };
+    await updateTransactionRecord(id, transactionRecordData);
+
     // 1. Pay Moon. If payment fails, function should break.
-    await doTransferToMoon(identity, cartInfo, wallet);
+    await doTransferToMoon(identity, id, cartInfo, wallet);
 
     // 2. Handle payment payload logic TODO: REFUND user if error
     const getPaymentPayloadHostMap = {

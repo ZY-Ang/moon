@@ -1,0 +1,87 @@
+service: moon-database-transaction-records
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  # Custom syntax: Use double curly braces to define variables
+  # See link for more information:
+  #     https://serverless.com/framework/docs/providers/aws/guide/variables/#reference-variables-in-javascript-files
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
+  # See link for more information:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  stage: ${{opt:stage, self:custom.defaultStage}}
+  region: ${{opt:region, self:custom.defaultRegion}}
+  profile: ${{opt:aws-profile, self:custom.profiles.${{self:provider.stage}}}}
+  environment:
+    NODE_ENV: ${{self:provider.stage}}
+
+plugins:
+  - serverless-dynamodb-autoscaling
+  - serverless-cloudformation-changesets
+
+resources:
+  Outputs:
+    TableArn:
+      Value:
+        { Fn::GetAtt: [TransactionRecordsDynamoDBTable, Arn] }
+    TableName:
+      Value: ${{self:service}}-${{self:provider.stage}}
+    TableDescription:
+      Value: ${{file(./package.json):description}}
+  Resources:
+    TransactionRecordsDynamoDBTable:
+      # Table that stores user general info.
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${{self:service}}-${{self:provider.stage}}
+        AttributeDefinitions:
+        - AttributeName: sub
+          AttributeType: S
+        - AttributeName: datetime
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+        KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        GlobalSecondaryIndexes:
+        - IndexName: transactonIdGSI
+          KeySchema:
+          - AttributeName: sub
+            KeyType: HASH
+          - AttributeName: datetime
+            KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+
+custom:
+  # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
+  # See link for credentials documentation:
+  #     https://serverless.com/framework/docs/providers/aws/guide/credentials/
+  defaultStage: development
+  defaultRegion: us-east-1
+  profiles:
+    production: moon-production
+    development: moon-development
+
+  accountId: ${AWS::AccountId}
+
+  # DynamoDB autoscaling plugin config
+  # See link for more information:
+  #     https://github.com/sbstjn/serverless-dynamodb-autoscaling
+  capacities:
+  - table: TransactionRecordsDynamoDBTable
+    read:
+      minimum: 5
+      maximum: 1000
+      usage: 0.9
+    write:
+      minimum: 5
+      maximum: 1000
+      usage: 0.9

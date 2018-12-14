@@ -1,0 +1,17 @@
+{
+  "name": "moon-database-transaction-records",
+  "version": "1.0.0",
+  "description": "DynamoDB table that stores transaction records for each purchase through Moon",
+  "main": "serverless.yml",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "deploy-production": "serverless deploy --changeset --stage production"
+  },
+  "author": "Moon",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "serverless": "^1.32.0",
+    "serverless-cloudformation-changesets": "0.0.2",
+    "serverless-dynamodb-autoscaling": "^0.6.2"
+  }
+}
