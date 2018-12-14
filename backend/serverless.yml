@@ -22,7 +22,7 @@ resources:
       # Generic S3 bucket to store shit in TODO: Delete or specialize for a purpose
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${{self:service}}-${{self:provider.stage}}
+        BucketName: ${{self:service}}-${{self:provider.stage}}-${{self:custom.accountId}}
         CorsConfiguration:
           CorsRules:
           - AllowedHeaders: ['*']

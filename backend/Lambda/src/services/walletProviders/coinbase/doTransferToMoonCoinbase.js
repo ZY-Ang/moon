@@ -3,6 +3,7 @@
  */
 import logHead from "../../../utils/logHead";
 import logTail from "../../../utils/logTail";
+import updateTransactionRecord from "../../../utils/updateTransactionRecord";
 import Decimal from "decimal.js";
 import {Client as CoinbaseClient} from "coinbase";
 import getUserSecrets from "../../moonUser/getUserSecrets";
@@ -36,7 +37,7 @@ const getRequiredAmount = (baseAmount, exchangeRate) => {
     return requiredAmount;
 };
 
-const doTransferToMoonCoinbase = async (sub, walletID, cartInfo) => {
+const doTransferToMoonCoinbase = async (sub, transactionId, walletID, cartInfo) => {
     logHead("doTransferToMoonCoinbase", {sub, walletID, cartInfo});
 
     // 1. Get the user's coinbase API keys that were stored
@@ -74,38 +75,51 @@ const doTransferToMoonCoinbase = async (sub, walletID, cartInfo) => {
         requiredAmountInQuote.toString()
     );
 
-    // 6. TODO: Store Coinbase transaction ID in database
-    // const {id} = transferToMoonCoinbaseTransaction;
+    // 6. Store Coinbase transaction data in database
+    await updateTransactionRecord(transactionId, {
+        transferToMoonCoinbaseTransaction,
+        exchangeRate,
+        quoteAmount: requiredAmountInQuote,
+        quoteCurrency: walletCurrency
+    });
 
-
-    //  ------------------- Currency Reserve Balancing -------------------
-    // NOTE: The function may end here. Begin running in parallel with payment payload execution
-    const authCoinbaseProClient = getCoinbaseProAuthenticatedClient();
-    // 7. Transfer the transferred amount into Coinbase Pro to be traded
-    doTransferToCoinbasePro(
-        authCoinbaseProClient,
-        requiredAmountInQuote.toString(),
-        walletCurrency,
-        MOON_COINBASE_WALLET_IDS[walletCurrency]
-    )
-    // 8. TODO: Store CoinbasePro transaction ID in a database
-        .then(transferToMoonCoinbaseProTransaction => {
-            // const {id} = transferToMoonCoinbaseProTransaction
-        })
-    // 9. Place market sell order and wait for fill
-        .then(() => placeCoinbaseProSellMarketOrder(
+    try{
+        //  ------------------- Currency Reserve Balancing -------------------
+        // NOTE: The function may end here. Begin running in parallel with payment payload execution
+        const authCoinbaseProClient = getCoinbaseProAuthenticatedClient();
+        // 7. Transfer the transferred amount into Coinbase Pro to be traded
+        await doTransferToCoinbasePro(
             authCoinbaseProClient,
-            cartInfo.amount,
-            cartInfo.currency,
-            walletCurrency
-        ))
-    // 10. TODO: Poll or webhook for market order when filled and update database
-        .then(coinbaseProMarketOrder => {
-            // const {id} = coinbaseProMarketOrder
-        })
-        .catch(err => console.error("CURRENCY RESERVE BALANCING FAILURE: ", err));
+            requiredAmountInQuote.toString(),
+            walletCurrency,
+            MOON_COINBASE_WALLET_IDS[walletCurrency]
+        )
+        // 8. Store CoinbasePro transaction in database
+            .then(transferToMoonCoinbaseProTransaction =>
+                updateTransactionRecord(transactionId, {
+                    transferToMoonCoinbaseProTransaction
+                })
+            )
+        // 9. Place market sell order and wait for fill
+            .then(() => placeCoinbaseProSellMarketOrder(
+                authCoinbaseProClient,
+                cartInfo.amount,
+                cartInfo.currency,
+                walletCurrency
+            ))
+        // 10. Store Coinbase Pro Market Order submission data to database
+            .then(coinbaseProMarketOrder => updateTransactionRecord(transactionId, {
+                coinbaseProMarketOrder
+                })
+            )
+        // 11. TODO: Poll or webhook for market order when filled and update database
+            .catch(err => console.error("CURRENCY RESERVE BALANCING FAILURE: ", err));
+    }catch(error){
+        console.log(error);
+        // todo: log error to Slack
+    }
 
-    const transferToMoonCoinbaseResult = true;
+    const transferToMoonCoinbaseResult = true; // todo: base this on the contents of transferToMoonCoinbaseTransaction
     logTail("transferToMoonCoinbaseResult", transferToMoonCoinbaseResult);
     return transferToMoonCoinbaseResult;
 };

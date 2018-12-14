@@ -72,6 +72,12 @@ functions:
       Resource:
       - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
       - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:UpdateItem"
+      Resource:
+      - ${{self:custom.dynamoDBTables.TransactionRecords.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.TransactionRecords.Arn}}", '/*']] }
   updateUser:
     name: ${{self:service}}-${{self:provider.stage}}-updateUser
     description: 'Updates a moon user with new information.'
@@ -134,3 +140,6 @@ custom:
     NonCheckoutReports:
       Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
+    TransactionRecords:
+      Name: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableArn}}
