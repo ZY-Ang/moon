@@ -18,18 +18,6 @@ plugins:
 
 resources:
   Resources:
-    S3Bucket:
-      # Generic S3 bucket to store shit in TODO: Delete or specialize for a purpose
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${{self:service}}-${{self:provider.stage}}-${{self:custom.accountId}}
-        CorsConfiguration:
-          CorsRules:
-          - AllowedHeaders: ['*']
-            AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE']
-            AllowedOrigins: ['*']
-            ExposedHeaders: ['ETag']
-
     UserRole:
       # Specifies the AWS resources that authenticated users from the moon federated provider are authorized to access.
       Type: AWS::IAM::Role
@@ -59,26 +47,6 @@ resources:
               - "appsync:GraphQL"
               Resource:
               - { Fn::Join: ['', ["${{self:custom.appSyncAPIs.authenticated.Arn}}", '/*']] }
-        - PolicyName: S3Bucket-policy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-            - Effect: "Allow"
-              Action:
-              - "s3:GetObject"
-              - "s3:PutObject"
-              - "s3:DeleteObject"
-              Resource:
-              - { Fn::Join: ['', [{ Fn::GetAtt: [S3Bucket, Arn] }, '/${${{file(./config/auth0.json):short_iss}}:sub}']] }
-              - { Fn::Join: ['', [{ Fn::GetAtt: [S3Bucket, Arn] }, '/${${{file(./config/auth0.json):short_iss}}:sub}/*']] }
-            - Effect: "Allow"
-              Action:
-              - "s3:ListBucket"
-              Resource:
-              - { Fn::GetAtt: [S3Bucket, Arn] }
-              Condition:
-                StringLike:
-                  s3:prefix: "${{self:resources.Resources.S3Bucket.Properties.BucketName}}/${${{file(./config/auth0.json):short_iss}}:sub}/*"
         - PolicyName: UserSecretsDynamoDBTable-policy
           PolicyDocument:
             Version: "2012-10-17"
