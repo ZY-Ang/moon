@@ -36,6 +36,7 @@ const UserFragment = gql`
         coinbaseInfo {
             wallets {
                 id
+                name
                 currency
                 balance
             }

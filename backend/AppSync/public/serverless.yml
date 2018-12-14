@@ -54,25 +54,19 @@ custom:
   accountId: ${AWS::AccountId}
 
   lambdaFunctions:
-    ExchangeRate:
-      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRateArn}}
-      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRateDescription}}
     ExchangeRates:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRatesArn}}
-      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRatesDescription}}
-    SiteInformation:
-      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.SiteInformationArn}}
-      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.SiteInformationDescription}}
+      Description: ${{file(../../Lambda/serverless.yml):functions.exchangeRates.description}}
 
   dynamoDBTables:
     SiteSupportRequests:
       Name: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableArn}}
-      Description: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableDescription}}
+      Description: ${{file(../../../database/siteSupportRequests/package.json):description}}
     NonCheckoutReports:
       Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
-      Description: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableDescription}}
+      Description: ${{file(../../../database/nonCheckoutReports/package.json):description}}
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}
@@ -109,18 +103,6 @@ custom:
             - ${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}
             - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}", '/*']] }
     # ============== Lambda Functions ==============
-      # exchangeRate
-      - type: AWS_LAMBDA
-        name: ExchangeRateLambdaFunction
-        description: ${{self:custom.lambdaFunctions.ExchangeRate.Description}}
-        config:
-          lambdaFunctionArn: ${{self:custom.lambdaFunctions.ExchangeRate.Arn}}
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "lambda:invokeFunction"
-            Resource:
-            - ${{self:custom.lambdaFunctions.ExchangeRate.Arn}}
       # exchangeRates
       - type: AWS_LAMBDA
         name: ExchangeRatesLambdaFunction
@@ -133,41 +115,17 @@ custom:
             - "lambda:invokeFunction"
             Resource:
             - ${{self:custom.lambdaFunctions.ExchangeRates.Arn}}
-      # siteInformation
-      - type: AWS_LAMBDA
-        name: SiteInformationLambdaFunction
-        description: "TODO: Reference lambda output description"
-        config:
-          lambdaFunctionArn: ${{self:custom.lambdaFunctions.SiteInformation.Arn}}
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "lambda:invokeFunction"
-            Resource:
-            - ${{self:custom.lambdaFunctions.SiteInformation.Arn}}
 
     mappingTemplatesLocation: mapping-templates
 
     mappingTemplates:
     # ============== Query ==============
-      # Query/exchangeRate
-      - dataSource: ExchangeRateLambdaFunction
-        type: Query
-        field: exchangeRate
-        request: Query/exchangeRate/request.vtl
-        response: Query/exchangeRate/response.vtl
       # Query/exchangeRates
       - dataSource: ExchangeRatesLambdaFunction
         type: Query
         field: exchangeRates
         request: Query/exchangeRates/request.vtl
         response: Query/exchangeRates/response.vtl
-      # Query/siteInformation
-      - dataSource: SiteInformationLambdaFunction
-        type: Query
-        field: siteInformation
-        request: Query/siteInformation/request.vtl
-        response: Query/siteInformation/response.vtl
     # ============== Mutation ==============
       # Mutation/addSiteSupportRequest
       - dataSource: SiteSupportRequestsDynamoDBTable

@@ -52,13 +52,13 @@ custom:
   lambdaFunctions:
     UpdateUser:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UpdateUserArn}}
-      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UpdateUserDescription}}
+      Description: ${{file(../../Lambda/serverless.yml):functions.updateUser.description}}
     User:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UserArn}}
-      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.UserDescription}}
+      Description: ${{file(../../Lambda/serverless.yml):functions.user.description}}
     GetPaymentPayload:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.GetPaymentPayloadArn}}
-      Description: ${{cf:moon-backend-lambda-${{self:provider.stage}}.GetPaymentPayloadDescription}}
+      Description: ${{file(../../Lambda/serverless.yml):functions.getPaymentPayload.description}}
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}

@@ -64,19 +64,19 @@ const build = async () => {
     console.log("================== ENVIRONMENT VARIABLES ==================");
     // NODE_ENV
     const DEFAULT_NODE_ENV = 'development';
-    console.log(`NODE_ENV:\t\t\t\t${shell.env.NODE_ENV}${!shell.env.NODE_ENV?` => ${DEFAULT_NODE_ENV}`:''}`);
+    console.log(`NODE_ENV:\t\t\t\t\t\t${shell.env.NODE_ENV}${!shell.env.NODE_ENV?` => ${DEFAULT_NODE_ENV}`:''}`);
     shell.env.NODE_ENV = process.env.NODE_ENV || DEFAULT_NODE_ENV;
 
     // AWS_PROFILE
     const DEFAULT_AWS_PROFILE = `moon-${shell.env.NODE_ENV}`;
-    console.log(`AWS_PROFILE:\t\t\t${shell.env.AWS_PROFILE}${!shell.env.AWS_PROFILE?` => ${DEFAULT_AWS_PROFILE}`:''}`);
+    console.log(`AWS_PROFILE:\t\t\t\t\t${shell.env.AWS_PROFILE}${!shell.env.AWS_PROFILE?` => ${DEFAULT_AWS_PROFILE}`:''}`);
     shell.env.AWS_PROFILE = process.env.AWS_PROFILE || DEFAULT_AWS_PROFILE;
 
     // AWS_ACCESS_KEY_ID
-    console.log(`AWS_ACCESS_KEY_ID:\t\t${shell.env.AWS_ACCESS_KEY_ID}`);
+    console.log(`AWS_ACCESS_KEY_ID:\t\t\t\t${shell.env.AWS_ACCESS_KEY_ID}`);
 
     // AWS_SECRET_ACCESS_KEY
-    console.log(`AWS_SECRET_ACCESS_KEY:\t${shell.env.AWS_SECRET_ACCESS_KEY}`);
+    console.log(`AWS_SECRET_ACCESS_KEY:\t\t\t${shell.env.AWS_SECRET_ACCESS_KEY}`);
 
     // AWS_ACCOUNT_ID
     const credentials = (
@@ -87,34 +87,34 @@ const build = async () => {
         ? new AWS.Credentials(shell.env.AWS_ACCESS_KEY_ID, shell.env.AWS_SECRET_ACCESS_KEY)
         : new AWS.SharedIniFileCredentials({profile: shell.env.AWS_PROFILE});
     shell.env.AWS_ACCOUNT_ID = await getAWSAccountId(credentials);
-    console.log(`AWS_ACCOUNT_ID:\t\t\t${(shell.env.AWS_ACCOUNT_ID)}`);
+    console.log(`AWS_ACCOUNT_ID:\t\t\t\t\t${(shell.env.AWS_ACCOUNT_ID)}`);
 
     // AWS_REGION
     const DEFAULT_AWS_REGION = 'us-east-1';
-    console.log(`AWS_REGION:\t\t\t\t${shell.env.AWS_REGION}${!shell.env.AWS_REGION?` => ${DEFAULT_AWS_REGION}`:''}`);
+    console.log(`AWS_REGION:\t\t\t\t\t\t${shell.env.AWS_REGION}${!shell.env.AWS_REGION?` => ${DEFAULT_AWS_REGION}`:''}`);
     shell.env.AWS_REGION = process.env.AWS_REGION || DEFAULT_AWS_REGION;
 
     // AWS_APPSYNC_ENDPOINT_AUTH
     shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-authenticated-${shell.env.NODE_ENV}`, "ApiUrl");
-    console.log(`AWS_APPSYNC_ENDPOINT_AUTH:\t${(shell.env.AWS_APPSYNC_ENDPOINT_AUTH)}`);
+    console.log(`AWS_APPSYNC_ENDPOINT_AUTH:\t\t${(shell.env.AWS_APPSYNC_ENDPOINT_AUTH)}`);
 
     // AWS_APPSYNC_ENDPOINT_PUBLIC
     shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}`, "ApiUrl");
     console.log(`AWS_APPSYNC_ENDPOINT_PUBLIC:\t${(shell.env.AWS_APPSYNC_ENDPOINT_PUBLIC)}`);
 
     shell.env.AWS_APPSYNC_API_ID_PUBLIC = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}`, "ApiId");
-    console.log(`AWS_APPSYNC_API_ID_PUBLIC:\t${(shell.env.AWS_APPSYNC_API_ID_PUBLIC)}`);
+    console.log(`AWS_APPSYNC_API_ID_PUBLIC:\t\t${(shell.env.AWS_APPSYNC_API_ID_PUBLIC)}`);
 
     shell.env.AWS_APPSYNC_API_KEY_PUBLIC = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-public-${shell.env.NODE_ENV}`, "ApiKey");
-    console.log(`AWS_APPSYNC_API_KEY_PUBLIC:\t${(shell.env.AWS_APPSYNC_API_KEY_PUBLIC)}`);
+    console.log(`AWS_APPSYNC_API_KEY_PUBLIC:\t\t${(shell.env.AWS_APPSYNC_API_KEY_PUBLIC)}`);
 
     // BROWSER
     const DEFAULT_BROWSER = 'chrome';
-    console.log(`BROWSER:\t\t\t\t${shell.env.BROWSER}${!shell.env.BROWSER?` => ${DEFAULT_BROWSER}`:''}`);
+    console.log(`BROWSER:\t\t\t\t\t\t${shell.env.BROWSER}${!shell.env.BROWSER?` => ${DEFAULT_BROWSER}`:''}`);
     shell.env.BROWSER = process.env.BROWSER || DEFAULT_BROWSER;
     console.log("===========================================================\n");
     console.log("=================== BUILD CONFIGURATION ===================");
-    console.log(`credentials:\t\t\t${credentials.constructor.name}`);
+    console.log(`credentials:\t\t\t\t\t${credentials.constructor.name}`);
     console.log("===========================================================\n");
 
     const DIR_BUILD = `build/`;

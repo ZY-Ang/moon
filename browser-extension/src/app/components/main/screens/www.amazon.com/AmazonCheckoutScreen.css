@@ -113,6 +113,10 @@ ul.sequence li:last-child {
     width: 100%;
 }
 
+.checkout-order-total-value input[disabled] {
+    border-bottom: none;
+}
+
 .checkout-order-total-value input:focus {
     outline: none;
 }

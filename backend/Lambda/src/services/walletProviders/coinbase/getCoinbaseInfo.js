@@ -29,11 +29,11 @@ const getCoinbaseInfo = async (userSecrets) => {
     const isValidCoinbaseClient = (!!coinbaseClient && coinbaseClient instanceof CoinbaseClient);
     const [coinbaseWallets, coinbaseUser] = (isValidCoinbaseClient)
         ? await Promise.all([
-            getCoinbaseWallets(coinbaseClient).catch(() => null),
+            getCoinbaseWallets(coinbaseClient).catch(() => []),
             getCoinbaseCurrentUser(coinbaseClient).catch(() => null)
         ])
-            .catch(() => [null, null])
-        : [null, null];
+            .catch(() => [[], null])
+        : [[], null];
 
     const coinbaseInfo = {
         coinbaseWallets,

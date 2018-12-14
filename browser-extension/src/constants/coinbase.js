@@ -9,9 +9,9 @@
  */
 export const URL_COINBASE = "https://www.coinbase.com";
 /**
- * The URL of coinbase's sign in page
+ * Regex for pathname of pages that require coinbase authentication to access
  */
-export const URL_COINBASE_SIGNIN = `${URL_COINBASE}/signin`;
+export const REGEX_COIBASE_AUTHENTICATED_PAGES = /^.*(\/dashboard|\/buy|\/sell|\/accounts|\/tax-center|\/addresses|\/recurring_payments|\/reports|\/transfers|\/settings|\/invite|\/signout).*$/;
 /**
  * The URL of coinbase's api settings page so we can start a capture request script
  */

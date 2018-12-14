@@ -7,6 +7,11 @@ import {base as baseCurrencies} from "./constants/exchanges/coinbasePro/currenci
 import {quote as quoteCurrencies} from "./constants/exchanges/coinbasePro/currencies";
 import getCoinbaseProExchangeRate from "./services/exchangeRateProviders/coinbasePro/getExchangeRate";
 
+/**
+ * Deprecated Lambda Function in favour of {@code exchangeRates} to fetch multiple rates at once.
+ *
+ * NOTE: This function is still used recursively by {@code exchangeRates}
+ */
 const exchangeRate = async (event) => {
     logHead("exchangeRate", event);
 
