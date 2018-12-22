@@ -161,11 +161,11 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_MOON_VALID_CHECKOUT_REPORT]() {
-            doAddNonCheckoutReport(request.url, request.content)
+            doAddNonCheckoutReport(request.url, request.content, AuthUser.getEmail())
                 .then(({data}) => sendSuccess(data))
                 .catch(err => {
                     handleErrors(err);
-                    sendFailure(`doAddNonCheckoutReport(${request.url}, ${request.content}) failed`);
+                    sendFailure(`doAddNonCheckoutReport(${request.url}, LARGE_CONTENT, ${AuthUser.getEmail()}) failed`);
                 });
             return true;
         },

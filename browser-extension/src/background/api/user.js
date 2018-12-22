@@ -39,6 +39,7 @@ const UserFragment = gql`
                 name
                 currency
                 balance
+                provider
             }
         }
     }
