@@ -5,7 +5,7 @@
 
 import logHead from "../../utils/logHead";
 import logTail from "../../utils/logTail";
-import {TRANSACTION_RECORDS_TABLE} from "../../constants/user/config";
+import {PAYMENT_PAYLOAD_RECORDS_TABLE} from "../../constants/paymentPayloaders/config";
 import AWS from "aws-sdk";
 import {removeSecrets} from "../../utils/sanitization";
 
@@ -36,7 +36,7 @@ const updatePaymentPayloadRecord = async (id, transactionData) => {
     }
 
     const params = {
-        TableName: TRANSACTION_RECORDS_TABLE,
+        TableName: PAYMENT_PAYLOAD_RECORDS_TABLE,
         Key: {id},
         UpdateExpression,
         ExpressionAttributeValues,

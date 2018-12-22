@@ -4,4 +4,3 @@
 
 export const USER_INFORMATION_TABLE = `moon-database-user-information-${process.env.NODE_ENV}`;
 export const USER_SECRETS_TABLE = `moon-database-user-secrets-${process.env.NODE_ENV}`;
-export const TRANSACTION_RECORDS_TABLE = `moon-database-payment-payload-records-${process.env.NODE_ENV}`;
