@@ -13,7 +13,7 @@
             "#content": "content"
         },
         "expressionValues" : {
-            ":timestamp": $util.dynamodb.toDynamoDBJson($util.time.nowEpochMilliSeconds()),
+            ":timestamp": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601()),
             ":email": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrEmpty($context.identity.claims.email, "guest@paywithmoon.com")),
             ":url" : $util.dynamodb.toDynamoDBJson($ctx.args.input.url),
             ":content": $util.dynamodb.toDynamoDBJson($ctx.args.input.content)

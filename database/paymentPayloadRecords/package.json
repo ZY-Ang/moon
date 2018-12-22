@@ -1,7 +1,7 @@
 {
-  "name": "moon-database-transaction-records",
+  "name": "moon-database-payment-payload-records",
   "version": "1.0.0",
-  "description": "DynamoDB table that stores transaction records for each purchase through Moon",
+  "description": "DynamoDB table that stores records of payment payloads.",
   "main": "serverless.yml",
   "scripts": {
     "deploy": "serverless deploy",
