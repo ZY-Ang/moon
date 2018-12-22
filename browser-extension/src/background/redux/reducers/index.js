@@ -4,6 +4,7 @@
 import {combineReducers} from 'redux';
 import apiReducer from "./api";
 import coinbaseReducer from "./coinbase";
+import sessionReducer from "./session";
 
 /**
  * The root reducer interface that contains the
@@ -12,7 +13,8 @@ import coinbaseReducer from "./coinbase";
  */
 const rootReducer = combineReducers({
     apiState: apiReducer,
-    coinbaseState: coinbaseReducer
+    coinbaseState: coinbaseReducer,
+    sessionState: sessionReducer
 });
 
 export default rootReducer;

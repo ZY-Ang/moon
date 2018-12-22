@@ -10,20 +10,25 @@ import {
     TYPE_STANDARD_SIGN_UP
 } from "../../constants/events/appEvents";
 import {
+    AMAZON_AUTH_PARAMS,
+    FACEBOOK_AUTH_PARAMS,
+    getCsrfStateAppendedParams,
     getURLFlowParams,
-    URL_AMAZON_AUTH,
-    URL_FACEBOOK_AUTH,
-    URL_GOOGLE_AUTH, URL_RESET_PASSWORD,
-    URL_STANDARD_AUTH, URL_STANDARD_SIGN_UP,
+    GOOGLE_AUTH_PARAMS,
+    STANDARD_RESET_PASSWORD_PARAMS,
+    STANDARD_SIGN_IN_PARAMS,
+    STANDARD_SIGN_UP_PARAMS,
+    URL_OAUTH_SERVER,
     URL_TOKEN_FLOW
 } from "./url";
 import axios from "axios";
-import {parseUrl} from "query-string";
+import {parseUrl, stringify} from "query-string";
 import {handleErrors} from "../../utils/errors";
 import Tabs from "../browser/Tabs";
 import Windows from "../browser/Windows";
 import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
 import AuthUser from "./AuthUser";
+import store from "../redux/store";
 
 /**
  * Signs a user into the Moon client using the JSON Web
@@ -54,6 +59,12 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     console.log(`Obtaining tokens from OAuth server with response url: ${url}`);
     const code = parseUrl(url).query.code.split("#")[0];
 
+    const authCsrfState = parseUrl(url).query.state;
+    const localCsrfState = store.getState().sessionState.csrfState;
+    if(localCsrfState !== authCsrfState){
+        return Promise.reject(new Error('Invalid CSRF state'));
+    }
+
     const body = getURLFlowParams(code);
     return axios.post(URL_TOKEN_FLOW, body)
         .then(({data}) => {
@@ -72,20 +83,40 @@ export const doOnAuthFlowResponse = (url, tabId) => {
 };
 
 /**
+ * Returns the correct parameters for the specified
+ * provider {@param type}
+ */
+const getOAuthParamsForType = (type) => {
+    const oauthMap = {
+        [TYPE_STANDARD_SIGN_IN]: STANDARD_SIGN_IN_PARAMS,
+        [TYPE_STANDARD_SIGN_UP]: STANDARD_SIGN_UP_PARAMS,
+        [TYPE_RESET_PASSWORD]: STANDARD_RESET_PASSWORD_PARAMS,
+        [TYPE_FACEBOOK]: FACEBOOK_AUTH_PARAMS,
+        [TYPE_GOOGLE]: GOOGLE_AUTH_PARAMS,
+        [TYPE_AMAZON]: AMAZON_AUTH_PARAMS
+    };
+    if (oauthMap[type]) {
+        return getCsrfStateAppendedParams(oauthMap[type]);
+    } else {
+        throw new Error(`${type} is not a recognized sign in type.`);
+    }
+};
+
+/**
  * Returns a fully qualified OAuth URL for a specified
  * provider {@param type}
  */
 const getOAuthUrlForType = async (type) => {
     const oauthMap = {
-        [TYPE_STANDARD_SIGN_IN]: URL_STANDARD_AUTH,
-        [TYPE_STANDARD_SIGN_UP]: URL_STANDARD_SIGN_UP,
-        [TYPE_RESET_PASSWORD]: URL_RESET_PASSWORD,
-        [TYPE_FACEBOOK]: URL_FACEBOOK_AUTH,
-        [TYPE_GOOGLE]: URL_GOOGLE_AUTH,
-        [TYPE_AMAZON]: URL_AMAZON_AUTH
+        [TYPE_STANDARD_SIGN_IN]: true,
+        [TYPE_STANDARD_SIGN_UP]: true,
+        [TYPE_RESET_PASSWORD]: true,
+        [TYPE_FACEBOOK]: true,
+        [TYPE_GOOGLE]: true,
+        [TYPE_AMAZON]: true
     };
     if (oauthMap[type]) {
-        return oauthMap[type];
+        return `${URL_OAUTH_SERVER}authorize?${stringify(getOAuthParamsForType(type))}`;
     } else {
         throw new Error(`${type} is not a recognized sign in type.`);
     }
