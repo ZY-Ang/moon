@@ -35,7 +35,7 @@ const user = async (event) => {
         identity,
         signUpState: {
             referredBy: userInformation && userInformation.referredBy,
-            onboardingSkipExpiry: userInformation && userInformation.onboardingSkipExpiry && moment(userInformation.onboardingSkipExpiry, "x").toISOString()
+            onboardingSkipExpiry: userInformation && userInformation.onboardingSkipExpiry && moment(userInformation.onboardingSkipExpiry).toISOString() // TODO: Remove moment type checking post-v0.3.2 in favour of GraphQL type checking
         },
         coinbaseInfo: {
             apiKeysExist: !!userSecrets && !!userSecrets.coinbaseApiKeys,

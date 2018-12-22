@@ -20,7 +20,8 @@ const doTransferToCoinbaseUser = async (sourceWallet, targetAccountEmail, amount
         to: targetAccountEmail,
         amount,
         currency: sourceWallet.balance.currency,
-        description: "Your purchase through Moon"
+        description: "Your purchase through Moon",
+        // skip_notifications: true TODO: Enable if using sendgrid instead for small amounts
     };
     const transferToCoinbaseUserInfo = await new Promise((resolve, reject) => {
         sourceWallet.sendMoney(params, (err, transferInfo) => {
@@ -28,7 +29,7 @@ const doTransferToCoinbaseUser = async (sourceWallet, targetAccountEmail, amount
                 console.error(err);
                 reject(err);
             } else if (transferInfo.status !== 'completed') {
-                reject(new Error(`The transaction from user\'s Coinbase account to Moon\'s Coinbase account failed.` +
+                reject(new Error(`The transaction from user's Coinbase account to Moon's Coinbase account failed.` +
                     ` Transaction id: ${transferInfo.id}. Status: ${transferInfo.status}`));
             } else {
                 resolve(transferInfo);

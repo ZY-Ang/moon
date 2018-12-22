@@ -141,5 +141,5 @@ custom:
       Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
     TransactionRecords:
-      Name: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableName}}
-      Arn: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableArn}}
+      Name: ${{cf:moon-database-payment-payload-records-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-payment-payload-records-${{self:provider.stage}}.TableArn}}

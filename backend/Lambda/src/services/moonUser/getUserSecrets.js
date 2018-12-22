@@ -26,7 +26,7 @@ const getUserSecrets = async (sub) => {
 
     const userSecrets = await dynamodb.get(params).promise().then(({Item}) => Item);
 
-    logTail("userSecrets", process.env.NODE_ENV === 'production' ? "OBFUSCATED" : userSecrets);
+    logTail("userSecrets", userSecrets);
     return userSecrets;
 };
 

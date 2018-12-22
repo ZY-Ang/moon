@@ -3,20 +3,21 @@
  * Copyright (c) 2018 moon
  */
 
-import logHead from "./logHead";
-import logTail from "./logTail";
-import {TRANSACTION_RECORDS_TABLE} from "../constants/user/config";
+import logHead from "../../utils/logHead";
+import logTail from "../../utils/logTail";
+import {TRANSACTION_RECORDS_TABLE} from "../../constants/user/config";
 import AWS from "aws-sdk";
+import {removeSecrets} from "../../utils/sanitization";
 
 /**
  * Creates or updates a transaction record in the transaction records dynamodb table
- * @param transactionId - the unique id associated with the transaction
- * @param transactionData - data to be written/updated to database associated with transactionId.
+ * @param id - the unique id associated with the payment payload
+ * @param transactionData - data to be written/updated to database associated with id.
  * Each top level element of transactionData will be a column in dynamo containing the value associated with that key
  * @returns {void | *}
  */
-const updateTransactionRecord = async (transactionId, transactionData) => {
-    logHead("updateTransactionRecord", transactionData);
+const updatePaymentPayloadRecord = async (id, transactionData) => {
+    logHead("updatePaymentPayloadRecord", transactionData);
 
     let dynamodb = new AWS.DynamoDB.DocumentClient();
 
@@ -24,7 +25,7 @@ const updateTransactionRecord = async (transactionId, transactionData) => {
     let ExpressionAttributeValues = {};
     let ExpressionAttributeNames = {};
 
-    Object.keys(transactionData)
+    Object.keys(removeSecrets(transactionData))
         .forEach(key => {
             ExpressionAttributeValues[`:${key}`] = transactionData[key];
             UpdateExpression += ` #${key} = :${key},`;
@@ -36,18 +37,20 @@ const updateTransactionRecord = async (transactionId, transactionData) => {
 
     const params = {
         TableName: TRANSACTION_RECORDS_TABLE,
-        Key: {id: transactionId},
+        Key: {id},
         UpdateExpression,
         ExpressionAttributeValues,
         ExpressionAttributeNames
     };
 
-    logTail("updateTransactionRecordParams", {params});
+    let updatePaymentPayloadRecordItemOutput;
+    try {
+        updatePaymentPayloadRecordItemOutput = await dynamodb.update(params).promise();
+    } catch (error) {
+        updatePaymentPayloadRecordItemOutput = error;
+    }
 
-    const updateTransactionRecordItemOutput = await dynamodb.update(params).promise();
-
-    logTail("updateTransactionRecordItemOutput", updateTransactionRecordItemOutput);
-
+    logTail("updatePaymentPayloadRecordItemOutput", updatePaymentPayloadRecordItemOutput);
 };
 
-export default updateTransactionRecord;
+export default updatePaymentPayloadRecord;
