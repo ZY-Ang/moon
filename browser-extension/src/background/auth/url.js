@@ -6,6 +6,9 @@ import {stringify} from "query-string";
 import {AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET} from "../config/Auth0/client";
 import {AUTH0_AUDIENCE} from "../config/Auth0/api";
 import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../../constants/url";
+import store from "../redux/store";
+import {ACTION_SET_CSRF_STATE} from "../redux/reducers/session";
+import {generate as randomstring} from "randomstring";
 
 /**
  * The unqualified domain URL where the OAuth Server/hosted UI is located
@@ -23,10 +26,26 @@ export const URL_OAUTH_SERVER = `https://${DOMAIN_OAUTH_SERVER}/`;
 export const URL_OAUTH_SERVER_ISS = `${URL_OAUTH_SERVER}.well-known/jwks.json`;
 
 /**
+ * Appends the CSRF state to the params
+ * @param params
+ * @returns {*}
+ */
+export const getCsrfStateAppendedParams = (params) => {
+    const csrfState = randomstring(8);
+    console.log('NEW CSRF STATE', csrfState);
+    store.dispatch({
+        type: ACTION_SET_CSRF_STATE,
+        csrfState
+    });
+    return {
+        ...params,
+        state: csrfState
+    };
+};
+
+/**
  * The default OAuth spec parameters to be sent to the AWS Cognito hosted UI
  * @type {{response_type: string, client_id: string, redirect_uri: string}}
- *
- * TODO: Pass State into query and obtain via REDUX to protect against CSRF
  */
 const DEFAULT_PARAMS = {
     response_type: 'code',
@@ -38,63 +57,39 @@ const DEFAULT_PARAMS = {
 };
 
 /** The overridden params for a standard sign in */
-const STANDARD_SIGN_IN_PARAMS = {
+export const STANDARD_SIGN_IN_PARAMS = {
     ...DEFAULT_PARAMS
 };
-/**
- * The Standard Sign IN URL for the hosted UI
- */
-export const URL_STANDARD_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(STANDARD_SIGN_IN_PARAMS)}`;
 
 /** The overridden params for a standard sign up */
-const STANDARD_SIGN_UP_PARAMS = {
+export const STANDARD_SIGN_UP_PARAMS = {
     ...DEFAULT_PARAMS,
     initialScreen: 'signUp'
 };
-/**
- * The Standard Sign UP URL for the hosted UI
- */
-export const URL_STANDARD_SIGN_UP = `${URL_OAUTH_SERVER}authorize?${stringify(STANDARD_SIGN_UP_PARAMS)}`;
 
 /** The overridden params for a password reset */
-const STANDARD_RESET_PASSWORD_PARAMS = {
+export const STANDARD_RESET_PASSWORD_PARAMS = {
     ...DEFAULT_PARAMS,
     initialScreen: 'forgotPassword'
 };
-/**
- * The Reset Password URL for the hosted UI
- */
-export const URL_RESET_PASSWORD = `${URL_OAUTH_SERVER}authorize?${stringify(STANDARD_RESET_PASSWORD_PARAMS)}`;
 
 /** The overridden params for an authentication via Facebook */
-const FACEBOOK_AUTH_PARAMS = {
+export const FACEBOOK_AUTH_PARAMS = {
     ...DEFAULT_PARAMS,
     connection: 'facebook'
 };
-/**
- * The Facebook Auth URL for the hosted UI
- */
-export const URL_FACEBOOK_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(FACEBOOK_AUTH_PARAMS)}`;
 
 /** The overridden params for a authentication via Google */
-const GOOGLE_AUTH_PARAMS = {
+export const GOOGLE_AUTH_PARAMS = {
     ...DEFAULT_PARAMS,
     connection: 'google-oauth2'
 };
-/**
- * The Google Auth URL for the hosted UI
- */
-export const URL_GOOGLE_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(GOOGLE_AUTH_PARAMS)}`;
 
 /** The overridden params for a authentication via Amazon */
-const AMAZON_AUTH_PARAMS = {
+export const AMAZON_AUTH_PARAMS = {
     ...DEFAULT_PARAMS,
     connection: 'amazon'
 };
-/**
- * The Amazon Auth URL for the hosted UI
- */
-export const URL_AMAZON_AUTH = `${URL_OAUTH_SERVER}authorize?${stringify(AMAZON_AUTH_PARAMS)}`;
 
 /**
  * Body of the POST request used in stage 2 of the OAuth Authorization Code Grant Flow.

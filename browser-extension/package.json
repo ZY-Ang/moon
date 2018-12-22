@@ -23,6 +23,7 @@
     "decimal.js": "^10.0.1",
     "detect-browser": "^3.0.1",
     "moment": "^2.22.2",
+    "randomstring": "^1.1.5",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.7",
