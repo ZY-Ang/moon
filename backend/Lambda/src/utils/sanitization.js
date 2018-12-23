@@ -17,26 +17,31 @@ const RESTRICTED_KEYS = {
  * it so we can safely log and store them.
  */
 export const removeSecrets = (obj) => {
-    obj = JSON.parse(JSON.stringify(obj));
-    for (let key in obj) {
-        try {
-            if (!obj.hasOwnProperty(key)) {
+    try {
+        obj = JSON.parse(JSON.stringify(obj));
+        for (let key in obj) {
+            try {
+                if (!obj.hasOwnProperty(key)) {
+                    // Continue
+                } else if (!!RESTRICTED_KEYS[key]) {
+                    delete obj[key];
+                } else if (
+                    !!obj[key] &&
+                    (
+                        obj[key].constructor === Array ||
+                        obj[key].constructor === Object
+                    )
+                ) {
+                    obj[key] = removeSecrets(obj[key]);
+                }
+            } catch (e) {
                 // Continue
-            } else if (!!RESTRICTED_KEYS[key]) {
-                delete obj[key];
-            } else if (
-                !!obj[key] &&
-                (
-                    obj[key].constructor === Array ||
-                    obj[key].constructor === Object
-                )
-            ) {
-                obj[key] = removeSecrets(obj[key]);
+                console.error(e);
             }
-        } catch (e) {
-            // Continue
-            console.error(e);
         }
+    } catch (e) {
+        return obj;
     }
+
     return obj;
 };

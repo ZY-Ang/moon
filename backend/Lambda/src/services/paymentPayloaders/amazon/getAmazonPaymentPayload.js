@@ -78,20 +78,18 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
                                     timeoutFunction();
                                 } else {
                                     var txtSuccess = document.querySelector("#gc-success,#promo-success,.PromoEntrySuccess");
-                                    var txtError = document.querySelector('.PromoEntryError,#addGiftCardOrPromo_Unknown:not([style*="display:none"]):not([style*="display: none"]),#addGiftCardOrPromo_NoCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_InvalidForPurchase:not([style*="display:none"]):not([style*="display: none"]),#addPromo_BadCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_ExpiredCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_InvalidForOrgUnit:not([style*="display:none"]):not([style*="display: none"]),#addPromo_OfferNotYetBegun:not([style*="display:none"]):not([style*="display: none"]),#addPromo_AlreadyRedeemed:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_AlreadyRedeemedByAnotherAccount:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_AlreadyRedeemedByThisAccount:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_BadCode:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_ExpiredCode:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Cancelled:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_WrongOrgUnit:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_ServiceDown:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Disabled:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Teen_Disabled:not([style*="display:none"]):not([style*="display: none"])');
+                                    var txtError = Array.from(document.querySelectorAll('.PromoEntryError,#addGiftCardOrPromo_Unknown,#addGiftCardOrPromo_NoCode,#addPromo_InvalidForPurchase,#addPromo_BadCode,#addPromo_ExpiredCode,#addPromo_InvalidForOrgUnit,#addPromo_OfferNotYetBegun,#addPromo_AlreadyRedeemed,#addGiftCard_AlreadyRedeemedByAnotherAccount,#addGiftCard_AlreadyRedeemedByThisAccount,#addGiftCard_BadCode,#addGiftCard_ExpiredCode,#addGiftCard_Cancelled,#addGiftCard_WrongOrgUnit,#addGiftCard_ServiceDown,#addGiftCard_Disabled,#addGiftCard_Teen_Disabled')).filter(function(e){return e.hasAttribute("style")})[0];
                                     var isElementHidden = function(htmlElement){
-                                        return (!!htmlElement.hidden || htmlElement.style.display === "none");
+                                        return (!htmlElement || !!htmlElement.hidden || !htmlElement.hasAttribute("style") || htmlElement.style.display === "none" || !htmlElement.style.display.length);
                                     };
-                                    if (!txtSuccess) {
-                                        reject("txtSuccess does not exist");
-                                    } else if (isElementHidden(txtSuccess) && !txtError) {
-                                        reject("txtSuccess is hidden and txtError missing");
-                                    } else if (isElementHidden(txtSuccess)) {
-                                        reject(txtError.innerText.trim());
-                                    } else if (isElementHidden(txtError) && isElementHidden(txtSuccess)) {
+                                    if (isElementHidden(txtSuccess) && isElementHidden(txtError)) {
                                         timeoutFunction();
-                                    } else {
+                                    } else if (!isElementHidden(txtError)) {
+                                        reject(txtError.innerText.trim())
+                                    } else if (!isElementHidden(txtSuccess)) {
                                         resolve(txtSuccess.innerText.trim());
+                                    } else {
+                                        timeoutFunction();
                                     }
                                 }
                             }, 1000);
