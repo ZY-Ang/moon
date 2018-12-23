@@ -59,13 +59,14 @@ const validatePageInfo = (pageInfo) => {
 const getPaymentPayload = async (event, context) => {
     logHead("getPaymentPayload", {event, context});
 
-    const {awsRequestId: paymentPayloadId, logGroupName, logStreamName} = context;
+    const {awsRequestId, logGroupName, logStreamName} = context;
     const {arguments: args, identity, createdOn} = event;
     validateInput(args.input);
     const {cartInfo, wallet, pageInfo} = args.input;
 
     // generate a unique id for this transaction
     const {sub} = identity;
+    const paymentPayloadId = `${sub}_${createdOn}_${awsRequestId}`;
     await updatePaymentPayloadRecord(paymentPayloadId, {
         sub,
         createdOn,
