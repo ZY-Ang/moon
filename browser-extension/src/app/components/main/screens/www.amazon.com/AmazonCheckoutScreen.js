@@ -337,11 +337,11 @@ class AmazonCheckoutScreen extends React.Component {
                 </div>
                 {
                     authUserHasWallets &&
-                    // On hold until we can find a way to safely calculate the correct price information.
                     <ul className="sequence">
                         {
-                            !isFullCartAmount &&
+                            // On hold until we can find a way to safely calculate the correct price information.
                             false &&
+                            !isFullCartAmount &&
                             <li
                                 className="text-left font-size-80"
                             >
@@ -427,6 +427,8 @@ class AmazonCheckoutScreen extends React.Component {
                         }
                     </li>
                     {
+                        // On hold until we can find a way to safely calculate the correct price information.
+                        false &&
                         !!selectedWallet &&
                         isMaxWalletAmount &&
                         Decimal(selectedWallet.balance).gt(requiredAmountInQuote) &&
