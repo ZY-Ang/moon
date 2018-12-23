@@ -498,6 +498,7 @@ class AmazonCheckoutScreen extends React.Component {
                     authUserHasWallets &&
                     !!selectedWallet &&
                     isZero &&
+                    !isInsufficient &&
                     <div className="text-center mt-2">
                         <p className="text-warning mb-0">To pay with cryptocurrency please change your payment method or add items so your order total is nonzero</p>
                     </div>
