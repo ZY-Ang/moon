@@ -44,6 +44,7 @@ const updateUserInformation = async (sub, userInformation) => {
             TableName: USER_INFORMATION_TABLE,
             Key: {sub},
             UpdateExpression,
+            ExpressionAttributeNames,
             ExpressionAttributeValues
         };
 
