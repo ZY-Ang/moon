@@ -79,17 +79,20 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
                                 } else {
                                     var txtSuccess = document.querySelector("#gc-success,#promo-success,.PromoEntrySuccess");
                                     var txtError = Array.from(document.querySelectorAll('.PromoEntryError,#addGiftCardOrPromo_Unknown:not([style*="display:none"]):not([style*="display: none"]),#addGiftCardOrPromo_NoCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_InvalidForPurchase:not([style*="display:none"]):not([style*="display: none"]),#addPromo_BadCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_ExpiredCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_InvalidForOrgUnit:not([style*="display:none"]):not([style*="display: none"]),#addPromo_OfferNotYetBegun:not([style*="display:none"]):not([style*="display: none"]),#addPromo_AlreadyRedeemed:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_AlreadyRedeemedByAnotherAccount:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_AlreadyRedeemedByThisAccount:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_BadCode:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_ExpiredCode:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Cancelled:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_WrongOrgUnit:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_ServiceDown:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Disabled:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Teen_Disabled:not([style*="display:none"]):not([style*="display: none"])')).filter(function(e){return e.hasAttribute("style")})[0];
-                                    var isElementHidden = function(htmlElement){
+                                    var isErrorHidden = function(htmlElement){
                                         return (!htmlElement || !!htmlElement.hidden || !htmlElement.hasAttribute("style") || htmlElement.style.display === "none" || !htmlElement.style.display.length);
                                     };
-                                    if (isElementHidden(txtSuccess) && isElementHidden(txtError)) {
+                                    var isSuccessHidden = function(htmlElement){
+                                        return !!htmlElement.hidden || (!!txtSuccess && !!txtSuccess.classList && !!txtSuccess.classList.length && Array.from(txtSuccess.classList).indexOf("hidden") !== -1)
+                                    };
+                                    if (isSuccessHidden(txtSuccess) && isErrorHidden(txtError)) {
                                         timeoutFunction();
-                                    } else if (!isElementHidden(txtError)) {
+                                    } else if (!isErrorHidden(txtError)) {
                                         reject(txtError.innerText.trim());
-                                    } else if (!isElementHidden(txtSuccess)) {
+                                    } else if (!isSuccessHidden(txtSuccess)) {
                                         resolve(txtSuccess.innerText.trim());
-                                    } else {
-                                        timeoutFunction();
+                                    } else if (!!txtSuccess && !!txtSuccess.innerText) {
+                                        resolve(txtSuccess.innerText.trim());
                                     }
                                 }
                             }, 1000);
