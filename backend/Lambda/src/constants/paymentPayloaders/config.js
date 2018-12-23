@@ -1,0 +1,1 @@
+export const PAYMENT_PAYLOAD_RECORDS_TABLE = `moon-database-payment-payload-records-${process.env.NODE_ENV}`;

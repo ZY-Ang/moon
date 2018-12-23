@@ -10,6 +10,7 @@ import {
     ACTION_SET_APP_MODAL_LOADING_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE
 } from "../../../../redux/reducers/constants";
+import smilingFaceEmoji from "../../../../../../../assets/emoji/windows10/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png";
 
 class AmazonNotAtCheckoutScreen extends React.Component {
     reportIsCheckout = () => {
@@ -48,10 +49,10 @@ class AmazonNotAtCheckoutScreen extends React.Component {
                         <span
                             className="site-logo unsupported"
                             role="img"
-                            aria-label="Unsupported Site"
+                            aria-label="Not at Checkout"
                             style={{fontSize: 100}}
                         >
-                            😄
+                            <img alt="Not at Checkout" src={AppRuntime.getURL(smilingFaceEmoji)}/>
                         </span>
                     </div>
                     <h2>Not at Checkout Page</h2>

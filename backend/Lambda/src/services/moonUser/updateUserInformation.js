@@ -4,7 +4,6 @@
 import logHead from "../../utils/logHead";
 import logTail from "../../utils/logTail";
 import AWS from "aws-sdk";
-import moment from "moment";
 import {USER_INFORMATION_TABLE} from "../../constants/user/config";
 
 const updateUserInformation = async (sub, userInformation) => {
@@ -12,7 +11,7 @@ const updateUserInformation = async (sub, userInformation) => {
 
     const keyConverter = {
         referredBy: (email) => email,   // Emails are type-checked by GraphQL so we can skip for now
-        onboardingSkipExpiry: (dateTime) => moment(dateTime).valueOf() // Returns NaN if unable to parse
+        onboardingSkipExpiry: (dateTime) => dateTime // DateTimes are type-checked by GraphQL so we can skip for now
     };
 
     const isValidUserInformation = (
@@ -28,12 +27,14 @@ const updateUserInformation = async (sub, userInformation) => {
         let dynamodb = new AWS.DynamoDB.DocumentClient();
         let UpdateExpression = "set";
         let ExpressionAttributeValues = {};
+        let ExpressionAttributeNames = {};
 
         Object.keys(userInformation)
             .filter(key => (!!keyConverter[key] && !!keyConverter[key](userInformation[key])))
             .forEach(key => {
                 ExpressionAttributeValues[`:${key}`] = keyConverter[key](userInformation[key]);
-                UpdateExpression += ` ${key} = :${key},`;
+                UpdateExpression += ` #${key} = :${key},`;
+                ExpressionAttributeNames[`#${key}`] = key;
             });
         if (UpdateExpression[UpdateExpression.length - 1] === ',') {
             UpdateExpression = UpdateExpression.slice(0, -1);
@@ -43,6 +44,7 @@ const updateUserInformation = async (sub, userInformation) => {
             TableName: USER_INFORMATION_TABLE,
             Key: {sub},
             UpdateExpression,
+            ExpressionAttributeNames,
             ExpressionAttributeValues
         };
 

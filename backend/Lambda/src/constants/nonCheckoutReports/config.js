@@ -1,0 +1,1 @@
+export const NON_CHECKOUT_REPORTS_TABLE = `moon-database-non-checkout-reports-${process.env.NODE_ENV}`;

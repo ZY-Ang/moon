@@ -9,6 +9,7 @@ import {
     ACTION_SET_APP_MODAL_LOADING_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE
 } from "../../../../redux/reducers/constants";
+import moonFaceEmoji from "../../../../../../../assets/emoji/windows10/new-moon-with-face_1f31a.png";
 
 class UnsupportedScreen extends React.Component {
     constructor(props) {
@@ -49,7 +50,7 @@ class UnsupportedScreen extends React.Component {
                             aria-label="Unsupported Site"
                             style={{fontSize: 100}}
                         >
-                            🌚
+                            <img alt="Unsupported Site" src={AppRuntime.getURL(moonFaceEmoji)}/>
                         </span>
                         <SettingsIcon/>
                     </div>

@@ -37,12 +37,41 @@ resources:
         AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: url
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
         KeySchema:
         - AttributeName: id
           KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 5 # TODO: Contact AWS Support beyond 40000 for an increase
           WriteCapacityUnits: 5 # TODO: Contact AWS Support beyond 40000 for an increase
+        GlobalSecondaryIndexes:
+        - IndexName: urlByEmailGSI
+          KeySchema:
+          - AttributeName: url
+            KeyType: HASH
+          - AttributeName: email
+            KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: urlByTimestampGSI
+          KeySchema:
+          - AttributeName: url
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials

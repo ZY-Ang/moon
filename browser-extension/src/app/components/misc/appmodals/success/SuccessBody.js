@@ -3,8 +3,10 @@
  */
 import React from "react";
 import './SuccessBody.css';
+import thumbsUpEmoji from "../../../../../../../assets/emoji/windows10/thumbs-up-sign_1f44d.png";
 import {connect} from "react-redux";
 import {ACTION_SET_APP_MODAL_SUCCESS_STATE} from "../../../../redux/reducers/constants";
+import AppRuntime from "../../../../browser/AppRuntime";
 
 const SuccessBody = ({isActive, text, onSetAppModalSuccessState}) => !!isActive && !!onSetAppModalSuccessState ? (
     <div className="app-modal">
@@ -25,7 +27,7 @@ const SuccessBody = ({isActive, text, onSetAppModalSuccessState}) => !!isActive 
             className="btn btn-primary-outline"
             onClick={() => onSetAppModalSuccessState({isActive: false})}
         >
-            <span role="img" aria-label="Ok">👍</span> Ok
+            <span role="img" aria-label="Ok"><img alt="Ok" src={AppRuntime.getURL(thumbsUpEmoji)}/></span> Ok
         </button>
     </div>
 ) : null;

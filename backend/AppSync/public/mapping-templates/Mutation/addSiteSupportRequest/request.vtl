@@ -2,15 +2,19 @@
     "version" : "2017-02-28",
     "operation" : "UpdateItem",
     "key" : {
-        "email": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrEmpty($ctx.args.email, "guest@paywithmoon.com"))
+        "id": $util.dynamodb.toDynamoDBJson($util.autoId())
     },
     "update" : {
-        "expression" : "SET #host = :value",
+        "expression" : "SET #email = :email, #host = :host, #timestamp = :timestamp",
         "expressionNames" : {
-           "#host" : "$ctx.args.host"
+            "#timestamp": "timestamp",
+            "#email": "email",
+            "#host" : "host"
         },
         "expressionValues" : {
-            ":value" : $util.dynamodb.toDynamoDBJson(true)
+            ":timestamp": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601()),
+            ":email": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrEmpty($ctx.args.email, "guest@paywithmoon.com")),
+            ":host": $util.dynamodb.toDynamoDBJson($ctx.args.host)
         }
     }
 }

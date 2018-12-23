@@ -1,14 +1,16 @@
 import React from "react";
+import AppRuntime from "../../../browser/AppRuntime";
+import shoppingCartEmoji from "../../../../../../assets/emoji/windows10/shopping-trolley_1f6d2.png";
 
 const OnboardingCheckout = ({next}) => (
     <div className="onboarding-tab">
         <span
             className="onboarding-emoji"
             role="img"
-            aria-label="Shop Online"
+            aria-label="Checkout"
             style={{fontSize: 100}}
         >
-            🛒
+            <img alt="Shop Online" src={AppRuntime.getURL(shoppingCartEmoji)}/>
         </span>
         <p><i>How it Works</i></p>
         <h1 style={{margin: '0'}}>Checkout</h1>

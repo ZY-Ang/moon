@@ -54,6 +54,9 @@ custom:
   accountId: ${AWS::AccountId}
 
   lambdaFunctions:
+    AddNonCheckoutReport:
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.AddNonCheckoutReportArn}}
+      Description: ${{file(../../Lambda/serverless.yml):functions.addNonCheckoutReport.description}}
     ExchangeRates:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.ExchangeRatesArn}}
       Description: ${{file(../../Lambda/serverless.yml):functions.exchangeRates.description}}
@@ -63,10 +66,6 @@ custom:
       Name: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-site-support-requests-${{self:provider.stage}}.TableArn}}
       Description: ${{file(../../../database/siteSupportRequests/package.json):description}}
-    NonCheckoutReports:
-      Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
-      Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
-      Description: ${{file(../../../database/nonCheckoutReports/package.json):description}}
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}
@@ -88,20 +87,6 @@ custom:
             Resource:
             - ${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}
             - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.SiteSupportRequests.Arn}}", '/*']] }
-      # NonCheckoutReportsDynamoDBTable
-      - type: AMAZON_DYNAMODB
-        name: NonCheckoutReportsDynamoDBTable
-        description: ${{self:custom.dynamoDBTables.NonCheckoutReports.Description}}
-        config:
-          tableName: ${{self:custom.dynamoDBTables.NonCheckoutReports.Name}}
-          iamRoleStatements:
-          - Effect: "Allow"
-            Action:
-            - "dynamodb:GetItem"
-            - "dynamodb:UpdateItem"
-            Resource:
-            - ${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}
-            - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}", '/*']] }
     # ============== Lambda Functions ==============
       # exchangeRates
       - type: AWS_LAMBDA
@@ -115,6 +100,18 @@ custom:
             - "lambda:invokeFunction"
             Resource:
             - ${{self:custom.lambdaFunctions.ExchangeRates.Arn}}
+      # addNonCheckoutReport
+      - type: AWS_LAMBDA
+        name: AddNonCheckoutReportLambdaFunction
+        description: ${{self:custom.lambdaFunctions.AddNonCheckoutReport.Description}}
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.AddNonCheckoutReport.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+              - "lambda:invokeFunction"
+            Resource:
+              - ${{self:custom.lambdaFunctions.AddNonCheckoutReport.Arn}}
 
     mappingTemplatesLocation: mapping-templates
 
@@ -134,7 +131,7 @@ custom:
         request: Mutation/addSiteSupportRequest/request.vtl
         response: Mutation/addSiteSupportRequest/response.vtl
       # Mutation/addNonCheckoutReport
-      - dataSource: NonCheckoutReportsDynamoDBTable
+      - dataSource: AddNonCheckoutReportLambdaFunction
         type: Mutation
         field: addNonCheckoutReport
         request: Mutation/addNonCheckoutReport/request.vtl

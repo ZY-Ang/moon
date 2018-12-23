@@ -313,7 +313,7 @@ class AmazonCheckoutScreen extends React.Component {
                 </div>
                 <div className="checkout-section checkout-section-order-total">
                     <div className="checkout-section-label py-0">
-                        {isFullCartAmount ? "Order Total" : "Convert"}
+                        Order Total
                     </div>
                     <div className="checkout-order-total-value">
                         <input
@@ -321,8 +321,8 @@ class AmazonCheckoutScreen extends React.Component {
                             type="number"
                             step={0.01}
                             min={0}
-                            max={Math.min(Number(cartAmount), Number(walletBalanceInBase))}
-                            value={paymentAmount}
+                            max={Math.min(Number(cartAmount))}//, Number(walletBalanceInBase))}
+                            value={cartAmount}//{paymentAmount}
                             onChange={this.onPaymentAmountChange}
                             style={{fontSize: paymentAmountFontSize}}
                             disabled
@@ -339,6 +339,8 @@ class AmazonCheckoutScreen extends React.Component {
                     authUserHasWallets &&
                     <ul className="sequence">
                         {
+                            // On hold until we can find a way to safely calculate the correct price information.
+                            false &&
                             !isFullCartAmount &&
                             <li
                                 className="text-left font-size-80"
@@ -425,6 +427,8 @@ class AmazonCheckoutScreen extends React.Component {
                         }
                     </li>
                     {
+                        // On hold until we can find a way to safely calculate the correct price information.
+                        false &&
                         !!selectedWallet &&
                         isMaxWalletAmount &&
                         Decimal(selectedWallet.balance).gt(requiredAmountInQuote) &&
@@ -488,9 +492,17 @@ class AmazonCheckoutScreen extends React.Component {
                     authUserHasWallets &&
                     !!selectedWallet &&
                     isInsufficient &&
-                    !isZero &&
                     <div className="text-center mt-2">
-                        <p className="text-error">Not enough to complete the purchase!</p>
+                        <p className="text-error mb-0">Not enough to complete the purchase!</p>
+                    </div>
+                }
+                {
+                    authUserHasWallets &&
+                    !!selectedWallet &&
+                    isZero &&
+                    !isInsufficient &&
+                    <div className="text-center mt-2">
+                        <p className="text-warning mb-0">To pay with cryptocurrency please change your payment method or add items so your order total is nonzero</p>
                     </div>
                 }
                 {

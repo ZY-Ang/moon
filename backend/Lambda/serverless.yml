@@ -34,6 +34,8 @@ package:
 
 resources:
   Outputs:
+    AddNonCheckoutReportArn:
+      Value: { Fn::GetAtt: [AddNonCheckoutReportLambdaFunction, Arn] }
     ExchangeRatesArn:
       Value: { Fn::GetAtt: [ExchangeRatesLambdaFunction, Arn] }
     GetPaymentPayloadArn:
@@ -52,6 +54,20 @@ resources:
 #     the function 'exchangeRate' will have a CloudFormation logical ID of
 #     'ExchangeRateLambdaFunction'
 functions:
+  addNonCheckoutReport:
+    name: ${{self:service}}-${{self:provider.stage}}-addNonCheckoutReport
+    description: 'Adds a report that the current page that the user is on is supposed to be a checkout page'
+    logRetentionInDays: 30
+    handler: src/addNonCheckoutReport.default
+    timeout: 30
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:UpdateItem"
+      Resource:
+      - ${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.NonCheckoutReports.Arn}}", '/*']] }
   exchangeRates:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRates
     description: 'Returns multiple exchange rates given multiple quote and base currencies.'
@@ -76,8 +92,8 @@ functions:
       Action:
       - "dynamodb:UpdateItem"
       Resource:
-      - ${{self:custom.dynamoDBTables.TransactionRecords.Arn}}
-      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.TransactionRecords.Arn}}", '/*']] }
+      - ${{self:custom.dynamoDBTables.PaymentPayloadRecords.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.PaymentPayloadRecords.Arn}}", '/*']] }
   updateUser:
     name: ${{self:service}}-${{self:provider.stage}}-updateUser
     description: 'Updates a moon user with new information.'
@@ -140,6 +156,6 @@ custom:
     NonCheckoutReports:
       Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
-    TransactionRecords:
-      Name: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableName}}
-      Arn: ${{cf:moon-database-transaction-records-${{self:provider.stage}}.TableArn}}
+    PaymentPayloadRecords:
+      Name: ${{cf:moon-database-payment-payload-records-${{self:provider.stage}}.TableName}}
+      Arn: ${{cf:moon-database-payment-payload-records-${{self:provider.stage}}.TableArn}}

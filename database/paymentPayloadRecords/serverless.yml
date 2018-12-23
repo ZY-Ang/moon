@@ -1,4 +1,4 @@
-service: moon-database-transaction-records
+service: moon-database-payment-payload-records
 
 provider:
   name: aws
@@ -23,21 +23,20 @@ resources:
   Outputs:
     TableArn:
       Value:
-        { Fn::GetAtt: [TransactionRecordsDynamoDBTable, Arn] }
+        { Fn::GetAtt: [PaymentPayloadRecordsDynamoDBTable, Arn] }
     TableName:
       Value: ${{self:service}}-${{self:provider.stage}}
     TableDescription:
       Value: ${{file(./package.json):description}}
   Resources:
-    TransactionRecordsDynamoDBTable:
-      # Table that stores user general info.
+    PaymentPayloadRecordsDynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${{self:service}}-${{self:provider.stage}}
         AttributeDefinitions:
         - AttributeName: sub
           AttributeType: S
-        - AttributeName: datetime
+        - AttributeName: createdOn
           AttributeType: S
         - AttributeName: id
           AttributeType: S
@@ -48,11 +47,11 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
         GlobalSecondaryIndexes:
-        - IndexName: transactonIdGSI
+        - IndexName: subByCreatedOnGSI
           KeySchema:
           - AttributeName: sub
             KeyType: HASH
-          - AttributeName: datetime
+          - AttributeName: createdOn
             KeyType: RANGE
           Projection:
             ProjectionType: KEYS_ONLY
@@ -76,7 +75,7 @@ custom:
   # See link for more information:
   #     https://github.com/sbstjn/serverless-dynamodb-autoscaling
   capacities:
-  - table: TransactionRecordsDynamoDBTable
+  - table: PaymentPayloadRecordsDynamoDBTable
     read:
       minimum: 5
       maximum: 1000

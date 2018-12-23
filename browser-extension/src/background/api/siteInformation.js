@@ -37,18 +37,15 @@ export const doAddSiteSupportRequest = async (email, host) => (MoonGraphQL.publi
     });
 
 const mutationAddNonCheckoutReport = gql`
-    mutation addNonCheckoutReport($url: AWSURL!, $content: String!) {
-        addNonCheckoutReport(input: {
+    mutation addNonCheckoutReport($email: AWSEmail="guest@paywithmoon.com", $url: AWSURL!, $content: String!) {
+        addNonCheckoutReport(email: $email, input: {
             url: $url,
             content: $content
         })
     }
 `;
-export const doAddNonCheckoutReport = async (url, content) => (MoonGraphQL.publicClient)
+export const doAddNonCheckoutReport = async (url, content, email) => (MoonGraphQL.publicClient)
     .mutate({
         mutation: mutationAddNonCheckoutReport,
-        variables: {
-            url,
-            content
-        }
+        variables: {url, content, email}
     });

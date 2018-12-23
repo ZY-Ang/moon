@@ -6,12 +6,25 @@ import logTail from "../../../utils/logTail";
 import Decimal from "decimal.js";
 import {URL} from "url";
 import doCreateAmazonGiftCard from "./doCreateAmazonGiftCard";
+import updatePaymentPayloadRecord from "../updatePaymentPayloadRecord";
 
-const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
-    logHead("getAmazonPaymentPayload", {cartInfo, pageInfo});
+/**
+ * @param paymentPayloadId - payment payload ID for records
+ *
+ * @param cartInfo - checkout page cart information
+ *                  that should contain {@code amount}
+ *                  and {@code currency}
+ *
+ * @param pageInfo - checkout page page information that
+ *                  can contain {@code url}, {@code content}
+ *                  for debug
+ */
+const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => {
+    logHead("getAmazonPaymentPayload", {paymentPayloadId, cartInfo, pageInfo});
     const {amount: purchaseAmount, currency: purchaseCurrency} = cartInfo;
-    // TODO: Store {@code pageInfo} in a database somewhere so we can debug
-    const {url, content} = pageInfo;
+    // pageInfo logged in cloudFormation is sufficient for debug.
+    // DO NOT log pageInfo to dynamodb as row data will be too expensive.
+    const {url} = pageInfo;
     const {host} = new URL(url);
 
     const regionHostMap = {
@@ -29,20 +42,20 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
     const REGION = regionHostMap[host];
 
     // 1. Issue Amazon gift card(s)
-    let giftCards = [];
+    let amazonGiftCards = [];
     let remaining = new Decimal(purchaseAmount);
     while (remaining.gt(0)) {
         if (remaining.gt(2000)) {
-            giftCards.push(await doCreateAmazonGiftCard("2000", purchaseCurrency, REGION));
+            amazonGiftCards.push(await doCreateAmazonGiftCard("2000", purchaseCurrency, REGION));
             remaining = remaining.minus(2000);
         } else {
-            giftCards.push(await doCreateAmazonGiftCard(remaining.toString(), purchaseCurrency, REGION));
+            amazonGiftCards.push(await doCreateAmazonGiftCard(remaining.toString(), purchaseCurrency, REGION));
             remaining = new Decimal(0);
         }
     }
 
-    // 2. TODO: Store {@code amazonGiftCard} in a database together with order trail somewhere in case we need to cancel the gift card. See {@link https://pypi.org/project/agcod/} for example response in python. Roughly similar in agcod for node but check just in case.
-    // db.put(giftCards)
+    // 2. Store gift card information directly into database
+    await updatePaymentPayloadRecord(paymentPayloadId, {amazonGiftCards});
 
     // TODO: FIGURE OUT WHAT HONEY is doing with 'applyCodesClick'
     const executable = require("harp-minify").js(`
@@ -64,20 +77,21 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
                                 if (loadingSpinner && loadingSpinner.style.display !== 'none') {
                                     timeoutFunction();
                                 } else {
-                                    var txtSuccess = document.querySelectorAll("#gc-success,.PromoEntrySuccess")[0];
-                                    var txtError = document.querySelectorAll("#gc-error,.PromoEntryError")[0];
-                                    var isElementHidden = function(htmlElement){
-                                        return (!!htmlElement.hidden || htmlElement.style.display === "none");
+                                    var txtSuccess = document.querySelector("#gc-success,#promo-success,.PromoEntrySuccess");
+                                    var txtError = Array.from(document.querySelectorAll('.PromoEntryError,#addGiftCardOrPromo_Unknown:not([style*="display:none"]):not([style*="display: none"]),#addGiftCardOrPromo_NoCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_InvalidForPurchase:not([style*="display:none"]):not([style*="display: none"]),#addPromo_BadCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_ExpiredCode:not([style*="display:none"]):not([style*="display: none"]),#addPromo_InvalidForOrgUnit:not([style*="display:none"]):not([style*="display: none"]),#addPromo_OfferNotYetBegun:not([style*="display:none"]):not([style*="display: none"]),#addPromo_AlreadyRedeemed:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_AlreadyRedeemedByAnotherAccount:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_AlreadyRedeemedByThisAccount:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_BadCode:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_ExpiredCode:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Cancelled:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_WrongOrgUnit:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_ServiceDown:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Disabled:not([style*="display:none"]):not([style*="display: none"]),#addGiftCard_Teen_Disabled:not([style*="display:none"]):not([style*="display: none"])')).filter(function(e){return e.hasAttribute("style")})[0];
+                                    var isErrorHidden = function(htmlElement){
+                                        return (!htmlElement || !!htmlElement.hidden || !htmlElement.hasAttribute("style") || htmlElement.style.display === "none" || !htmlElement.style.display.length);
                                     };
-                                    if (!txtSuccess) {
-                                        reject("txtSuccess does not exist");
-                                    } else if (isElementHidden(txtSuccess) && !txtError) {
-                                        reject("txtSuccess is hidden and txtError missing");
-                                    } else if (isElementHidden(txtSuccess)) {
-                                        reject(txtError.innerText.trim());
-                                    } else if (isElementHidden(txtError) && isElementHidden(txtSuccess)) {
+                                    var isSuccessHidden = function(htmlElement){
+                                        return !!htmlElement.hidden || (!!txtSuccess && !!txtSuccess.classList && !!txtSuccess.classList.length && Array.from(txtSuccess.classList).indexOf("hidden") !== -1)
+                                    };
+                                    if (isSuccessHidden(txtSuccess) && isErrorHidden(txtError)) {
                                         timeoutFunction();
-                                    } else {
+                                    } else if (!isErrorHidden(txtError)) {
+                                        reject(txtError.innerText.trim());
+                                    } else if (!isSuccessHidden(txtSuccess)) {
+                                        resolve(txtSuccess.innerText.trim());
+                                    } else if (!!txtSuccess && !!txtSuccess.innerText) {
                                         resolve(txtSuccess.innerText.trim());
                                     }
                                 }
@@ -136,7 +150,7 @@ const getAmazonPaymentPayload = async (cartInfo, pageInfo) => {
         .catch(function(err){
             console.error("Something seriously bad happened: ", err);
         });
-})(${JSON.stringify(giftCards)}, '${process.env.NODE_ENV}');
+})(${JSON.stringify(amazonGiftCards)}, '${process.env.NODE_ENV}');
 `, {compress: true, mangle: true});
 
     const amazonPaymentPayload = {

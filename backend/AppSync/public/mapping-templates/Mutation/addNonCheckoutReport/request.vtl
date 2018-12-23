@@ -1,22 +1,10 @@
 {
     "version" : "2017-02-28",
-    "operation" : "UpdateItem",
-    "key" : {
-        "id": $util.dynamodb.toDynamoDBJson($util.autoId())
-    },
-    "update" : {
-        "expression" : "SET #email = :email, #url = :url, #content = :content, #timestamp = :timestamp",
-        "expressionNames" : {
-            "#timestamp": "timestamp",
-            "#email": "email",
-            "#url" : "url",
-            "#content": "content"
-        },
-        "expressionValues" : {
-            ":timestamp": $util.dynamodb.toDynamoDBJson($util.time.nowEpochMilliSeconds()),
-            ":email": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrEmpty($context.identity.claims.email, "guest@paywithmoon.com")),
-            ":url" : $util.dynamodb.toDynamoDBJson($ctx.args.input.url),
-            ":content": $util.dynamodb.toDynamoDBJson($ctx.args.input.content)
-        }
-    }
+    "operation" : "Invoke",
+    "payload": $util.toJson({
+        "timestamp": $util.time.nowISO8601(),
+        "email": $util.defaultIfNullOrEmpty($ctx.args.email, "guest@paywithmoon.com"),
+        "url" : $ctx.args.input.url,
+        "content": $ctx.args.input.content
+    })
 }

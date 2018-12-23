@@ -53,7 +53,7 @@ type Mutation {
     # Request a site to be added to the list of sites to be supported
     addSiteSupportRequest(email: AWSEmail="guest@paywithmoon.com", host: String!): Boolean
     # Reports a web page is a valid checkout page detected as invalid
-    addNonCheckoutReport(input: PageInfo!): Boolean
+    addNonCheckoutReport(email: AWSEmail="guest@paywithmoon.com", input: PageInfo!): Boolean
     # Updates the exchange rate to be propagated to the attached exchange rate subscribers
     updateExchangeRate(credentials: String!): ExchangeRate
 }
@@ -68,8 +68,6 @@ input PageInfo {
 
 # Queries (static). Naming convention: NOUNS
 type Query {
-    # Returns the latest exchange rate object for a currency and a baseCurrency(default: USD) # TODO Deprecate in favour of multiple pair specification
-    exchangeRate(quote: CoinbaseProQuoteCurrency!, base: CoinbaseProBaseCurrency=USD): ExchangeRate
     # Returns the latest exchange rate object for multiple pairs of quote currencies and base currencies at once
     exchangeRates(pairs: [ExchangeRateInput]!): [ExchangeRate]
     # Returns information about the URL of the current site.

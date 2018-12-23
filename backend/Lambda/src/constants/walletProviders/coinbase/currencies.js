@@ -8,9 +8,9 @@
 const SUPPORTED_WALLET_CURRENCIES = {
     BTC: true,
     ETH: true,
-    ETC: false,
+    ETC: true,
     LTC: true,
-    BCH: false
+    BCH: true
 };
 
 export default SUPPORTED_WALLET_CURRENCIES;

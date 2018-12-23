@@ -4,6 +4,10 @@
 
 import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../constants/url";
 import supportedSites from "../../../backend/Lambda/supportedSites";
+import {
+    ROUTE_AMAZON_CHECKOUT_DEFAULT,
+    ROUTE_AMAZON_CHECKOUT_MUSIC
+} from "../app/components/main/screens/www.amazon.com/constants/routes";
 
 /**
  * @return {boolean} {@code true} if
@@ -47,19 +51,21 @@ export const isSupportedSite = (urlString) => {
  * {@code supportedSites[host].pathnameCheckout}.
  */
 export const isCheckoutPage = (urlString, pathnameCheckout) => {
-    const {host, pathname} = new URL(urlString);
+    const {pathname} = new URL(urlString);
     if (!!pathnameCheckout) {
         return (
+            isSupportedSite(urlString) &&
             !!pathnameCheckout &&
             !!pathnameCheckout.length &&
             pathnameCheckout.reduce((prev, curPathname) => (pathname.startsWith(curPathname) || prev), false)
         );
     } else {
         return (
-            supportedSites[host] &&
-            !!supportedSites[host].pathnameCheckout &&
-            !!supportedSites[host].pathnameCheckout.length &&
-            supportedSites[host].pathnameCheckout.reduce((prev, curPathname) => (pathname.startsWith(curPathname) || prev), false)
+            isSupportedSite(urlString) &&
+            [
+                ROUTE_AMAZON_CHECKOUT_DEFAULT,
+                ROUTE_AMAZON_CHECKOUT_MUSIC
+            ].reduce((prev, curPathname) => (!!pathname.match(curPathname) || prev), false)
         );
     }
 };
