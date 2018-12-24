@@ -59,7 +59,7 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     console.log(`Obtaining tokens from OAuth server with response url: ${url}`);
     const code = parseUrl(url).query.code.split("#")[0];
 
-    const authCsrfState = parseUrl(url).query.state;
+    const authCsrfState = parseUrl(url).query.state.split("#")[0];
     const localCsrfState = store.getState().sessionState.csrfState;
     if(localCsrfState !== authCsrfState){
         return Promise.reject(new Error('Invalid CSRF state'));

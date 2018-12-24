@@ -32,7 +32,6 @@ export const URL_OAUTH_SERVER_ISS = `${URL_OAUTH_SERVER}.well-known/jwks.json`;
  */
 export const getCsrfStateAppendedParams = (params) => {
     const csrfState = randomstring(8);
-    console.log('NEW CSRF STATE', csrfState);
     store.dispatch({
         type: ACTION_SET_CSRF_STATE,
         csrfState
