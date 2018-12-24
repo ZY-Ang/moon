@@ -34,6 +34,8 @@ resources:
       Properties:
         TableName: ${{self:service}}-${{self:provider.stage}}
         AttributeDefinitions:
+        - AttributeName: awsRequestId
+          AttributeType: S
         - AttributeName: sub
           AttributeType: S
         - AttributeName: createdOn
@@ -47,6 +49,15 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
         GlobalSecondaryIndexes:
+        - IndexName: awsRequestIdGSI
+          KeySchema:
+          - AttributeName: awsRequestId
+            KeyType: HASH
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
         - IndexName: subByCreatedOnGSI
           KeySchema:
           - AttributeName: sub
