@@ -15,6 +15,7 @@ import placeCoinbaseProSellMarketOrder from "../../exchanges/coinbasePro/placeSe
 import {getAuthenticatedClient as getCoinbaseProAuthenticatedClient} from "../../exchanges/coinbasePro/client";
 import {base as BASE_CURRENCIES, quote as QUOTE_CURRENCIES} from "../../../constants/exchanges/coinbasePro/currencies";
 import {EMAIL as MOON_COINBASE_EMAIL, WALLETS as MOON_COINBASE_WALLET_IDS} from "../../../constants/walletProviders/coinbase/config";
+import {removeSecrets} from "../../../utils/sanitization";
 
 /**
  * Calculates the required amount that is needed for a transaction.
@@ -77,7 +78,7 @@ const doTransferToMoonCoinbase = async (paymentPayloadId, sub, walletID, cartInf
 
     // 6. Store Coinbase transaction data in database
     await updatePaymentPayloadRecord(paymentPayloadId, {
-        coinbaseResponse,
+        coinbaseResponse: removeSecrets(coinbaseResponse),
         exchangeRate,
         quoteAmount: requiredAmountInQuote,
         quoteCurrency: walletCurrency
