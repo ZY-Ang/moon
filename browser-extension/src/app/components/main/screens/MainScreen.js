@@ -6,14 +6,18 @@ import AmazonAddressSelectScreen from "./www.amazon.com/AmazonAddressSelectScree
 import AmazonPaymentMethodSelectScreen from "./www.amazon.com/AmazonPaymentMethodSelectScreen";
 import UnsupportedScreen from "./unsupported/UnsupportedScreen";
 import AmazonCatchAllScreen from "./www.amazon.com/AmazonCatchAllScreen";
+//just added new line of code here
+import AmazonSelectBillingAddress from "./www.amazon.com/AmazonSelectBillingAddress";
+
 import {
     ROUTE_AMAZON_CHECKOUT_DEFAULT,
     ROUTE_AMAZON_CHECKOUT_DEFAULT_ADDRESS_SELECT,
     ROUTE_AMAZON_CHECKOUT_DEFAULT_PAYMENT_SELECT,
-    ROUTE_AMAZON_CHECKOUT_MUSIC
+    ROUTE_AMAZON_CHECKOUT_MUSIC, ROUTE_AMAZON_SELECT_BILLING_ADDRESS
 } from "./www.amazon.com/constants/routes";
 
 /**
+ *
  * Host-ful and Pathname-ful router for the first page of the main flow
  */
 class MainScreen extends React.Component {
@@ -45,6 +49,11 @@ class MainScreen extends React.Component {
                 {
                     path: ROUTE_AMAZON_CHECKOUT_DEFAULT_PAYMENT_SELECT,
                     component: AmazonPaymentMethodSelectScreen
+                },
+                // select billing address(new line)
+                {
+                    path: ROUTE_AMAZON_SELECT_BILLING_ADDRESS,
+                    component: AmazonSelectBillingAddress
                 },
                 {
                     path: "*",
