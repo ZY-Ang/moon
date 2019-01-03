@@ -1,10 +1,10 @@
 import React from "react";
-import "./AmazonAddressSelectScreen.css";
+import "./AmazonSelectShippingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {querySelectorAddressSelect} from "./constants/querySelectors";
 
-class AmazonAddressSelectScreen extends React.Component {
+class AmazonSelectShippingAddressScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -62,4 +62,4 @@ class AmazonAddressSelectScreen extends React.Component {
     }
 }
 
-export default AmazonAddressSelectScreen;
+export default AmazonSelectShippingAddressScreen;

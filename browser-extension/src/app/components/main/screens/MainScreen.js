@@ -2,7 +2,7 @@ import React from "react";
 import {connect} from "react-redux";
 import {ACTION_PUSH_SCREEN} from "../../../redux/reducers/constants";
 import AmazonCheckoutScreen from "./www.amazon.com/AmazonCheckoutScreen";
-import AmazonAddressSelectScreen from "./www.amazon.com/AmazonAddressSelectScreen";
+import AmazonSelectShippingAddressScreen from "./www.amazon.com/AmazonSelectShippingAddressScreen";
 import AmazonPaymentMethodSelectScreen from "./www.amazon.com/AmazonPaymentMethodSelectScreen";
 import UnsupportedScreen from "./unsupported/UnsupportedScreen";
 import AmazonCatchAllScreen from "./www.amazon.com/AmazonCatchAllScreen";
@@ -43,7 +43,7 @@ class MainScreen extends React.Component {
                 },
                 {
                     path: ROUTE_AMAZON_CHECKOUT_DEFAULT_ADDRESS_SELECT,
-                    component: AmazonAddressSelectScreen
+                    component: AmazonSelectShippingAddressScreen
                 },
                 {
                     path: ROUTE_AMAZON_CHECKOUT_DEFAULT_PAYMENT_SELECT,

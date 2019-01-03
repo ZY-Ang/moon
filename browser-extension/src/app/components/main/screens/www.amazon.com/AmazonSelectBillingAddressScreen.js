@@ -4,10 +4,10 @@
 
 // creates a sequence UI for the select billing address page
 import React from "react";
-import "./AmazonAddressSelectScreen.css";
+import "./AmazonSelectBillingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {querySelectorAddressSelect} from "./constants/querySelectors";
+import {querySelectorBillingAddressSelect} from "./constants/querySelectors";
 
 class AmazonSelectBillingAddressScreen extends React.Component {
     constructor(props) {
@@ -26,13 +26,13 @@ class AmazonSelectBillingAddressScreen extends React.Component {
     }
 
     parseContinueButton = () => {
-        if (document.querySelector(querySelectorAddressSelect)) {
+        if (document.querySelector(querySelectorBillingAddressSelect)) {
             this.setState({continueButton: true});
         }
     };
 
     onContinueClick = () => {
-        const useThisAddressButton = document.querySelector(querySelectorAddressSelect);
+        const useThisAddressButton = document.querySelector(querySelectorBillingAddressSelect);
         if (useThisAddressButton) {
             useThisAddressButton.click();
         }
