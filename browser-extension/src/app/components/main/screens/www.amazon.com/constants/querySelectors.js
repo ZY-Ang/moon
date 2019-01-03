@@ -1,6 +1,6 @@
 export const querySelectorParseObserver = "#subtotalsSection,#checkoutDisplayPage,.MusicCartReviewButtonSection";
 export const querySelectorMoonButton = "#order-summary-box .a-box-inner,#subtotals .a-box-inner,.MusicCartReviewButtonSection .a-box-inner,#unifiedPrice_feature_div,#mediaPrice_feature_div";
-export const querySelectorCartAmount = "input[name='purchaseTotal'][value],#subtotals .a-color-price,#bottomsubtotals .a-color-price,.MusicCartReviewSubtotalSection span.a-color-price";
+export const querySelectorCartAmount = "input[name='purchaseTotal'][value],#subtotals .a-color-price,#bottomsubtotals .a-color-price,.MusicCartReviewSubtotalSection span.a-color-price, .grand-total-price";
 export const querySelectorCartCurrency = "input[name='purchaseTotalCurrency'][value]";
 export const querySelectorProductTitle = "#productTitle";
 export const querySelectorProductImage = "#landingImage";
