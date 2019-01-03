@@ -6,11 +6,13 @@ import AmazonAddressSelectScreen from "./www.amazon.com/AmazonAddressSelectScree
 import AmazonPaymentMethodSelectScreen from "./www.amazon.com/AmazonPaymentMethodSelectScreen";
 import UnsupportedScreen from "./unsupported/UnsupportedScreen";
 import AmazonCatchAllScreen from "./www.amazon.com/AmazonCatchAllScreen";
+import AmazonGiftOptionScreen from "./www.amazon.com/AmazonGiftOptionScreen";
 import {
     ROUTE_AMAZON_CHECKOUT_DEFAULT,
     ROUTE_AMAZON_CHECKOUT_DEFAULT_ADDRESS_SELECT,
     ROUTE_AMAZON_CHECKOUT_DEFAULT_PAYMENT_SELECT,
-    ROUTE_AMAZON_CHECKOUT_MUSIC
+    ROUTE_AMAZON_CHECKOUT_MUSIC,
+    ROUTE_AMAZON_GIFT_OPTION
 } from "./www.amazon.com/constants/routes";
 
 /**
@@ -45,6 +47,10 @@ class MainScreen extends React.Component {
                 {
                     path: ROUTE_AMAZON_CHECKOUT_DEFAULT_PAYMENT_SELECT,
                     component: AmazonPaymentMethodSelectScreen
+                },
+                {
+                    path: ROUTE_AMAZON_GIFT_OPTION,
+                    component: AmazonGiftOptionScreen
                 },
                 {
                     path: "*",
