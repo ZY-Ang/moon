@@ -7,8 +7,7 @@ import AmazonPaymentMethodSelectScreen from "./www.amazon.com/AmazonPaymentMetho
 import UnsupportedScreen from "./unsupported/UnsupportedScreen";
 import AmazonCatchAllScreen from "./www.amazon.com/AmazonCatchAllScreen";
 //just added new line of code here
-import AmazonSelectBillingAddress from "./www.amazon.com/AmazonSelectBillingAddress";
-
+import AmazonSelectBillingAddressScreen from "./www.amazon.com/AmazonSelectBillingAddressScreen";
 import {
     ROUTE_AMAZON_CHECKOUT_DEFAULT,
     ROUTE_AMAZON_CHECKOUT_DEFAULT_ADDRESS_SELECT,
@@ -53,7 +52,7 @@ class MainScreen extends React.Component {
                 // select billing address(new line)
                 {
                     path: ROUTE_AMAZON_SELECT_BILLING_ADDRESS,
-                    component: AmazonSelectBillingAddress
+                    component: AmazonSelectBillingAddressScreen
                 },
                 {
                     path: "*",

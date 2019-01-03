@@ -9,7 +9,7 @@ import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {querySelectorAddressSelect} from "./constants/querySelectors";
 
-class AmazonSelectBillingAddress extends React.Component {
+class AmazonSelectBillingAddressScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -71,4 +71,4 @@ class AmazonSelectBillingAddress extends React.Component {
     }
 }
 
-export default AmazonSelectBillingAddress;
+export default AmazonSelectBillingAddressScreen;

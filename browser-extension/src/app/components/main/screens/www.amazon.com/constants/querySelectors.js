@@ -9,6 +9,3 @@ export const querySelectorProductPrice = "#priceblock_ourprice,#priceblock_dealp
 export const querySelectorProductObserver = `#desktop_unifiedPrice,${querySelectorProductTitle},${querySelectorProductImage},${querySelectorProductPrice}`;
 export const querySelectorAddressSelect = "#payChangeButtonId,#address-list .a-button-input,#subtotals .a-button-input";
 export const querySelectorPaymentSelect = "#continue-top,#spcViewButtonId,#subtotals .a-button-input";
-
-
-
