@@ -6,13 +6,15 @@ import AmazonSelectShippingAddressScreen from "./www.amazon.com/AmazonSelectShip
 import AmazonPaymentMethodSelectScreen from "./www.amazon.com/AmazonPaymentMethodSelectScreen";
 import UnsupportedScreen from "./unsupported/UnsupportedScreen";
 import AmazonCatchAllScreen from "./www.amazon.com/AmazonCatchAllScreen";
-//just added new line of code here
 import AmazonSelectBillingAddressScreen from "./www.amazon.com/AmazonSelectBillingAddressScreen";
+import AmazonGiftOptionScreen from "./www.amazon.com/AmazonGiftOptionScreen";
 import {
     ROUTE_AMAZON_CHECKOUT_DEFAULT,
-    ROUTE_AMAZON_CHECKOUT_DEFAULT_ADDRESS_SELECT,
+    ROUTE_AMAZON_CHECKOUT_DEFAULT_SHIPPING_ADDRESS_SELECT,
     ROUTE_AMAZON_CHECKOUT_DEFAULT_PAYMENT_SELECT,
-    ROUTE_AMAZON_CHECKOUT_MUSIC, ROUTE_AMAZON_SELECT_BILLING_ADDRESS
+    ROUTE_AMAZON_CHECKOUT_MUSIC,
+    ROUTE_AMAZON_CHECKOUT_DEFAULT_GIFT_OPTION_SELECT,
+    ROUTE_AMAZON_CHECKOUT_DEFAULT_BILLING_ADDRESS_SELECT
 } from "./www.amazon.com/constants/routes";
 
 /**
@@ -42,7 +44,7 @@ class MainScreen extends React.Component {
                     component: AmazonCheckoutScreen
                 },
                 {
-                    path: ROUTE_AMAZON_CHECKOUT_DEFAULT_ADDRESS_SELECT,
+                    path: ROUTE_AMAZON_CHECKOUT_DEFAULT_SHIPPING_ADDRESS_SELECT,
                     component: AmazonSelectShippingAddressScreen
                 },
                 {
@@ -51,8 +53,12 @@ class MainScreen extends React.Component {
                 },
                 // select billing address(new line)
                 {
-                    path: ROUTE_AMAZON_SELECT_BILLING_ADDRESS,
+                    path: ROUTE_AMAZON_CHECKOUT_DEFAULT_BILLING_ADDRESS_SELECT,
                     component: AmazonSelectBillingAddressScreen
+                },
+                {
+                    path: ROUTE_AMAZON_CHECKOUT_DEFAULT_GIFT_OPTION_SELECT,
+                    component: AmazonGiftOptionScreen
                 },
                 {
                     path: "*",

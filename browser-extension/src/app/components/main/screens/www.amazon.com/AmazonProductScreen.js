@@ -21,7 +21,9 @@ import {observeDOM} from "../../../../utils/dom";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";
 
-// Note: Amazon has no obvious product page schema so this should be a catchall page, which will in turn, render AmazonNotAtCheckoutPage.
+/**
+ * Note: Amazon has no obvious product page schema so this should be a catchall page, which will in turn, render AmazonNotAtCheckoutPage.
+ */
 class AmazonProductScreen extends React.Component {
     constructor(props) {
         super(props);
