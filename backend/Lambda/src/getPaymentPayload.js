@@ -70,6 +70,7 @@ const getPaymentPayload = async (event, context) => {
     await updatePaymentPayloadRecord(paymentPayloadId, {
         sub,
         createdOn,
+        awsRequestId,
         logGroupName,
         logStreamName,
         baseCurrency: cartInfo.currency,
