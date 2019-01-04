@@ -1,7 +1,7 @@
 import React from "react";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import { querySelectorGiftOptionScreen} from "./constants/querySelectors";
+import {QUERY_SELECTOR_GIFT_OPTIONS_SELECT} from "./constants/querySelectors";
 
 class AmazonGiftOptionScreen extends React.Component {
     constructor(props) {
@@ -19,13 +19,13 @@ class AmazonGiftOptionScreen extends React.Component {
     }
 
     parseContinueButton = () => {
-        if (document.querySelector(querySelectorGiftOptionScreen)) {
+        if (document.querySelector(QUERY_SELECTOR_GIFT_OPTIONS_SELECT)) {
             this.setState({continueButton: true});
         }
     };
 
     onContinueClick = () => {
-        const saveGiftOptionButton = document.querySelector(querySelectorGiftOptionScreen);
+        const saveGiftOptionButton = document.querySelector(QUERY_SELECTOR_GIFT_OPTIONS_SELECT);
         if (saveGiftOptionButton) {
             saveGiftOptionButton.click();
         }

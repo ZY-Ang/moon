@@ -7,7 +7,7 @@ import UnsupportedScreen from "../../components/main/screens/unsupported/Unsuppo
 import SettingsScreen from "../../components/main/screens/settings/SettingsScreen";
 import MainScreen from "../../components/main/screens/MainScreen";
 import AmazonCheckoutScreen from "../../components/main/screens/www.amazon.com/AmazonCheckoutScreen";
-import AmazonAddressSelectScreen from "../../components/main/screens/www.amazon.com/AmazonAddressSelectScreen";
+import AmazonSelectShippingAddressScreen from "../../components/main/screens/www.amazon.com/AmazonSelectShippingAddressScreen";
 import AmazonPaymentMethodSelectScreen
     from "../../components/main/screens/www.amazon.com/AmazonPaymentMethodSelectScreen";
 import AmazonProductScreen from "../../components/main/screens/www.amazon.com/AmazonProductScreen";
@@ -62,7 +62,7 @@ export const POSSIBLE_SCREENS = {
     [SCREEN_AMAZON_CATCH_ALL]: AmazonCatchAllScreen,
     [SCREEN_AMAZON_CHECKOUT]: AmazonCheckoutScreen,
     [SCREEN_AMAZON_NOT_AT_CHECKOUT]: AmazonNotAtCheckoutScreen,
-    [SCREEN_AMAZON_ADDRESS_SELECT]: AmazonAddressSelectScreen,
+    [SCREEN_AMAZON_ADDRESS_SELECT]: AmazonSelectShippingAddressScreen,
     [SCREEN_AMAZON_PAYMENT_METHOD_SELECT]: AmazonPaymentMethodSelectScreen,
     [SCREEN_AMAZON_PRODUCT]: AmazonProductScreen
 };

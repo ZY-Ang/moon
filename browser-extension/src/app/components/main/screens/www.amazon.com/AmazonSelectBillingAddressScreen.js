@@ -1,9 +1,15 @@
+/*
+ * Copyright (c) 2019 moon
+ */
+
+// creates a sequence UI for the select billing address page
 import React from "react";
+import "./AmazonSelectBillingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {QUERY_SELECTOR_PAYMENT_METHOD_SELECT} from "./constants/querySelectors";
+import {QUERY_SELECTOR_BILLING_ADDRESS_SELECT} from "./constants/querySelectors";
 
-class AmazonPaymentMethodSelectScreen extends React.Component {
+class AmazonSelectBillingAddressScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,13 +26,13 @@ class AmazonPaymentMethodSelectScreen extends React.Component {
     }
 
     parseContinueButton = () => {
-        if (document.querySelector(QUERY_SELECTOR_PAYMENT_METHOD_SELECT)) {
+        if (document.querySelector(QUERY_SELECTOR_BILLING_ADDRESS_SELECT)) {
             this.setState({continueButton: true});
         }
     };
 
     onContinueClick = () => {
-        const useThisAddressButton = document.querySelector(QUERY_SELECTOR_PAYMENT_METHOD_SELECT);
+        const useThisAddressButton = document.querySelector(QUERY_SELECTOR_BILLING_ADDRESS_SELECT);
         if (useThisAddressButton) {
             useThisAddressButton.click();
         }
@@ -44,16 +50,13 @@ class AmazonPaymentMethodSelectScreen extends React.Component {
                     <p className="mt-1">To Pay with Moon,</p>
                 </div>
                 <ol className="sequence">
-                    <li className="text-left pb-5 mt-4 done">Choose a Shipping Address</li>
+                    <li className="text-left pb-5 mt-4 current done">Choose a Shipping Address</li>
+
+                    <li className="text-left pb-5 current done">
+                        Choose an Amazon Payment Method
+                    </li>
                     <li className="text-left pb-5 current">
-                        Choose an Amazon Payment Method <a
-                        className="text-small"
-                        href="https://paywithmoon.com/FAQs"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Why?
-                    </a>
+                        Change Billing Address
                     </li>
                     <li className="text-left mb-5">Review Items and Shipping</li>
                 </ol>
@@ -68,4 +71,4 @@ class AmazonPaymentMethodSelectScreen extends React.Component {
     }
 }
 
-export default AmazonPaymentMethodSelectScreen;
+export default AmazonSelectBillingAddressScreen;

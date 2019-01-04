@@ -5,8 +5,8 @@ import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {
-    querySelectorCartAmount,
-    querySelectorCartCurrency
+    QUERY_SELECTOR_CART_AMOUNT,
+    QUERY_SELECTOR_CART_CURRENCY
 } from "./constants/querySelectors";
 import Decimal from "decimal.js";
 import {
@@ -89,8 +89,8 @@ class AmazonCheckoutScreen extends React.Component {
     };
 
     parse = (triesRemaining = 5) => {
-        const cartAmountElements = document.querySelectorAll(querySelectorCartAmount);
-        const cartCurrencyElements = document.querySelectorAll(querySelectorCartCurrency);
+        const cartAmountElements = document.querySelectorAll(QUERY_SELECTOR_CART_AMOUNT);
+        const cartCurrencyElements = document.querySelectorAll(QUERY_SELECTOR_CART_CURRENCY);
 
         if (!cartAmountElements || !cartAmountElements.length) {
             this.props.onSetAppModalLoadingState({isActive: true, text: "Loading..."});
