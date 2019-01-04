@@ -28,7 +28,11 @@ class AddWalletsScreen extends React.Component {
                 <BackButton/>
                 <h2>Connect a Wallet</h2>
                 <div className="mb-2 w-100">
-                    <button className="btn w-80 btn-coinbase" onClick={this.launchCoinbaseAuthFlow}>
+                    <button className="btn w-80 btn-coinbase my-2" onClick={this.launchCoinbaseAuthFlow}>
+                        <div className="btn-brand-icon"><CoinbaseIcon/></div>
+                        <div className="btn-brand-text">Connect Coinbase</div>
+                    </button>
+                    <button className="btn w-80 btn-coinbase">
                         <div className="btn-brand-icon"><CoinbaseIcon/></div>
                         <div className="btn-brand-text">Connect Coinbase</div>
                     </button>
