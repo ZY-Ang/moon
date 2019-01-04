@@ -1,10 +1,10 @@
 import React from "react";
-import "./AmazonAddressSelectScreen.css";
+import "./AmazonSelectShippingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {querySelectorAddressSelect} from "./constants/querySelectors";
+import {QUERY_SELECTOR_SHIPPING_ADDRESS_SELECT} from "./constants/querySelectors";
 
-class AmazonAddressSelectScreen extends React.Component {
+class AmazonSelectShippingAddressScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -21,13 +21,13 @@ class AmazonAddressSelectScreen extends React.Component {
     }
 
     parseContinueButton = () => {
-        if (document.querySelector(querySelectorAddressSelect)) {
+        if (document.querySelector(QUERY_SELECTOR_SHIPPING_ADDRESS_SELECT)) {
             this.setState({continueButton: true});
         }
     };
 
     onContinueClick = () => {
-        const useThisAddressButton = document.querySelector(querySelectorAddressSelect);
+        const useThisAddressButton = document.querySelector(QUERY_SELECTOR_SHIPPING_ADDRESS_SELECT);
         if (useThisAddressButton) {
             useThisAddressButton.click();
         }
@@ -62,4 +62,4 @@ class AmazonAddressSelectScreen extends React.Component {
     }
 }
 
-export default AmazonAddressSelectScreen;
+export default AmazonSelectShippingAddressScreen;

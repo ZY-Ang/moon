@@ -4,8 +4,8 @@ import {
     SCREEN_AMAZON_NOT_AT_CHECKOUT, SCREEN_AMAZON_PRODUCT
 } from "../../../../redux/reducers/constants";
 import {
-    querySelectorProductImage,
-    querySelectorProductTitle
+    QUERY_SELECTOR_PRODUCT_IMAGE,
+    QUERY_SELECTOR_PRODUCT_TITLE
 } from "./constants/querySelectors";
 
 /**
@@ -24,8 +24,8 @@ class AmazonCatchAllScreen extends React.Component {
     }
 
     parse = () => {
-        const productTitleElements = document.querySelectorAll(querySelectorProductTitle);
-        const productImageElements = document.querySelectorAll(querySelectorProductImage);
+        const productTitleElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_TITLE);
+        const productImageElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_IMAGE);
         if (
             productTitleElements && !!productTitleElements.length &&
             productImageElements && !!productImageElements.length
