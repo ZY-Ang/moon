@@ -7,7 +7,7 @@ import React from "react";
 import "./AmazonSelectBillingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {querySelectorBillingAddressSelect} from "./constants/querySelectors";
+import {QUERY_SELECTOR_BILLING_ADDRESS_SELECT} from "./constants/querySelectors";
 
 class AmazonSelectBillingAddressScreen extends React.Component {
     constructor(props) {
@@ -26,13 +26,13 @@ class AmazonSelectBillingAddressScreen extends React.Component {
     }
 
     parseContinueButton = () => {
-        if (document.querySelector(querySelectorBillingAddressSelect)) {
+        if (document.querySelector(QUERY_SELECTOR_BILLING_ADDRESS_SELECT)) {
             this.setState({continueButton: true});
         }
     };
 
     onContinueClick = () => {
-        const useThisAddressButton = document.querySelector(querySelectorBillingAddressSelect);
+        const useThisAddressButton = document.querySelector(QUERY_SELECTOR_BILLING_ADDRESS_SELECT);
         if (useThisAddressButton) {
             useThisAddressButton.click();
         }

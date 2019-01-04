@@ -1,7 +1,7 @@
 import React from "react";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {querySelectorPaymentSelect} from "./constants/querySelectors";
+import {QUERY_SELECTOR_PAYMENT_METHOD_SELECT} from "./constants/querySelectors";
 
 class AmazonPaymentMethodSelectScreen extends React.Component {
     constructor(props) {
@@ -20,13 +20,13 @@ class AmazonPaymentMethodSelectScreen extends React.Component {
     }
 
     parseContinueButton = () => {
-        if (document.querySelector(querySelectorPaymentSelect)) {
+        if (document.querySelector(QUERY_SELECTOR_PAYMENT_METHOD_SELECT)) {
             this.setState({continueButton: true});
         }
     };
 
     onContinueClick = () => {
-        const useThisAddressButton = document.querySelector(querySelectorPaymentSelect);
+        const useThisAddressButton = document.querySelector(QUERY_SELECTOR_PAYMENT_METHOD_SELECT);
         if (useThisAddressButton) {
             useThisAddressButton.click();
         }

@@ -4,9 +4,9 @@ import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {
-    querySelectorProductImage, querySelectorProductObserver,
-    querySelectorProductPrice,
-    querySelectorProductTitle
+    QUERY_SELECTOR_PRODUCT_IMAGE, QUERY_SELECTOR_PRODUCT_OBSERVER,
+    QUERY_SELECTOR_PRODUCT_PRICE,
+    QUERY_SELECTOR_PRODUCT_TITLE
 } from "./constants/querySelectors";
 import CurrencyIcon from "../../../misc/currencyicon/CurrencyIcon";
 import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../utils/exchangerates";
@@ -41,7 +41,7 @@ class AmazonProductScreen extends React.Component {
     componentDidMount() {
         this.parseAndUpdate()
             .then(() => this.setState(state => ({selectedExchangeRate: state.exchangeRates[`${QUICKVIEW_CURRENCIES[0]}_${AMAZON_DEFAULT_CURRENCY}`]})));
-        const elementTreesToObserve = document.querySelectorAll(querySelectorProductObserver);
+        const elementTreesToObserve = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_OBSERVER);
         for (let i = 0; i < elementTreesToObserve.length ; i++) {
             const element = elementTreesToObserve[i];
             this.observers[i] = observeDOM(element, this.parseAndUpdate);
@@ -66,9 +66,9 @@ class AmazonProductScreen extends React.Component {
     };
 
     parse = () => new Promise(resolve => {
-        const productTitleElements = document.querySelectorAll(querySelectorProductTitle);
-        const productImageElements = document.querySelectorAll(querySelectorProductImage);
-        const productPriceElements = document.querySelectorAll(querySelectorProductPrice);
+        const productTitleElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_TITLE);
+        const productImageElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_IMAGE);
+        const productPriceElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_PRICE);
         this.setState(() => ({
             title: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
             imageURL: productImageElements && productImageElements[0] && productImageElements[0].src,
