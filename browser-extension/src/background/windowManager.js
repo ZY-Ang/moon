@@ -21,6 +21,7 @@ import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
 import {isCoinbaseSettingsApiUrl, isCoinbaseAuthenticatedUrl, isCoinbaseUrl} from "../utils/coinbase";
+import {isSuccessfullyInstalledPage} from "../utils/moon";
 
 /**
  * Sends a tab update event to the content script
@@ -71,6 +72,10 @@ export const tabDidUpdate = (tab) => {
         // URL on the current tab is the final redirect after an OAuth logout has been hit
         // DEPRECATED. An Ajax call via Axios replaced the need to manually open a new tab
         Tabs.remove(tab).catch(handleErrors);
+
+    } else if (isSuccessfullyInstalledPage(tab.url)) {
+        doInjectAppEvent(tab.url, tab)
+            .catch(handleErrors);
 
     } else if (isCoinbaseAuthFlow() && isCoinbaseAuthenticatedUrl(tab.url)) {
         // Coinbase Auth Flow is activated but not on the sign in page
