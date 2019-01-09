@@ -81,7 +81,7 @@ export const doInjectAppEvent = async (source, tab) => {
  * Handler for when a {@param tab} is updated.
  */
 export const tabDidUpdate = (tab) => {
-    if (!tab || !tab.url) {
+    if (!tab || !tab.url || tab.status !== "complete") {
         // Tab/URL does not exist yet - ignore and let the next call deal with it.
         BrowserAction.setInvalidIcon()
             .catch(err => logger.error("tabDidUpdate (tab does not exist) setInvalidIcon exception: ", err));
@@ -138,8 +138,9 @@ export const tabDidUpdate = (tab) => {
         BrowserAction.setInvalidIcon(tab.id)
             .catch(err => logger.error("tabDidUpdate (catchAll) setInvalidIcon exception: ", err));
         doUpdateTabEvent(tab)
+            .catch(err => logger.error("tabDidUpdate (catchAll) doUpdateTabEvent exception: ", err))
             .then(() => doUpdateAuthUserEvent(tab))
-            .catch(err => logger.error("tabDidUpdate (catchAll) injectApp exception: ", err));
+            .catch(err => logger.error("tabDidUpdate (catchAll) doUpdateAuthUserEvent exception: ", err));
 
     }
 };
