@@ -15,6 +15,7 @@ import ErrorBody from "./misc/appmodals/error/ErrorBody";
 import SuccessBody from "./misc/appmodals/success/SuccessBody";
 import LoadingBody from "./misc/appmodals/loading/LoadingBody";
 import MainFlow from "./main/MainFlow";
+import {REQUEST_POPUP} from "../../constants/events/appEvents";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -54,7 +55,14 @@ class App extends Component {
         if (nextProps.isAppActive) {
             this.onMouseLeaveHeaderButtons();
         }
-    }
+    };
+
+    chatPopUp = (event) => {
+        AppRuntime.sendMessage(REQUEST_POPUP);
+        if (event) {
+            event.preventDefault();
+        }
+    };
 
     render() {
         const CLASS_MOON_BODY = this.state.isMaximized ? "moon-body-maximized" : "moon-body-minimized";
@@ -70,6 +78,17 @@ class App extends Component {
                                 onMouseEnter={this.onMouseEnterHeaderButtons}
                                 onMouseLeave={this.onMouseLeaveHeaderButtons}
                             >
+                                <div
+                                    className="text-center"
+                                >
+                                    <button
+                                        id="moon-header-support-button"
+                                        className="btn-support"
+                                        onClick={this.chatPopUp}
+                                    >
+                                        <FaIcon icon="comments"/>
+                                    </button>
+                                </div>
                                 <div
                                     id="moon-header-toggle-button"
                                     className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
