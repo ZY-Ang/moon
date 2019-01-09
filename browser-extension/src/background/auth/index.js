@@ -186,7 +186,7 @@ export const doUpdateAuthUserEvent = async (tab) => {
             trimmedAuthUserPromise = null;
         }
     } catch (error) {
-        logger.error("doUpdateAuthUserEvent exception: ", error);
+        logger.warn("doUpdateAuthUserEvent exception: ", error);
         Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null}).then(() => false);
         throw error;
     }
