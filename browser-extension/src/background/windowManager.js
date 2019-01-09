@@ -22,6 +22,8 @@ import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
 import {isCoinbaseSettingsApiUrl, isCoinbaseAuthenticatedUrl, isCoinbaseUrl} from "../utils/coinbase";
 import {isSuccessfullyInstalledPage} from "../utils/moon";
+import BackgroundRuntime from "./browser/BackgroundRuntime";
+import {MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER} from "./browser/constants";
 
 /**
  * Sends a tab update event to the content script
@@ -30,8 +32,23 @@ import {isSuccessfullyInstalledPage} from "../utils/moon";
  *
  * @param tab - Extension API tab object
  */
-export const doUpdateTabEvent = async (tab) =>
-    Tabs.sendMessage(tab.id, REQUEST_UPDATE_TAB, {tab});
+export const doUpdateTabEvent = async (tab) => {
+    try {
+        if (!tab) {
+            const activeTab = await Tabs.getActive();
+            if (!!activeTab) {
+                return doUpdateTabEvent(activeTab);
+            }
+        }
+        await Tabs.sendMessage(tab.id, REQUEST_UPDATE_TAB, {tab});
+    } catch (err) {
+        if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
+            return doInjectAppEvent(tab.url, tab);
+        } else {
+            console.error("doUpdateTabEvent failed with uncaught exception: ", err);
+        }
+    }
+};
 
 /**
  * Sends an app injection event message to the
@@ -43,16 +60,27 @@ export const doUpdateTabEvent = async (tab) =>
  * @param tab - Extension API tab object
  */
 export const doInjectAppEvent = async (source, tab) => {
-    if (!tab) {
-        return Tabs.getActive()
-            .then(activeTab => {
-                if (!!activeTab) {
-                    return doInjectAppEvent(source, activeTab);
-                }
-            });
-    } else {
+    try {
+        if (!tab) {
+            const activeTab = await Tabs.getActive();
+            if (!!activeTab) {
+                return doInjectAppEvent(source, activeTab);
+            }
+        }
         const authUser = await AuthUser.getCurrent().then(authUser => authUser.trim()).catch(() => null);
         return Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
+    } catch (err) {
+        if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
+            const manifest = BackgroundRuntime.getManifest();
+            const contentScripts = manifest.content_scripts[0].js;
+            await Promise.all(contentScripts.map(file =>
+                Tabs.executeScript(tab.id, {file})
+                    .catch(() => console.warn(`Skipping ${tab.id} with ${tab.url}`))
+            ));
+            return doInjectAppEvent(source, tab);
+        } else {
+            console.error("doInjectAppEvent failed with uncaught exception: ", err);
+        }
     }
 };
 
