@@ -26,7 +26,7 @@ class Windows {
         }, window => {
             const lastError = chrome.runtime.lastError;
             if (!!lastError) {
-                console.error(lastError);
+                logger.error(lastError);
                 reject(lastError);
             } else {
                 resolve(window);

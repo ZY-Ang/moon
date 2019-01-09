@@ -3,18 +3,24 @@
  */
 
 import {
-    POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_EXCHANGE_RATE, REQUEST_GET_EXCHANGE_RATES,
+    POLL_IS_COINBASE_AUTH_MODE,
+    REQUEST_GET_EXCHANGE_RATE,
+    REQUEST_GET_EXCHANGE_RATES,
     REQUEST_GET_ID_JWTOKEN,
     REQUEST_GET_PAYMENT_PAYLOAD,
     REQUEST_GET_SITE_INFORMATION,
     REQUEST_GLOBAL_SIGN_OUT,
     REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
     REQUEST_LAUNCH_WEB_AUTH_FLOW,
-    REQUEST_MOON_SITE_SUPPORT, REQUEST_MOON_VALID_CHECKOUT_REPORT, REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
+    REQUEST_MOON_SITE_SUPPORT,
+    REQUEST_MOON_VALID_CHECKOUT_REPORT,
+    REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
     REQUEST_RESET_PASSWORD,
     REQUEST_SIGN_OUT,
     REQUEST_TEST_FUNCTION,
-    REQUEST_UPDATE_COINBASE_API_KEYS, REQUEST_UPDATE_ONBOARDING_SKIP
+    REQUEST_UPDATE_AUTH_USER,
+    REQUEST_UPDATE_COINBASE_API_KEYS,
+    REQUEST_UPDATE_ONBOARDING_SKIP
 } from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut, doUpdateAuthUserEvent} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
@@ -23,11 +29,9 @@ import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKeyEvent} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
-import {updateOnboardingSkipExpiry} from "./api/user";
+import {doGetPaymentPayload, updateOnboardingSkipExpiry} from "./api/user";
 import {doPasswordReset} from "./auth";
-import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
-import {doGetPaymentPayload} from "./api/user";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
@@ -61,7 +65,7 @@ const messageCenter = (request, sender, sendResponse) => {
                 AuthUser.getInstance().getRefreshedIdJWToken()
                     .then(sendSuccess)
                     .catch(err => {
-                        handleErrors(err);
+                        logger.error("messageCenter.REQUEST_GET_ID_JWTOKEN exception: ", err);
                         sendFailure(err);
                     });
                 return true;
@@ -72,7 +76,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doLaunchWebAuthFlow(request.type)
                 .then(() => sendSuccess(`doLaunchWebAuthFlow(${request.type}) completed`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_LAUNCH_WEB_AUTH_FLOW exception: ", err);
                     sendFailure(`doLaunchWebAuthFlow(${request.type}) failed`);
                 });
             return true;
@@ -81,7 +85,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doLaunchCoinbaseAuthFlow()
                 .then(() => sendSuccess(`doLaunchCoinbaseAuthFlow() completed`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_LAUNCH_COINBASE_AUTH_FLOW exception: ", err);
                     sendFailure(`doLaunchCoinbaseAuthFlow() failed`);
                 });
             return true;
@@ -91,24 +95,24 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_UPDATE_ONBOARDING_SKIP]() {
             updateOnboardingSkipExpiry(request.delay)
-                .then(doUpdateAuthUserEvent)
+                .then(() => doUpdateAuthUserEvent(sender.tab))
                 .then(() => sendSuccess(`updateOnboardingSkipExpiry(${request.delay}) skipped`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_UPDATE_ONBOARDING_SKIP exception: ", err);
                     sendFailure(`updateOnboardingSkipExpiry(${request.delay}) failed`);
                 });
             return true;
         },
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
             doUpdateCoinbaseApiKeyEvent(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
-                .then(doUpdateAuthUserEvent);
+                .then(() => doUpdateAuthUserEvent(sender.tab));
             sendSuccess("doUpdateCoinbaseApiKeyEvent() started");
         },
         [REQUEST_GET_EXCHANGE_RATE]() {
             getExchangeRate(request.quote, request.base)
                 .then(exchangeRate => sendSuccess(exchangeRate))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_GET_EXCHANGE_RATE exception: ", err);
                     sendFailure(`getExchangeRate(${request.quote}, ${request.base}) failed`);
                 });
             return true;
@@ -117,7 +121,7 @@ const messageCenter = (request, sender, sendResponse) => {
             getExchangeRates(request.pairs)
                 .then(exchangeRates => sendSuccess(exchangeRates))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_GET_EXCHANGE_RATES exception: ", err);
                     sendFailure(`getExchangeRates(${request.pairs}) failed`);
                 });
             return true;
@@ -130,14 +134,14 @@ const messageCenter = (request, sender, sendResponse) => {
                 })
                 .then(responses => sendSuccess(responses))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_GET_PAYMENT_PAYLOAD exception: ", err);
                     sendFailure(err);
                 });
             return true;
         },
         [REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION]() {
             // FIXME: FIXME: FIXME: FIXME: FIXME: FIXME IMPLEMENT IMPLEMENT - Log to db, pageinfo, etc
-            console.log("Notify payment payload completion request: ", request);
+            logger.log("Notify payment payload completion request: ", request);
             Tabs.sendMessage(sender.tab.id, REQUEST_PAYMENT_COMPLETED_OFF_MODAL, {isSuccess: true}) // TODO: Only send success if all success or something
                 .finally(() => sendSuccess(true));
             return true;
@@ -146,7 +150,7 @@ const messageCenter = (request, sender, sendResponse) => {
             getSiteInformation(request.host)
                 .then(({data}) => sendSuccess(data.siteInformation))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_GET_SITE_INFORMATION exception: ", err);
                     sendFailure(`getSiteInformation(${request.host}) failed`);
                 });
             return true;
@@ -155,7 +159,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doAddSiteSupportRequest(AuthUser.getEmail(), request.host)
                 .then(({data}) => sendSuccess(data))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_MOON_SITE_SUPPORT exception: ", err);
                     sendFailure(`doAddSiteSupportRequest(${request.host}) failed`);
                 });
             return true;
@@ -164,8 +168,17 @@ const messageCenter = (request, sender, sendResponse) => {
             doAddNonCheckoutReport(request.url, request.content, AuthUser.getEmail())
                 .then(({data}) => sendSuccess(data))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
                     sendFailure(`doAddNonCheckoutReport(${request.url}, LARGE_CONTENT, ${AuthUser.getEmail()}) failed`);
+                });
+            return true;
+        },
+        [REQUEST_UPDATE_AUTH_USER]() {
+            doUpdateAuthUserEvent(sender.tab)
+                .then(() => sendSuccess(`doUpdateAuthUserEvent(...) completed`))
+                .catch(err => {
+                    logger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
+                    sendFailure(`doUpdateAuthUserEvent(${JSON.stringify(sender.tab)}) failed`);
                 });
             return true;
         },
@@ -173,7 +186,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doPasswordReset()
                 .then(() => sendSuccess(`doPasswordReset() completed`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_RESET_PASSWORD exception: ", err);
                     sendFailure(`doPasswordReset() failed`);
                 });
             return true;
@@ -182,7 +195,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doSignOut()
                 .then(() => sendSuccess(`doSignOut() completed`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_SIGN_OUT exception: ", err);
                     sendFailure(`doSignOut() failed`);
                 });
             return true;
@@ -191,7 +204,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doGlobalSignOut()
                 .then(() => sendSuccess(`doGlobalSignOut() completed`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_GLOBAL_SIGN_OUT exception: ", err);
                     sendFailure(`doGlobalSignOut() failed`);
                 });
             return true;
@@ -200,7 +213,7 @@ const messageCenter = (request, sender, sendResponse) => {
     if (request.message && request.message in messageResolver) {
         return messageResolver[request.message]();
     } else {
-        console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+        logger.warn("messageCenter Received an unknown message.\nRequest: ", JSON.stringify(request), "\nSender: ", JSON.stringify(sender));
         sendFailure("Background messageCenter received an unknown request");
     }
 };

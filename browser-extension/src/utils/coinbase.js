@@ -2,11 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import {
-    URL_COINBASE,
-    URL_COINBASE_SETTINGS_API,
-    REGEX_COIBASE_AUTHENTICATED_PAGES
-} from "../constants/coinbase";
+import {REGEX_COIBASE_AUTHENTICATED_PAGES, URL_COINBASE, URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 
 /**
  * @return {boolean} {@code true} if

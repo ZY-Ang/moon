@@ -3,8 +3,7 @@
  */
 import logHead from "./utils/logHead";
 import logTail from "./utils/logTail";
-import {base as baseCurrencies} from "./constants/exchanges/coinbasePro/currencies";
-import {quote as quoteCurrencies} from "./constants/exchanges/coinbasePro/currencies";
+import {base as baseCurrencies, quote as quoteCurrencies} from "./constants/exchanges/coinbasePro/currencies";
 import getCoinbaseProExchangeRate from "./services/exchangeRateProviders/coinbasePro/getExchangeRate";
 
 /**

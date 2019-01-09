@@ -7,7 +7,8 @@ import UnsupportedScreen from "../../components/main/screens/unsupported/Unsuppo
 import SettingsScreen from "../../components/main/screens/settings/SettingsScreen";
 import MainScreen from "../../components/main/screens/MainScreen";
 import AmazonCheckoutScreen from "../../components/main/screens/www.amazon.com/AmazonCheckoutScreen";
-import AmazonSelectShippingAddressScreen from "../../components/main/screens/www.amazon.com/AmazonSelectShippingAddressScreen";
+import AmazonSelectShippingAddressScreen
+    from "../../components/main/screens/www.amazon.com/AmazonSelectShippingAddressScreen";
 import AmazonPaymentMethodSelectScreen
     from "../../components/main/screens/www.amazon.com/AmazonPaymentMethodSelectScreen";
 import AmazonProductScreen from "../../components/main/screens/www.amazon.com/AmazonProductScreen";

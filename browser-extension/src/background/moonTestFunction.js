@@ -12,22 +12,22 @@ let subscription = null;
  * This will be automatically tree-shaken out in production.
  */
 const moonTestFunction = async (params) => {
-    console.log("moonTestFunction");
+    logger.log("moonTestFunction");
     const awsAppSyncClient = await MoonGraphQL.authClient;
 
     if (subscription) {
-        console.log("subscription: ", subscription);
+        logger.log("subscription: ", subscription);
         subscription.unsubscribe();
         subscription = null;
     } else {
         subscription = awsAppSyncClient
             .subscribe({query: onUpdateUser})
             .subscribe({
-                next: ({data}) => console.log("next-data: ", data),
-                complete: console.log,
-                error: console.error
+                next: ({data}) => logger.log("next-data: ", data),
+                complete: logger.log,
+                error: logger.error
             });
-        console.log("subscription: ", subscription);
+        logger.log("subscription: ", subscription);
     }
     return new Promise(resolve => resolve(subscription));
 };

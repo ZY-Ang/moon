@@ -4,21 +4,21 @@ import moment from "moment";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {
-    QUERY_SELECTOR_CART_AMOUNT,
-    QUERY_SELECTOR_CART_CURRENCY
-} from "./constants/querySelectors";
+import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY} from "./constants/querySelectors";
 import Decimal from "decimal.js";
 import {
-    ACTION_PUSH_SCREEN, ACTION_SET_APP_MODAL_ERROR_STATE, ACTION_SET_APP_MODAL_LOADING_STATE,
-    ACTION_SET_SELECTED_WALLET, ACTION_SET_UI_BLOCKER_STATE, SCREEN_ADD_WALLETS
+    ACTION_PUSH_SCREEN,
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_SELECTED_WALLET,
+    ACTION_SET_UI_BLOCKER_STATE,
+    SCREEN_ADD_WALLETS
 } from "../../../../redux/reducers/constants";
 import CurrencyIcon from "../../../misc/currencyicon/CurrencyIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_GET_EXCHANGE_RATE, REQUEST_GET_PAYMENT_PAYLOAD} from "../../../../../constants/events/appEvents";
 import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../utils/exchangerates";
 import FaIcon from "../../../misc/fontawesome/FaIcon";
-import {handleErrors} from "../../../../../utils/errors";
 import ConfirmSlider from "../../../misc/confirmslider/ConfirmSlider";
 import {AMAZON_DEFAULT_CURRENCY} from "./AmazonProductScreen";
 
@@ -140,7 +140,7 @@ class AmazonCheckoutScreen extends React.Component {
                         exchangeRate: "Error",
                         walletBalanceInBase: INITIAL_STATE.walletBalanceInBase
                     }));
-                    console.error("Failed to get exchange rate", err);
+                    logger.error("Failed to get exchange rate", err);
                     this.props.onSetAppModalErrorState({isActive: true, text: "Failed to get exchange rates! The server might be busy. Please try again in a few moments."});
                 });
         } else {
@@ -241,7 +241,7 @@ class AmazonCheckoutScreen extends React.Component {
         this.getPaymentPayload()
             .then(() => this.props.onSetAppModalLoadingState({isActive: false}))
             .catch(err => {
-                handleErrors(err);
+                logger.error("AmazonCheckoutScreen.pay.getPaymentPayload exception: ", err);
                 this.props.onSetUIBlockerState({isActive: false});
                 this.props.onSetAppModalLoadingState({isActive: false});
                 const errorMessage = err.message || (err.response && err.response.graphQLErrors && err.response.graphQLErrors[0] && err.response.graphQLErrors[0].message) || "";

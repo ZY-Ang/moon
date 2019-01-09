@@ -14,7 +14,10 @@ import getCoinbaseProExchangeRate from "../../exchangeRateProviders/coinbasePro/
 import placeCoinbaseProSellMarketOrder from "../../exchanges/coinbasePro/placeSellMarketOrder";
 import {getAuthenticatedClient as getCoinbaseProAuthenticatedClient} from "../../exchanges/coinbasePro/client";
 import {base as BASE_CURRENCIES, quote as QUOTE_CURRENCIES} from "../../../constants/exchanges/coinbasePro/currencies";
-import {EMAIL as MOON_COINBASE_EMAIL, WALLETS as MOON_COINBASE_WALLET_IDS} from "../../../constants/walletProviders/coinbase/config";
+import {
+    EMAIL as MOON_COINBASE_EMAIL,
+    WALLETS as MOON_COINBASE_WALLET_IDS
+} from "../../../constants/walletProviders/coinbase/config";
 import {removeSecrets} from "../../../utils/sanitization";
 
 /**

@@ -8,9 +8,10 @@ import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {connect} from "react-redux";
 import {
     REQUEST_LAUNCH_WEB_AUTH_FLOW,
+    TYPE_FACEBOOK,
+    TYPE_GOOGLE,
     TYPE_STANDARD_SIGN_IN,
-    TYPE_STANDARD_SIGN_UP,
-    TYPE_FACEBOOK, TYPE_GOOGLE
+    TYPE_STANDARD_SIGN_UP
 } from "../../../constants/events/appEvents";
 import AppRuntime from "../../browser/AppRuntime";
 import moonLogo from "../../../../../assets/icons/logo_32_text_thick_infinity.png";
@@ -29,7 +30,7 @@ class AuthFlow extends Component {
 
     launchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type})
         .catch(err => {
-            console.error(err);
+            logger.error(err);
             this.props.onSetAuthUser(null);
             this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN}));
         });

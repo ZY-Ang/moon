@@ -4,7 +4,8 @@ import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {
-    QUERY_SELECTOR_PRODUCT_IMAGE, QUERY_SELECTOR_PRODUCT_OBSERVER,
+    QUERY_SELECTOR_PRODUCT_IMAGE,
+    QUERY_SELECTOR_PRODUCT_OBSERVER,
     QUERY_SELECTOR_PRODUCT_PRICE,
     QUERY_SELECTOR_PRODUCT_TITLE
 } from "./constants/querySelectors";
@@ -14,9 +15,7 @@ import {QUICKVIEW_CURRENCIES} from "./AmazonCheckoutScreen";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_GET_EXCHANGE_RATES} from "../../../../../constants/events/appEvents";
 import moment from "moment";
-import {
-    ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS
-} from "../../../../redux/reducers/constants";
+import {ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS} from "../../../../redux/reducers/constants";
 import {observeDOM} from "../../../../utils/dom";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";

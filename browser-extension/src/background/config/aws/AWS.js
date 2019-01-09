@@ -3,6 +3,7 @@
  */
 
 import * as AWS from "aws-sdk";
+
 /**
  * Note: aws-sdk uses dynamic imports on a service object declaration
  * so no additional resources are used. There is no need to handle

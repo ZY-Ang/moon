@@ -4,6 +4,9 @@
 
 import Runtime from "../../browser/Runtime";
 import messageCenter from "../messageCenter";
+import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/appEvents";
+import store from "../redux/store";
+import {ACTION_SET_APP_MODAL_LOADING_STATE} from "../redux/reducers/constants";
 
 /**
  * Utility Class for interaction with the browser's runtime API
@@ -65,6 +68,18 @@ class AppRuntime extends Runtime {
              */
             browser.runtime.onMessage.addListener(messageCenter);
         }
+
+        // Poll background script for latest AuthUser
+        store.dispatch({
+            type: ACTION_SET_APP_MODAL_LOADING_STATE,
+            isActive: true,
+            text: "Loading..."
+        });
+        AppRuntime.sendMessage(REQUEST_UPDATE_AUTH_USER)
+            .finally(() => store.dispatch({
+                type: ACTION_SET_APP_MODAL_LOADING_STATE,
+                isActive: false
+            }));
     }
 }
 
