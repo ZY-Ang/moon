@@ -221,7 +221,10 @@ class AuthUser {
      * Returns the current {@class AuthUser} instance for display on the front end
      */
     static trim = async () => {
-        await AuthUser.getCurrent();
+        const authUser = await AuthUser.getCurrent();
+        if (!authUser) {
+            return null;
+        }
         const {data} = await getUser();
         const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets && !!data.user.coinbaseInfo.wallets.length)
             ? data.user.coinbaseInfo.wallets
