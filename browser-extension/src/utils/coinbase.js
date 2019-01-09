@@ -12,7 +12,8 @@ export const isCoinbaseUrl = (url) =>
     url.startsWith(URL_COINBASE);
 /**
  * @return {boolean} {@code true} if
- * {@param url {string}} matches a coinbase sign in URL
+ * {@param url {string}} matches a URL that can only be
+ * accessed when signed in to coinbase
  */
 export const isCoinbaseAuthenticatedUrl = (url) => {
     try {

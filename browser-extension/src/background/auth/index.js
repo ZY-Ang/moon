@@ -170,17 +170,15 @@ let trimmedAuthUserPromise = null;
 export const doUpdateAuthUserEvent = async (tab) => {
     try {
         if (!!trimmedAuthUserPromise) {
-            logger.log("doUpdateAuthUserEvent on cache");
             const authUser = await trimmedAuthUserPromise;
-            if (!!tab && !!tab.id) {
+            if (!!tab && !!tab.id && tab.status === "complete") {
                 await Tabs.sendMessage(tab.id, REQUEST_UPDATE_AUTH_USER, {authUser});
             } else {
                 await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser});
             }
         } else {
-            logger.log("doUpdateAuthUserEvent new call");
             trimmedAuthUserPromise = AuthUser.trim();
-            if (!!tab && !!tab.id) {
+            if (!!tab && !!tab.id && tab.status === "complete") {
                 await Tabs.sendMessage(tab.id, REQUEST_UPDATE_AUTH_USER, {authUser: (await trimmedAuthUserPromise)});
             } else {
                 await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: (await trimmedAuthUserPromise)});
@@ -188,7 +186,7 @@ export const doUpdateAuthUserEvent = async (tab) => {
             trimmedAuthUserPromise = null;
         }
     } catch (error) {
-        logger.error("doUpdateAuthUserEvent exception: ", error);
+        logger.warn("doUpdateAuthUserEvent exception: ", error);
         Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null}).then(() => false);
         throw error;
     }

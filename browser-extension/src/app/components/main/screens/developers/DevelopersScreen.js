@@ -41,7 +41,7 @@ class DevelopersScreen extends React.Component {
         logger.log("getIdToken");
         AppRuntime.sendMessage(REQUEST_GET_ID_JWTOKEN)
             .then(response => copyToClipboard(response))
-            .then(logger.log)
+            .then(res => logger.log(res))
             .then(() => this.setState(() => ({idJWToken: "Copied to clipboard"})))
             .catch(err => {
                 this.setState(() => ({idJWToken: "Error. Check logs"}));

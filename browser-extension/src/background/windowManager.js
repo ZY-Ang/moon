@@ -38,7 +38,7 @@ export const doUpdateTabEvent = async (tab) => {
         if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             return doInjectAppEvent(tab.url, tab);
         } else {
-            logger.error("doUpdateTabEvent failed with uncaught exception: ", err);
+            logger.warn("doUpdateTabEvent failed with uncaught exception: ", err);
         }
     }
 };
@@ -72,7 +72,7 @@ export const doInjectAppEvent = async (source, tab) => {
             ));
             return doInjectAppEvent(source, tab);
         } else {
-            logger.error("doInjectAppEvent failed with uncaught exception: ", err);
+            logger.warn("doInjectAppEvent failed with uncaught exception: ", err);
         }
     }
 };
@@ -81,7 +81,7 @@ export const doInjectAppEvent = async (source, tab) => {
  * Handler for when a {@param tab} is updated.
  */
 export const tabDidUpdate = (tab) => {
-    if (!tab || !tab.url) {
+    if (!tab || !tab.url || tab.status !== "complete") {
         // Tab/URL does not exist yet - ignore and let the next call deal with it.
         BrowserAction.setInvalidIcon()
             .catch(err => logger.error("tabDidUpdate (tab does not exist) setInvalidIcon exception: ", err));
@@ -101,9 +101,9 @@ export const tabDidUpdate = (tab) => {
         doInjectAppEvent(tab.url, tab)
             .catch(err => logger.error("tabDidUpdate (isSuccessfullyInstalledPage) doInjectAppEvent exception: ", err));
 
-    } else if (isCoinbaseAuthFlow() && isCoinbaseAuthenticatedUrl(tab.url)) {
+    } else if (isCoinbaseAuthFlow()) {
         // Coinbase Auth Flow is activated but not on the sign in page
-        if (isCoinbaseUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
+        if (isCoinbaseUrl(tab.url) && isCoinbaseAuthenticatedUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
             // Reroute the user to the settings api page of the coinbase if not currently on it.
             Tabs.update(tab.id, {url: URL_COINBASE_SETTINGS_API})
                 .catch(err => logger.error("tabDidUpdate (coinbase non-auth url) Tabs.update exception: ", err));
@@ -136,10 +136,10 @@ export const tabDidUpdate = (tab) => {
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
         BrowserAction.setInvalidIcon(tab.id)
-            .catch(err => logger.error("tabDidUpdate (catchAll) setInvalidIcon exception: ", err));
+            .catch();
         doUpdateTabEvent(tab)
             .then(() => doUpdateAuthUserEvent(tab))
-            .catch(err => logger.error("tabDidUpdate (catchAll) injectApp exception: ", err));
+            .catch();
 
     }
 };
