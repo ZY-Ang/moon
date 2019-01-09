@@ -27,7 +27,7 @@ const SuccessBody = ({isActive, text, onSetAppModalSuccessState}) => !!isActive 
             className="btn btn-primary-outline"
             onClick={() => onSetAppModalSuccessState({isActive: false})}
         >
-            <span role="img" aria-label="Ok"><img alt="Ok" src={AppRuntime.getURL(thumbsUpEmoji)}/></span> Ok
+            <img alt="Ok" style={{height: 15}} src={AppRuntime.getURL(thumbsUpEmoji)}/> Ok
         </button>
     </div>
 ) : null;
