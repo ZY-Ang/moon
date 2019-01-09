@@ -1,4 +1,4 @@
-import getExchangeRate from  "./exchangeRate";
+import getExchangeRate from "./exchangeRate";
 import logHead from "./utils/logHead";
 import logTail from "./utils/logTail";
 
