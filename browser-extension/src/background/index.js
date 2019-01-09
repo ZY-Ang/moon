@@ -3,6 +3,7 @@
  */
 
 import Logger from "../utils/Logger";
+import "./services/mixpanel";
 import BrowserAction from "./browser/BrowserAction";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import Tabs from "./browser/Tabs";

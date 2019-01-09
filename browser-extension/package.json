@@ -22,6 +22,7 @@
     "@fortawesome/react-fontawesome": "0.1.0-11",
     "decimal.js": "^10.0.1",
     "detect-browser": "^3.0.1",
+    "mixpanel-browser": "^2.25.0",
     "moment": "^2.22.2",
     "randomstring": "^1.1.5",
     "react": "^16.2.0",
