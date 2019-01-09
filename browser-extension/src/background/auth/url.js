@@ -84,12 +84,6 @@ export const GOOGLE_AUTH_PARAMS = {
     connection: 'google-oauth2'
 };
 
-/** The overridden params for a authentication via Amazon */
-export const AMAZON_AUTH_PARAMS = {
-    ...DEFAULT_PARAMS,
-    connection: 'amazon'
-};
-
 /**
  * Body of the POST request used in stage 2 of the OAuth Authorization Code Grant Flow.
  *

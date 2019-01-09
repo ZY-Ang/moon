@@ -3,7 +3,6 @@
  */
 
 import {
-    TYPE_AMAZON,
     TYPE_FACEBOOK,
     TYPE_GOOGLE, TYPE_RESET_PASSWORD,
     TYPE_STANDARD_SIGN_IN,
@@ -92,8 +91,7 @@ const getOAuthParamsForType = (type) => {
         [TYPE_STANDARD_SIGN_UP]: STANDARD_SIGN_UP_PARAMS,
         [TYPE_RESET_PASSWORD]: STANDARD_RESET_PASSWORD_PARAMS,
         [TYPE_FACEBOOK]: FACEBOOK_AUTH_PARAMS,
-        [TYPE_GOOGLE]: GOOGLE_AUTH_PARAMS,
-        [TYPE_AMAZON]: AMAZON_AUTH_PARAMS
+        [TYPE_GOOGLE]: GOOGLE_AUTH_PARAMS
     };
     if (oauthMap[type]) {
         return getCsrfStateAppendedParams(oauthMap[type]);
@@ -112,8 +110,7 @@ const getOAuthUrlForType = async (type) => {
         [TYPE_STANDARD_SIGN_UP]: true,
         [TYPE_RESET_PASSWORD]: true,
         [TYPE_FACEBOOK]: true,
-        [TYPE_GOOGLE]: true,
-        [TYPE_AMAZON]: true
+        [TYPE_GOOGLE]: true
     };
     if (oauthMap[type]) {
         return `${URL_OAUTH_SERVER}authorize?${stringify(getOAuthParamsForType(type))}`;
