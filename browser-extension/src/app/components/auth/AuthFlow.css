@@ -124,11 +124,10 @@
 .btn-auth-social {
     cursor: pointer;
     width: 100%;
-    border-radius: 3px;
+    border-radius: 5px;
     padding: 0;
     font-size: 15px;
     border: 2px solid ;
-    background-color: transparent;
     color: white;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
