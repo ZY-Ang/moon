@@ -10,7 +10,8 @@ import {
     ACTION_SET_APP_MODAL_LOADING_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE
 } from "../../../../redux/reducers/constants";
-import smilingFaceEmoji from "../../../../../../../assets/emoji/windows10/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png";
+import smilingFaceEmoji
+    from "../../../../../../../assets/emoji/windows10/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png";
 
 class AmazonNotAtCheckoutScreen extends React.Component {
     reportIsCheckout = () => {

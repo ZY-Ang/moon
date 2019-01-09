@@ -8,7 +8,8 @@ import AWS from "../config/aws/AWS";
 import {
     getPasswordResetFlowParams,
     getRefreshTokenParams,
-    getRevokeTokenParams, URL_PASSWORD_RESET,
+    getRevokeTokenParams,
+    URL_PASSWORD_RESET,
     URL_REVOKE_REFRESH_TOKENS,
     URL_SIGN_OUT,
     URL_TOKEN_FLOW

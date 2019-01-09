@@ -5,7 +5,8 @@
 import {
     TYPE_AMAZON,
     TYPE_FACEBOOK,
-    TYPE_GOOGLE, TYPE_RESET_PASSWORD,
+    TYPE_GOOGLE,
+    TYPE_RESET_PASSWORD,
     TYPE_STANDARD_SIGN_IN,
     TYPE_STANDARD_SIGN_UP
 } from "../../constants/events/appEvents";

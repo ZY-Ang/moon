@@ -4,7 +4,8 @@ import "./Settings.css";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {
     REQUEST_GLOBAL_SIGN_OUT,
-    REQUEST_RESET_PASSWORD, REQUEST_SIGN_OUT
+    REQUEST_RESET_PASSWORD,
+    REQUEST_SIGN_OUT
 } from "../../../../../constants/events/appEvents";
 import {handleErrors} from "../../../../../utils/errors";
 import FaIcon from "../../../misc/fontawesome/FaIcon";
@@ -13,7 +14,10 @@ import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
     ACTION_SET_APP_MODAL_LOADING_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE,
-    ACTION_SET_AUTH_USER, SCREEN_ADD_WALLETS, SCREEN_DEVELOPER, SCREEN_HELP_TAWK
+    ACTION_SET_AUTH_USER,
+    SCREEN_ADD_WALLETS,
+    SCREEN_DEVELOPER,
+    SCREEN_HELP_TAWK
 } from "../../../../redux/reducers/constants";
 import BackButton from "../../BackButton";
 

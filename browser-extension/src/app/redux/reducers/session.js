@@ -3,8 +3,10 @@
  */
 
 import {
-    ACTION_SET_AUTH_USER, ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP,
-    ACTION_SET_TAB, ACTION_SET_SELECTED_WALLET
+    ACTION_SET_AUTH_USER,
+    ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP,
+    ACTION_SET_SELECTED_WALLET,
+    ACTION_SET_TAB
 } from "./constants";
 import {isValidAuthUser} from "../../utils/auth";
 import {getDelayedHours} from "../../../utils/datetime";

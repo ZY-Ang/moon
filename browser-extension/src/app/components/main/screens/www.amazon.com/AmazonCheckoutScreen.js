@@ -4,14 +4,15 @@ import moment from "moment";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {
-    QUERY_SELECTOR_CART_AMOUNT,
-    QUERY_SELECTOR_CART_CURRENCY
-} from "./constants/querySelectors";
+import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY} from "./constants/querySelectors";
 import Decimal from "decimal.js";
 import {
-    ACTION_PUSH_SCREEN, ACTION_SET_APP_MODAL_ERROR_STATE, ACTION_SET_APP_MODAL_LOADING_STATE,
-    ACTION_SET_SELECTED_WALLET, ACTION_SET_UI_BLOCKER_STATE, SCREEN_ADD_WALLETS
+    ACTION_PUSH_SCREEN,
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE,
+    ACTION_SET_SELECTED_WALLET,
+    ACTION_SET_UI_BLOCKER_STATE,
+    SCREEN_ADD_WALLETS
 } from "../../../../redux/reducers/constants";
 import CurrencyIcon from "../../../misc/currencyicon/CurrencyIcon";
 import AppRuntime from "../../../../browser/AppRuntime";

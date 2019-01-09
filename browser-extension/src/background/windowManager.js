@@ -4,13 +4,7 @@
 import BrowserAction from './browser/BrowserAction';
 import Tabs from './browser/Tabs';
 import AuthUser from "./auth/AuthUser";
-import {
-    isCheckoutPage,
-    isClearCacheUrl,
-    isOAuthUrl,
-    isSupportedSite,
-    isValidWebUrl
-} from "../utils/url";
+import {isCheckoutPage, isClearCacheUrl, isOAuthUrl, isSupportedSite, isValidWebUrl} from "../utils/url";
 import {doOnAuthFlowResponse, doUpdateAuthUserEvent} from "./auth/index";
 import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
@@ -20,7 +14,7 @@ import {
 import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
-import {isCoinbaseSettingsApiUrl, isCoinbaseAuthenticatedUrl, isCoinbaseUrl} from "../utils/coinbase";
+import {isCoinbaseAuthenticatedUrl, isCoinbaseSettingsApiUrl, isCoinbaseUrl} from "../utils/coinbase";
 import {isSuccessfullyInstalledPage} from "../utils/moon";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import {MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER} from "./browser/constants";

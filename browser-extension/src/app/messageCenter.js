@@ -4,8 +4,10 @@
 
 import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
-    REQUEST_INJECT_APP, REQUEST_PAYMENT_COMPLETED_OFF_MODAL,
-    REQUEST_UPDATE_AUTH_USER, REQUEST_UPDATE_TAB
+    REQUEST_INJECT_APP,
+    REQUEST_PAYMENT_COMPLETED_OFF_MODAL,
+    REQUEST_UPDATE_AUTH_USER,
+    REQUEST_UPDATE_TAB
 } from "../constants/events/backgroundEvents";
 import store from "./redux/store";
 import {toggleApp} from "./index";
@@ -17,7 +19,8 @@ import {injectButton} from "./buttonMoon";
 import {handleErrors} from "../utils/errors";
 import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
-    ACTION_SET_APP_MODAL_SUCCESS_STATE, ACTION_SET_TAB,
+    ACTION_SET_APP_MODAL_SUCCESS_STATE,
+    ACTION_SET_TAB,
     ACTION_SET_UI_BLOCKER_STATE
 } from "./redux/reducers/constants";
 
