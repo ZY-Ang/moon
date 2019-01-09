@@ -667,8 +667,8 @@ a {
 }
 
 .btn-support svg {
-    height: 16px;
-    color: black;
+    height: 20px;
+    padding-bottom: 5px;
 }
 .btn-support {
     cursor: pointer;
@@ -697,8 +697,4 @@ a {
 .btn-support:active,
 .btn-support:focus {
     outline: 0 !important;
-}
-
-.btn-auth-social {
-    color: black;
 }
