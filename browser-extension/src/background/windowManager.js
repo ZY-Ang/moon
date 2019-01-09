@@ -138,9 +138,9 @@ export const tabDidUpdate = (tab) => {
         BrowserAction.setInvalidIcon(tab.id)
             .catch(err => logger.error("tabDidUpdate (catchAll) setInvalidIcon exception: ", err));
         doUpdateTabEvent(tab)
-            .catch(err => logger.error("tabDidUpdate (catchAll) doUpdateTabEvent exception: ", err))
+            .catch(err => logger.warn("tabDidUpdate (catchAll) doUpdateTabEvent exception: ", err))
             .then(() => doUpdateAuthUserEvent(tab))
-            .catch(err => logger.error("tabDidUpdate (catchAll) doUpdateAuthUserEvent exception: ", err));
+            .catch(err => logger.warn("tabDidUpdate (catchAll) doUpdateAuthUserEvent exception: ", err));
 
     }
 };
