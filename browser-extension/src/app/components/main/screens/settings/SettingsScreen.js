@@ -7,7 +7,6 @@ import {
     REQUEST_RESET_PASSWORD,
     REQUEST_SIGN_OUT
 } from "../../../../../constants/events/appEvents";
-import {handleErrors} from "../../../../../utils/errors";
 import FaIcon from "../../../misc/fontawesome/FaIcon";
 import {
     ACTION_PUSH_SCREEN,
@@ -27,7 +26,7 @@ class SettingsScreen extends React.Component {
         AppRuntime.sendMessage(REQUEST_RESET_PASSWORD)
             .then(() => this.props.onSetAppModalSuccessState({isActive: true, text: "A password reset link has been sent to your email!"}))
             .catch(err => {
-                handleErrors(err);
+                logger.error("SettingsScreen.changePassword REQUEST_RESET_PASSWORD exception: ", err);
                 this.props.onSetAppModalErrorState({isActive: true, text: "Something went wrong! Please try again."});
             })
             .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));

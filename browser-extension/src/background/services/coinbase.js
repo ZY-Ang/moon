@@ -19,7 +19,7 @@ let coinbaseAuthFlowTimeout = null;
  */
 export const doLaunchCoinbaseAuthFlow = () => {
     clearTimeout(coinbaseAuthFlowTimeout);
-    console.log("doLaunchCoinbaseAuthFlow");
+    logger.log("doLaunchCoinbaseAuthFlow");
     store.dispatch({
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: true
@@ -34,23 +34,23 @@ export const doLaunchCoinbaseAuthFlow = () => {
  * Updates the coinbase API Key into the secure database
  */
 export const doUpdateCoinbaseApiKeyEvent = (apiKey, apiSecret, innerHTML, senderTab) => {
-    console.log("doUpdateCoinbaseApiKeyEvent");
+    logger.log("doUpdateCoinbaseApiKeyEvent");
     return new Promise((resolve, reject) => {
         if (!apiKey || apiKey.constructor !== String) {
-            console.error(`apiKey (${apiKey}) is not supplied or is invalid`);
+            logger.error(`apiKey (${apiKey}) is not supplied or is invalid`);
             reject(new Error("apiKey invalid"));
         } else if (!apiSecret || apiSecret.constructor !== String) {
-            console.error(`apiSecret (${apiSecret}) is not supplied or is invalid`);
+            logger.error(`apiSecret (${apiSecret}) is not supplied or is invalid`);
             reject(new Error("apiSecret invalid"));
         } else if (!innerHTML || innerHTML.constructor !== String) {
-            console.error(`innerHTML (${innerHTML}) is not supplied or is invalid`);
+            logger.error(`innerHTML (${innerHTML}) is not supplied or is invalid`);
             reject(new Error("innerHTML invalid"));
         } else {
             resolve(true);
         }
     })
         .then(() => doUpdateCoinbaseApiKey(apiKey, apiSecret, innerHTML))
-        .then(({data}) => console.log("Successfully added new API Keys: ", data))
+        .then(({data}) => logger.log("Successfully added new API Keys: ", data))
         .finally(() => {
             store.dispatch({
                 type: ACTION_SET_COINBASE_AUTH_FLOW,

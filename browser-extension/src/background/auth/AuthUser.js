@@ -61,16 +61,16 @@ class AuthUser {
     static isValidTokens = (tokens) => {
         const {access_token, id_token, refresh_token} = tokens;
         if (!tokens || tokens.constructor !== Object) {
-            console.error("tokens do not exist or are malformed");
+            logger.error("tokens do not exist or are malformed");
 
         } else if (!access_token || !isValidJWT(access_token)) {
-            console.error("access_token does not exist or is invalid");
+            logger.error("access_token does not exist or is invalid");
 
         } else if (!id_token || !isValidJWT(id_token)) {
-            console.error("id_token does not exist or is invalid");
+            logger.error("id_token does not exist or is invalid");
 
         } else if (!refresh_token || refresh_token.constructor !== String) {
-            console.error("refresh_token does not exist or is invalid");
+            logger.error("refresh_token does not exist or is invalid");
 
         } else {
             return true;
@@ -144,7 +144,7 @@ class AuthUser {
     };
 
     setAWSCredentials = () => {
-        console.log("setAWSCredentials");
+        logger.log("setAWSCredentials");
         let credentials = new AWS.WebIdentityCredentials({
             RoleArn: WEBIDENTITY_IAM_ROLE_ARN,
             WebIdentityToken: this.getIdToken().getJwtToken()
@@ -152,7 +152,7 @@ class AuthUser {
         });
         AWS.config.update({credentials});
         return AWS.config.credentials.getPromise()
-            .catch(err => console.error("setAWSCredentials: AWS.config.credentials.getPromise exception: ", err));
+            .catch(err => logger.error("setAWSCredentials: AWS.config.credentials.getPromise exception: ", err));
     };
 
     /**
@@ -180,7 +180,7 @@ class AuthUser {
         return this.clearTokensFromStorage()
             .then(() => axios.get(URL_SIGN_OUT))
             .then(response => {
-                console.log(`Cleared cache via OAuth logout endpoint`);
+                logger.log(`Cleared cache via OAuth logout endpoint`);
                 return response;
             });
     };

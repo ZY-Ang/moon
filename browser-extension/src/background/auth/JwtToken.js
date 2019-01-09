@@ -4,7 +4,6 @@
 
 import {decode} from "jsonwebtoken";
 import {URL_OAUTH_SERVER} from "./url";
-import {handleErrors} from "../../utils/errors";
 
 /**
  * Verifies a JWT on the client without
@@ -22,7 +21,7 @@ export const isValidJWT = (token) => {
         return true;
 
     } catch (err) {
-        handleErrors(err);
+        logger.error("isValidJWT exception: ", err);
         return false;
     }
 };

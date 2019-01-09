@@ -2,7 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import '../utils/preload.js';
+import Logger from "../utils/Logger";
 import AppRuntime from "./browser/AppRuntime";
 import './index.css';
 import WebFont from 'webfontloader';
@@ -26,15 +26,9 @@ import ReactDOM from 'react-dom';
 const initializeApp = () => {
     const moonDiv = document.getElementById(MOON_DIV_ID);
     if (!!moonDiv) {
-        // FIXME: On re-render, poll background for authUser to immediately update UI
-        console.log("moonDiv found, re-rendering app");
+        logger.log("moonDiv found, re-rendering app");
         moonDiv.remove();
-        toggleApp(SOURCE_MANUAL)
-            .then(res => {
-                if (res) {
-                    console.log("App re-rendered");
-                }
-            });
+        toggleApp(SOURCE_MANUAL).catch();
     }
 };
 
@@ -45,7 +39,7 @@ const initializeApp = () => {
  * already exists, remove it from the DOM.
  */
 export const toggleApp = async (source, tabInfo) => {
-    console.log("toggleApp request received from ", source);
+    logger.log("toggleApp request received from ", source);
     // Attempt to get the wrapper div
     let moonDiv = document.getElementById(MOON_DIV_ID);
 
@@ -53,7 +47,7 @@ export const toggleApp = async (source, tabInfo) => {
         // If the source of the injection came from a manual click of the
         // browserAction icon or moon pay buttons and a div already exists,
         // toggle the render state.
-        console.log("Toggling existing moonDiv...");
+        logger.log("Toggling existing moonDiv...");
         store.dispatch({type: ACTION_TOGGLE_IS_APP_ACTIVE});
         return true;
 
@@ -62,22 +56,22 @@ export const toggleApp = async (source, tabInfo) => {
         // {@code SOURCE_NONE}, and no div exists yet, create the new div
 
         // Create Moon Div (Wrapper)
-        console.log("Creating a new moon div");
+        logger.log("Creating a new moon div");
         moonDiv = document.createElement("div");
         moonDiv.setAttribute("id", MOON_DIV_ID);
         document.body.appendChild(moonDiv);
 
         // Create Moon Shadow of Moon Div
-        console.log("Creating a new moon div shadow");
+        logger.log("Creating a new moon div shadow");
         const moonShadow = moonDiv.attachShadow({mode: 'open'});
 
         // Create Styles of Moon Shadow
-        console.log("Creating a new moon style element");
+        logger.log("Creating a new moon style element");
         const moonStyles = document.createElement('style');
         moonStyles.innerHTML = (await axios.get(AppRuntime.getURL('app.css'))).data;
 
         // Render React Application onto shadow child
-        console.log("Rendering App");
+        logger.log("Rendering App");
         ReactDOM.render((
             <Provider store={store}>
                 <App/>
@@ -96,6 +90,7 @@ export const toggleApp = async (source, tabInfo) => {
 // TODO: handle orphaned content script @see {@link https://stackoverflow.com/questions/7792552/how-to-detect-chrome-extension-uninstall}
 
 
+window.logger = new Logger("App");
 /**
  * Load required font families from the appropriate libraries.
  * For more information, @see {@link https://www.npmjs.com/package/webfontloader}

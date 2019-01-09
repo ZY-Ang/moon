@@ -4,7 +4,6 @@ import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_MOON_VALID_CHECKOUT_REPORT} from "../../../../../constants/events/appEvents";
-import {handleErrors} from "../../../../../utils/errors";
 import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
     ACTION_SET_APP_MODAL_LOADING_STATE,
@@ -29,7 +28,7 @@ class AmazonNotAtCheckoutScreen extends React.Component {
                 });
             })
             .catch(err => {
-                handleErrors(err);
+                logger.error("AmazonNotAtCheckoutScreen.reportIsCheckout REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
                 this.props.onSetAppModalErrorState({
                     isActive: true,
                     text: "Hmmm... Something went wrong, try again! If that doesn't work either, you can always call to tell us ❤!"

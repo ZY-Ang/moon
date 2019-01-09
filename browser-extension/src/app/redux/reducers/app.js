@@ -122,10 +122,10 @@ const MAINFLOW_SWIPER_ANIMATION_TIMEOUT = 300;
  */
 const doPopScreenState = (state) => {
     if (state.mainFlowLock) {
-        console.warn("Main flow is performing work.");
+        logger.warn("Main flow is performing work.");
         return state;
     } if (state.mainFlowIndex <= 0) {
-        console.warn("There are no more screens to be popped");
+        logger.warn("There are no more screens to be popped");
         return state;
     } else {
         setTimeout(() => store.dispatch({
@@ -151,7 +151,7 @@ const doPushScreenState = (state, action) => {
     }), MAINFLOW_SWIPER_ANIMATION_TIMEOUT);
     const mainFlowIndex = state.mainFlowIndex + 1;
     if (state.mainFlowLock) {
-        console.warn("Main flow is performing work.");
+        logger.warn("Main flow is performing work.");
         return state;
     } if (!action.screen || !POSSIBLE_SCREENS[action.screen]) {
         // Screen invalid or unknown - push an unsupported screen

@@ -16,7 +16,6 @@ import {getSendFailureResponseFunction, getSendSuccessResponseFunction} from "..
 import {doExtractCoinbaseApiKeys} from "./wallets/coinbase";
 import {updateAuthUser} from "./utils/auth";
 import {injectButton} from "./buttonMoon";
-import {handleErrors} from "../utils/errors";
 import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE,
@@ -44,12 +43,12 @@ const messageCenter = (request, sender, sendResponse) => {
         [REQUEST_INJECT_APP]() {
             store.dispatch({type: ACTION_SET_TAB, tab: request.tab});
             Promise.all([
-                toggleApp(request.source),
-                updateAuthUser(request.authUser).catch(handleErrors)
+                toggleApp(request.source).catch(),
+                updateAuthUser(request.authUser)
             ])
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_INJECT_APP exception: ", err);
                     sendFailure(`toggleApp(${request.source}) failed`);
                 });
             injectButton();
@@ -59,7 +58,7 @@ const messageCenter = (request, sender, sendResponse) => {
             updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${JSON.stringify(request.authUser)}) completed`))
                 .catch(err => {
-                    handleErrors(err);
+                    logger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
                     sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
                 });
             return true;
@@ -96,7 +95,7 @@ const messageCenter = (request, sender, sendResponse) => {
     if (request.message && request.message in messageResolver) {
         return messageResolver[request.message]();
     } else {
-        console.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+        logger.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
         sendFailure("App messageCenter received an unknown request");
     }
 };
