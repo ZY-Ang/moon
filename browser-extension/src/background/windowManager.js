@@ -101,9 +101,9 @@ export const tabDidUpdate = (tab) => {
         doInjectAppEvent(tab.url, tab)
             .catch(err => logger.error("tabDidUpdate (isSuccessfullyInstalledPage) doInjectAppEvent exception: ", err));
 
-    } else if (isCoinbaseAuthFlow() && isCoinbaseAuthenticatedUrl(tab.url)) {
+    } else if (isCoinbaseAuthFlow()) {
         // Coinbase Auth Flow is activated but not on the sign in page
-        if (isCoinbaseUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
+        if (isCoinbaseUrl(tab.url) && isCoinbaseAuthenticatedUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
             // Reroute the user to the settings api page of the coinbase if not currently on it.
             Tabs.update(tab.id, {url: URL_COINBASE_SETTINGS_API})
                 .catch(err => logger.error("tabDidUpdate (coinbase non-auth url) Tabs.update exception: ", err));
