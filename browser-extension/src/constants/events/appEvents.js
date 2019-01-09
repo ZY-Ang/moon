@@ -23,8 +23,7 @@ export const TYPE_RESET_PASSWORD = "TypeResetPassword";
 export const TYPE_FACEBOOK = "Facebook";
 /** Used to notify of authentication via Google */
 export const TYPE_GOOGLE = "Google";
-/** Used to notify of authentication via Login With Amazon */
-export const TYPE_AMAZON = "Amazon";
+
 
 // --------------------- Onboarding Expiry ---------------------
 /** Used to skip onboarding for a week */
