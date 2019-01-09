@@ -23,8 +23,7 @@ export const TYPE_RESET_PASSWORD = "TypeResetPassword";
 export const TYPE_FACEBOOK = "Facebook";
 /** Used to notify of authentication via Google */
 export const TYPE_GOOGLE = "Google";
-/** Used to notify of authentication via Login With Amazon */
-export const TYPE_AMAZON = "Amazon";
+
 
 // --------------------- Onboarding Expiry ---------------------
 /** Used to skip onboarding for a week */
@@ -64,6 +63,9 @@ export const REQUEST_MOON_SITE_SUPPORT = "MOON_I_WANT_TO_SHOP_ON_THIS_SITE";
 
 /** Used to report a valid checkout page that is currently invalid on the client */
 export const REQUEST_MOON_VALID_CHECKOUT_REPORT = "MOON_THIS_IS_A_CHECKOUT_PAGE";
+
+// --------------------- Authenticated User ---------------------
+export const REQUEST_UPDATE_AUTH_USER = "MOON_GET_AUTH_USER";
 
 // --------------------- Reset Password ---------------------
 export const REQUEST_RESET_PASSWORD = "MOON_RESET_PASSWORD";

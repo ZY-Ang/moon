@@ -8,7 +8,6 @@ import AppRuntime from "../browser/AppRuntime";
 import whiteLogo from "../../../../assets/icons/logo_32_text_thick.png";
 import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
 import {toggleApp} from "../index";
-import {handleErrors} from "../../utils/errors";
 
 const defaultStyle = {
     backgroundColor: '#0F62BD',
@@ -57,7 +56,7 @@ class ButtonMoon extends Component {
         return this.props.isAppActive ? null : (
             <div
                 style={this.state.style}
-                onClick={() => toggleApp(SOURCE_MANUAL).catch(handleErrors)}
+                onClick={() => toggleApp(SOURCE_MANUAL).catch()}
                 onMouseEnter={this.setHoverStyle}
                 onMouseLeave={this.setDefaultStyle}
                 onMouseDown={this.setActiveStyle}

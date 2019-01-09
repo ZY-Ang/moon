@@ -5,15 +5,10 @@
 // Core imports
 import {FontAwesomeIcon as FaIcon} from "@fortawesome/react-fontawesome";
 import {library} from "@fortawesome/fontawesome-svg-core";
-
 // Brands
 import {faFacebook} from "@fortawesome/free-brands-svg-icons/faFacebook";
 import {faGoogle} from "@fortawesome/free-brands-svg-icons/faGoogle";
 import {faAmazon} from "@fortawesome/free-brands-svg-icons/faAmazon";
-
-// Regular
-// import {} from '@fortawesome/free-regular-svg-icons';
-
 // Solid
 import {faHandsHelping} from "@fortawesome/free-solid-svg-icons/faHandsHelping";
 import {faChevronCircleUp} from '@fortawesome/free-solid-svg-icons/faChevronCircleUp';
@@ -33,6 +28,9 @@ import {faCaretUp} from '@fortawesome/free-solid-svg-icons/faCaretUp';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons/faChevronRight';
 import {faComments} from "@fortawesome/free-solid-svg-icons/faComments";
+
+// Regular
+// import {} from '@fortawesome/free-regular-svg-icons';
 
 library.add(faFacebook, faGoogle, faAmazon);
 library.add(

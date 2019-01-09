@@ -1,12 +1,10 @@
 import React from "react";
 import {
     POSSIBLE_SCREENS,
-    SCREEN_AMAZON_NOT_AT_CHECKOUT, SCREEN_AMAZON_PRODUCT
+    SCREEN_AMAZON_NOT_AT_CHECKOUT,
+    SCREEN_AMAZON_PRODUCT
 } from "../../../../redux/reducers/constants";
-import {
-    QUERY_SELECTOR_PRODUCT_IMAGE,
-    QUERY_SELECTOR_PRODUCT_TITLE
-} from "./constants/querySelectors";
+import {QUERY_SELECTOR_PRODUCT_IMAGE, QUERY_SELECTOR_PRODUCT_TITLE} from "./constants/querySelectors";
 
 /**
  * Parses the page and renders the appropriate screen as opposed to checking window.location.href

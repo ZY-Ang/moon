@@ -15,10 +15,12 @@ import {
     QUERY_ACCOUNTS_ALL_CHECKBOX,
     QUERY_API_KEY_DISPLAY_ROOT,
     QUERY_API_KEY_FORM_SUBMIT_BUTTON,
-    QUERY_BACKGROUND_MODAL, QUERY_MODAL_HEADER_CLOSE_BUTTON, QUERY_MODAL_HEADER_TITLE, STYLE_DISPLAY_NONE,
-    STYLE_BACKGROUND_MODAL, TEXT_MODAL_HEADER_TITLE, QUERY_API_KEY_DISPLAY_ROOT_CHILDREN
+    QUERY_BACKGROUND_MODAL,
+    QUERY_MODAL_HEADER_CLOSE_BUTTON,
+    QUERY_MODAL_HEADER_TITLE,
+    STYLE_BACKGROUND_MODAL,
+    TEXT_MODAL_HEADER_TITLE
 } from "../../constants/coinbase";
-import {handleErrors} from "../../utils/errors";
 import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
 
 /**
@@ -27,7 +29,7 @@ import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
  * the popup.
  */
 export const doExtractCoinbaseApiKeys = () => {
-    console.log("doExtractCoinbaseApiKeys");
+    logger.log("doExtractCoinbaseApiKeys");
     return AppRuntime.sendMessage(POLL_IS_COINBASE_AUTH_MODE)
         .then(response => {
             if (response) {
@@ -103,7 +105,7 @@ export const doExtractCoinbaseApiKeys = () => {
                 ) {
                     document.getElementById(ID_ADD_NEW_KEY_BUTTON).click();
                 } else if (document.getElementById(ID_API_KEYS_MODAL).children.length !== 0) {
-                    console.log("API keys modal already being shown. Skipping button click");
+                    logger.log("API keys modal already being shown. Skipping button click");
                 } else {
                     reject(new Error("Add new key button does not exist on DOM at load completion. Something bad has happened."));
                 }
@@ -113,6 +115,5 @@ export const doExtractCoinbaseApiKeys = () => {
         }))
         .then(apiKeys => AppRuntime.sendMessage(REQUEST_UPDATE_COINBASE_API_KEYS, apiKeys))
         .then(() => window.location.replace(URL_COINBASE_POST_CONNECTION))
-        // Handle errors here
-        .catch(handleErrors);
+        .catch(err => logger.error("doExtractCoinbaseApiKeys exception: ", err));
 };

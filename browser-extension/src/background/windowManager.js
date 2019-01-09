@@ -4,23 +4,19 @@
 import BrowserAction from './browser/BrowserAction';
 import Tabs from './browser/Tabs';
 import AuthUser from "./auth/AuthUser";
-import {
-    isCheckoutPage,
-    isClearCacheUrl,
-    isOAuthUrl,
-    isSupportedSite,
-    isValidWebUrl
-} from "../utils/url";
+import {isCheckoutPage, isClearCacheUrl, isOAuthUrl, isSupportedSite, isValidWebUrl} from "../utils/url";
 import {doOnAuthFlowResponse, doUpdateAuthUserEvent} from "./auth/index";
 import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
     REQUEST_INJECT_APP,
     REQUEST_UPDATE_TAB
 } from "../constants/events/backgroundEvents";
-import {handleErrors} from "../utils/errors";
 import {URL_COINBASE_SETTINGS_API} from "../constants/coinbase";
 import {isCoinbaseAuthFlow} from "./services/coinbase";
-import {isCoinbaseSettingsApiUrl, isCoinbaseAuthenticatedUrl, isCoinbaseUrl} from "../utils/coinbase";
+import {isCoinbaseAuthenticatedUrl, isCoinbaseSettingsApiUrl, isCoinbaseUrl} from "../utils/coinbase";
+import {isSuccessfullyInstalledPage} from "../utils/moon";
+import BackgroundRuntime from "./browser/BackgroundRuntime";
+import {MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER} from "./browser/constants";
 
 /**
  * Sends a tab update event to the content script
@@ -29,8 +25,23 @@ import {isCoinbaseSettingsApiUrl, isCoinbaseAuthenticatedUrl, isCoinbaseUrl} fro
  *
  * @param tab - Extension API tab object
  */
-export const doUpdateTabEvent = async (tab) =>
-    Tabs.sendMessage(tab.id, REQUEST_UPDATE_TAB, {tab});
+export const doUpdateTabEvent = async (tab) => {
+    try {
+        if (!tab) {
+            const activeTab = await Tabs.getActive();
+            if (!!activeTab) {
+                return doUpdateTabEvent(activeTab);
+            }
+        }
+        await Tabs.sendMessage(tab.id, REQUEST_UPDATE_TAB, {tab});
+    } catch (err) {
+        if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
+            return doInjectAppEvent(tab.url, tab);
+        } else {
+            logger.warn("doUpdateTabEvent failed with uncaught exception: ", err);
+        }
+    }
+};
 
 /**
  * Sends an app injection event message to the
@@ -42,16 +53,27 @@ export const doUpdateTabEvent = async (tab) =>
  * @param tab - Extension API tab object
  */
 export const doInjectAppEvent = async (source, tab) => {
-    if (!tab) {
-        return Tabs.getActive()
-            .then(activeTab => {
-                if (!!activeTab) {
-                    return doInjectAppEvent(source, activeTab);
-                }
-            });
-    } else {
-        const authUser = await AuthUser.getCurrent().then(authUser => authUser.trim()).catch(() => null);
+    try {
+        if (!tab) {
+            const activeTab = await Tabs.getActive();
+            if (!!activeTab) {
+                return doInjectAppEvent(source, activeTab);
+            }
+        }
+        const authUser = await AuthUser.trim().catch(() => null);
         return Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
+    } catch (err) {
+        if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
+            const manifest = BackgroundRuntime.getManifest();
+            const contentScripts = manifest.content_scripts[0].js;
+            await Promise.all(contentScripts.map(file =>
+                Tabs.executeScript(tab.id, {file})
+                    .catch(() => logger.warn(`Skipping ${tab.id} with ${tab.url}`))
+            ));
+            return doInjectAppEvent(source, tab);
+        } else {
+            logger.warn("doInjectAppEvent failed with uncaught exception: ", err);
+        }
     }
 };
 
@@ -59,54 +81,65 @@ export const doInjectAppEvent = async (source, tab) => {
  * Handler for when a {@param tab} is updated.
  */
 export const tabDidUpdate = (tab) => {
-    if (!tab || !tab.url) {
+    if (!tab || !tab.url || tab.status !== "complete") {
         // Tab/URL does not exist yet - ignore and let the next call deal with it.
-        BrowserAction.setInvalidIcon().catch(handleErrors);
+        BrowserAction.setInvalidIcon()
+            .catch(err => logger.error("tabDidUpdate (tab does not exist) setInvalidIcon exception: ", err));
 
     } else if (isOAuthUrl(tab.url)) {
         // URL on the current tab is a OAuth redirect URL - retrieve tokens from code grant and store in storage
-        doOnAuthFlowResponse(tab.url, tab.id).catch(handleErrors);
+        doOnAuthFlowResponse(tab.url, tab.id)
+            .catch(err => logger.error("tabDidUpdate (isOAuthUrl) doOnAuthFlowResponse exception: ", err));
 
     } else if (isClearCacheUrl(tab.url)) {
         // URL on the current tab is the final redirect after an OAuth logout has been hit
         // DEPRECATED. An Ajax call via Axios replaced the need to manually open a new tab
-        Tabs.remove(tab).catch(handleErrors);
+        Tabs.remove(tab)
+            .catch(err => logger.error("tabDidUpdate (isClearCacheUrl) Tabs.remove exception: ", err));
 
-    } else if (isCoinbaseAuthFlow() && isCoinbaseAuthenticatedUrl(tab.url)) {
+    } else if (isSuccessfullyInstalledPage(tab.url)) {
+        doInjectAppEvent(tab.url, tab)
+            .catch(err => logger.error("tabDidUpdate (isSuccessfullyInstalledPage) doInjectAppEvent exception: ", err));
+
+    } else if (isCoinbaseAuthFlow()) {
         // Coinbase Auth Flow is activated but not on the sign in page
-        if (isCoinbaseUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
+        if (isCoinbaseUrl(tab.url) && isCoinbaseAuthenticatedUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
             // Reroute the user to the settings api page of the coinbase if not currently on it.
-            Tabs.update(tab.id, {url: URL_COINBASE_SETTINGS_API}).catch(handleErrors);
+            Tabs.update(tab.id, {url: URL_COINBASE_SETTINGS_API})
+                .catch(err => logger.error("tabDidUpdate (coinbase non-auth url) Tabs.update exception: ", err));
         } else if (isCoinbaseSettingsApiUrl(tab.url)) {
             // Let content script handle coinbase auth flow if on tab URL
-            Tabs.sendMessageToActive(REQUEST_COINBASE_EXTRACT_API_KEYS).catch(handleErrors);
+            Tabs.sendMessageToActive(REQUEST_COINBASE_EXTRACT_API_KEYS)
+                .catch(err => logger.error("tabDidUpdate (coinbase settings/api url) Tabs.sendMessageToActive exception: ", err));
         }
 
     } else if (!isValidWebUrl(tab.url)) {
         // URL is not of a valid web schema - e.g. chrome-extension://... or file:///...
         // We ignore and do nothing
-        BrowserAction.setInvalidIcon().catch(handleErrors);
+        BrowserAction.setInvalidIcon()
+            .catch(err => logger.error("tabDidUpdate (invalidWebUrl) setInvalidIcon exception: ", err));
 
     } else if (isSupportedSite(tab.url)) {
         // URL on the current tab is a supported site - set to valid browser icon.
-        BrowserAction.setValidIcon(tab.id).catch(handleErrors);
-        BrowserAction.setBadgeText('1', tab.id).catch(handleErrors);
+        BrowserAction.setValidIcon(tab.id)
+            .catch(err => logger.error("tabDidUpdate (isSupportedSite) setInvalidIcon exception: ", err));
 
         // URL on the current tab is supported and is a checkout page - auto render the extension
         const injectAppConditionalPromise = isCheckoutPage(tab.url)
             ? doInjectAppEvent(tab.url, tab)
-            : doUpdateAuthUserEvent();
+            : doUpdateAuthUserEvent(tab);
 
         injectAppConditionalPromise
             .then(() => doUpdateTabEvent(tab))
-            .catch(handleErrors);
+            .catch(err => logger.error("tabDidUpdate (isSupportedSite) injectApp exception: ", err));
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
-        BrowserAction.setInvalidIcon(tab.id).catch(handleErrors);
+        BrowserAction.setInvalidIcon(tab.id)
+            .catch();
         doUpdateTabEvent(tab)
-            .then(doUpdateAuthUserEvent)
-            .catch(handleErrors);
+            .then(() => doUpdateAuthUserEvent(tab))
+            .catch();
 
     }
 };

@@ -4,16 +4,19 @@ import "./Settings.css";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {
     REQUEST_GLOBAL_SIGN_OUT,
-    REQUEST_RESET_PASSWORD, REQUEST_SIGN_OUT
+    REQUEST_RESET_PASSWORD,
+    REQUEST_SIGN_OUT
 } from "../../../../../constants/events/appEvents";
-import {handleErrors} from "../../../../../utils/errors";
 import FaIcon from "../../../misc/fontawesome/FaIcon";
 import {
     ACTION_PUSH_SCREEN,
     ACTION_SET_APP_MODAL_ERROR_STATE,
     ACTION_SET_APP_MODAL_LOADING_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE,
-    ACTION_SET_AUTH_USER, SCREEN_ADD_WALLETS, SCREEN_DEVELOPER, SCREEN_HELP_TAWK
+    ACTION_SET_AUTH_USER,
+    SCREEN_ADD_WALLETS,
+    SCREEN_DEVELOPER,
+    SCREEN_HELP_TAWK
 } from "../../../../redux/reducers/constants";
 import BackButton from "../../BackButton";
 
@@ -23,7 +26,7 @@ class SettingsScreen extends React.Component {
         AppRuntime.sendMessage(REQUEST_RESET_PASSWORD)
             .then(() => this.props.onSetAppModalSuccessState({isActive: true, text: "A password reset link has been sent to your email!"}))
             .catch(err => {
-                handleErrors(err);
+                logger.error("SettingsScreen.changePassword REQUEST_RESET_PASSWORD exception: ", err);
                 this.props.onSetAppModalErrorState({isActive: true, text: "Something went wrong! Please try again."});
             })
             .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));

@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import CoinbaseIcon from "../../../misc/coinbase/CoinbaseIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_LAUNCH_COINBASE_AUTH_FLOW} from "../../../../../constants/events/appEvents";
-import {handleErrors} from "../../../../../utils/errors";
 import BackButton from "../../BackButton";
 import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../../../redux/reducers/constants";
 
@@ -11,13 +10,9 @@ class AddWalletsScreen extends React.Component {
     launchCoinbaseAuthFlow = () => {
         AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
             .then(response => {
-                // FIXME: Show user permission warnings and shit
-                console.log(response);
+                logger.log(response);
             })
-            .catch(err => {
-                handleErrors(err);
-                // FIXME: Show user errors and shit
-            });
+            .catch(err => logger.error("AddWalletsScreen.launchCoinbaseAuthFlow exception: ", err));
         // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
         this.props.delayAuthUserOnboarding();
     };
@@ -27,6 +22,7 @@ class AddWalletsScreen extends React.Component {
             <div className="moon-mainflow-screen text-center">
                 <BackButton/>
                 <h2>Connect a Wallet</h2>
+                <p>Wallets are connected via API keys</p>
                 <div className="mb-2 w-100">
                     <button className="btn w-80 btn-coinbase" onClick={this.launchCoinbaseAuthFlow}>
                         <div className="btn-brand-icon"><CoinbaseIcon/></div>
