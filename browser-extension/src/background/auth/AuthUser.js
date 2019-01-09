@@ -124,7 +124,6 @@ class AuthUser {
     };
 
     signIn = async () => {
-        console.log("signIn");
         if (this.isSessionValid()) {
             await this.setAWSCredentials();
         } else {
@@ -152,8 +151,7 @@ class AuthUser {
         });
         AWS.config.update({credentials});
         return AWS.config.credentials.getPromise()
-            .then(() => console.log("AWS credentials get success"))
-            .catch(err => console.error("AWS credentials get failure: ", err));
+            .catch(err => console.error("setAWSCredentials: AWS.config.credentials.getPromise exception: ", err));
     };
 
     /**
@@ -219,9 +217,10 @@ class AuthUser {
     };
 
     /**
-     * Returns a authUser object for display on the front end
+     * Returns the current {@class AuthUser} instance for display on the front end
      */
-    trim = async () => {
+    static trim = async () => {
+        await AuthUser.getCurrent();
         const {data} = await getUser();
         const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets && !!data.user.coinbaseInfo.wallets.length)
             ? data.user.coinbaseInfo.wallets

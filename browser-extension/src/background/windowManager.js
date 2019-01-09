@@ -67,7 +67,7 @@ export const doInjectAppEvent = async (source, tab) => {
                 return doInjectAppEvent(source, activeTab);
             }
         }
-        const authUser = await AuthUser.getCurrent().then(authUser => authUser.trim()).catch(() => null);
+        const authUser = await AuthUser.trim().catch(() => null);
         return Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
     } catch (err) {
         if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {

@@ -3,18 +3,24 @@
  */
 
 import {
-    POLL_IS_COINBASE_AUTH_MODE, REQUEST_GET_EXCHANGE_RATE, REQUEST_GET_EXCHANGE_RATES,
+    POLL_IS_COINBASE_AUTH_MODE,
+    REQUEST_GET_EXCHANGE_RATE,
+    REQUEST_GET_EXCHANGE_RATES,
     REQUEST_GET_ID_JWTOKEN,
     REQUEST_GET_PAYMENT_PAYLOAD,
     REQUEST_GET_SITE_INFORMATION,
     REQUEST_GLOBAL_SIGN_OUT,
     REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
     REQUEST_LAUNCH_WEB_AUTH_FLOW,
-    REQUEST_MOON_SITE_SUPPORT, REQUEST_MOON_VALID_CHECKOUT_REPORT, REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
+    REQUEST_MOON_SITE_SUPPORT,
+    REQUEST_MOON_VALID_CHECKOUT_REPORT,
+    REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
     REQUEST_RESET_PASSWORD,
     REQUEST_SIGN_OUT,
     REQUEST_TEST_FUNCTION,
-    REQUEST_UPDATE_COINBASE_API_KEYS, REQUEST_UPDATE_ONBOARDING_SKIP
+    REQUEST_UPDATE_AUTH_USER,
+    REQUEST_UPDATE_COINBASE_API_KEYS,
+    REQUEST_UPDATE_ONBOARDING_SKIP
 } from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut, doUpdateAuthUserEvent} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
@@ -23,11 +29,10 @@ import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKeyEvent} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
-import {updateOnboardingSkipExpiry} from "./api/user";
+import {doGetPaymentPayload, updateOnboardingSkipExpiry} from "./api/user";
 import {doPasswordReset} from "./auth";
 import {handleErrors} from "../utils/errors";
 import Tabs from "./browser/Tabs";
-import {doGetPaymentPayload} from "./api/user";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
@@ -166,6 +171,15 @@ const messageCenter = (request, sender, sendResponse) => {
                 .catch(err => {
                     handleErrors(err);
                     sendFailure(`doAddNonCheckoutReport(${request.url}, LARGE_CONTENT, ${AuthUser.getEmail()}) failed`);
+                });
+            return true;
+        },
+        [REQUEST_UPDATE_AUTH_USER]() {
+            doUpdateAuthUserEvent()
+                .then(() => sendSuccess(`doUpdateAuthUserEvent() completed`))
+                .catch(err => {
+                    handleErrors(err);
+                    sendFailure(`doUpdateAuthUserEvent() failed`);
                 });
             return true;
         },

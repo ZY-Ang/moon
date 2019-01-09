@@ -157,17 +157,31 @@ export const doGlobalSignOut = () => {
 };
 
 /**
+ * Cached trimmed authUser promise from an attempt
+ * to call {@code AuthUser.trim()} for obtaining
+ * trimmed responses without having to make a second
+ * on-network call.
+ */
+let trimmedAuthUserPromise = null;
+
+/**
  * Sends an authUser update request to the
  * active tab in the current window to be rendered.
  */
 export const doUpdateAuthUserEvent = async () => {
     try {
-        const currentAuthUser = await AuthUser.getCurrent();
-        const authUser = currentAuthUser && (await currentAuthUser.trim());
-        console.log("doUpdateAuthUserEvent: ", !!authUser);
-        return Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser}).then(() => !!authUser);
+        if (!!trimmedAuthUserPromise) {
+            console.log("doUpdateAuthUserEvent on cache");
+            const authUser = await trimmedAuthUserPromise;
+            await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser});
+        } else {
+            console.log("doUpdateAuthUserEvent new call");
+            trimmedAuthUserPromise = AuthUser.trim();
+            await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: (await trimmedAuthUserPromise)});
+            trimmedAuthUserPromise = null;
+        }
     } catch (error) {
-        console.error("doUpdateAuthUserEvent: ", error);
+        console.error("doUpdateAuthUserEvent exception: ", error);
         Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null}).then(() => false);
         throw error;
     }
