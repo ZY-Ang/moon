@@ -8,7 +8,6 @@ import {ACTION_SET_AUTH_USER} from "../../redux/reducers/constants";
 import {connect} from "react-redux";
 import {
     REQUEST_LAUNCH_WEB_AUTH_FLOW,
-    TYPE_AMAZON,
     TYPE_FACEBOOK,
     TYPE_GOOGLE,
     TYPE_STANDARD_SIGN_IN,
@@ -64,16 +63,9 @@ class AuthFlow extends Component {
         }
     };
 
-    signInWithAmazon = (event) => {
-        this.launchWebAuthFlow(TYPE_AMAZON);
-        if (event) {
-            event.preventDefault();
-        }
-    };
-
     render() {
         return (
-            <div className="moon-tab moon-authflow-tab">
+            <div className="moon-tab moon-authflow-tab py-5">
                 <div style={{width: '100%'}}>
                     <button className="btn-auth" onClick={this.signIn}>
                         <div className="btn-auth-icon">
@@ -100,24 +92,26 @@ class AuthFlow extends Component {
                 />
                 <div className="text-center">
                     <button
-                        className="btn-auth-social btn-auth-social-facebook"
+                        className="btn-auth-social btn-login-facebook my-2"
                         onClick={this.signInWithFacebook}
                     >
-                        <FaIcon icon={['fab', 'facebook']}/>
+                        <div className="btn-auth-social-icon btn-auth-social-text btn-auth-social-icon-facebook">
+                            {/*<FaIcon icon={['fab', 'facebook']}/>*/}
+                        </div>
+                        <div className=" btn-auth-text btn-auth-social-text">Sign in With Facebook</div>
                     </button>
                     <button
-                        className="btn-auth-social btn-auth-social-google"
+                        className="btn-auth-social btn-login-google"
+
                         onClick={this.signInWithGoogle}
                     >
-                        <FaIcon icon={['fab', 'google']}/>
-                    </button>
-                    <button
-                        className="btn-auth-social btn-auth-social-amazon"
-                        onClick={this.signInWithAmazon}
-                    >
-                        <FaIcon icon={['fab', 'amazon']}/>
+                        <div className="btn-auth-social-icon">
+                            <FaIcon icon={['fab', 'google']}/>
+                        </div>
+                        <div className="btn-auth-text btn-auth-social-text">Sign in With Google</div>
                     </button>
                 </div>
+
                 {!!this.state.error && <p className="text-center text-error">{this.state.error}</p>}
             </div>
         );
