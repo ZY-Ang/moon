@@ -24,8 +24,8 @@ const moonTestFunction = async (params) => {
             .subscribe({query: onUpdateUser})
             .subscribe({
                 next: ({data}) => logger.log("next-data: ", data),
-                complete: logger.log,
-                error: logger.error
+                complete: res => logger.log(res),
+                error: err => logger.error(err)
             });
         logger.log("subscription: ", subscription);
     }
