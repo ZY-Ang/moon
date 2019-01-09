@@ -12,36 +12,40 @@ class Logger {
         this.stack = [];
     }
 
+    pushToStack = (logLine) => {
+        this.stack.push(logLine);
+    };
+
     log() {
         const args = Array.prototype.slice.call(arguments);
-        this.stack.concat(`[${this.prefix}][log]${args.join(" ")}`);
+        this.pushToStack(`[${this.prefix}][log]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
-            console.log.apply(console, args);
+            console.log(...args);
         }
     };
 
     info() {
         const args = Array.prototype.slice.call(arguments);
-        this.stack.concat(`[${this.prefix}][info]${args.join(" ")}`);
+        this.pushToStack(`[${this.prefix}][info]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
-            console.info.apply(console, args);
+            console.info(...args);
         }
     };
 
     warn() {
         const args = Array.prototype.slice.call(arguments);
-        this.stack.concat(`[${this.prefix}][warn]${args.join(" ")}`);
+        this.pushToStack(`[${this.prefix}][warn]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
-            console.warn.apply(console, args);
+            console.warn(...args);
         }
     };
 
-    // TODO: Log log stack (including other log levels) to cloudwatch on error
+    // TODO: Log log stack (including other log levels) to cloudwatch on error, clear stack
     error() {
         const args = Array.prototype.slice.call(arguments);
-        this.stack.concat(`[${this.prefix}][error]${args.join(" ")}`);
+        this.pushToStack(`[${this.prefix}][error]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
-            console.error.apply(console, args);
+            console.error(...args);
         }
     };
 }
