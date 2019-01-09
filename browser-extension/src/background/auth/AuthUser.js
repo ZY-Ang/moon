@@ -180,7 +180,7 @@ class AuthUser {
         return this.clearTokensFromStorage()
             .then(() => axios.get(URL_SIGN_OUT))
             .then(response => {
-                console.log(`Cleared cache via OAuth logout endpoint with response.data: "${response.data}"`);
+                console.log(`Cleared cache via OAuth logout endpoint`);
                 return response;
             });
     };
