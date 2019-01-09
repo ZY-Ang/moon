@@ -167,17 +167,27 @@ let trimmedAuthUserPromise = null;
 /**
  * Sends an authUser update request to the
  * active tab in the current window to be rendered.
+ *
+ * @param tab (optional)
  */
-export const doUpdateAuthUserEvent = async () => {
+export const doUpdateAuthUserEvent = async (tab) => {
     try {
         if (!!trimmedAuthUserPromise) {
             logger.log("doUpdateAuthUserEvent on cache");
             const authUser = await trimmedAuthUserPromise;
-            await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser});
+            if (!!tab && !!tab.id) {
+                await Tabs.sendMessage(tab.id, REQUEST_UPDATE_AUTH_USER, {authUser});
+            } else {
+                await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser});
+            }
         } else {
             logger.log("doUpdateAuthUserEvent new call");
             trimmedAuthUserPromise = AuthUser.trim();
-            await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: (await trimmedAuthUserPromise)});
+            if (!!tab && !!tab.id) {
+                await Tabs.sendMessage(tab.id, REQUEST_UPDATE_AUTH_USER, {authUser: (await trimmedAuthUserPromise)});
+            } else {
+                await Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: (await trimmedAuthUserPromise)});
+            }
             trimmedAuthUserPromise = null;
         }
     } catch (error) {

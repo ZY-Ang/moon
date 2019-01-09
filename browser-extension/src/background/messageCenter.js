@@ -95,7 +95,7 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_UPDATE_ONBOARDING_SKIP]() {
             updateOnboardingSkipExpiry(request.delay)
-                .then(doUpdateAuthUserEvent)
+                .then(() => doUpdateAuthUserEvent(sender.tab))
                 .then(() => sendSuccess(`updateOnboardingSkipExpiry(${request.delay}) skipped`))
                 .catch(err => {
                     logger.error("messageCenter.REQUEST_UPDATE_ONBOARDING_SKIP exception: ", err);
@@ -105,7 +105,7 @@ const messageCenter = (request, sender, sendResponse) => {
         },
         [REQUEST_UPDATE_COINBASE_API_KEYS]() {
             doUpdateCoinbaseApiKeyEvent(request.apiKey, request.apiSecret, request.innerHTML, sender.tab)
-                .then(doUpdateAuthUserEvent);
+                .then(() => doUpdateAuthUserEvent(sender.tab));
             sendSuccess("doUpdateCoinbaseApiKeyEvent() started");
         },
         [REQUEST_GET_EXCHANGE_RATE]() {
@@ -174,11 +174,11 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_UPDATE_AUTH_USER]() {
-            doUpdateAuthUserEvent()
-                .then(() => sendSuccess(`doUpdateAuthUserEvent() completed`))
+            doUpdateAuthUserEvent(sender.tab)
+                .then(() => sendSuccess(`doUpdateAuthUserEvent(...) completed`))
                 .catch(err => {
                     logger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
-                    sendFailure(`doUpdateAuthUserEvent() failed`);
+                    sendFailure(`doUpdateAuthUserEvent(${JSON.stringify(sender.tab)}) failed`);
                 });
             return true;
         },
