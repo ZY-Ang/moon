@@ -38,7 +38,7 @@ export const doUpdateTabEvent = async (tab) => {
         if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             return doInjectAppEvent(tab.url, tab);
         } else {
-            logger.error("doUpdateTabEvent failed with uncaught exception: ", err);
+            logger.warn("doUpdateTabEvent failed with uncaught exception: ", err);
         }
     }
 };
@@ -72,7 +72,7 @@ export const doInjectAppEvent = async (source, tab) => {
             ));
             return doInjectAppEvent(source, tab);
         } else {
-            logger.error("doInjectAppEvent failed with uncaught exception: ", err);
+            logger.warn("doInjectAppEvent failed with uncaught exception: ", err);
         }
     }
 };
@@ -136,11 +136,10 @@ export const tabDidUpdate = (tab) => {
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
         BrowserAction.setInvalidIcon(tab.id)
-            .catch(err => logger.error("tabDidUpdate (catchAll) setInvalidIcon exception: ", err));
+            .catch();
         doUpdateTabEvent(tab)
-            .catch(err => logger.warn("tabDidUpdate (catchAll) doUpdateTabEvent exception: ", err))
             .then(() => doUpdateAuthUserEvent(tab))
-            .catch(err => logger.warn("tabDidUpdate (catchAll) doUpdateAuthUserEvent exception: ", err));
+            .catch();
 
     }
 };
