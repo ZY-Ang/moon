@@ -11,7 +11,7 @@ import {
     REQUEST_GET_SITE_INFORMATION,
     REQUEST_GLOBAL_SIGN_OUT,
     REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
-    REQUEST_LAUNCH_WEB_AUTH_FLOW,
+    REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_MIXPANEL,
     REQUEST_MOON_SITE_SUPPORT,
     REQUEST_MOON_VALID_CHECKOUT_REPORT,
     REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION,
@@ -35,6 +35,7 @@ import Tabs from "./browser/Tabs";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
+import BackgroundMixPanel from "./services/BackgroundMixPanel";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -188,6 +189,15 @@ const messageCenter = (request, sender, sendResponse) => {
                 .catch(err => {
                     logger.error("messageCenter.REQUEST_RESET_PASSWORD exception: ", err);
                     sendFailure(`doPasswordReset() failed`);
+                });
+            return true;
+        },
+        [REQUEST_MIXPANEL]() {
+            BackgroundMixPanel.resolve(request._functionName, request.args)
+                .then(response => sendSuccess(response))
+                .catch(err => {
+                    logger.error("messageCenter.REQUEST_MIXPANEL exception: ", err);
+                    sendFailure(`Mixpanel tracking failed`);
                 });
             return true;
         },
