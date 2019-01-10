@@ -15,7 +15,7 @@ import ErrorBody from "./misc/appmodals/error/ErrorBody";
 import SuccessBody from "./misc/appmodals/success/SuccessBody";
 import LoadingBody from "./misc/appmodals/loading/LoadingBody";
 import MainFlow from "./main/MainFlow";
-import {REQUEST_POPUP} from "../../constants/events/appEvents";
+import {REQUEST_OPEN_POPUP} from "../../constants/events/appEvents";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -57,8 +57,8 @@ class App extends Component {
         }
     };
 
-    chatPopUp = (event) => {
-        AppRuntime.sendMessage(REQUEST_POPUP);
+    openChatPopUp = (event) => {
+        AppRuntime.sendMessage(REQUEST_OPEN_POPUP);
         if (event) {
             event.preventDefault();
         }
@@ -84,7 +84,7 @@ class App extends Component {
                                     <button
                                         id="moon-header-support-button"
                                         className="btn-support"
-                                        onClick={this.chatPopUp}
+                                        onClick={this.openChatPopUp}
                                     >
                                         <FaIcon icon="comments"/>
                                     </button>
