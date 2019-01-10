@@ -4,7 +4,10 @@ import moment from "moment";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY} from "./constants/querySelectors";
+import {QUERY_SELECTOR_CART_AMOUNT,
+        QUERY_SELECTOR_CART_CURRENCY,
+        QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE
+} from "./constants/querySelectors";
 import Decimal from "decimal.js";
 import {
     ACTION_PUSH_SCREEN,
@@ -64,6 +67,17 @@ class AmazonCheckoutScreen extends React.Component {
                 .then(() => this.setPaymentAmount(this.state.cartAmount));
         }
     }
+
+    isCartContainsRestrictedItems = () => {
+        const restrictedWords = ["egift", "amazon.com"];
+        return Array.from(document.querySelectorAll(QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE))
+            .reduce((accItem, curItem) =>
+                restrictedWords.reduce((accRestrictedWord, curRestrictedWord) =>
+                    curItem.innerText.toLowerCase().includes(curRestrictedWord) || accRestrictedWord,
+                    false
+                ) || accItem, false
+            );
+    };
 
     getCartAmountFromElements = (cartAmountElements) => {
         if (!cartAmountElements || !cartAmountElements.length) {
@@ -305,6 +319,7 @@ class AmazonCheckoutScreen extends React.Component {
         const isInsufficient = !cartAmount || !walletBalanceInBase || Number(cartAmount) > Number(walletBalanceInBase);
         const authUserHasWallets = this.authUserHasWallets();
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
+        const isRestrictedItem = this.isCartContainsRestrictedItems();
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
@@ -479,6 +494,12 @@ class AmazonCheckoutScreen extends React.Component {
                         </div>
                     </div>
                 </div>
+                {
+                    isRestrictedItem &&
+                        <div className="text-black mt-2">
+                            <p className="text-error mb-0">You have restricted item</p>
+                        </div>
+                }
                 {
                     authUserHasWallets &&
                     !!selectedWallet &&
