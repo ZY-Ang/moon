@@ -16,6 +16,7 @@ import SuccessBody from "./misc/appmodals/success/SuccessBody";
 import LoadingBody from "./misc/appmodals/loading/LoadingBody";
 import MainFlow from "./main/MainFlow";
 import {REQUEST_OPEN_POPUP} from "../../constants/events/appEvents";
+import {URL_MOON_TAWK_SUPPORT} from "../../../src/constants/url";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -58,7 +59,9 @@ class App extends Component {
     };
 
     openChatPopUp = (event) => {
-        AppRuntime.sendMessage(REQUEST_OPEN_POPUP);
+        AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {
+            url:URL_MOON_TAWK_SUPPORT
+        });
         if (event) {
             event.preventDefault();
         }
