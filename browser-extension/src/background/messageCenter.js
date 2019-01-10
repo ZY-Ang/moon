@@ -21,7 +21,7 @@ import {
     REQUEST_UPDATE_AUTH_USER,
     REQUEST_UPDATE_COINBASE_API_KEYS,
     REQUEST_UPDATE_ONBOARDING_SKIP,
-    REQUEST_POPUP
+    REQUEST_OPEN_POPUP
 } from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut, doUpdateAuthUserEvent} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
@@ -37,7 +37,7 @@ import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroun
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
 import Windows from "../background/browser/Windows";
-import {URL_TAWK_TO_CHAT_IFRAME} from "../constants/url";
+import {URL_MOON_TAWK_SUPPORT} from "../constants/url";
 /**
  * Message handler for receiving messages from other extension processes
  * @param request {object} - message sent by the extension process
@@ -211,12 +211,12 @@ const messageCenter = (request, sender, sendResponse) => {
                 });
             return true;
         },
-        [REQUEST_POPUP]() {
-            Windows.openPopup(URL_TAWK_TO_CHAT_IFRAME, 600,400)
+        [REQUEST_OPEN_POPUP]() {
+            Windows.openPopup(URL_MOON_TAWK_SUPPORT, 600,400)
                 .then(() => sendSuccess(`Windows.openPopup() completed`))
                 .catch(err => {
-                    handleErrors(err);
-                    sendFailure(`doSignOut() failed`);
+                    logger.error("messageCenter.REQUEST_OPEN_POPUP", err);
+                    sendFailure("Windows.openPopup() failed");
                 });
             return true;
         }
