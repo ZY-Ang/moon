@@ -37,7 +37,6 @@ import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroun
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
 import Windows from "../background/browser/Windows";
-import {URL_MOON_TAWK_SUPPORT} from "../constants/url";
 import BackgroundMixpanel from "./services/BackgroundMixpanel";
 
 /**
@@ -223,7 +222,7 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_OPEN_POPUP]() {
-            Windows.openPopup(URL_MOON_TAWK_SUPPORT, 600,400)
+            Windows.openPopup(request.url, 600,400)
                 .then(() => sendSuccess(`Windows.openPopup() completed`))
                 .catch(err => {
                     logger.error("messageCenter.REQUEST_OPEN_POPUP", err);
