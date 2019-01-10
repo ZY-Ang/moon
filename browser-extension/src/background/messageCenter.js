@@ -35,7 +35,7 @@ import Tabs from "./browser/Tabs";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
-import BackgroundMixPanel from "./services/BackgroundMixPanel";
+import BackgroundMixpanel from "./services/BackgroundMixpanel";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -193,7 +193,7 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_MIXPANEL]() {
-            BackgroundMixPanel.resolve(request._functionName, request.args)
+            BackgroundMixpanel.resolve(request._functionName, request._args)
                 .then(response => sendSuccess(response))
                 .catch(err => {
                     logger.error("messageCenter.REQUEST_MIXPANEL exception: ", err);

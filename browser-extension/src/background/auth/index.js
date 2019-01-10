@@ -28,6 +28,7 @@ import Windows from "../browser/Windows";
 import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
 import AuthUser from "./AuthUser";
 import store from "../redux/store";
+import BackgroundMixpanel from "../services/BackgroundMixpanel";
 
 /**
  * Signs a user into the Moon client using the JSON Web
