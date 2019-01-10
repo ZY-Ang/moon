@@ -78,3 +78,6 @@ export const REQUEST_SIGN_OUT = "MOON_SIGN_OUT";
 
 // --------------------- Global Sign Out ---------------------
 export const REQUEST_GLOBAL_SIGN_OUT = "MOON_GLOBAL_SIGN_OUT";
+
+// --------------------- Request Pop Up Screen ---------------
+export const REQUEST_OPEN_POPUP = "MOON_OPEN_POP_UP_SCREEN";

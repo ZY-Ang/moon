@@ -20,7 +20,8 @@ import {
     REQUEST_TEST_FUNCTION,
     REQUEST_UPDATE_AUTH_USER,
     REQUEST_UPDATE_COINBASE_API_KEYS,
-    REQUEST_UPDATE_ONBOARDING_SKIP
+    REQUEST_UPDATE_ONBOARDING_SKIP,
+    REQUEST_OPEN_POPUP
 } from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut, doUpdateAuthUserEvent} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
@@ -35,6 +36,7 @@ import Tabs from "./browser/Tabs";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
 import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
+import Windows from "../background/browser/Windows";
 import BackgroundMixpanel from "./services/BackgroundMixpanel";
 
 /**
@@ -216,6 +218,15 @@ const messageCenter = (request, sender, sendResponse) => {
                 .catch(err => {
                     logger.error("messageCenter.REQUEST_GLOBAL_SIGN_OUT exception: ", err);
                     sendFailure(`doGlobalSignOut() failed`);
+                });
+            return true;
+        },
+        [REQUEST_OPEN_POPUP]() {
+            Windows.openPopup(request.url, 600,400)
+                .then(() => sendSuccess(`Windows.openPopup() completed`))
+                .catch(err => {
+                    logger.error("messageCenter.REQUEST_OPEN_POPUP", err);
+                    sendFailure("Windows.openPopup() failed");
                 });
             return true;
         }

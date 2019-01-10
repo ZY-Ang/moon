@@ -2,7 +2,7 @@ import React from "react";
 import "./TawkLiveChatScreen.css";
 import BackButton from "../../BackButton";
 import Throbber from "../../../misc/throbber/Throbber";
-import {URL_TAWK_TO_CHAT_IFRAME} from "../../../../../constants/url";
+import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
 
 class TawkLiveChatScreen extends React.Component {
     constructor(props) {
@@ -20,7 +20,7 @@ class TawkLiveChatScreen extends React.Component {
                 </div>
                 <div className="tawk-live-chat-iframe-wrapper">
                     <iframe
-                        src={URL_TAWK_TO_CHAT_IFRAME}
+                        src={URL_MOON_TAWK_SUPPORT}
                         height={this.state.loaded ? "100%" : "0%"}
                         width="100%"
                         onLoad={() => this.setState(() => ({loaded: true}))}
