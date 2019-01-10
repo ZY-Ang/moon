@@ -70,6 +70,9 @@ export const REQUEST_UPDATE_AUTH_USER = "MOON_GET_AUTH_USER";
 // --------------------- Reset Password ---------------------
 export const REQUEST_RESET_PASSWORD = "MOON_RESET_PASSWORD";
 
+// --------------------- Resolve a new mixpanel request ---------------------
+export const REQUEST_MIXPANEL = "MOON_MIXPANEL_RESOLVE";
+
 // --------------------- Sign Out ---------------------
 export const REQUEST_SIGN_OUT = "MOON_SIGN_OUT";
 
