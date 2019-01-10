@@ -496,12 +496,15 @@ class AmazonCheckoutScreen extends React.Component {
                 </div>
                 {
                     isRestrictedItem &&
-                        <div className="text-black mt-2">
-                            <p className="text-error mb-0">You have restricted item</p>
+                        <div className="text-center mt-2">
+                            <p className="text-error mb-0">
+                                You have one or more restricted items in your cart. Please remove any gift cards from your cart before proceeding.
+                            </p>
                         </div>
                 }
                 {
                     authUserHasWallets &&
+                    !isRestrictedItem &&
                     !!selectedWallet &&
                     !isInsufficient &&
                     !isZero &&
@@ -511,6 +514,7 @@ class AmazonCheckoutScreen extends React.Component {
                 }
                 {
                     authUserHasWallets &&
+                    !isRestrictedItem &&
                     !!selectedWallet &&
                     isInsufficient &&
                     <div className="text-center mt-2">
