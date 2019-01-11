@@ -670,6 +670,7 @@ a {
     height: 20px;
     padding-bottom: 5px;
 }
+
 .btn-support {
     cursor: pointer;
     padding: 0;
@@ -685,8 +686,18 @@ a {
     transition: all 0.2s ease;
 }
 
+.btn-support:focus,
 .btn-support:hover {
     opacity: .7;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.btn-support:active {
+    opacity: .5;
     -webkit-transition: all 0.2s ease;
     -moz-transition: all 0.2s ease;
     -ms-transition: all 0.2s ease;
