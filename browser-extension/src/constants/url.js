@@ -24,4 +24,4 @@ export const URL_COINBASE_POST_CONNECTION = "https://paywithmoon.com/coinbase-po
 /**
  * The URL for tawk.to's chat widget to be thrown into an iframe's src
  */
-export const URL_TAWK_TO_CHAT_IFRAME = "https://tawk.to/chat/5bf7291379ed6453ccaab1af/1ct92sc5n";
+export const URL_MOON_TAWK_SUPPORT = "https://tawk.to/chat/5bf7291379ed6453ccaab1af/1ct92sc5n";
