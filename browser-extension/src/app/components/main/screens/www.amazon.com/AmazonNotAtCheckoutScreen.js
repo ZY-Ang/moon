@@ -28,7 +28,7 @@ class AmazonNotAtCheckoutScreen extends React.Component {
                 });
             })
             .catch(err => {
-                logger.error("AmazonNotAtCheckoutScreen.reportIsCheckout REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
+                moonLogger.error("AmazonNotAtCheckoutScreen.reportIsCheckout REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
                 this.props.onSetAppModalErrorState({
                     isActive: true,
                     text: "Hmmm... Something went wrong, try again! If that doesn't work either, you can always call to tell us ❤!"

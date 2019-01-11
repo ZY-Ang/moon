@@ -32,7 +32,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        logger.log("Main App Mounted");
+        moonLogger.log("Main App Mounted");
     }
 
     onToggleMaximize = () => {
@@ -60,7 +60,10 @@ class App extends Component {
 
     openChatPopUp = (event) => {
         AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {
-            url:URL_MOON_TAWK_SUPPORT
+            url: URL_MOON_TAWK_SUPPORT,
+            height: 600,
+            width: 400,
+            type: "popup"
         });
         if (event) {
             event.preventDefault();

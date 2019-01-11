@@ -10,9 +10,9 @@ class AddWalletsScreen extends React.Component {
     launchCoinbaseAuthFlow = () => {
         AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
             .then(response => {
-                logger.log(response);
+                moonLogger.log(response);
             })
-            .catch(err => logger.error("AddWalletsScreen.launchCoinbaseAuthFlow exception: ", err));
+            .catch(err => moonLogger.error("AddWalletsScreen.launchCoinbaseAuthFlow exception: ", err));
         // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
         this.props.delayAuthUserOnboarding();
     };

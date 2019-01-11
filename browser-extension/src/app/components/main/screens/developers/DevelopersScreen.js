@@ -21,14 +21,14 @@ class DevelopersScreen extends React.Component {
         const params = this.state;
         AppRuntime.sendMessage(REQUEST_TEST_FUNCTION, {params})
             .then(response => {
-                logger.log("%cTEST FUNCTION SUCCEEDED. Response:", 'background: #6b0; color: #fff', response);
+                moonLogger.log("%cTEST FUNCTION SUCCEEDED. Response:", 'background: #6b0; color: #fff', response);
                 this.setState(() => ({
                     isSuccess: true,
                     isError: false
                 }));
             })
             .catch(err => {
-                logger.error("TEST FUNCTION FAILED. Error:", err);
+                moonLogger.error("TEST FUNCTION FAILED. Error:", err);
                 this.setState(() => ({
                     isSuccess: false,
                     isError: true
@@ -38,14 +38,14 @@ class DevelopersScreen extends React.Component {
     };
 
     getIdToken = () => {
-        logger.log("getIdToken");
+        moonLogger.log("getIdToken");
         AppRuntime.sendMessage(REQUEST_GET_ID_JWTOKEN)
             .then(response => copyToClipboard(response))
-            .then(res => logger.log(res))
+            .then(res => moonLogger.log(res))
             .then(() => this.setState(() => ({idJWToken: "Copied to clipboard"})))
             .catch(err => {
                 this.setState(() => ({idJWToken: "Error. Check logs"}));
-                logger.error(err);
+                moonLogger.error(err);
             });
     };
 

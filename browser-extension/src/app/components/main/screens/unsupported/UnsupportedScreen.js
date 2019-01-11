@@ -29,7 +29,7 @@ class UnsupportedScreen extends React.Component {
                 this.setState(() => ({isRequested: true}));
             })
             .catch(err => {
-                logger.error("UnsupportedScreen.requestSite REQUEST_MOON_SITE_SUPPORT exception: ", err);
+                moonLogger.error("UnsupportedScreen.requestSite REQUEST_MOON_SITE_SUPPORT exception: ", err);
                 this.props.onSetAppModalErrorState({
                     isActive: true,
                     text: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call us ❤!"

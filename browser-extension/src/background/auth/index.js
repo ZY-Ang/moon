@@ -126,7 +126,7 @@ const getOAuthUrlForType = async (type) => {
 export const doLaunchWebAuthFlow = (type) => {
     logger.log(`doLaunchWebAuthFlow for ${type}`);
     return getOAuthUrlForType(type)
-        .then(url => Windows.openPopup(url));
+        .then(url => Windows.create({url, type: "popup"}));
 };
 
 /**

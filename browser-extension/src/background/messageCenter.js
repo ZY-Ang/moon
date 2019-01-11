@@ -222,11 +222,11 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_OPEN_POPUP]() {
-            Windows.openPopup(request.url, 600,400)
+            Windows.create(request)
                 .then(() => sendSuccess(`Windows.openPopup() completed`))
                 .catch(err => {
                     logger.error("messageCenter.REQUEST_OPEN_POPUP", err);
-                    sendFailure("Windows.openPopup() failed");
+                    sendFailure("Windows.create() failed");
                 });
             return true;
         }

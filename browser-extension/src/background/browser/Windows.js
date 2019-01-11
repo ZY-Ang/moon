@@ -9,18 +9,19 @@ import {tabDidUpdate} from "../windowManager";
  */
 class Windows {
     /**
-     * Opens a new popup window with
+     * Creates a new window with
      * its specified {@param url}
      * @param height (default: natural) - of the popup window
      * @param width (default: natural) - of the popup window
+     * @param type (default: normal)
      *
      * @see {@link https://developer.chrome.com/extensions/windows#method-create}
      */
-    static openPopup = (url, height, width) => new Promise((resolve, reject) => {
+    static create = ({url, height, width, type}) => new Promise((resolve, reject) => {
         chrome.windows.create({
             url,
             focused: true,
-            type: 'popup',
+            type,
             height,
             width
         }, window => {

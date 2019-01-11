@@ -23,6 +23,7 @@ provider:
   environment:
     NODE_ENV: ${{self:provider.stage}}
     STACK_PREFIX: ${{self:service}}-${{self:provider.stage}}
+  logRetentionInDays: 2555
 
 plugins:
   - serverless-iam-roles-per-function

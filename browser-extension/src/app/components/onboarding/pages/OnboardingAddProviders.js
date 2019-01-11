@@ -11,8 +11,8 @@ class OnboardingAddProviders extends React.Component {
 
     launchCoinbaseAuthFlow = () => {
         AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
-            .then(response => logger.log(response))
-            .catch(err => logger.error("OnboardingAddProviders.launchCoinbaseAuthFlow REQUEST_LAUNCH_COINBASE_AUTH_FLOW exception: ", err));
+            .then(response => moonLogger.log(response))
+            .catch(err => moonLogger.error("OnboardingAddProviders.launchCoinbaseAuthFlow REQUEST_LAUNCH_COINBASE_AUTH_FLOW exception: ", err));
     };
 
     render() {

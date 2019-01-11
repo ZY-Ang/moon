@@ -2,14 +2,14 @@
  * Copyright (c) 2018 moon
  */
 
-import Logger from "../utils/Logger";
+import {backgroundLogger} from "./utils/BackgroundLogger";
 import "./services/BackgroundMixpanel";
 import BrowserAction from "./browser/BrowserAction";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import Tabs from "./browser/Tabs";
 import Windows from "./browser/Windows";
 
-window.logger = new Logger("Background");
+window.logger = backgroundLogger;
 BackgroundRuntime.run();
 Windows.run();
 Tabs.run();

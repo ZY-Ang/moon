@@ -28,7 +28,10 @@ export const doLaunchCoinbaseAuthFlow = () => {
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: false
     }), 300000);
-    return Windows.openPopup(URL_COINBASE_SETTINGS_API);
+    return Windows.create({
+        url: URL_COINBASE_SETTINGS_API,
+        type: "popup"
+    });
 };
 /**
  * Updates the coinbase API Key into the secure database

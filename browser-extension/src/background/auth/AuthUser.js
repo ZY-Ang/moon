@@ -4,7 +4,7 @@
 
 import JwtToken, {isValidJWT} from "./JwtToken";
 import Storage from "../browser/Storage";
-import AWS from "../config/aws/AWS";
+import AWS, {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
 import {
     getPasswordResetFlowParams,
     getRefreshTokenParams,
@@ -15,7 +15,7 @@ import {
     URL_TOKEN_FLOW
 } from "./url";
 import axios from "axios";
-import {WEBIDENTITY_IAM_ROLE_ARN} from "../config/aws/iam";
+import {IAM_USER_ROLE_ARN} from "../config/aws/iam";
 import {getUser} from "../api/user";
 import MoonGraphQL from "../api/MoonGraphQL";
 
@@ -146,9 +146,9 @@ class AuthUser {
     setAWSCredentials = () => {
         logger.log("setAWSCredentials");
         let credentials = new AWS.WebIdentityCredentials({
-            RoleArn: WEBIDENTITY_IAM_ROLE_ARN,
-            WebIdentityToken: this.getIdToken().getJwtToken()
-            // TODO: (maybe) Implement RoleSessionName for downstream validation
+            RoleArn: IAM_USER_ROLE_ARN,
+            WebIdentityToken: this.getIdToken().getJwtToken(),
+            RoleSessionName: `${this.getIdToken().getEmail()}-BrowserExtension`
         });
         AWS.config.update({credentials});
         return AWS.config.credentials.getPromise()
@@ -177,6 +177,7 @@ class AuthUser {
     signOut = () => {
         AuthUser.setInstance(null);
         MoonGraphQL.signOut();
+        AWS.config.update({credentials: PUBLIC_CREDENTIALS});
         return this.clearTokensFromStorage()
             .then(() => axios.get(URL_SIGN_OUT))
             .then(response => {

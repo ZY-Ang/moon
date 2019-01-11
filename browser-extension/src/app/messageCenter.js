@@ -48,7 +48,7 @@ const messageCenter = (request, sender, sendResponse) => {
             ])
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_INJECT_APP exception: ", err);
+                    moonLogger.error("messageCenter.REQUEST_INJECT_APP exception: ", err);
                     sendFailure(`toggleApp(${request.source}) failed`);
                 });
             injectButton();
@@ -58,7 +58,7 @@ const messageCenter = (request, sender, sendResponse) => {
             updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${JSON.stringify(request.authUser)}) completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
+                    moonLogger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
                     sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
                 });
             return true;
@@ -95,7 +95,7 @@ const messageCenter = (request, sender, sendResponse) => {
     if (request.message && request.message in messageResolver) {
         return messageResolver[request.message]();
     } else {
-        logger.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+        moonLogger.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
         sendFailure("App messageCenter received an unknown request");
     }
 };
