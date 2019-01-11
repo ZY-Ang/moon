@@ -5,24 +5,63 @@
 import Logger from "../../utils/Logger";
 import uuid from "uuid/v4";
 import moment from "moment";
-import * as AWS from "aws-sdk";
+import AWS from "../config/aws/AWS";
 import {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
-
-const logGroupName = `browser-extension-${process.env.NODE_ENV}`;
-const logStreamName = `${moment().toISOString()}${uuid()}`;
 
 class BackgroundLogger extends Logger {
     constructor(prefix) {
         super(prefix);
         this.logEvents = [];
-        (new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS})).createLogStream({
-            logGroupName,
-            logStreamName
-        });
+        this.cloudwatchLogClient = new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS});
+        this.initialized = false;
+        this.initializeLogStream();
     }
 
+    initializeLogStream = () => {
+        // TODO: Add IP-GeoLocation service to Group or Stream
+        this.logGroupName = `browser-extension-${process.env.NODE_ENV}`;
+        this.logStreamName = `${moment().format("YYYY-MM-DD")}-${uuid()}`;
+        this.cloudwatchLogClient.createLogStream({
+            logGroupName: this.logGroupName,
+            logStreamName: this.logStreamName
+        }, (err) => {
+            if (err) {
+                console.error("Unable to initialize log stream");
+            } else {
+                this.initialized = true;
+            }
+        });
+    };
+
+    putLogEvents = () => {
+        if (!this.initialized) {
+            this.initializeLogStream();
+
+        } else {
+            // Try again later
+            try {
+                this.cloudwatchLogClient.putLogEvents({
+                    logEvents: this.logEvents,
+                    logGroupName: this.logGroupName,
+                    logStreamName: this.logStreamName,
+                    sequenceToken: this.sequenceToken
+                }, (err, data) => {
+                    if (err) {
+                        // Unable to log to cloudwatch. Ignore and just log.
+                        console.error("BackgroundLogger.putLogEvents if (err) exception: ", err);
+                    } else if (data && data.nextSequenceToken) {
+                        this.sequenceToken = data.nextSequenceToken;
+                    }
+                });
+                // Reset log events for next batch
+                this.logEvents = [];
+            } catch (e) {
+                console.error("BackgroundLogger.putLogEvents catch (e) exception: ", e);
+            }
+        }
+    };
+
     log() {
-        console.log({PUBLIC_CREDENTIALS});
         const args = Array.prototype.slice.call(arguments);
         super.log(...args);
         args.unshift(`[${this.prefix}]`, "[log]");
@@ -34,29 +73,6 @@ class BackgroundLogger extends Logger {
     appLog() {
         // TODO: Implement
     }
-
-    putLogEvent = () => {
-        try {
-            console.log({PUBLIC_CREDENTIALS});
-            (new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS})).putLogEvents({
-                logEvents: this.logEvents,
-                logGroupName,
-                logStreamName,
-                sequenceToken: this.sequenceToken
-            }, (err, data) => {
-                if (err) {
-                    // Unable to log to cloudwatch. Ignore and just log.
-                    console.error("BackgroundLogger.putLogEvent if (err) exception: ", err);
-                } else if (data && data.nextSequenceToken) {
-                    this.sequenceToken = data.nextSequenceToken;
-                }
-            });
-            // Reset log events for next batch
-            this.logEvents = [];
-        } catch (e) {
-            console.error("BackgroundLogger.putLogEvent catch (e) exception: ", e);
-        }
-    };
 
     info() {
         const args = Array.prototype.slice.call(arguments);
@@ -83,7 +99,7 @@ class BackgroundLogger extends Logger {
         const message = args.join(" ");
         const timestamp = moment().valueOf();
         this.logEvents.push({message, timestamp});
-        this.putLogEvent();
+        this.putLogEvents();
     }
 }
 
