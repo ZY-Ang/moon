@@ -23,7 +23,6 @@ provider:
   environment:
     NODE_ENV: ${{self:provider.stage}}
     STACK_PREFIX: ${{self:service}}-${{self:provider.stage}}
-  logRetentionInDays: 2555
 
 plugins:
   - serverless-iam-roles-per-function
@@ -45,6 +44,27 @@ resources:
       Value: { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
     UserArn:
       Value: { Fn::GetAtt: [UserLambdaFunction, Arn] }
+  Resources:
+    AddNonCheckoutReportLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 30
+    ExchangeRatesLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 1
+    GetPaymentPayloadLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 3653
+    UpdateUserLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 7
+    UserLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 7
 
 # See Link for functions documentation:
 #     https://serverless.com/framework/docs/providers/aws/guide/functions/
@@ -58,7 +78,6 @@ functions:
   addNonCheckoutReport:
     name: ${{self:service}}-${{self:provider.stage}}-addNonCheckoutReport
     description: 'Adds a report that the current page that the user is on is supposed to be a checkout page'
-    logRetentionInDays: 30
     handler: src/addNonCheckoutReport.default
     timeout: 30
     iamRoleStatementsInherit: true
@@ -72,13 +91,11 @@ functions:
   exchangeRates:
     name: ${{self:service}}-${{self:provider.stage}}-exchangeRates
     description: 'Returns multiple exchange rates given multiple quote and base currencies.'
-    logRetentionInDays: 1
     handler: src/exchangeRates.default
     timeout: 30
   getPaymentPayload:
     name: ${{self:service}}-${{self:provider.stage}}-getPaymentPayload
     description: 'Exchanges client information for a payment payload to be executed on the client'
-    logRetentionInDays: 2555
     handler: src/getPaymentPayload.default
     timeout: 180
     iamRoleStatementsInherit: true
@@ -98,7 +115,6 @@ functions:
   updateUser:
     name: ${{self:service}}-${{self:provider.stage}}-updateUser
     description: 'Updates a moon user with new information.'
-    logRetentionInDays: 7
     handler: src/updateUser.default
     iamRoleStatementsInherit: true
     iamRoleStatements:
@@ -114,7 +130,6 @@ functions:
   user:
     name: ${{self:service}}-${{self:provider.stage}}-user
     description: 'Returns information about a moon user.'
-    logRetentionInDays: 7
     handler: src/user.default
     iamRoleStatementsInherit: true
     iamRoleStatements:
