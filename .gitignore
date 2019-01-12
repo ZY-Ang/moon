@@ -142,3 +142,6 @@ browser-extension/build.pem
 jspm_packages/
 
 .webpack/
+
+# firebase
+.firebase/

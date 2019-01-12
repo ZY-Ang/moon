@@ -5,13 +5,9 @@
   "main": "serverless.yml",
   "scripts": {
     "deploy": "serverless deploy",
-    "deploy-production": "serverless deploy --changeset --stage production"
+    "deploy-production": "serverless deploy --changeset --stage production",
+    "deploy-production-force": "serverless deploy --stage production"
   },
   "author": "Moon",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "serverless": "^1.32.0",
-    "serverless-cloudformation-changesets": "0.0.2",
-    "serverless-dynamodb-autoscaling": "^0.6.2"
-  }
+  "license": "UNLICENSED"
 }

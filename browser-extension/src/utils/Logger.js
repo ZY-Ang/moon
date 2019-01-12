@@ -8,17 +8,14 @@
  */
 class Logger {
     constructor(prefix) {
+        if (!prefix) {
+            throw new Error("Logger.constructor - prefix is not defined.");
+        }
         this.prefix = prefix;
-        this.stack = [];
     }
-
-    pushToStack = (logLine) => {
-        this.stack.push(logLine);
-    };
 
     log() {
         const args = Array.prototype.slice.call(arguments);
-        this.pushToStack(`[${this.prefix}][log]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
             console.log(...args);
         }
@@ -26,7 +23,6 @@ class Logger {
 
     info() {
         const args = Array.prototype.slice.call(arguments);
-        this.pushToStack(`[${this.prefix}][info]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
             console.info(...args);
         }
@@ -34,16 +30,13 @@ class Logger {
 
     warn() {
         const args = Array.prototype.slice.call(arguments);
-        this.pushToStack(`[${this.prefix}][warn]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
             console.warn(...args);
         }
     };
 
-    // TODO: Log log stack (including other log levels) to cloudwatch on error, clear stack
     error() {
         const args = Array.prototype.slice.call(arguments);
-        this.pushToStack(`[${this.prefix}][error]${args.join(" ")}`);
         if (process.env.NODE_ENV !== "production") {
             console.error(...args);
         }

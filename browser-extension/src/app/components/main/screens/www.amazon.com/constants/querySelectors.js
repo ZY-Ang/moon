@@ -11,3 +11,4 @@ export const QUERY_SELECTOR_SHIPPING_ADDRESS_SELECT = "#payChangeButtonId,#addre
 export const QUERY_SELECTOR_BILLING_ADDRESS_SELECT = "#payChangeButtonId,#address-list .a-button-input,#subtotals .a-button-input";
 export const QUERY_SELECTOR_PAYMENT_METHOD_SELECT = "#continue-top,#spcViewButtonId,#subtotals .a-button-input";
 export const QUERY_SELECTOR_GIFT_OPTIONS_SELECT = "#giftForm .save-gift-button-box input";
+export const QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE = "#spc-orders strong.asin-title";

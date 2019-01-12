@@ -27,12 +27,14 @@ import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
 import {faCaretUp} from '@fortawesome/free-solid-svg-icons/faCaretUp';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons/faChevronRight';
+import {faComments} from "@fortawesome/free-solid-svg-icons/faComments";
 
 // Regular
 // import {} from '@fortawesome/free-regular-svg-icons';
 
 library.add(faFacebook, faGoogle, faAmazon);
 library.add(
+    faComments,
     faHandsHelping,
     faChevronCircleUp,
     faDotCircle,

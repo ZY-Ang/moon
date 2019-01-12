@@ -427,6 +427,10 @@ a {
     outline: none;
 }
 
+#moon-header-toggle-button {
+    margin-left: 12px;
+}
+
 #moon-header-toggle-button svg {
     -webkit-transition: transform 0.2s ease;
     -moz-transition: transform 0.2s ease;
@@ -453,6 +457,18 @@ a {
 
 #moon-header-toggle-button.maximized:active path {
     color: rgb(179, 113, 0);
+}
+
+#moon-header-support-button {
+    opacity: .7;
+}
+
+#moon-header-support-button.hover {
+    opacity: .5;
+}
+
+#moon-header-support-button:active {
+    opacity: 1.0;
 }
 
 #moon-header-close-button {
@@ -656,4 +672,8 @@ a {
     color: white;
     background-color: #0667D0;
     border-color: #0667D0;
+}
+
+.text-center {
+    text-align: center !important;
 }

@@ -4,6 +4,12 @@
   "description": "The world's first cryptocurrency e-commerce platform",
   "private": true,
   "scripts": {
+    "install-all": "npm install && npm-run-all --parallel install-database install-dashboard install-backend install-backend-lambda install-browser-extension",
+    "install-dashboard": "cd dashboard && npm install",
+    "install-database": "cd database && npm install",
+    "install-backend": "cd backend && npm install",
+    "install-backend-lambda": "cd backend/Lambda && npm install",
+    "install-browser-extension": "cd browser-extension && npm install",
     "build-extension": "cd browser-extension && npm run build",
     "clean-extension": "cd browser-extension && npm run clean",
     "clean-and-build-extension": "cd browser-extension && npm run clean && npm run build",
@@ -25,20 +31,7 @@
     "url": "https://github.com/paywithmoon/moon/issues"
   },
   "homepage": "https://paywithmoon.com",
-  "dependencies": {
-    "aws-appsync": "^1.3.4",
-    "aws-sdk": "^2.287.0",
-    "axios": "^0.18.0",
-    "data-uri-to-buffer": "^2.0.0",
-    "fs": "0.0.1-security",
-    "graphql": "^14.0.0",
-    "graphql-tag": "^2.9.2",
-    "jsonwebtoken": "^8.3.0",
-    "jwks-rsa": "^1.3.0",
-    "jwt-decode": "^2.2.0",
-    "query-string": "^6.1.0"
-  },
   "devDependencies": {
-    "cross-env": "^5.2.0"
+    "npm-run-all": "^4.1.5"
   }
 }

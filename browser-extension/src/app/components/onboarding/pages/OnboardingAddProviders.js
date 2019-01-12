@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import CoinbaseIcon from "../../misc/coinbase/CoinbaseIcon";
 import AppRuntime from "../../../browser/AppRuntime";
 import {REQUEST_LAUNCH_COINBASE_AUTH_FLOW} from "../../../../constants/events/appEvents";
+import appLogger from "../../../utils/AppLogger";
 
 class OnboardingAddProviders extends React.Component {
     constructor(props) {
@@ -11,8 +12,8 @@ class OnboardingAddProviders extends React.Component {
 
     launchCoinbaseAuthFlow = () => {
         AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
-            .then(response => logger.log(response))
-            .catch(err => logger.error("OnboardingAddProviders.launchCoinbaseAuthFlow REQUEST_LAUNCH_COINBASE_AUTH_FLOW exception: ", err));
+            .then(response => appLogger.log(response))
+            .catch(err => appLogger.error("OnboardingAddProviders.launchCoinbaseAuthFlow REQUEST_LAUNCH_COINBASE_AUTH_FLOW exception: ", err));
     };
 
     render() {

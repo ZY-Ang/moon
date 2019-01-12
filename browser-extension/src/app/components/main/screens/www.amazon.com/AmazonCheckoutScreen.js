@@ -4,8 +4,10 @@ import moment from "moment";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY} from "./constants/querySelectors";
+import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY, QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE} from "./constants/querySelectors";
 import Decimal from "decimal.js";
+import {REQUEST_OPEN_POPUP} from "../../../../../constants/events/appEvents";
+import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
 import {
     ACTION_PUSH_SCREEN,
     ACTION_SET_APP_MODAL_ERROR_STATE,
@@ -21,6 +23,7 @@ import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../util
 import FaIcon from "../../../misc/fontawesome/FaIcon";
 import ConfirmSlider from "../../../misc/confirmslider/ConfirmSlider";
 import {AMAZON_DEFAULT_CURRENCY} from "./AmazonProductScreen";
+import appLogger from "../../../../utils/AppLogger";
 
 export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
 const INITIAL_STATE = {
@@ -64,6 +67,17 @@ class AmazonCheckoutScreen extends React.Component {
                 .then(() => this.setPaymentAmount(this.state.cartAmount));
         }
     }
+
+    isCartContainsRestrictedItems = () => {
+        const restrictedWords = ["egift", "amazon.com"];
+        return Array.from(document.querySelectorAll(QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE))
+            .reduce((accItem, curItem) =>
+                restrictedWords.reduce((accRestrictedWord, curRestrictedWord) =>
+                    curItem.innerText.toLowerCase().includes(curRestrictedWord) || accRestrictedWord,
+                    false
+                ) || accItem, false
+            );
+    };
 
     getCartAmountFromElements = (cartAmountElements) => {
         if (!cartAmountElements || !cartAmountElements.length) {
@@ -140,7 +154,7 @@ class AmazonCheckoutScreen extends React.Component {
                         exchangeRate: "Error",
                         walletBalanceInBase: INITIAL_STATE.walletBalanceInBase
                     }));
-                    logger.error("Failed to get exchange rate", err);
+                    appLogger.error("Failed to get exchange rate", err);
                     this.props.onSetAppModalErrorState({isActive: true, text: "Failed to get exchange rates! The server might be busy. Please try again in a few moments."});
                 });
         } else {
@@ -241,7 +255,7 @@ class AmazonCheckoutScreen extends React.Component {
         this.getPaymentPayload()
             .then(() => this.props.onSetAppModalLoadingState({isActive: false}))
             .catch(err => {
-                logger.error("AmazonCheckoutScreen.pay.getPaymentPayload exception: ", err);
+                appLogger.error("AmazonCheckoutScreen.pay.getPaymentPayload exception: ", err);
                 this.props.onSetUIBlockerState({isActive: false});
                 this.props.onSetAppModalLoadingState({isActive: false});
                 const errorMessage = err.message || (err.response && err.response.graphQLErrors && err.response.graphQLErrors[0] && err.response.graphQLErrors[0].message) || "";
@@ -305,6 +319,7 @@ class AmazonCheckoutScreen extends React.Component {
         const isInsufficient = !cartAmount || !walletBalanceInBase || Number(cartAmount) > Number(walletBalanceInBase);
         const authUserHasWallets = this.authUserHasWallets();
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
+        const containsRestrictedItems = this.isCartContainsRestrictedItems();
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
@@ -480,7 +495,20 @@ class AmazonCheckoutScreen extends React.Component {
                     </div>
                 </div>
                 {
+                    containsRestrictedItems &&
+                    <div className="text-center mt-2">
+                        <p className="text-error mb-0">
+                            Moon cannot facilitate the purchase of gift cards. Please remove any gift cards from your cart before proceeding.
+                        </p>
+                        <p className="text-error mb-0">
+                            If you think this is a mistake, <a onClick={() => AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})}>contact us</a>
+                        </p>
+
+                    </div>
+                }
+                {
                     authUserHasWallets &&
+                    !containsRestrictedItems &&
                     !!selectedWallet &&
                     !isInsufficient &&
                     !isZero &&
@@ -490,6 +518,7 @@ class AmazonCheckoutScreen extends React.Component {
                 }
                 {
                     authUserHasWallets &&
+                    !containsRestrictedItems &&
                     !!selectedWallet &&
                     isInsufficient &&
                     <div className="text-center mt-2">

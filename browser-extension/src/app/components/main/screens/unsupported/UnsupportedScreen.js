@@ -9,6 +9,7 @@ import {
     ACTION_SET_APP_MODAL_SUCCESS_STATE
 } from "../../../../redux/reducers/constants";
 import moonFaceEmoji from "../../../../../../../assets/emoji/windows10/new-moon-with-face_1f31a.png";
+import appLogger from "../../../../utils/AppLogger";
 
 class UnsupportedScreen extends React.Component {
     constructor(props) {
@@ -29,7 +30,7 @@ class UnsupportedScreen extends React.Component {
                 this.setState(() => ({isRequested: true}));
             })
             .catch(err => {
-                logger.error("UnsupportedScreen.requestSite REQUEST_MOON_SITE_SUPPORT exception: ", err);
+                appLogger.error("UnsupportedScreen.requestSite REQUEST_MOON_SITE_SUPPORT exception: ", err);
                 this.props.onSetAppModalErrorState({
                     isActive: true,
                     text: "Hmmm. Something went wrong... Try again! If that doesn't work either, you can always call us ❤!"

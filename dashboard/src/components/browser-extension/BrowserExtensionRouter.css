@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) 2019 moon
+ */
+.browser-extension {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #2E2F33;
+}
+
+.browser-extension h1, .browser-extension p, .browser-extension a {
+    font-family: "Helvetica Neue", "Segoe UI", sans-serif, Helvetica, Arial;
+    color: white;
+}
+
+.browser-extension pre {
+    background-color: white;
+    padding: 4px;
+    border: 1px #2E2F33;
+    border-radius: 4px;
+}
