@@ -23,6 +23,7 @@ import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../util
 import FaIcon from "../../../misc/fontawesome/FaIcon";
 import ConfirmSlider from "../../../misc/confirmslider/ConfirmSlider";
 import {AMAZON_DEFAULT_CURRENCY} from "./AmazonProductScreen";
+import appLogger from "../../../../utils/AppLogger";
 
 export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
 const INITIAL_STATE = {
@@ -153,7 +154,7 @@ class AmazonCheckoutScreen extends React.Component {
                         exchangeRate: "Error",
                         walletBalanceInBase: INITIAL_STATE.walletBalanceInBase
                     }));
-                    logger.error("Failed to get exchange rate", err);
+                    appLogger.error("Failed to get exchange rate", err);
                     this.props.onSetAppModalErrorState({isActive: true, text: "Failed to get exchange rates! The server might be busy. Please try again in a few moments."});
                 });
         } else {
@@ -254,7 +255,7 @@ class AmazonCheckoutScreen extends React.Component {
         this.getPaymentPayload()
             .then(() => this.props.onSetAppModalLoadingState({isActive: false}))
             .catch(err => {
-                logger.error("AmazonCheckoutScreen.pay.getPaymentPayload exception: ", err);
+                appLogger.error("AmazonCheckoutScreen.pay.getPaymentPayload exception: ", err);
                 this.props.onSetUIBlockerState({isActive: false});
                 this.props.onSetAppModalLoadingState({isActive: false});
                 const errorMessage = err.message || (err.response && err.response.graphQLErrors && err.response.graphQLErrors[0] && err.response.graphQLErrors[0].message) || "";

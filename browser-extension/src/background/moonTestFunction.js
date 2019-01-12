@@ -4,6 +4,7 @@
 
 import MoonGraphQL from "./api/MoonGraphQL";
 import {onUpdateUser} from "./api/user";
+import backgroundLogger from "./utils/BackgroundLogger";
 
 let subscription = null;
 
@@ -12,22 +13,22 @@ let subscription = null;
  * This will be automatically tree-shaken out in production.
  */
 const moonTestFunction = async (params) => {
-    logger.log("moonTestFunction");
+    backgroundLogger.log("moonTestFunction");
     const awsAppSyncClient = await MoonGraphQL.authClient;
 
     if (subscription) {
-        logger.log("subscription: ", subscription);
+        backgroundLogger.log("subscription: ", subscription);
         subscription.unsubscribe();
         subscription = null;
     } else {
         subscription = awsAppSyncClient
             .subscribe({query: onUpdateUser})
             .subscribe({
-                next: ({data}) => logger.log("next-data: ", data),
-                complete: res => logger.log(res),
-                error: err => logger.error(err)
+                next: ({data}) => backgroundLogger.log("next-data: ", data),
+                complete: res => backgroundLogger.log(res),
+                error: err => backgroundLogger.error(err)
             });
-        logger.log("subscription: ", subscription);
+        backgroundLogger.log("subscription: ", subscription);
     }
     return new Promise(resolve => resolve(subscription));
 };

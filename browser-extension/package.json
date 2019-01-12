@@ -30,6 +30,7 @@
     "react-redux": "^5.0.7",
     "react-swipeable-views": "^0.12.14",
     "redux": "^4.0.0",
+    "uuid": "^3.3.2",
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {

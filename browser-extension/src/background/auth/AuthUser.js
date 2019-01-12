@@ -2,9 +2,10 @@
  * Copyright (c) 2018 moon
  */
 
+import backgroundLogger from "../utils/BackgroundLogger";
 import JwtToken, {isValidJWT} from "./JwtToken";
 import Storage from "../browser/Storage";
-import AWS from "../config/aws/AWS";
+import AWS, {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
 import {
     getPasswordResetFlowParams,
     getRefreshTokenParams,
@@ -15,7 +16,7 @@ import {
     URL_TOKEN_FLOW
 } from "./url";
 import axios from "axios";
-import {WEBIDENTITY_IAM_ROLE_ARN} from "../config/aws/iam";
+import {IAM_USER_ROLE_ARN} from "../config/aws/iam";
 import {getUser} from "../api/user";
 import MoonGraphQL from "../api/MoonGraphQL";
 
@@ -61,16 +62,16 @@ class AuthUser {
     static isValidTokens = (tokens) => {
         const {access_token, id_token, refresh_token} = tokens;
         if (!tokens || tokens.constructor !== Object) {
-            logger.error("tokens do not exist or are malformed");
+            backgroundLogger.error("tokens do not exist or are malformed");
 
         } else if (!access_token || !isValidJWT(access_token)) {
-            logger.error("access_token does not exist or is invalid");
+            backgroundLogger.error("access_token does not exist or is invalid");
 
         } else if (!id_token || !isValidJWT(id_token)) {
-            logger.error("id_token does not exist or is invalid");
+            backgroundLogger.error("id_token does not exist or is invalid");
 
         } else if (!refresh_token || refresh_token.constructor !== String) {
-            logger.error("refresh_token does not exist or is invalid");
+            backgroundLogger.error("refresh_token does not exist or is invalid");
 
         } else {
             return true;
@@ -144,15 +145,15 @@ class AuthUser {
     };
 
     setAWSCredentials = () => {
-        logger.log("setAWSCredentials");
+        backgroundLogger.log("setAWSCredentials");
         let credentials = new AWS.WebIdentityCredentials({
-            RoleArn: WEBIDENTITY_IAM_ROLE_ARN,
-            WebIdentityToken: this.getIdToken().getJwtToken()
-            // TODO: (maybe) Implement RoleSessionName for downstream validation
+            RoleArn: IAM_USER_ROLE_ARN,
+            WebIdentityToken: this.getIdToken().getJwtToken(),
+            RoleSessionName: `${this.getIdToken().getEmail()}-BrowserExtension`
         });
         AWS.config.update({credentials});
         return AWS.config.credentials.getPromise()
-            .catch(err => logger.error("setAWSCredentials: AWS.config.credentials.getPromise exception: ", err));
+            .catch(err => backgroundLogger.error("setAWSCredentials: AWS.config.credentials.getPromise exception: ", err));
     };
 
     /**
@@ -177,10 +178,11 @@ class AuthUser {
     signOut = () => {
         AuthUser.setInstance(null);
         MoonGraphQL.signOut();
+        AWS.config.update({credentials: PUBLIC_CREDENTIALS});
         return this.clearTokensFromStorage()
             .then(() => axios.get(URL_SIGN_OUT))
             .then(response => {
-                logger.log(`Cleared cache via OAuth logout endpoint`);
+                backgroundLogger.log(`Cleared cache via OAuth logout endpoint`);
                 return response;
             });
     };

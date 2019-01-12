@@ -3,6 +3,7 @@
  */
 
 import * as AWS from "aws-sdk";
+import {IDENTITY_POOL_ID as IdentityPoolId} from "./iam";
 
 /**
  * Note: aws-sdk uses dynamic imports on a service object declaration
@@ -17,7 +18,12 @@ import * as AWS from "aws-sdk";
 
 export const region = process.env.AWS_REGION;
 
-// Region setting should not be handled here and be set by DevOps.
-AWS.config.update({region});
+export let PUBLIC_CREDENTIALS = new AWS.CognitoIdentityCredentials({IdentityPoolId});
+
+// Default configuration is set by DevOps
+AWS.config.update({
+    region,
+    credentials: PUBLIC_CREDENTIALS
+});
 
 export default AWS;

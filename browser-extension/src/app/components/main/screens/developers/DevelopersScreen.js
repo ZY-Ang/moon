@@ -3,6 +3,7 @@ import BackButton from "../../BackButton";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_GET_ID_JWTOKEN, REQUEST_TEST_FUNCTION} from "../../../../../constants/events/appEvents";
 import {copyToClipboard} from "../../../../utils/dom";
+import appLogger from "../../../../utils/AppLogger";
 
 class DevelopersScreen extends React.Component {
     constructor(props) {
@@ -21,14 +22,14 @@ class DevelopersScreen extends React.Component {
         const params = this.state;
         AppRuntime.sendMessage(REQUEST_TEST_FUNCTION, {params})
             .then(response => {
-                logger.log("%cTEST FUNCTION SUCCEEDED. Response:", 'background: #6b0; color: #fff', response);
+                appLogger.log("%cTEST FUNCTION SUCCEEDED. Response:", 'background: #6b0; color: #fff', response);
                 this.setState(() => ({
                     isSuccess: true,
                     isError: false
                 }));
             })
             .catch(err => {
-                logger.error("TEST FUNCTION FAILED. Error:", err);
+                appLogger.error("TEST FUNCTION FAILED. Error:", err);
                 this.setState(() => ({
                     isSuccess: false,
                     isError: true
@@ -38,14 +39,14 @@ class DevelopersScreen extends React.Component {
     };
 
     getIdToken = () => {
-        logger.log("getIdToken");
+        appLogger.log("getIdToken");
         AppRuntime.sendMessage(REQUEST_GET_ID_JWTOKEN)
-            .then(response => copyToClipboard(response))
-            .then(res => logger.log(res))
+            .then(res => copyToClipboard(res))
+            .then(res => appLogger.log(res))
             .then(() => this.setState(() => ({idJWToken: "Copied to clipboard"})))
             .catch(err => {
                 this.setState(() => ({idJWToken: "Error. Check logs"}));
-                logger.error(err);
+                appLogger.error(err);
             });
     };
 
