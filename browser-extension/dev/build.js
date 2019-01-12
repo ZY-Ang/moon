@@ -7,6 +7,7 @@ const AWS = require("aws-sdk");
 const fs = require("fs");
 const shell = require("shelljs");
 const path = require("path");
+const {version} = require("../package.json");
 
 const getAWSAccountId = (credentials) => new Promise((resolve, reject) =>
     (new AWS.STS({credentials}))
@@ -125,6 +126,7 @@ const build = async () => {
     shell.rm('-rf', `${DIR_BUILD}*`);
     console.log("Force recreating build folder...");
     shell.mkdir('-p', DIR_BUILD);
+    shell.mkdir('-p', `${DIR_BUILD}zipped/`);
     console.log("===========================================================\n");
 
 // 2. Build browser-extension
@@ -159,10 +161,23 @@ const build = async () => {
     console.log("===========================================================\n");
 
 // 5. Zip folder on production to prepare for WebStore deployments
-    if (shell.env.NODE_ENV === 'production') {
+    if (shell.env.CI || shell.env.NODE_ENV === 'production') {
         console.log("Zipping up folder...");
 
-        const PATH_ZIP_EXIT = `${DIR_BUILD}moon-extension.zip`;
+        let PATH_ZIP_EXIT = `${DIR_BUILD}zipped/moon-extension`;
+        if (!!version) {
+            PATH_ZIP_EXIT += `.v${version}`;
+        }
+        if (!!shell.env.NODE_ENV) {
+            PATH_ZIP_EXIT += `.${shell.env.NODE_ENV}`;
+        }
+        if (!!shell.env.CIRCLE_BRANCH) {
+            PATH_ZIP_EXIT += `.BRANCH-${shell.env.CIRCLE_BRANCH}`;
+        }
+        if (!!shell.env.CIRCLE_BUILD_NUM) {
+            PATH_ZIP_EXIT += `.CIRCLECI-BUILD-${shell.env.CIRCLE_BUILD_NUM}`;
+        }
+        PATH_ZIP_EXIT += ".zip";
         const zip = new AdmZip();
         zip.addLocalFolder(DIR_BUILD);
         await new Promise((resolve, reject) =>
