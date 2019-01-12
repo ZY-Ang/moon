@@ -18,6 +18,8 @@
       <excludeFolder url="file://$MODULE_DIR$/browser-extension/.cache" />
       <excludeFolder url="file://$MODULE_DIR$/browser-extension/build" />
       <excludeFolder url="file://$MODULE_DIR$/browser-extension/src/build" />
+      <excludeFolder url="file://$MODULE_DIR$/dashboard/.firebase" />
+      <excludeFolder url="file://$MODULE_DIR$/dashboard/build" />
       <excludeFolder url="file://$MODULE_DIR$/database/nonCheckoutReports/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/database/paymentPayloadRecords/.serverless" />
       <excludeFolder url="file://$MODULE_DIR$/database/paymentPayloadRecords/node_modules" />
