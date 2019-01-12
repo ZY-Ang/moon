@@ -1,4 +1,4 @@
-# [Moon](https://paywithmoon.com/) &middot; [![CircleCI](https://circleci.com/gh/paywithmoon/moon/tree/master.svg?style=svg&circle-token=8eefab7e2547ccc1a17e25f2d05e857d62a786a4)](https://circleci.com/gh/paywithmoon/moon/tree/master)
+# [<img alt="Moon" src="https://github.com/paywithmoon/moon/blob/master/assets/icons/logo_300_text_dark.png" height="38px">](https://paywithmoon.com/) &middot; [![CircleCI](https://circleci.com/gh/paywithmoon/moon/tree/master.svg?style=svg&circle-token=8eefab7e2547ccc1a17e25f2d05e857d62a786a4)](https://circleci.com/gh/paywithmoon/moon/tree/master)
 
 Moon is a platform that allows users to shop anywhere online with cryptocurrency.
 
@@ -10,7 +10,6 @@ Moon is a platform that allows users to shop anywhere online with cryptocurrency
 4. Run either:
    - `npm run install-all` to install packages for all projects at once, or;
    - `npm install` on the individual projects you are working on to reduce project size.
-5. 
 
 ## Front End Developers Look Here!
 
@@ -52,6 +51,7 @@ This is a standard `create-react-app` application. Stuff you might need to learn
 - `aws` (Our backend is mostly on `aws`)
 - `auth0` (Our authentication service)
 - `firebase` (We host the dashboard on `firebase`)
+- `github hosting` (We can alternatively host the site on github for free)
 
 To get started,
 
