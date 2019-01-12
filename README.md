@@ -1,4 +1,4 @@
-# [<img alt="Moon" src="https://github.com/paywithmoon/moon/blob/master/assets/icons/logo_300_text_dark.png" height="38px">](https://paywithmoon.com/) &middot; [![CircleCI](https://circleci.com/gh/paywithmoon/moon/tree/master.svg?style=svg&circle-token=8eefab7e2547ccc1a17e25f2d05e857d62a786a4)](https://circleci.com/gh/paywithmoon/moon/tree/master)
+# [<img alt="Moon" src="https://github.com/paywithmoon/moon/blob/master/assets/icons/logo_300_text_dark.png" height="38px">](https://paywithmoon.com/) &middot; [![CircleCI](https://circleci.com/gh/paywithmoon/moon/tree/master.svg?style=svg&circle-token=8eefab7e2547ccc1a17e25f2d05e857d62a786a4)](https://circleci.com/gh/paywithmoon/moon/tree/master)  [![Codacy Badge](https://api.codacy.com/project/badge/Grade/983333a580104fa39f2895b67bb4f248)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paywithmoon/moon&amp;utm_campaign=Badge_Grade)
 
 Moon is a platform that allows users to shop anywhere online with cryptocurrency.
 
