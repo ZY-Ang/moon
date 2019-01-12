@@ -71,6 +71,20 @@ commands:
               aws_access_key_id=$PAYWITHMOON_AWS_ACCESS_KEY_ID
               aws_secret_access_key=$PAYWITHMOON_AWS_SECRET_ACCESS_KEY
             " >> ~/.aws/credentials
+  install_npm_latest:
+    description: "Installs the latest version of npm"
+    steps:
+      - run:
+          name: Update npm to v2
+          command: npm install npm@2 -g
+      - run:
+          name: Update npm to latest
+          command: npm install npm@latest -g
+  install_firebase_global:
+    description: "Installs firebase globally as a hotfix for firebase-tools failure to install in devDependencies on 2.1"
+    steps:
+      - run:
+          command: npm install firebase-tools -g
   install_database:
     description: "Installs dependencies in preparation to deploy databases"
     steps:
@@ -215,13 +229,15 @@ jobs:
       - install_dashboard
       - run:
           working_directory: ~/repo/dashboard
-          command: npm run test
+          command: npm test
       - run:
           working_directory: ~/repo/dashboard
           command: npm run build
+      - install_firebase_global
       - run:
           working_directory: ~/repo/dashboard
-          command: ./node_modules/.bin/firebase deploy --token $FIREBASE_TOKEN
+          name: Firebase Deploy (With Token)
+          command: firebase deploy --token=$FIREBASE_TOKEN
   backend_deploy_lambda_development:
     <<: *config_project_defaults
     <<: *config_env_development
