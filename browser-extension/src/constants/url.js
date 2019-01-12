@@ -2,7 +2,8 @@
  * Copyright (c) 2018 moon
  */
 
-import {ROUTE_BROWSER_EXTENSION, ROUTE_LOGOUT, ROUTE_OAUTH_REDIRECT} from "../../../dashboard/src/components/App";
+import {ROUTE_LOGOUT} from "../../../dashboard/src/constants/routes";
+import {ROUTE_BROWSER_EXTENSION, ROUTE_OAUTH_REDIRECT} from "../../../dashboard/src/constants/routes";
 
 export const DOMAIN = "paywithmoon.com";
 export const URL_LANDING_PAGE = `https://${DOMAIN}/`;

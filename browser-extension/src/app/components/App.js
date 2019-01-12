@@ -88,13 +88,13 @@ class App extends Component {
                                 <div
                                     className="text-center"
                                 >
-                                    <button
+                                    <div
                                         id="moon-header-support-button"
-                                        className="btn-support"
+                                        className={`moon-header-button${this.state.isHoverHeaderButtons ? " hover" : ""}`}
                                         onClick={this.openChatPopUp}
                                     >
                                         <FaIcon icon="comments"/>
-                                    </button>
+                                    </div>
                                 </div>
                                 <div
                                     id="moon-header-toggle-button"

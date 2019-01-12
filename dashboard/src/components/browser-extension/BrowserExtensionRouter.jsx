@@ -9,7 +9,8 @@ import {Route, Switch} from "react-router-dom";
 import BrowserExtensionLogoutPage from "./BrowserExtensionLogoutPage";
 import BrowserExtensionNotFoundPage from "./BrowserExtensionNotFoundPage";
 import BrowserExtensionErrorPage from "./BrowserExtensionErrorPage";
-import {ROUTE_ERROR, ROUTE_LOGOUT, ROUTE_OAUTH_REDIRECT} from "../App";
+import {ROUTE_ERROR} from "../../constants/routes";
+import {ROUTE_LOGOUT, ROUTE_OAUTH_REDIRECT} from "../../constants/routes";
 
 class BrowserExtensionRouter extends React.Component {
     render() {
