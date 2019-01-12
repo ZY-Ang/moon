@@ -3,6 +3,7 @@
  */
 
 import {tabDidUpdate} from "../windowManager";
+import backgroundLogger from "../utils/BackgroundLogger";
 
 /**
  * Interface for interaction with the browser's tabs API
@@ -47,7 +48,7 @@ class Tabs {
             .then(tab => {
                 if (!!tab) {
                     return Tabs.sendMessage(tab.id, message, options)
-                        .catch(() => logger.log(`Receiving end probably does not exist.`));
+                        .catch(() => backgroundLogger.log(`Receiving end probably does not exist.`));
                 }
                 // Otherwise, page is not ready.
             });
@@ -62,7 +63,7 @@ class Tabs {
             .then(tabs => tabs.filter(tab => (!!tab)))
             .then(tabs => tabs.forEach(tab =>
                 Tabs.sendMessage(tab.id, message, options)
-                    .catch(() => logger.log(`Message broadcast: Skipping ${tab.id}. Receiving end probably does not exist.`))
+                    .catch(() => backgroundLogger.log(`Message broadcast: Skipping ${tab.id}. Receiving end probably does not exist.`))
             ));
 
     /**
@@ -110,7 +111,7 @@ class Tabs {
             if (!!tabs && tabs.length === 1) {
                 resolve(tabs[0]);
             } else {
-                logger.log("Unable to get active tab");
+                backgroundLogger.log("Unable to get active tab");
                 resolve(null);
             }
         });

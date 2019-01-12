@@ -95,6 +95,14 @@ const build = async () => {
     console.log(`AWS_REGION:\t\t\t\t\t\t${shell.env.AWS_REGION}${!shell.env.AWS_REGION?` => ${DEFAULT_AWS_REGION}`:''}`);
     shell.env.AWS_REGION = process.env.AWS_REGION || DEFAULT_AWS_REGION;
 
+    // AWS_IAM_USER_ROLE_ARN
+    shell.env.AWS_IAM_USER_ROLE_ARN = await getCloudFormationStackOutput(credentials, `moon-backend-${shell.env.NODE_ENV}`, "UserRoleArn");
+    console.log(`AWS_IAM_USER_ROLE_ARN:\t\t\t${(shell.env.AWS_IAM_USER_ROLE_ARN)}`);
+
+    // AWS_IDENTITY_POOL_ID
+    shell.env.AWS_IDENTITY_POOL_ID = await getCloudFormationStackOutput(credentials, `moon-backend-${shell.env.NODE_ENV}`, "IdentityPoolId");
+    console.log(`AWS_IDENTITY_POOL_ID:\t\t\t${(shell.env.AWS_IDENTITY_POOL_ID)}`);
+
     // AWS_APPSYNC_ENDPOINT_AUTH
     shell.env.AWS_APPSYNC_ENDPOINT_AUTH = await getCloudFormationStackOutput(credentials, `moon-backend-appsync-authenticated-${shell.env.NODE_ENV}`, "ApiUrl");
     console.log(`AWS_APPSYNC_ENDPOINT_AUTH:\t\t${(shell.env.AWS_APPSYNC_ENDPOINT_AUTH)}`);

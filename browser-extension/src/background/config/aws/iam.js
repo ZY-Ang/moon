@@ -3,4 +3,5 @@
  */
 
 const ACCOUNT_ID = process.env.AWS_ACCOUNT_ID;
-export const WEBIDENTITY_IAM_ROLE_ARN = `arn:aws:iam::${ACCOUNT_ID}:role/moon-backend-${process.env.NODE_ENV}-user-role`;
+export const IAM_USER_ROLE_ARN = process.env.AWS_IAM_USER_ROLE_ARN;
+export const IDENTITY_POOL_ID = process.env.AWS_IDENTITY_POOL_ID;

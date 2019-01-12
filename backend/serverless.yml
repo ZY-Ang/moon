@@ -17,7 +17,49 @@ plugins:
   - serverless-cloudformation-changesets
 
 resources:
+  Outputs:
+    IdentityPoolId:
+      Value:
+        Ref: IdentityPool
+    UserRoleArn:
+      Value: { Fn::GetAtt: [UserRole, Arn] }
   Resources:
+    IdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        # IdentityPoolName has to satisfy /[\w ]+/g regex :(
+        IdentityPoolName: moon_${{self:provider.stage}}_identityPool
+        AllowUnauthenticatedIdentities: true
+
+    IdentityPoolRoles:
+      Type: AWS::Cognito::IdentityPoolRoleAttachment
+      Properties:
+        IdentityPoolId:
+          Ref: IdentityPool
+        Roles:
+          unauthenticated: { Fn::GetAtt: [PublicRole, Arn] }
+
+    PublicRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${{self:service}}-${{self:provider.stage}}-public-role
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: 'Allow'
+            Principal:
+              Federated: 'cognito-identity.amazonaws.com'
+            Action:
+            - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                "cognito-identity.amazonaws.com:aud":
+                  Ref: IdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": unauthenticated
+        Policies:
+        - ${{self:custom.browserExtensionCloudWatchLogsPolicy}}
+
     UserRole:
       # Specifies the AWS resources that authenticated users from the moon federated provider are authorized to access.
       Type: AWS::IAM::Role
@@ -38,6 +80,7 @@ resources:
                 paywithmoon.auth0.com/:aud:
                 - ${{file(./config/auth0.json):aud}}
         Policies:
+        - ${{self:custom.browserExtensionCloudWatchLogsPolicy}}
         - PolicyName: AppSync-policy
           PolicyDocument:
             Version: "2012-10-17"
@@ -63,6 +106,12 @@ resources:
                   dynamodb:LeadingKeys:
                     - "${${{file(./config/auth0.json):short_iss}}:sub}"
 
+    BrowserExtensionLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: ${{self:custom.browserExtensionCloudWatchLogGroupName}}
+        RetentionInDays: 7
+
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
   # See link for credentials documentation:
@@ -78,6 +127,22 @@ custom:
   appSyncAPIs:
     authenticated:
       Arn: ${{cf:moon-backend-appsync-authenticated-${{self:provider.stage}}.ApiArn}}
+
+  browserExtensionCloudWatchLogGroupName: browser-extension-${{self:provider.stage}}
+
+  browserExtensionCloudWatchLogsPolicy:
+    PolicyName: BrowserExtensionCloudWatchlogs-policy
+    PolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: 'Allow'
+        Action:
+        - 'logs:PutLogEvents'
+        - 'logs:createLogGroup'
+        - 'logs:createLogStream'
+        Resource:
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:${{self:custom.browserExtensionCloudWatchLogGroupName}}:*']] }
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:${{self:custom.browserExtensionCloudWatchLogGroupName}}']] }
 
   dynamoDBTables:
     UserSecrets:

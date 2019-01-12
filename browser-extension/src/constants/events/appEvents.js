@@ -10,8 +10,11 @@ export const REQUEST_TEST_FUNCTION = "MOON_TEST_FUNCTION";
 export const REQUEST_GET_ID_JWTOKEN = "MOON_GET_ID_TOKEN";
 
 // --------------------- Launch Web Auth Flow ---------------------
+export const REQUEST_LOG = "MOON_REQUEST_LOG";
+
+// --------------------- Launch Web Auth Flow ---------------------
 /** Used to request launch of the auth flow */
-export const REQUEST_LAUNCH_WEB_AUTH_FLOW = "MOON_LAUNCH_AUTH_FLOW";
+export const REQUEST_LAUNCH_WEB_AUTH_FLOW = "MOON_REQUEST_LAUNCH_WEB_AUTH_FLOW";
 
 /** Used to notify of sign in via email and password */
 export const TYPE_STANDARD_SIGN_IN = "TypeStandardSignIn";

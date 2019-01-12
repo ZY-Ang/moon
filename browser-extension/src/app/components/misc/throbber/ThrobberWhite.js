@@ -4,7 +4,7 @@
 import React from 'react';
 import {detect} from 'detect-browser';
 import throbber from '../../../../../../assets/icons/throbber_200_white.svg';
-import throbber_fallback from '../../../../../../assets/icons/throbber_200.gif';
+import throbber_fallback from '../../../../../../assets/icons/throbber_200_white.gif';
 import AppRuntime from "../../../browser/AppRuntime";
 
 const ThrobberWhite = (props) => {

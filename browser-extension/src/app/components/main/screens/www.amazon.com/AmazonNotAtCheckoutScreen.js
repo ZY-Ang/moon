@@ -11,6 +11,7 @@ import {
 } from "../../../../redux/reducers/constants";
 import smilingFaceEmoji
     from "../../../../../../../assets/emoji/windows10/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png";
+import appLogger from "../../../../utils/AppLogger";
 
 class AmazonNotAtCheckoutScreen extends React.Component {
     reportIsCheckout = () => {
@@ -28,7 +29,7 @@ class AmazonNotAtCheckoutScreen extends React.Component {
                 });
             })
             .catch(err => {
-                logger.error("AmazonNotAtCheckoutScreen.reportIsCheckout REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
+                appLogger.error("AmazonNotAtCheckoutScreen.reportIsCheckout REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
                 this.props.onSetAppModalErrorState({
                     isActive: true,
                     text: "Hmmm... Something went wrong, try again! If that doesn't work either, you can always call to tell us ❤!"

@@ -427,6 +427,10 @@ a {
     outline: none;
 }
 
+#moon-header-toggle-button {
+    margin-left: 12px;
+}
+
 #moon-header-toggle-button svg {
     -webkit-transition: transform 0.2s ease;
     -moz-transition: transform 0.2s ease;
@@ -453,6 +457,18 @@ a {
 
 #moon-header-toggle-button.maximized:active path {
     color: rgb(179, 113, 0);
+}
+
+#moon-header-support-button {
+    opacity: .7;
+}
+
+#moon-header-support-button.hover {
+    opacity: .5;
+}
+
+#moon-header-support-button:active {
+    opacity: 1.0;
 }
 
 #moon-header-close-button {
@@ -658,43 +674,6 @@ a {
     border-color: #0667D0;
 }
 
-#moon-header-support-button {
-    margin-right: 6px;
-}
-
 .text-center {
     text-align: center !important;
-}
-
-.btn-support svg {
-    height: 20px;
-    padding-bottom: 5px;
-}
-.btn-support {
-    cursor: pointer;
-    padding: 0;
-    border: 0;
-    text-align: center;
-    width: 36px;
-    height: 25px;
-    background-color: transparent;
-    -webkit-transition: all 0.2s ease;
-    -moz-transition: all 0.2s ease;
-    -ms-transition: all 0.2s ease;
-    -o-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-}
-
-.btn-support:hover {
-    opacity: .7;
-    -webkit-transition: all 0.2s ease;
-    -moz-transition: all 0.2s ease;
-    -ms-transition: all 0.2s ease;
-    -o-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-}
-
-.btn-support:active,
-.btn-support:focus {
-    outline: 0 !important;
 }
