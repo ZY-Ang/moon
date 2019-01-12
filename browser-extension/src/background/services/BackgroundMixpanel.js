@@ -2,6 +2,7 @@
  * Copyright (c) 2019 moon
  */
 
+import backgroundLogger from "../utils/BackgroundLogger";
 import mixpanel from "mixpanel-browser";
 import AuthUser from "../auth/AuthUser";
 
@@ -34,7 +35,7 @@ class BackgroundMixpanel {
      */
     static track = async (eventName, properties) => {
         if (!mixPanelReady) {
-            logger.warn("Mixpanel not loaded yet.");
+            backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
         } else {
             return new Promise((resolve) => mixpanel.track(eventName, properties, resolve));
@@ -71,7 +72,7 @@ class BackgroundMixpanel {
      */
     static identify = async (uniqueId) => {
         if (!mixPanelReady) {
-            logger.warn("Mixpanel not loaded yet.");
+            backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
         } else {
             return new Promise((resolve) => mixpanel.identify(uniqueId, resolve));

@@ -4,6 +4,7 @@
 
 import {decode} from "jsonwebtoken";
 import {URL_OAUTH_SERVER} from "./url";
+import backgroundLogger from "../utils/BackgroundLogger";
 
 /**
  * Verifies a JWT on the client without
@@ -21,7 +22,7 @@ export const isValidJWT = (token) => {
         return true;
 
     } catch (err) {
-        logger.error("isValidJWT exception: ", err);
+        backgroundLogger.error("isValidJWT exception: ", err);
         return false;
     }
 };

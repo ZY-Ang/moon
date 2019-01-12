@@ -22,6 +22,7 @@ import {
     TEXT_MODAL_HEADER_TITLE
 } from "../../constants/coinbase";
 import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
+import appLogger from "../utils/AppLogger";
 
 /**
  * Requested by the background script to extract the api
@@ -29,7 +30,7 @@ import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
  * the popup.
  */
 export const doExtractCoinbaseApiKeys = () => {
-    logger.log("doExtractCoinbaseApiKeys");
+    appLogger.log("doExtractCoinbaseApiKeys");
     return AppRuntime.sendMessage(POLL_IS_COINBASE_AUTH_MODE)
         .then(response => {
             if (response) {
@@ -105,7 +106,7 @@ export const doExtractCoinbaseApiKeys = () => {
                 ) {
                     document.getElementById(ID_ADD_NEW_KEY_BUTTON).click();
                 } else if (document.getElementById(ID_API_KEYS_MODAL).children.length !== 0) {
-                    logger.log("API keys modal already being shown. Skipping button click");
+                    appLogger.log("API keys modal already being shown. Skipping button click");
                 } else {
                     reject(new Error("Add new key button does not exist on DOM at load completion. Something bad has happened."));
                 }
@@ -115,5 +116,5 @@ export const doExtractCoinbaseApiKeys = () => {
         }))
         .then(apiKeys => AppRuntime.sendMessage(REQUEST_UPDATE_COINBASE_API_KEYS, apiKeys))
         .then(() => window.location.replace(URL_COINBASE_POST_CONNECTION))
-        .catch(err => logger.error("doExtractCoinbaseApiKeys exception: ", err));
+        .catch(err => appLogger.error("doExtractCoinbaseApiKeys exception: ", err));
 };

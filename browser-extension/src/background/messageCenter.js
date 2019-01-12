@@ -2,6 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
+import backgroundLogger from "./utils/BackgroundLogger";
 import {
     POLL_IS_COINBASE_AUTH_MODE,
     REQUEST_GET_EXCHANGE_RATE,
@@ -21,7 +22,7 @@ import {
     REQUEST_UPDATE_AUTH_USER,
     REQUEST_UPDATE_COINBASE_API_KEYS,
     REQUEST_UPDATE_ONBOARDING_SKIP,
-    REQUEST_OPEN_POPUP
+    REQUEST_OPEN_POPUP, REQUEST_LOG
 } from "../constants/events/appEvents";
 import {doGlobalSignOut, doLaunchWebAuthFlow, doSignOut, doUpdateAuthUserEvent} from "./auth/index";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
@@ -63,12 +64,16 @@ const messageCenter = (request, sender, sendResponse) => {
             }
             sendFailure("You are not authorized to access this experimental feature yet.");
         },
+        [REQUEST_LOG]() {
+            backgroundLogger.resolveDynamicLogger(request.type, request.prefix, ...request.arguments);
+            sendSuccess();
+        },
         [REQUEST_GET_ID_JWTOKEN]() {
             if (process.env.NODE_ENV !== 'production') {
                 AuthUser.getInstance().getRefreshedIdJWToken()
                     .then(sendSuccess)
                     .catch(err => {
-                        logger.error("messageCenter.REQUEST_GET_ID_JWTOKEN exception: ", err);
+                        backgroundLogger.error("messageCenter.REQUEST_GET_ID_JWTOKEN exception: ", err);
                         sendFailure(err);
                     });
                 return true;
@@ -79,7 +84,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doLaunchWebAuthFlow(request.type)
                 .then(() => sendSuccess(`doLaunchWebAuthFlow(${request.type}) completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_LAUNCH_WEB_AUTH_FLOW exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_LAUNCH_WEB_AUTH_FLOW exception: ", err);
                     sendFailure(`doLaunchWebAuthFlow(${request.type}) failed`);
                 });
             return true;
@@ -88,7 +93,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doLaunchCoinbaseAuthFlow()
                 .then(() => sendSuccess(`doLaunchCoinbaseAuthFlow() completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_LAUNCH_COINBASE_AUTH_FLOW exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_LAUNCH_COINBASE_AUTH_FLOW exception: ", err);
                     sendFailure(`doLaunchCoinbaseAuthFlow() failed`);
                 });
             return true;
@@ -101,7 +106,7 @@ const messageCenter = (request, sender, sendResponse) => {
                 .then(() => doUpdateAuthUserEvent(sender.tab))
                 .then(() => sendSuccess(`updateOnboardingSkipExpiry(${request.delay}) skipped`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_UPDATE_ONBOARDING_SKIP exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_UPDATE_ONBOARDING_SKIP exception: ", err);
                     sendFailure(`updateOnboardingSkipExpiry(${request.delay}) failed`);
                 });
             return true;
@@ -115,7 +120,7 @@ const messageCenter = (request, sender, sendResponse) => {
             getExchangeRate(request.quote, request.base)
                 .then(exchangeRate => sendSuccess(exchangeRate))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_GET_EXCHANGE_RATE exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_GET_EXCHANGE_RATE exception: ", err);
                     sendFailure(`getExchangeRate(${request.quote}, ${request.base}) failed`);
                 });
             return true;
@@ -124,7 +129,7 @@ const messageCenter = (request, sender, sendResponse) => {
             getExchangeRates(request.pairs)
                 .then(exchangeRates => sendSuccess(exchangeRates))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_GET_EXCHANGE_RATES exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_GET_EXCHANGE_RATES exception: ", err);
                     sendFailure(`getExchangeRates(${request.pairs}) failed`);
                 });
             return true;
@@ -137,14 +142,14 @@ const messageCenter = (request, sender, sendResponse) => {
                 })
                 .then(responses => sendSuccess(responses))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_GET_PAYMENT_PAYLOAD exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_GET_PAYMENT_PAYLOAD exception: ", err);
                     sendFailure(err);
                 });
             return true;
         },
         [REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION]() {
             // FIXME: FIXME: FIXME: FIXME: FIXME: FIXME IMPLEMENT IMPLEMENT - Log to db, pageinfo, etc
-            logger.log("Notify payment payload completion request: ", request);
+            backgroundLogger.log("Notify payment payload completion request: ", request);
             Tabs.sendMessage(sender.tab.id, REQUEST_PAYMENT_COMPLETED_OFF_MODAL, {isSuccess: true}) // TODO: Only send success if all success or something
                 .finally(() => sendSuccess(true));
             return true;
@@ -153,7 +158,7 @@ const messageCenter = (request, sender, sendResponse) => {
             getSiteInformation(request.host)
                 .then(({data}) => sendSuccess(data.siteInformation))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_GET_SITE_INFORMATION exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_GET_SITE_INFORMATION exception: ", err);
                     sendFailure(`getSiteInformation(${request.host}) failed`);
                 });
             return true;
@@ -162,7 +167,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doAddSiteSupportRequest(AuthUser.getEmail(), request.host)
                 .then(({data}) => sendSuccess(data))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_MOON_SITE_SUPPORT exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_MOON_SITE_SUPPORT exception: ", err);
                     sendFailure(`doAddSiteSupportRequest(${request.host}) failed`);
                 });
             return true;
@@ -171,7 +176,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doAddNonCheckoutReport(request.url, request.content, AuthUser.getEmail())
                 .then(({data}) => sendSuccess(data))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
                     sendFailure(`doAddNonCheckoutReport(${request.url}, LARGE_CONTENT, ${AuthUser.getEmail()}) failed`);
                 });
             return true;
@@ -180,7 +185,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doUpdateAuthUserEvent(sender.tab)
                 .then(() => sendSuccess(`doUpdateAuthUserEvent(...) completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
+                    backgroundLogger.warn("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
                     sendFailure(`doUpdateAuthUserEvent(${JSON.stringify(sender.tab)}) failed`);
                 });
             return true;
@@ -189,7 +194,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doPasswordReset()
                 .then(() => sendSuccess(`doPasswordReset() completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_RESET_PASSWORD exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_RESET_PASSWORD exception: ", err);
                     sendFailure(`doPasswordReset() failed`);
                 });
             return true;
@@ -198,7 +203,7 @@ const messageCenter = (request, sender, sendResponse) => {
             BackgroundMixpanel.resolve(request._functionName, request._args)
                 .then(response => sendSuccess(response))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_MIXPANEL exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_MIXPANEL exception: ", err);
                     sendFailure(`Mixpanel tracking failed`);
                 });
             return true;
@@ -207,7 +212,7 @@ const messageCenter = (request, sender, sendResponse) => {
             doSignOut()
                 .then(() => sendSuccess(`doSignOut() completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_SIGN_OUT exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_SIGN_OUT exception: ", err);
                     sendFailure(`doSignOut() failed`);
                 });
             return true;
@@ -216,17 +221,17 @@ const messageCenter = (request, sender, sendResponse) => {
             doGlobalSignOut()
                 .then(() => sendSuccess(`doGlobalSignOut() completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_GLOBAL_SIGN_OUT exception: ", err);
+                    backgroundLogger.error("messageCenter.REQUEST_GLOBAL_SIGN_OUT exception: ", err);
                     sendFailure(`doGlobalSignOut() failed`);
                 });
             return true;
         },
         [REQUEST_OPEN_POPUP]() {
-            Windows.openPopup(request.url, 600,400)
+            Windows.create(request)
                 .then(() => sendSuccess(`Windows.openPopup() completed`))
                 .catch(err => {
-                    logger.error("messageCenter.REQUEST_OPEN_POPUP", err);
-                    sendFailure("Windows.openPopup() failed");
+                    backgroundLogger.error("messageCenter.REQUEST_OPEN_POPUP", err);
+                    sendFailure("Windows.create() failed");
                 });
             return true;
         }
@@ -234,7 +239,7 @@ const messageCenter = (request, sender, sendResponse) => {
     if (request.message && request.message in messageResolver) {
         return messageResolver[request.message]();
     } else {
-        logger.warn("messageCenter Received an unknown message.\nRequest: ", JSON.stringify(request), "\nSender: ", JSON.stringify(sender));
+        backgroundLogger.warn("messageCenter Received an unknown message.\nRequest: ", JSON.stringify(request), "\nSender: ", JSON.stringify(sender));
         sendFailure("Background messageCenter received an unknown request");
     }
 };

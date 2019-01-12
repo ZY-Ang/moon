@@ -7,6 +7,7 @@ import {ACTION_SET_COINBASE_AUTH_FLOW} from "../redux/reducers/coinbase";
 import Windows from "../browser/Windows";
 import {URL_COINBASE_SETTINGS_API} from "../../constants/coinbase";
 import {doUpdateCoinbaseApiKey} from "../api/user";
+import backgroundLogger from "../utils/BackgroundLogger";
 
 /**
  * Global timeout variable defined to
@@ -19,7 +20,7 @@ let coinbaseAuthFlowTimeout = null;
  */
 export const doLaunchCoinbaseAuthFlow = () => {
     clearTimeout(coinbaseAuthFlowTimeout);
-    logger.log("doLaunchCoinbaseAuthFlow");
+    backgroundLogger.log("doLaunchCoinbaseAuthFlow");
     store.dispatch({
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: true
@@ -28,29 +29,32 @@ export const doLaunchCoinbaseAuthFlow = () => {
         type: ACTION_SET_COINBASE_AUTH_FLOW,
         isCoinbaseAuthFlow: false
     }), 300000);
-    return Windows.openPopup(URL_COINBASE_SETTINGS_API);
+    return Windows.create({
+        url: URL_COINBASE_SETTINGS_API,
+        type: "popup"
+    });
 };
 /**
  * Updates the coinbase API Key into the secure database
  */
 export const doUpdateCoinbaseApiKeyEvent = (apiKey, apiSecret, innerHTML, senderTab) => {
-    logger.log("doUpdateCoinbaseApiKeyEvent");
+    backgroundLogger.log("doUpdateCoinbaseApiKeyEvent");
     return new Promise((resolve, reject) => {
         if (!apiKey || apiKey.constructor !== String) {
-            logger.error(`apiKey (${apiKey}) is not supplied or is invalid`);
+            backgroundLogger.error(`apiKey (${apiKey}) is not supplied or is invalid`);
             reject(new Error("apiKey invalid"));
         } else if (!apiSecret || apiSecret.constructor !== String) {
-            logger.error(`apiSecret (${apiSecret}) is not supplied or is invalid`);
+            backgroundLogger.error(`apiSecret (${apiSecret}) is not supplied or is invalid`);
             reject(new Error("apiSecret invalid"));
         } else if (!innerHTML || innerHTML.constructor !== String) {
-            logger.error(`innerHTML (${innerHTML}) is not supplied or is invalid`);
+            backgroundLogger.error(`innerHTML (${innerHTML}) is not supplied or is invalid`);
             reject(new Error("innerHTML invalid"));
         } else {
             resolve(true);
         }
     })
         .then(() => doUpdateCoinbaseApiKey(apiKey, apiSecret, innerHTML))
-        .then(({data}) => logger.log("Successfully added new API Keys: ", data))
+        .then(({data}) => backgroundLogger.log("Successfully added new API Keys: ", data))
         .finally(() => {
             store.dispatch({
                 type: ACTION_SET_COINBASE_AUTH_FLOW,
