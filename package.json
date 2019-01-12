@@ -4,7 +4,8 @@
   "description": "The world's first cryptocurrency e-commerce platform",
   "private": true,
   "scripts": {
-    "install-all": "npm install && npm-run-all --parallel install-database install-backend install-backend-lambda install-browser-extension",
+    "install-all": "npm install && npm-run-all --parallel install-database install-dashboard install-backend install-backend-lambda install-browser-extension",
+    "install-dashboard": "cd dashboard && npm install",
     "install-database": "cd database && npm install",
     "install-backend": "cd backend && npm install",
     "install-backend-lambda": "cd backend/Lambda && npm install",
