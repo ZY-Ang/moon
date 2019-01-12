@@ -4,8 +4,8 @@
 import React from "react";
 import {parse, stringify} from "query-string";
 import ThrobberWhite from "../misc/throbber/ThrobberWhite";
-import {ROUTE_ERROR} from "../App";
-import {ROUTE_BROWSER_EXTENSION} from "../App";
+import {ROUTE_ERROR} from "../../constants/routes";
+import {ROUTE_BROWSER_EXTENSION} from "../../constants/routes";
 
 class BrowserExtensionOAuthRedirectPage extends React.Component {
     componentDidMount() {

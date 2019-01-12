@@ -9,13 +9,8 @@ import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import ScrollToTop from "./ScrollToTop";
 import HomePage from "./HomePage";
 import BrowserExtensionRouter from "./browser-extension/BrowserExtensionRouter";
+import {ROUTE_BROWSER_EXTENSION, ROUTE_ERROR, ROUTE_HOME, ROUTE_NOT_FOUND} from "../constants/routes";
 
-const ROUTE_HOME = "/";
-export const ROUTE_BROWSER_EXTENSION = "/extension";
-export const ROUTE_OAUTH_REDIRECT = "/oauth";
-export const ROUTE_LOGOUT = "/logout";
-export const ROUTE_ERROR = "/error";
-const ROUTE_NOT_FOUND = '/404';
 
 class App extends React.Component {
     render() {
