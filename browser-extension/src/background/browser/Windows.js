@@ -3,6 +3,7 @@
  */
 
 import {tabDidUpdate} from "../windowManager";
+import backgroundLogger from "../utils/BackgroundLogger";
 
 /**
  * Interface for interaction with the browser's windows API
@@ -27,7 +28,7 @@ class Windows {
         }, window => {
             const lastError = chrome.runtime.lastError;
             if (!!lastError) {
-                logger.error(lastError);
+                backgroundLogger.error(lastError);
                 reject(lastError);
             } else {
                 resolve(window);

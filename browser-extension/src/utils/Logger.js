@@ -8,6 +8,9 @@
  */
 class Logger {
     constructor(prefix) {
+        if (!prefix) {
+            throw new Error("Logger.constructor - prefix is not defined.");
+        }
         this.prefix = prefix;
     }
 
@@ -39,7 +42,5 @@ class Logger {
         }
     };
 }
-
-export const appLogger = new Logger("App");
 
 export default Logger;

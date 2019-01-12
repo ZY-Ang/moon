@@ -5,14 +5,12 @@ import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_LAUNCH_COINBASE_AUTH_FLOW} from "../../../../../constants/events/appEvents";
 import BackButton from "../../BackButton";
 import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../../../redux/reducers/constants";
+import appLogger from "../../../../utils/AppLogger";
 
 class AddWalletsScreen extends React.Component {
     launchCoinbaseAuthFlow = () => {
         AppRuntime.sendMessage(REQUEST_LAUNCH_COINBASE_AUTH_FLOW)
-            .then(response => {
-                moonLogger.log(response);
-            })
-            .catch(err => moonLogger.error("AddWalletsScreen.launchCoinbaseAuthFlow exception: ", err));
+            .catch(err => appLogger.error("AddWalletsScreen.launchCoinbaseAuthFlow exception: ", err));
         // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
         this.props.delayAuthUserOnboarding();
     };

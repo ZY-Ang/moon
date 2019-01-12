@@ -28,14 +28,14 @@ import Windows from "../browser/Windows";
 import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
 import AuthUser from "./AuthUser";
 import store from "../redux/store";
-import BackgroundMixpanel from "../services/BackgroundMixpanel";
+import backgroundLogger from "../utils/BackgroundLogger";
 
 /**
  * Signs a user into the Moon client using the JSON Web
  * {@param tokens} (JWT)
  */
 const doSignIn = (tokens) => {
-    logger.log("doSignIn");
+    backgroundLogger.log("doSignIn");
     // 1. Instantiate a new AuthUser object
     return new Promise((resolve, reject) => {
             try {
@@ -46,7 +46,7 @@ const doSignIn = (tokens) => {
         })
         // 2. Sign in the auth user and get AWS credentials for the first time
         .then(authUser => authUser.signIn())
-        .then(() => logger.log("User has been successfully signed in"));
+        .then(() => backgroundLogger.log("User has been successfully signed in"));
 };
 
 /**
@@ -56,7 +56,7 @@ const doSignIn = (tokens) => {
  * @param {number} tabId - of the popup window
  */
 export const doOnAuthFlowResponse = (url, tabId) => {
-    logger.log(`Obtaining tokens from OAuth server with response url: ${url}`);
+    backgroundLogger.log(`Obtaining tokens from OAuth server with response url: ${url}`);
     const code = parseUrl(url).query.code.split("#")[0];
 
     const authCsrfState = parseUrl(url).query.state.split("#")[0];
@@ -68,16 +68,16 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     const body = getURLFlowParams(code);
     return axios.post(URL_TOKEN_FLOW, body)
         .then(({data}) => {
-            logger.log("Retrieved tokens");
+            backgroundLogger.log("Retrieved tokens");
             return doSignIn(data);
         })
         .catch(err => {
-            logger.error("doOnAuthFlowResponse exception: ", err);
-            logger.error("doOnAuthFlowResponse exception.response: ", err.response);
+            backgroundLogger.error("doOnAuthFlowResponse exception: ", err);
+            backgroundLogger.error("doOnAuthFlowResponse exception.response: ", err.response);
             doSignOut();
         })
         .finally(() => {
-            logger.log(`Closing tab ${tabId}`);
+            backgroundLogger.log(`Closing tab ${tabId}`);
             Tabs.removeById(tabId);
         });
 };
@@ -124,7 +124,7 @@ const getOAuthUrlForType = async (type) => {
  * Launches the OAuth web flow based on the {@param type} of authentication method
  */
 export const doLaunchWebAuthFlow = (type) => {
-    logger.log(`doLaunchWebAuthFlow for ${type}`);
+    backgroundLogger.log(`doLaunchWebAuthFlow for ${type}`);
     return getOAuthUrlForType(type)
         .then(url => Windows.create({url, type: "popup"}));
 };
@@ -133,7 +133,7 @@ export const doLaunchWebAuthFlow = (type) => {
  * Sends a password reset link to the user
  */
 export const doPasswordReset = () => {
-    logger.log("doPasswordReset");
+    backgroundLogger.log("doPasswordReset");
     return AuthUser.getInstance().resetPassword();
 };
 
@@ -141,7 +141,7 @@ export const doPasswordReset = () => {
  * Signs the user out (clear cache but leave tokens as is as per Cognito's behaviour)
  */
 export const doSignOut = () => {
-    logger.log("doSignOut");
+    backgroundLogger.log("doSignOut");
     return AuthUser.getInstance().signOut();
 };
 
@@ -149,7 +149,7 @@ export const doSignOut = () => {
  * Signs the user out from all devices (clear cache and revoke all issued tokens)
  */
 export const doGlobalSignOut = () => {
-    logger.log("doGlobalSignOut");
+    backgroundLogger.log("doGlobalSignOut");
     return AuthUser.getCurrent()
         .then(authUser => authUser.globalSignOut());
 };
@@ -187,7 +187,7 @@ export const doUpdateAuthUserEvent = async (tab) => {
             trimmedAuthUserPromise = null;
         }
     } catch (error) {
-        logger.warn("doUpdateAuthUserEvent exception: ", error);
+        backgroundLogger.warn("doUpdateAuthUserEvent exception: ", error);
         Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null}).then(() => false);
         throw error;
     }

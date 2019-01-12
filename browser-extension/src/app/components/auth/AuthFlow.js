@@ -16,6 +16,7 @@ import {
 import AppRuntime from "../../browser/AppRuntime";
 import moonLogo from "../../../../../assets/icons/logo_32_text_thick_infinity.png";
 import FaIcon from "../misc/fontawesome/FaIcon";
+import appLogger from "../../utils/AppLogger";
 
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
 
@@ -30,7 +31,7 @@ class AuthFlow extends Component {
 
     launchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type})
         .catch(err => {
-            moonLogger.error(err);
+            appLogger.error(err);
             this.props.onSetAuthUser(null);
             this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN}));
         });

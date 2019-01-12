@@ -17,6 +17,7 @@ import {
     SCREEN_UNSUPPORTED
 } from "./constants";
 import store from "../store";
+import appLogger from "../../utils/AppLogger";
 
 /* -----------------     Initial State     ------------------ */
 
@@ -122,10 +123,10 @@ const MAINFLOW_SWIPER_ANIMATION_TIMEOUT = 300;
  */
 const doPopScreenState = (state) => {
     if (state.mainFlowLock) {
-        moonLogger.warn("Main flow is performing work.");
+        appLogger.warn("Main flow is performing work.");
         return state;
     } if (state.mainFlowIndex <= 0) {
-        moonLogger.warn("There are no more screens to be popped");
+        appLogger.warn("There are no more screens to be popped");
         return state;
     } else {
         setTimeout(() => store.dispatch({
@@ -151,7 +152,7 @@ const doPushScreenState = (state, action) => {
     }), MAINFLOW_SWIPER_ANIMATION_TIMEOUT);
     const mainFlowIndex = state.mainFlowIndex + 1;
     if (state.mainFlowLock) {
-        moonLogger.warn("Main flow is performing work.");
+        appLogger.warn("Main flow is performing work.");
         return state;
     } if (!action.screen || !POSSIBLE_SCREENS[action.screen]) {
         // Screen invalid or unknown - push an unsupported screen

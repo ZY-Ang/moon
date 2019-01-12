@@ -9,8 +9,8 @@ import AWS from "../config/aws/AWS";
 import {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
 
 class BackgroundLogger extends Logger {
-    constructor(prefix) {
-        super(prefix);
+    constructor(...args) {
+        super(...args);
         this.logEvents = [];
         this.cloudwatchLogClient = new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS});
         this.initialized = false;
@@ -27,8 +27,10 @@ class BackgroundLogger extends Logger {
         }, (err) => {
             if (err) {
                 console.error("Unable to initialize log stream");
+
             } else {
                 this.initialized = true;
+
             }
         });
     };
@@ -49,35 +51,70 @@ class BackgroundLogger extends Logger {
                     if (err) {
                         // Unable to log to cloudwatch. Ignore and just log.
                         console.error("BackgroundLogger.putLogEvents if (err) exception: ", err);
+
                     } else if (data && data.nextSequenceToken) {
                         this.sequenceToken = data.nextSequenceToken;
+
                     }
                 });
-                // Reset log events for next batch
+
+                // Reset log events for the next batch
                 this.logEvents = [];
+
             } catch (e) {
                 console.error("BackgroundLogger.putLogEvents catch (e) exception: ", e);
             }
         }
     };
 
+    resolveDynamicLogger(type, prefix, ..._arguments) {
+        const resolver = {
+            log: () => this.logDynamic(prefix, ..._arguments),
+            info: () => this.infoDynamic(prefix, ..._arguments),
+            warn: () => this.warnDynamic(prefix, ..._arguments),
+            error: () => this.errorDynamic(prefix, ..._arguments),
+        };
+
+        if (!resolver[type]) {
+            resolver.log();
+
+        } else {
+            resolver[type]();
+
+        }
+    }
+
     log() {
         const args = Array.prototype.slice.call(arguments);
-        super.log(...args);
         args.unshift(`[${this.prefix}]`, "[log]");
+        super.log(...args);
         const message = args.join(" ");
         const timestamp = moment().valueOf();
         this.logEvents.push({message, timestamp});
     }
 
-    appLog() {
-        // TODO: Implement
+    logDynamic(prefix, ..._arguments) {
+        const args = Array.prototype.slice.call(_arguments);
+        args.unshift(`[${prefix}]`, "[log]");
+        super.log(...args);
+        const message = args.join(" ");
+        const timestamp = moment().valueOf();
+        this.logEvents.push({message, timestamp});
     }
 
     info() {
         const args = Array.prototype.slice.call(arguments);
-        super.info(...args);
         args.unshift(`[${this.prefix}]`, "[info]");
+        super.info(...args);
+        const message = args.join(" ");
+        const timestamp = moment().valueOf();
+        this.logEvents.push({message, timestamp});
+    }
+
+    infoDynamic(prefix, ..._arguments) {
+        const args = Array.prototype.slice.call(_arguments);
+        args.unshift(`[${prefix}]`, "[info]");
+        super.info(...args);
         const message = args.join(" ");
         const timestamp = moment().valueOf();
         this.logEvents.push({message, timestamp});
@@ -85,8 +122,17 @@ class BackgroundLogger extends Logger {
 
     warn() {
         const args = Array.prototype.slice.call(arguments);
-        super.warn(...args);
         args.unshift(`[${this.prefix}]`, "[warn]");
+        super.warn(...args);
+        const message = args.join(" ");
+        const timestamp = moment().valueOf();
+        this.logEvents.push({message, timestamp});
+    }
+
+    warnDynamic(prefix, ..._arguments) {
+        const args = Array.prototype.slice.call(_arguments);
+        args.unshift(`[${prefix}]`, "[warn]");
+        super.warn(...args);
         const message = args.join(" ");
         const timestamp = moment().valueOf();
         this.logEvents.push({message, timestamp});
@@ -94,8 +140,18 @@ class BackgroundLogger extends Logger {
 
     error() {
         const args = Array.prototype.slice.call(arguments);
-        super.error(...args);
         args.unshift(`[${this.prefix}]`, "[error]");
+        super.error(...args);
+        const message = args.join(" ");
+        const timestamp = moment().valueOf();
+        this.logEvents.push({message, timestamp});
+        this.putLogEvents();
+    }
+
+    errorDynamic(prefix, ..._arguments) {
+        const args = Array.prototype.slice.call(_arguments);
+        args.unshift(`[${prefix}]`, "[error]");
+        super.error(...args);
         const message = args.join(" ");
         const timestamp = moment().valueOf();
         this.logEvents.push({message, timestamp});
@@ -103,6 +159,5 @@ class BackgroundLogger extends Logger {
     }
 }
 
-export const backgroundLogger = new BackgroundLogger("Background");
-
-export default BackgroundLogger;
+const backgroundLogger = new BackgroundLogger("Background");
+export default backgroundLogger;

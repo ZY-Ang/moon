@@ -17,6 +17,7 @@ import LoadingBody from "./misc/appmodals/loading/LoadingBody";
 import MainFlow from "./main/MainFlow";
 import {REQUEST_OPEN_POPUP} from "../../constants/events/appEvents";
 import {URL_MOON_TAWK_SUPPORT} from "../../../src/constants/url";
+import appLogger from "../utils/AppLogger";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -32,7 +33,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        moonLogger.log("Main App Mounted");
+        appLogger.log("Main App Mounted");
     }
 
     onToggleMaximize = () => {

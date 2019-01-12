@@ -22,6 +22,7 @@ import {
     ACTION_SET_TAB,
     ACTION_SET_UI_BLOCKER_STATE
 } from "./redux/reducers/constants";
+import appLogger from "./utils/AppLogger";
 
 /**
  * Message handler for receiving messages from other extension processes
@@ -48,7 +49,7 @@ const messageCenter = (request, sender, sendResponse) => {
             ])
                 .then(() => sendSuccess(`toggleApp(${request.source}) completed`))
                 .catch(err => {
-                    moonLogger.error("messageCenter.REQUEST_INJECT_APP exception: ", err);
+                    appLogger.error("messageCenter.REQUEST_INJECT_APP exception: ", err);
                     sendFailure(`toggleApp(${request.source}) failed`);
                 });
             injectButton();
@@ -58,7 +59,7 @@ const messageCenter = (request, sender, sendResponse) => {
             updateAuthUser(request.authUser)
                 .then(() => sendSuccess(`updateAuthUser(${JSON.stringify(request.authUser)}) completed`))
                 .catch(err => {
-                    moonLogger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
+                    appLogger.error("messageCenter.REQUEST_UPDATE_AUTH_USER exception: ", err);
                     sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
                 });
             return true;
@@ -95,7 +96,7 @@ const messageCenter = (request, sender, sendResponse) => {
     if (request.message && request.message in messageResolver) {
         return messageResolver[request.message]();
     } else {
-        moonLogger.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
+        appLogger.warn("Received an unknown message.\nRequest: ", request, "\nSender: ", sender);
         sendFailure("App messageCenter received an unknown request");
     }
 };
