@@ -297,36 +297,36 @@ workflows:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - database_paymentPayloadRecords_deploy_development:
           filters:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - database_siteSupportRequests_deploy_development:
           filters:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - database_userInformation_deploy_development:
           filters:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - database_userSecrets_deploy_development:
           filters:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - backend_deploy_lambda_development:
           requires:
             - database_nonCheckoutReports_deploy_development
@@ -338,8 +338,8 @@ workflows:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - backend_deploy_appsync_authenticated_development:
           requires:
             - backend_deploy_lambda_development
@@ -347,8 +347,8 @@ workflows:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - backend_deploy_appsync_public_development:
           requires:
             - backend_deploy_lambda_development
@@ -356,8 +356,8 @@ workflows:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - backend_deploy_development:
           requires:
             - backend_deploy_appsync_authenticated_development
@@ -366,8 +366,8 @@ workflows:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
       - browser_extension_build_development:
           requires:
             - backend_deploy_development
@@ -375,8 +375,8 @@ workflows:
             branches:
               only:
                 - dev
-                - /^feature*/
-                - /^fix*/
+                - /^feature.*/
+                - /^fix.*/
 
   deploy_then_build_production_full_workflow:
     jobs:
