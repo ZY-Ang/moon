@@ -550,8 +550,8 @@ class AmazonCheckoutScreen extends React.Component {
                                     'cart_amount': cartAmount,
                                     'exchange_rate': exchangeRate
                                 });
-                            AppMixpanel.peopleIncrement('Number of Purchases');
-                            AppMixpanel.peopleTrackCharge(cartAmount);
+                            AppMixpanel.increment('Number of Purchases');
+                            AppMixpanel.trackCharge(cartAmount);
                             this.pay();
                         }} loading={this.props.isPaying}/>
                     </div>

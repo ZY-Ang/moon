@@ -93,7 +93,7 @@ export const doExtractCoinbaseApiKeys = () => {
                             }
                         }
                         AppMixpanel.track('successfully_connected_coinbase');
-                        AppMixpanel.peopleSet({'Connected Coinbase': true});
+                        AppMixpanel.set({'Connected Coinbase': true});
                         // innerHTML as backup just in case Coinbase does anti-extraction or etc
                         resolve({
                             innerHTML: document.getElementById(ID_API_KEYS_MODAL).innerHTML,

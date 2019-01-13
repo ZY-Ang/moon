@@ -88,7 +88,7 @@ class BackgroundMixpanel {
      *
      * @param {Object} [properties] A set of properties to associate with the user profile.
      */
-    static peopleSet = async (properties) => {
+    static set = async (properties) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -103,7 +103,7 @@ class BackgroundMixpanel {
      *
      * @param {Object} [properties] A set of properties to associate with the user profile.
      */
-    static peopleSetOnce = async (properties) => {
+    static setOnce = async (properties) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -119,7 +119,7 @@ class BackgroundMixpanel {
      * @param {Object} [properties] Properties of user to increment. Can be a string or an object.
      * @param {Number} by Amount by which to increment properties. Default is 1 if not supplied.
      */
-    static peopleIncrement = async (properties, by) => {
+    static increment = async (properties, by) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -134,7 +134,7 @@ class BackgroundMixpanel {
      * @param {Number} amount Amount the user spent in base currency
      * @param {Object} [properties] Properties to associate with this transaction
      */
-    static peopleTrackCharge = async (amount, properties) => {
+    static trackCharge = async (amount, properties) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -148,23 +148,25 @@ class BackgroundMixpanel {
      * @param args {object} - to be forwarded
      */
     static resolve = async (functionName, args) => {
-        // Identify user automatically.
-        BackgroundMixpanel.identify(AuthUser.getEmail()).catch();
-        // Create a user profile
-        BackgroundMixpanel.peopleSet({
-            '$email': AuthUser.getEmail()
-        }).catch();
-        BackgroundMixpanel.peopleSetOnce({
+        if(!!AuthUser.getEmail()) {
+            // Identify user automatically.
+            BackgroundMixpanel.identify(AuthUser.getEmail()).catch();
+            // Create a user profile
+            BackgroundMixpanel.set({
+                '$email': AuthUser.getEmail()
+            }).catch();
+        }
+        BackgroundMixpanel.setOnce({
             'First Extension Open': new Date()
         }).catch();
 
         // Resolver for mixpanel API types. Add more as you wish.
         const resolver = {
             track: () => BackgroundMixpanel.track(args.event_name, args.properties),
-            peopleSet: () => BackgroundMixpanel.peopleSet(args.properties),
-            peopleSetOnce: () => BackgroundMixpanel.peopleSetOnce(args.properties),
-            peopleIncrement: () => BackgroundMixpanel.peopleIncrement(args.properties, args.by),
-            peopleTrackCharge: () => BackgroundMixpanel.peopleTrackCharge(args.amount, args.properties)
+            set: () => BackgroundMixpanel.set(args.properties),
+            setOnce: () => BackgroundMixpanel.setOnce(args.properties),
+            increment: () => BackgroundMixpanel.increment(args.properties, args.by),
+            trackCharge: () => BackgroundMixpanel.trackCharge(args.amount, args.properties)
         };
 
         if (!functionName) {
