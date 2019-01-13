@@ -12,6 +12,7 @@ import {
 import smilingFaceEmoji
     from "../../../../../../../assets/emoji/windows10/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png";
 import appLogger from "../../../../utils/AppLogger";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 class AmazonNotAtCheckoutScreen extends React.Component {
     reportIsCheckout = () => {
@@ -38,6 +39,10 @@ class AmazonNotAtCheckoutScreen extends React.Component {
             .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
     };
 
+    componentDidMount() {
+        AppMixpanel.track('view_screen_amazon_not_at_checkout');
+    }
+
     render() {
         return (
             <div className="moon-mainflow-screen text-center">
@@ -59,7 +64,10 @@ class AmazonNotAtCheckoutScreen extends React.Component {
                     <h2>Not at Checkout Page</h2>
                     <p>When you're about to checkout, you'll have the option to pay with cryptocurrency.</p>
                     <a
-                        onClick={this.reportIsCheckout}
+                        onClick={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_report_is_checkout');
+                            this.reportIsCheckout();
+                        }}
                     >
                         Click here if you think this is a mistake
                     </a>

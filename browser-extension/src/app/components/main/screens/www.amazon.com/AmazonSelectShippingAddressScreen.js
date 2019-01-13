@@ -3,6 +3,7 @@ import "./AmazonSelectShippingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {QUERY_SELECTOR_SHIPPING_ADDRESS_SELECT} from "./constants/querySelectors";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 class AmazonSelectShippingAddressScreen extends React.Component {
     constructor(props) {
@@ -17,6 +18,7 @@ class AmazonSelectShippingAddressScreen extends React.Component {
     }
 
     componentDidMount() {
+        AppMixpanel.track('view_screen_amazon_shipping_address_select');
         this.parseContinueButton();
     }
 
@@ -54,7 +56,10 @@ class AmazonSelectShippingAddressScreen extends React.Component {
                 {
                     this.state.continueButton &&
                     <div className="w-100">
-                        <button className="btn btn-primary w-77" onClick={this.onContinueClick}>Continue</button>
+                        <button className="btn btn-primary w-77" onClick={() => {
+                            AppMixpanel.track('button_click_amazon_shipping_address_select_continue');
+                            this.onContinueClick();
+                        }}>Continue</button>
                     </div>
                 }
             </div>

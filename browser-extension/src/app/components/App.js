@@ -18,6 +18,7 @@ import MainFlow from "./main/MainFlow";
 import {REQUEST_OPEN_POPUP} from "../../constants/events/appEvents";
 import {URL_MOON_TAWK_SUPPORT} from "../../../src/constants/url";
 import appLogger from "../utils/AppLogger";
+import AppMixpanel from "../services/AppMixpanel";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -91,7 +92,10 @@ class App extends Component {
                                     <div
                                         id="moon-header-support-button"
                                         className={`moon-header-button${this.state.isHoverHeaderButtons ? " hover" : ""}`}
-                                        onClick={this.openChatPopUp}
+                                        onClick={() => {
+                                            AppMixpanel.track('button_click_support');
+                                            this.openChatPopUp();
+                                        }}
                                     >
                                         <FaIcon icon="comments"/>
                                     </div>
@@ -99,7 +103,10 @@ class App extends Component {
                                 <div
                                     id="moon-header-toggle-button"
                                     className={`moon-header-button ${(this.state.isMaximized ? "maximized" : "minimized")}`}
-                                    onClick={this.onToggleMaximize}
+                                    onClick={() => {
+                                        AppMixpanel.track('button_click_toggle_maximize');
+                                        this.onToggleMaximize();
+                                    }}
                                 >
                                     {
                                         this.state.isHoverHeaderButtons
@@ -110,7 +117,10 @@ class App extends Component {
                                 <div
                                     id="moon-header-close-button"
                                     className="moon-header-button"
-                                    onClick={this.onClose}
+                                    onClick={() => {
+                                        AppMixpanel.track('button_click_close');
+                                        this.onClose();
+                                    }}
                                 >
                                     {
                                         this.state.isHoverHeaderButtons

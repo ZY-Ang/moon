@@ -6,7 +6,11 @@ import backgroundLogger from "../utils/BackgroundLogger";
 import mixpanel from "mixpanel-browser";
 import AuthUser from "../auth/AuthUser";
 
-const TOKEN_MIXPANEL = "238c4bc9d59e41ef38cfb8f53f1fdc60";
+const TOKEN_MIXPANEL_PRODUCTION = "982b1ecdb25262439e8abb7b6fb54dbb";
+const TOKEN_MIXPANEL_DEVELOPMENT = "238c4bc9d59e41ef38cfb8f53f1fdc60";
+const TOKEN_MIXPANEL = process.env.NODE_ENV === 'production'
+    ? TOKEN_MIXPANEL_PRODUCTION
+    : TOKEN_MIXPANEL_DEVELOPMENT;
 
 let mixPanelReady = false;
 
@@ -80,16 +84,71 @@ class BackgroundMixpanel {
     };
 
     /**
+     * Set properties on a user record in Mixpanel using Mixpanel People Analytics
+     *
+     * @param {Object} [properties] A set of properties to associate with the user profile.
+     */
+    static peopleSet = async (properties) => {
+        if (!mixPanelReady) {
+            backgroundLogger.warn("Mixpanel not loaded yet.");
+            return true;
+        } else {
+            return new Promise((resolve) => mixpanel.people.set(properties, resolve));
+        }
+    };
+
+    /**
+     * Set properties on a user record in Mixpanel using Mixpanel People Analytics. Properties set with this method are
+     * only written once and will not be overwritten in future calls
+     *
+     * @param {Object} [properties] A set of properties to associate with the user profile.
+     */
+    static peopleSetOnce = async (properties) => {
+        if (!mixPanelReady) {
+            backgroundLogger.warn("Mixpanel not loaded yet.");
+            return true;
+        } else {
+            return new Promise((resolve) => mixpanel.people.set_once(properties, resolve));
+        }
+    };
+
+    /**
+     * Increment properties of a user by a specified amount in Mixpanel using Mixpanel People Analytics. If increment
+     * amount is not specified, properties are incremented by one.
+     *
+     * @param {Object} [properties] Properties of user to increment. Can be a string or an object.
+     * @param {Number} by Amount by which to increment properties. Default is 1 if not supplied.
+     */
+    static peopleIncrement = async (properties, by) => {
+        if (!mixPanelReady) {
+            backgroundLogger.warn("Mixpanel not loaded yet.");
+            return true;
+        } else {
+            return new Promise((resolve) => mixpanel.people.increment(properties, by, resolve));
+        }
+    };
+
+    /**
      * @param functionName - of {@code mixpanel} to be forwarded to
      * @param args {object} - to be forwarded
      */
     static resolve = async (functionName, args) => {
         // Identify user automatically.
         BackgroundMixpanel.identify(AuthUser.getEmail()).catch();
+        // Create a user profile
+        BackgroundMixpanel.peopleSet({
+            '$email': AuthUser.getEmail()
+        }).catch();
+        BackgroundMixpanel.peopleSetOnce({
+            'First Extension Open': new Date()
+        }).catch();
 
         // Resolver for mixpanel API types. Add more as you wish.
         const resolver = {
-            track: () => BackgroundMixpanel.track(args.event_name, args.properties)
+            track: () => BackgroundMixpanel.track(args.event_name, args.properties),
+            peopleSet: () => BackgroundMixpanel.peopleSet(args.properties),
+            peopleSetOnce: () => BackgroundMixpanel.peopleSetOnce(args.properties),
+            peopleIncrement: () => BackgroundMixpanel.peopleIncrement(args.properties, args.by)
         };
 
         if (!functionName) {

@@ -4,6 +4,7 @@ import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_GET_ID_JWTOKEN, REQUEST_TEST_FUNCTION} from "../../../../../constants/events/appEvents";
 import {copyToClipboard} from "../../../../utils/dom";
 import appLogger from "../../../../utils/AppLogger";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 class DevelopersScreen extends React.Component {
     constructor(props) {
@@ -12,6 +13,10 @@ class DevelopersScreen extends React.Component {
             isSuccess: false,
             isError: false
         };
+    }
+
+    componentDidMount() {
+        AppMixpanel.track('view_screen_developers');
     }
 
     onTest = () => {

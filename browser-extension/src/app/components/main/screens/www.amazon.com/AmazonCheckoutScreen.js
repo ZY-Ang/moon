@@ -24,6 +24,7 @@ import FaIcon from "../../../misc/fontawesome/FaIcon";
 import ConfirmSlider from "../../../misc/confirmslider/ConfirmSlider";
 import {AMAZON_DEFAULT_CURRENCY} from "./AmazonProductScreen";
 import appLogger from "../../../../utils/AppLogger";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH", "ETC"];
 const INITIAL_STATE = {
@@ -51,6 +52,7 @@ class AmazonCheckoutScreen extends React.Component {
     }
 
     componentDidMount() {
+        AppMixpanel.track('view_screen_amazon_checkout');
         if (!!this.txtBaseValue) {
             this.txtBaseValue.focus();
         }
@@ -373,7 +375,10 @@ class AmazonCheckoutScreen extends React.Component {
                     <div className="checkout-section checkout-section-wallet-select">
                         <div
                             className="checkout-section-label"
-                            onClick={() => this.setState(state => ({isShowingWallets: !state.isShowingWallets}))}
+                            onClick={() => {
+                                AppMixpanel.track('button_click_amazon_checkout_toggle_select_wallet');
+                                this.setState(state => ({isShowingWallets: !state.isShowingWallets}));
+                            }}
                         >
                             Select Wallet
                         </div>
@@ -381,7 +386,10 @@ class AmazonCheckoutScreen extends React.Component {
                             selectedWallet &&
                             <div
                                 className="checkout-wallet-select-selected-wallet"
-                                onClick={() => this.setState(state => ({isShowingWallets: !state.isShowingWallets}))}
+                                onClick={() => {
+                                    AppMixpanel.track('button_click_amazon_checkout_toggle_select_wallet');
+                                    this.setState(state => ({isShowingWallets: !state.isShowingWallets}));
+                                }}
                             >
                                 <div className="checkout-wallet-select-selected-wallet-name">{selectedWallet.name}</div>
                                 <div className="checkout-wallet-select-selected-wallet-balance">{selectedWallet.balance}</div>
@@ -394,7 +402,10 @@ class AmazonCheckoutScreen extends React.Component {
                         }
                         <div
                             className={`checkout-wallet-select-change${isShowingWallets ? " inverse" : ""}`}
-                            onClick={() => this.setState(state => ({isShowingWallets: !state.isShowingWallets}))}
+                            onClick={() => {
+                                AppMixpanel.track('button_click_amazon_checkout_toggle_select_wallet');
+                                this.setState(state => ({isShowingWallets: !state.isShowingWallets}));
+                            }}
                         >
                             <FaIcon icon="chevron-down"/>
                         </div>
@@ -407,6 +418,15 @@ class AmazonCheckoutScreen extends React.Component {
                                             key={wallet.name}
                                             className={`checkout-wallet-select-change-wallet-selection ${wallet.provider}`}
                                             onClick={() => {
+                                                AppMixpanel.track('button_click_amazon_checkout_select_wallet',
+                                                    {
+                                                        'wallet': wallet.name,
+                                                        'currency': wallet.currency,
+                                                        'balance': wallet.balance,
+                                                        'provider': wallet.provider,
+                                                        'balance_in_base_currency': walletBalanceInBase,
+                                                        'base_currency': cartCurrency
+                                                    });
                                                 this.changeWallet(wallet);
                                                 this.setState(() => ({isShowingWallets: false}));
                                             }}
@@ -485,7 +505,10 @@ class AmazonCheckoutScreen extends React.Component {
                         />
                     </div>
                     <div
-                        onClick={this.onQuickViewCurrencyClick}
+                        onClick={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_cycle_wallets');
+                            this.onQuickViewCurrencyClick();
+                        }}
                         className="checkout-section-currency-flag"
                     >
                         <div>
@@ -501,7 +524,10 @@ class AmazonCheckoutScreen extends React.Component {
                             Moon cannot facilitate the purchase of gift cards. Please remove any gift cards from your cart before proceeding.
                         </p>
                         <p className="text-error mb-0">
-                            If you think this is a mistake, <a onClick={() => AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})}>contact us</a>
+                            If you think this is a mistake, <a onClick={() => {
+                                AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
+                                AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
+                        }}>contact us</a>
                         </p>
 
                     </div>
@@ -513,7 +539,20 @@ class AmazonCheckoutScreen extends React.Component {
                     !isInsufficient &&
                     !isZero &&
                     <div className="checkout-payment-button mt-2">
-                        <ConfirmSlider action={this.pay} loading={this.props.isPaying}/>
+                        <ConfirmSlider action={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_pay',
+                                {
+                                    'wallet_name': selectedWallet.name,
+                                    'wallet_currency': selectedWallet.currency,
+                                    'wallet_balance': selectedWallet.balance,
+                                    'wallet_provider': selectedWallet.provider,
+                                    'cart_currency': cartCurrency,
+                                    'cart_amount': cartAmount,
+                                    'exchange_rate': exchangeRate
+                                });
+                            AppMixpanel.peopleIncrement('Number of Purchases');
+                            this.pay();
+                        }} loading={this.props.isPaying}/>
                     </div>
                 }
                 {
@@ -545,7 +584,10 @@ class AmazonCheckoutScreen extends React.Component {
                     <div className="checkout-payment-button">
                         <button
                             className="btn btn-primary w-100"
-                            onClick={() => this.props.onPushScreen(SCREEN_ADD_WALLETS)}
+                            onClick={() => {
+                                AppMixpanel.track('button_click_amazon_checkout_connect_wallets');
+                                this.props.onPushScreen(SCREEN_ADD_WALLETS);
+                            }}
                         >
                             Connect One Now!
                         </button>

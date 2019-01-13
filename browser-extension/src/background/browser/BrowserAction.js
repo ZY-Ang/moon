@@ -6,6 +6,7 @@ import logoDisabled from "../../../../assets/icons/logo_disabled_128.png";
 import logo from "../../../../assets/icons/logo_128.png";
 import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
 import {doInjectAppEvent} from "../windowManager";
+import BackgroundMixpanel from "../services/BackgroundMixpanel";
 
 /**
  * Interface for interaction with the browser's browserAction API
@@ -63,7 +64,10 @@ class BrowserAction {
          * Fired when a browser action icon is clicked.
          * @see {@link https://developer.chrome.com/extensions/browserAction#event-onClicked}
          */
-        chrome.browserAction.onClicked.addListener(() => doInjectAppEvent(SOURCE_MANUAL));
+        chrome.browserAction.onClicked.addListener(() => {
+            BackgroundMixpanel.track('button_click_moon_toolbar');
+            return doInjectAppEvent(SOURCE_MANUAL);
+        });
 
         /**
          * Sets the background color for the badge (notification).

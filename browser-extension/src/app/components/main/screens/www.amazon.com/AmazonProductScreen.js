@@ -17,6 +17,7 @@ import {REQUEST_GET_EXCHANGE_RATES} from "../../../../../constants/events/appEve
 import moment from "moment";
 import {ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS} from "../../../../redux/reducers/constants";
 import {observeDOM} from "../../../../utils/dom";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";
 
@@ -77,6 +78,10 @@ class AmazonProductScreen extends React.Component {
             price: productPriceElements && productPriceElements[0] &&
                 Number(productPriceElements[0].innerText.replace(/[^0-9.-]+/g, ""))
         }), resolve);
+        AppMixpanel.track('view_screen_amazon_product', {
+            'product': this.state.title,
+            'price': this.state.price
+        });
     });
 
     getFontSize = (str) => {
@@ -167,7 +172,10 @@ class AmazonProductScreen extends React.Component {
                         </div>
                         <div
                             className="product-section-currency-flag"
-                            onClick={this.onCurrencyClick}
+                            onClick={() => {
+                                AppMixpanel.track('button_click_amazon_product_toggle_change_currency');
+                                this.onCurrencyClick();
+                            }}
                         >
                             <div>
                                 {selectedExchangeRate.quote}
@@ -182,10 +190,14 @@ class AmazonProductScreen extends React.Component {
                                         <div
                                             key={`${quote}${base}`}
                                             className="product-section-currency-selector-currency"
-                                            onClick={() => this.setState(() => ({
-                                                selectedExchangeRate: exchangeRates[`${quote}_${base}`],
-                                                isExchangeRatesSelectorOpen: false
-                                            }))}
+                                            onClick={() => {
+                                                AppMixpanel.track('button_click_amazon_product_change_currency',
+                                                    {'change_to_currency': quote});
+                                                this.setState(() => ({
+                                                    selectedExchangeRate: exchangeRates[`${quote}_${base}`],
+                                                    isExchangeRatesSelectorOpen: false
+                                                }))
+                                            }}
                                         >
                                             <CurrencyIcon className="mx-auto mb-1" currency={quote}/>
                                             <b className="text-white font-weight-bold">{quote}</b>
@@ -234,7 +246,10 @@ class AmazonProductScreen extends React.Component {
                     <div>
                         <button
                             className="btn btn-primary w-100"
-                            onClick={() => this.props.onPushScreen(SCREEN_ADD_WALLETS)}
+                            onClick={() => {
+                                AppMixpanel.track('button_click_amazon_product_connect_wallets');
+                                this.props.onPushScreen(SCREEN_ADD_WALLETS);
+                            }}
                         >
                             Connect One Now!
                         </button>

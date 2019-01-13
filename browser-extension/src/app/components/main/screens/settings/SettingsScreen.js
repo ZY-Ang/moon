@@ -19,6 +19,7 @@ import {
     SCREEN_HELP_TAWK
 } from "../../../../redux/reducers/constants";
 import BackButton from "../../BackButton";
+import AppMixpanel from "../../../../services/AppMixpanel";
 import appLogger from "../../../../utils/AppLogger";
 
 class SettingsScreen extends React.Component {
@@ -56,6 +57,10 @@ class SettingsScreen extends React.Component {
         }
     };
 
+    componentDidMount() {
+        AppMixpanel.track('view_screen_settings');
+    }
+
     render() {
         return (
             <div className="moon-mainflow-screen overflow-hidden">
@@ -78,24 +83,42 @@ class SettingsScreen extends React.Component {
                     {
                         process.env.NODE_ENV !== 'production' &&
                         <div className="mb-2">
-                            <button className="btn w-100" onClick={() => this.props.onPushScreen(SCREEN_DEVELOPER)}><FaIcon icon="wrench"/> Developers</button>
+                            <button className="btn w-100" onClick={() => {
+                                AppMixpanel.track('button_click_settings_developer');
+                                this.props.onPushScreen(SCREEN_DEVELOPER);
+                            }}><FaIcon icon="wrench"/> Developers</button>
                         </div>
                     }
                     <div className="mb-2">
-                        <button className="btn w-100" onClick={() => window.open("https://paywithmoon.com/#howitworks", "_blank")}><FaIcon icon="question"/> How Moon works</button>
+                        <button className="btn w-100" onClick={() => {
+                            AppMixpanel.track('button_click_settings_how_it_works');
+                            window.open("https://paywithmoon.com/#howitworks", "_blank");
+                        }}><FaIcon icon="question"/> How Moon works</button>
                     </div>
                     <div className="mb-2">
-                        <button className="btn w-100" onClick={() => this.props.onPushScreen(SCREEN_ADD_WALLETS)}><FaIcon icon="wallet"/> Connect Wallets</button>
+                        <button className="btn w-100" onClick={() => {
+                            AppMixpanel.track('button_click_settings_add_wallets');
+                            this.props.onPushScreen(SCREEN_ADD_WALLETS);
+                        }}><FaIcon icon="wallet"/> Connect Wallets</button>
                     </div>
                     <div className="mb-2">
-                        <button className="btn w-100" onClick={this.changePassword}><FaIcon icon="user"/> Change Password</button>
+                        <button className="btn w-100" onClick={() => {
+                            AppMixpanel.track('button_click_settings_change_password');
+                            this.changePassword();
+                        }}><FaIcon icon="user"/> Change Password</button>
                     </div>
                     <div className="mb-2">
-                        <button className="btn w-100" onClick={() => this.props.onPushScreen(SCREEN_HELP_TAWK)}><FaIcon icon="hands-helping"/> Support</button>
+                        <button className="btn w-100" onClick={() => {
+                            AppMixpanel.track('button_click_settings_support');
+                            this.props.onPushScreen(SCREEN_HELP_TAWK);
+                        }}><FaIcon icon="hands-helping"/> Support</button>
                     </div>
                     {/*<div className="mb-2"><button className="btn w-100" onClick={this.onSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button></div>*/}
                     <div className="mb-2">
-                        <button className="btn w-100" onClick={this.onGlobalSignOutClick}><FaIcon icon="sign-out-alt"/> Sign Out</button>
+                        <button className="btn w-100" onClick={() => {
+                            AppMixpanel.track('button_click_settings_sign_out');
+                            this.onGlobalSignOutClick();
+                        }}><FaIcon icon="sign-out-alt"/> Sign Out</button>
                     </div>
                     <p className="my-0 text-center">Moon v{AppRuntime.getManifest().version}</p>
                 </div>
