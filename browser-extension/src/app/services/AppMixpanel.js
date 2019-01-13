@@ -22,6 +22,10 @@ class AppMixpanel {
         _functionName: "peopleIncrement",
         _args: {properties, by}
     });
+    static peopleTrackCharge = (amount, properties) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
+        _functionName: "peopleTrackCharge",
+        _args: {amount, properties}
+    });
 }
 
 export default AppMixpanel;

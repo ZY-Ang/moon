@@ -129,6 +129,21 @@ class BackgroundMixpanel {
     };
 
     /**
+     * Track a purchase by a user in base currency for reporting in Mixpanel using Mixpanel People Analytics.
+     *
+     * @param {Number} amount Amount the user spent in base currency
+     * @param {Object} [properties] Properties to associate with this transaction
+     */
+    static peopleTrackCharge = async (amount, properties) => {
+        if (!mixPanelReady) {
+            backgroundLogger.warn("Mixpanel not loaded yet.");
+            return true;
+        } else {
+            return new Promise((resolve) => mixpanel.people.track_charge(amount, properties, resolve));
+        }
+    };
+
+    /**
      * @param functionName - of {@code mixpanel} to be forwarded to
      * @param args {object} - to be forwarded
      */
@@ -148,7 +163,8 @@ class BackgroundMixpanel {
             track: () => BackgroundMixpanel.track(args.event_name, args.properties),
             peopleSet: () => BackgroundMixpanel.peopleSet(args.properties),
             peopleSetOnce: () => BackgroundMixpanel.peopleSetOnce(args.properties),
-            peopleIncrement: () => BackgroundMixpanel.peopleIncrement(args.properties, args.by)
+            peopleIncrement: () => BackgroundMixpanel.peopleIncrement(args.properties, args.by),
+            peopleTrackCharge: () => BackgroundMixpanel.peopleTrackCharge(args.amount, args.properties)
         };
 
         if (!functionName) {
