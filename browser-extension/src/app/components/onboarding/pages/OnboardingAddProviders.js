@@ -20,7 +20,7 @@ class OnboardingAddProviders extends React.Component {
     render() {
         return (
             <div className="onboarding-tab">
-                <h2>Add one of our supported wallet providers to get started</h2>
+                <h2>Connect a wallet to get started</h2>
                 <div className="mb-2 w-100">
                     <button className="btn w-80 btn-coinbase" onClick={() => {
                         AppMixpanel.track('button_click_onboarding_connect_coinbase');
