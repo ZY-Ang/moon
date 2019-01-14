@@ -43,7 +43,7 @@ export const QUERY_MODAL_HEADER_TITLE = ".modal-header h4";
 /**
  * The HTML query selector for the title component of the modal header
  */
-export const QUERY_MODAL_INPUT_LABEL = ".controls label";
+export const QUERY_MODAL_INPUT_LABEL = ".modal-body .controls label";
 /**
  * The text of the title in the modal header to be set to.
  */
