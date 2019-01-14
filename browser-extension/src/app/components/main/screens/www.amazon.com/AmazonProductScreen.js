@@ -277,8 +277,8 @@ class AmazonProductScreen extends React.Component {
                         </p>
                         <p className="text-error mb-0">
                             If you think this is a mistake, <a onClick={() => {
-                            AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
-                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
+                            AppMixpanel.track("button_click_amazon_checkout_restricted_item_support");
+                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT});
                         }}>contact us</a>
                         </p>
                     </div>
