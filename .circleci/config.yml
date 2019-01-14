@@ -704,6 +704,7 @@ workflows:
                 - master
       - browser_extension_build_production:
           requires:
+            - dashboard_build_deploy
             - backend_deploy_production
           filters:
             branches:
