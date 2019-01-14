@@ -10,6 +10,10 @@ config_env_development: &config_env_development
   environment:
     NODE_ENV: development
     SLS_DEBUG: "*"
+config_env_production: &config_env_staging
+  environment:
+    NODE_ENV: production
+    SLS_DEBUG: "*"
 config_env_production: &config_env_production
   environment:
     NODE_ENV: production
