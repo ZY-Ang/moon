@@ -8,7 +8,7 @@
 const SUPPORTED_WALLET_CURRENCIES = {
     BTC: true,
     ETH: true,
-    ETC: true,
+    ETC: false,
     LTC: true,
     BCH: true
 };
