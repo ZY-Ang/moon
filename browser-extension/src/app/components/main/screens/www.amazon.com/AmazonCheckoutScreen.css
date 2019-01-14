@@ -128,13 +128,17 @@ ul.sequence li:last-child {
 }
 
 .checkout-section-currency-flag {
-    cursor: pointer;
-    background-color: #2E2F33;
     align-items: center;
+    background-color: #ffffff;
     border-bottom-right-radius: 3px;
     border-top-right-radius: 3px;
+    cursor: pointer;
     display: flex;
     padding: 8px 10px;
+    transition: background-color .2s ease;
+    box-shadow: 0 0 0 0 rgba(0,0,0,.5);
+    border-style: outset;
+    margin: 2px;
     -webkit-transition: background-color 0.2s ease;
     -moz-transition: background-color 0.2s ease;
     -ms-transition: background-color 0.2s ease;
@@ -144,23 +148,21 @@ ul.sequence li:last-child {
 
 .checkout-section-currency-flag.disabled {
     cursor: default;
-    background-color: #5f6066;
+    background-color: #ffffff;
 }
 
 .checkout-section-currency-flag:focus,
 .checkout-section-currency-flag.disabled:hover {
-    opacity: 1.0;
-    background-color: #5f6066;
+    background-color: #ffffff;
 }
 
 .checkout-section-currency-flag:hover {
-    opacity: 0.9;
-    background-color: #1F3384;
+    background-color: rgba(0,0,0,0.1);
 }
 
 .checkout-section-currency-flag:active {
-    opacity: 1.0;
-    background-color: #0F62BD;
+    background-color: rgba(0,0,0,0.3);
+    border-style: inset;
 }
 
 .checkout-section-currency-flag img {
@@ -169,7 +171,7 @@ ul.sequence li:last-child {
 }
 
 .checkout-section-currency-flag div {
-    color: white;
+    color: black;
     display: flex;
     align-items: center;
 }
