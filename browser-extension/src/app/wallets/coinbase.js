@@ -18,8 +18,11 @@ import {
     QUERY_BACKGROUND_MODAL,
     QUERY_MODAL_HEADER_CLOSE_BUTTON,
     QUERY_MODAL_HEADER_TITLE,
+    QUERY_MODAL_INPUT_LABEL,
     STYLE_BACKGROUND_MODAL,
-    TEXT_MODAL_HEADER_TITLE
+    TEXT_MODAL_HEADER_TITLE,
+    TEXT_MODAL_INPUT_LABEL_AUTHENTICATOR_BEFORE,
+    TEXT_MODAL_INPUT_LABEL_AUTHENTICATOR_AFTER
 } from "../../constants/coinbase";
 import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
 import appLogger from "../utils/AppLogger";
@@ -58,6 +61,12 @@ export const doExtractCoinbaseApiKeys = () => {
                         document.querySelector(QUERY_MODAL_HEADER_TITLE).innerHTML !== TEXT_MODAL_HEADER_TITLE
                     ) {
                         document.querySelector(QUERY_MODAL_HEADER_TITLE).innerHTML = TEXT_MODAL_HEADER_TITLE;
+                    }
+                    if (
+                        document.querySelector(QUERY_MODAL_INPUT_LABEL) &&
+                        document.querySelector(QUERY_MODAL_INPUT_LABEL).innerHTML === TEXT_MODAL_INPUT_LABEL_AUTHENTICATOR_BEFORE
+                    ) {
+                        document.querySelector(QUERY_MODAL_INPUT_LABEL).innerHTML = TEXT_MODAL_INPUT_LABEL_AUTHENTICATOR_AFTER;
                     }
                     if (!!document.querySelector(QUERY_MODAL_HEADER_CLOSE_BUTTON)) {
                         document.querySelector(QUERY_MODAL_HEADER_CLOSE_BUTTON).remove();

@@ -41,9 +41,21 @@ export const QUERY_BACKGROUND_MODAL = ".modal-backdrop.fade.in";
  */
 export const QUERY_MODAL_HEADER_TITLE = ".modal-header h4";
 /**
+ * The HTML query selector for the title component of the modal header
+ */
+export const QUERY_MODAL_INPUT_LABEL = ".modal-body .controls label";
+/**
  * The text of the title in the modal header to be set to.
  */
 export const TEXT_MODAL_HEADER_TITLE = "Link Moon to your Coinbase Account";
+/**
+ * The text of the title in the modal header to be set to.
+ */
+export const TEXT_MODAL_INPUT_LABEL_AUTHENTICATOR_BEFORE = "Enter the 2-step verification code provided by your authentication app";
+/**
+ * The text of the title in the modal header to be set to.
+ */
+export const TEXT_MODAL_INPUT_LABEL_AUTHENTICATOR_AFTER = "Enter the 2-step verification code provided by your authentication app. If you just entered a verification code, please wait for a new one to be issued.";
 /**
  * The HTML query selector for the close button of the modal header
  */
