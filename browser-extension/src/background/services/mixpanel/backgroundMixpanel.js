@@ -2,9 +2,10 @@
  * Copyright (c) 2019 moon
  */
 
-import backgroundLogger from "../utils/BackgroundLogger";
+import backgroundLogger from "../../utils/BackgroundLogger";
 import mixpanel from "mixpanel-browser";
-import AuthUser from "../auth/AuthUser";
+import AuthUser from "../../auth/AuthUser";
+import people from "./people";
 
 const TOKEN_MIXPANEL_PRODUCTION = "982b1ecdb25262439e8abb7b6fb54dbb";
 const TOKEN_MIXPANEL_DEVELOPMENT = "238c4bc9d59e41ef38cfb8f53f1fdc60";
@@ -12,17 +13,19 @@ const TOKEN_MIXPANEL = process.env.NODE_ENV === 'production'
     ? TOKEN_MIXPANEL_PRODUCTION
     : TOKEN_MIXPANEL_DEVELOPMENT;
 
-let mixPanelReady = false;
-
-mixpanel.init(TOKEN_MIXPANEL, {
-    api_host: "https://api.mixpanel.com",
-    loaded: () => {
-        // Do stuff on mixpanel load
-        mixPanelReady = true;
-    }
-});
-
 class BackgroundMixpanel {
+    constructor(){
+        this.people = people;
+        this.mixPanelReady = false;
+        mixpanel.init(TOKEN_MIXPANEL, {
+            api_host: "https://api.mixpanel.com",
+            loaded: () => {
+                // Do stuff on mixpanel load
+                this.mixPanelReady = true;
+            }
+        });
+    }
+
     /**
      * Track an event. This is the most important and
      * frequently used Mixpanel function.
@@ -37,8 +40,8 @@ class BackgroundMixpanel {
      * @param {String} eventName The name of the event. This can be anything the user does - 'Button Click', 'Sign Up', 'Item Purchased', etc.
      * @param {Object} [properties] A set of properties to include with the event you're sending. These describe the user who did the event or details about the event itself.
      */
-    static doTrack = async (eventName, properties) => {
-        if (!mixPanelReady) {
+    track = async (eventName, properties) => {
+        if (!this.mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
         } else {
@@ -74,8 +77,8 @@ class BackgroundMixpanel {
      *
      * @param {String} [uniqueId] A string that uniquely identifies a user. If not provided, the distinct_id currently in the persistent store (cookie or localStorage) will be used.
      */
-    static doIdentify = async (uniqueId) => {
-        if (!mixPanelReady) {
+    identify = async (uniqueId) => {
+        if (!this.mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
         } else {
@@ -84,89 +87,27 @@ class BackgroundMixpanel {
     };
 
     /**
-     * Set properties on a user record in Mixpanel using Mixpanel People Analytics
-     *
-     * @param {Object} [properties] A set of properties to associate with the user profile.
-     */
-    static doSet = async (properties) => {
-        if (!mixPanelReady) {
-            backgroundLogger.warn("Mixpanel not loaded yet.");
-            return true;
-        } else {
-            return new Promise((resolve) => mixpanel.people.set(properties, resolve));
-        }
-    };
-
-    /**
-     * Set properties on a user record in Mixpanel using Mixpanel People Analytics. Properties set with this method are
-     * only written once and will not be overwritten in future calls
-     *
-     * @param {Object} [properties] A set of properties to associate with the user profile.
-     */
-    static doSetOnce = async (properties) => {
-        if (!mixPanelReady) {
-            backgroundLogger.warn("Mixpanel not loaded yet.");
-            return true;
-        } else {
-            return new Promise((resolve) => mixpanel.people.set_once(properties, resolve));
-        }
-    };
-
-    /**
-     * Increment properties of a user by a specified amount in Mixpanel using Mixpanel People Analytics. If increment
-     * amount is not specified, properties are incremented by one.
-     *
-     * @param {Object} [properties] Properties of user to increment. Can be a string or an object.
-     * @param {Number} by Amount by which to increment properties. Default is 1 if not supplied.
-     */
-    static doIncrement = async (properties, by) => {
-        if (!mixPanelReady) {
-            backgroundLogger.warn("Mixpanel not loaded yet.");
-            return true;
-        } else {
-            return new Promise((resolve) => mixpanel.people.increment(properties, by, resolve));
-        }
-    };
-
-    /**
-     * Track a purchase by a user in base currency for reporting in Mixpanel using Mixpanel People Analytics.
-     *
-     * @param {Number} amount Amount the user spent in base currency
-     * @param {Object} [properties] Properties to associate with this transaction
-     */
-    static doTrackCharge = async (amount, properties) => {
-        if (!mixPanelReady) {
-            backgroundLogger.warn("Mixpanel not loaded yet.");
-            return true;
-        } else {
-            return new Promise((resolve) => mixpanel.people.track_charge(amount, properties, resolve));
-        }
-    };
-
-    /**
      * @param functionName - of {@code mixpanel} to be forwarded to
      * @param args {object} - to be forwarded
      */
-    static resolve = (functionName, args) => {
-        if(!!AuthUser.getEmail()) {
-            // Identify user automatically.
-            BackgroundMixpanel.doIdentify(AuthUser.getEmail()).catch();
-            // Create a user profile
-            BackgroundMixpanel.doSet({
-                '$email': AuthUser.getEmail()
-            }).catch();
-        }
-        BackgroundMixpanel.doSetOnce({
+    resolve = (functionName, args) => {
+        // Identify user automatically.
+        this.identify(AuthUser.getEmail()).catch();
+        // Create a user profile
+        this.people.set({
+            '$email': AuthUser.getEmail()
+        }).catch();
+        this.people.set_once({
             'First Extension Open': new Date()
         }).catch();
 
         // Resolver for mixpanel API types. Add more as you wish.
         const resolver = {
-            track: () => BackgroundMixpanel.doTrack(args.event_name, args.properties),
-            set: () => BackgroundMixpanel.doSet(args.properties),
-            setOnce: () => BackgroundMixpanel.doSetOnce(args.properties),
-            increment: () => BackgroundMixpanel.doIncrement(args.properties, args.by),
-            trackCharge: () => BackgroundMixpanel.doTrackCharge(args.amount, args.properties)
+            track: () => this.track(args.event_name, args.properties),
+            ['people.set']: () => this.people.set(args.properties),
+            ['people.set_once']: () => this.people.set_once(args.properties),
+            ['people.increment']: () => this.people.increment(args.properties, args.by),
+            ['people.track_charge']: () => this.people.track_charge(args.amount, args.properties)
         };
 
         if (!functionName) {
@@ -185,4 +126,4 @@ class BackgroundMixpanel {
     }
 }
 
-export default BackgroundMixpanel;
+export default new BackgroundMixpanel();

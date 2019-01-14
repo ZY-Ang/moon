@@ -6,7 +6,7 @@ import logoDisabled from "../../../../assets/icons/logo_disabled_128.png";
 import logo from "../../../../assets/icons/logo_128.png";
 import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
 import {doInjectAppEvent} from "../windowManager";
-import BackgroundMixpanel from "../services/BackgroundMixpanel";
+import backgroundMixpanel from "../services/mixpanel/backgroundMixpanel";
 
 /**
  * Interface for interaction with the browser's browserAction API
@@ -65,7 +65,7 @@ class BrowserAction {
          * @see {@link https://developer.chrome.com/extensions/browserAction#event-onClicked}
          */
         chrome.browserAction.onClicked.addListener(() => {
-            BackgroundMixpanel.doTrack('button_click_moon_toolbar');
+            backgroundMixpanel.track('button_click_moon_toolbar');
             return doInjectAppEvent(SOURCE_MANUAL);
         });
 

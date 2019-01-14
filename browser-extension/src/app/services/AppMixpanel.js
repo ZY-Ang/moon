@@ -10,22 +10,25 @@ class AppMixpanel {
         _functionName: "track",
         _args: {event_name, properties}
     });
-    static set = (properties) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
-        _functionName: "set",
+
+    static people = {
+        set: (properties) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
+            _functionName: "people.set",
+            _args: {properties}
+        }),
+        set_once: (properties) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
+        _functionName: "people.set_once",
         _args: {properties}
-    });
-    static setOnce = (properties) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
-        _functionName: "setOnce",
-        _args: {properties}
-    });
-    static increment = (properties, by) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
-        _functionName: "increment",
-        _args: {properties, by}
-    });
-    static trackCharge = (amount, properties) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
-        _functionName: "trackCharge",
-        _args: {amount, properties}
-    });
+        }),
+        increment: (properties, by) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
+            _functionName: "people.increment",
+            _args: {properties, by}
+        }),
+        track_charge: (amount, properties) => AppRuntime.sendMessage(REQUEST_MIXPANEL, {
+            _functionName: "people.track_charge",
+            _args: {amount, properties}
+        })
+    };
 }
 
 export default AppMixpanel;
