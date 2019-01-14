@@ -29,9 +29,6 @@ commands:
             echo -e "[default]
               aws_access_key_id=None
               aws_secret_access_key=None\n
-              [moon-production]
-              aws_access_key_id=$DEVELOPERS_AWS_ACCESS_KEY_ID
-              aws_secret_access_key=$DEVELOPERS_AWS_SECRET_ACCESS_KEY\n
               [moon-development]
               aws_access_key_id=$DEVELOPERS_AWS_ACCESS_KEY_ID
               aws_secret_access_key=$DEVELOPERS_AWS_SECRET_ACCESS_KEY
@@ -50,10 +47,7 @@ commands:
               aws_secret_access_key=None\n
               [moon-production]
               aws_access_key_id=$DEVELOPERS_AWS_ACCESS_KEY_ID
-              aws_secret_access_key=$DEVELOPERS_AWS_SECRET_ACCESS_KEY\n
-              [moon-development]
-              aws_access_key_id=$PAYWITHMOON_AWS_ACCESS_KEY_ID
-              aws_secret_access_key=$PAYWITHMOON_AWS_SECRET_ACCESS_KEY
+              aws_secret_access_key=$DEVELOPERS_AWS_SECRET_ACCESS_KEY
             " >> ~/.aws/credentials
   configure_aws_production:
     description: "Sets up the AWS profiles and configuration for the staging workflow"
@@ -177,6 +171,215 @@ commands:
             - ~/repo/browser-extension/node_modules
 
 jobs:
+  ################################### Jobs: Production ###################################
+  dashboard_build_deploy:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - install_dashboard
+      - run:
+          working_directory: ~/repo/dashboard
+          command: npm test
+      - run:
+          working_directory: ~/repo/dashboard
+          command: npm run build
+      - install_firebase_global
+      - run:
+          working_directory: ~/repo/dashboard
+          name: Firebase Deploy (With Token)
+          command: firebase deploy --token=$FIREBASE_TOKEN
+  database_nonCheckoutReports_deploy_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-nonCheckoutReports-production-force
+  database_paymentPayloadRecords_deploy_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-paymentPayloadRecords-production-force
+  database_siteSupportRequests_deploy_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-siteSupportRequests-production-force
+  database_userInformation_deploy_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-userInformation-production-force
+  database_userSecrets_deploy_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-userSecrets-production-force
+  backend_deploy_lambda_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_backend
+      - install_backend_lambda
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-lambda-production-force
+  backend_deploy_appsync_authenticated_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_backend
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-appsync-authenticated-production-force
+  backend_deploy_appsync_public_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_backend
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-appsync-public-production-force
+  backend_deploy_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_backend
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-backend-production-force
+  browser_extension_build_production:
+    <<: *config_project_defaults
+    <<: *config_env_production
+    steps:
+      - configure_aws_production
+      - install_browser_extension
+      - run:
+          working_directory: ~/repo/browser-extension
+          command: npm run build-production
+      - store_artifacts:
+          path: ~/repo/browser-extension/build/zipped
+          destination: browser-extension-build
+
+  ################################### Jobs: Staging ###################################
+  database_nonCheckoutReports_deploy_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-nonCheckoutReports-production-force
+  database_paymentPayloadRecords_deploy_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-paymentPayloadRecords-production-force
+  database_siteSupportRequests_deploy_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-siteSupportRequests-production-force
+  database_userInformation_deploy_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-userInformation-production-force
+  database_userSecrets_deploy_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_database
+      - run:
+          working_directory: ~/repo/database
+          command: npm run deploy-userSecrets-production-force
+  backend_deploy_lambda_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_backend
+      - install_backend_lambda
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-lambda-production-force
+  backend_deploy_appsync_authenticated_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_backend
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-appsync-authenticated-production-force
+  backend_deploy_appsync_public_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_backend
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-appsync-public-production-force
+  backend_deploy_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_backend
+      - run:
+          working_directory: ~/repo/backend
+          command: npm run deploy-backend-production-force
+  browser_extension_build_staging:
+    <<: *config_project_defaults
+    <<: *config_env_staging
+    steps:
+      - configure_aws_staging
+      - install_browser_extension
+      - run:
+          working_directory: ~/repo/browser-extension
+          command: npm run build-production
+      - store_artifacts:
+          path: ~/repo/browser-extension/build/zipped
+          destination: browser-extension-build
+
+  ################################### Jobs: Development ###################################
   database_nonCheckoutReports_deploy_development:
     <<: *config_project_defaults
     <<: *config_env_development
@@ -222,22 +425,6 @@ jobs:
       - run:
           working_directory: ~/repo/database
           command: npm run deploy-userSecrets
-  dashboard_build_deploy:
-    <<: *config_project_defaults
-    <<: *config_env_production
-    steps:
-      - install_dashboard
-      - run:
-          working_directory: ~/repo/dashboard
-          command: npm test
-      - run:
-          working_directory: ~/repo/dashboard
-          command: npm run build
-      - install_firebase_global
-      - run:
-          working_directory: ~/repo/dashboard
-          name: Firebase Deploy (With Token)
-          command: firebase deploy --token=$FIREBASE_TOKEN
   backend_deploy_lambda_development:
     <<: *config_project_defaults
     <<: *config_env_development
@@ -378,9 +565,142 @@ workflows:
                 - /^feature.*/
                 - /^fix.*/
 
+  deploy_then_build_staging_full_workflow:
+    jobs:
+      - database_nonCheckoutReports_deploy_staging:
+          filters:
+            branches:
+              only:
+                - staging
+      - database_paymentPayloadRecords_deploy_staging:
+          filters:
+            branches:
+              only:
+                - staging
+      - database_siteSupportRequests_deploy_staging:
+          filters:
+            branches:
+              only:
+                - staging
+      - database_userInformation_deploy_staging:
+          filters:
+            branches:
+              only:
+                - staging
+      - database_userSecrets_deploy_staging:
+          filters:
+            branches:
+              only:
+                - staging
+      - backend_deploy_lambda_staging:
+          requires:
+            - database_nonCheckoutReports_deploy_staging
+            - database_paymentPayloadRecords_deploy_staging
+            - database_siteSupportRequests_deploy_staging
+            - database_userInformation_deploy_staging
+            - database_userSecrets_deploy_staging
+          filters:
+            branches:
+              only:
+                - staging
+      - backend_deploy_appsync_authenticated_staging:
+          requires:
+            - backend_deploy_lambda_staging
+          filters:
+            branches:
+              only:
+                - staging
+      - backend_deploy_appsync_public_staging:
+          requires:
+            - backend_deploy_lambda_staging
+          filters:
+            branches:
+              only:
+                - staging
+      - backend_deploy_staging:
+          requires:
+            - backend_deploy_appsync_authenticated_staging
+            - backend_deploy_appsync_public_staging
+          filters:
+            branches:
+              only:
+                - staging
+      - browser_extension_build_staging:
+          requires:
+            - backend_deploy_staging
+          filters:
+            branches:
+              only:
+                - staging
+
   deploy_then_build_production_full_workflow:
     jobs:
       - dashboard_build_deploy:
+          filters:
+            branches:
+              only:
+                - master
+      - database_nonCheckoutReports_deploy_production:
+          filters:
+            branches:
+              only:
+                - master
+      - database_paymentPayloadRecords_deploy_production:
+          filters:
+            branches:
+              only:
+                - master
+      - database_siteSupportRequests_deploy_production:
+          filters:
+            branches:
+              only:
+                - master
+      - database_userInformation_deploy_production:
+          filters:
+            branches:
+              only:
+                - master
+      - database_userSecrets_deploy_production:
+          filters:
+            branches:
+              only:
+                - master
+      - backend_deploy_lambda_production:
+          requires:
+            - database_nonCheckoutReports_deploy_production
+            - database_paymentPayloadRecords_deploy_production
+            - database_siteSupportRequests_deploy_production
+            - database_userInformation_deploy_production
+            - database_userSecrets_deploy_production
+          filters:
+            branches:
+              only:
+                - master
+      - backend_deploy_appsync_authenticated_production:
+          requires:
+            - backend_deploy_lambda_production
+          filters:
+            branches:
+              only:
+                - master
+      - backend_deploy_appsync_public_production:
+          requires:
+            - backend_deploy_lambda_production
+          filters:
+            branches:
+              only:
+                - master
+      - backend_deploy_production:
+          requires:
+            - backend_deploy_appsync_authenticated_production
+            - backend_deploy_appsync_public_production
+          filters:
+            branches:
+              only:
+                - master
+      - browser_extension_build_production:
+          requires:
+            - backend_deploy_production
           filters:
             branches:
               only:
