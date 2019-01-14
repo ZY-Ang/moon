@@ -37,7 +37,7 @@ class BackgroundMixpanel {
      * @param {String} eventName The name of the event. This can be anything the user does - 'Button Click', 'Sign Up', 'Item Purchased', etc.
      * @param {Object} [properties] A set of properties to include with the event you're sending. These describe the user who did the event or details about the event itself.
      */
-    static track = async (eventName, properties) => {
+    static doTrack = async (eventName, properties) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -74,7 +74,7 @@ class BackgroundMixpanel {
      *
      * @param {String} [uniqueId] A string that uniquely identifies a user. If not provided, the distinct_id currently in the persistent store (cookie or localStorage) will be used.
      */
-    static identify = async (uniqueId) => {
+    static doIdentify = async (uniqueId) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -88,7 +88,7 @@ class BackgroundMixpanel {
      *
      * @param {Object} [properties] A set of properties to associate with the user profile.
      */
-    static set = async (properties) => {
+    static doSet = async (properties) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -103,7 +103,7 @@ class BackgroundMixpanel {
      *
      * @param {Object} [properties] A set of properties to associate with the user profile.
      */
-    static setOnce = async (properties) => {
+    static doSetOnce = async (properties) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -119,7 +119,7 @@ class BackgroundMixpanel {
      * @param {Object} [properties] Properties of user to increment. Can be a string or an object.
      * @param {Number} by Amount by which to increment properties. Default is 1 if not supplied.
      */
-    static increment = async (properties, by) => {
+    static doIncrement = async (properties, by) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -134,7 +134,7 @@ class BackgroundMixpanel {
      * @param {Number} amount Amount the user spent in base currency
      * @param {Object} [properties] Properties to associate with this transaction
      */
-    static trackCharge = async (amount, properties) => {
+    static doTrackCharge = async (amount, properties) => {
         if (!mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
@@ -147,26 +147,26 @@ class BackgroundMixpanel {
      * @param functionName - of {@code mixpanel} to be forwarded to
      * @param args {object} - to be forwarded
      */
-    static resolve = async (functionName, args) => {
+    static resolve = (functionName, args) => {
         if(!!AuthUser.getEmail()) {
             // Identify user automatically.
-            BackgroundMixpanel.identify(AuthUser.getEmail()).catch();
+            BackgroundMixpanel.doIdentify(AuthUser.getEmail()).catch();
             // Create a user profile
-            BackgroundMixpanel.set({
+            BackgroundMixpanel.doSet({
                 '$email': AuthUser.getEmail()
             }).catch();
         }
-        BackgroundMixpanel.setOnce({
+        BackgroundMixpanel.doSetOnce({
             'First Extension Open': new Date()
         }).catch();
 
         // Resolver for mixpanel API types. Add more as you wish.
         const resolver = {
-            track: () => BackgroundMixpanel.track(args.event_name, args.properties),
-            set: () => BackgroundMixpanel.set(args.properties),
-            setOnce: () => BackgroundMixpanel.setOnce(args.properties),
-            increment: () => BackgroundMixpanel.increment(args.properties, args.by),
-            trackCharge: () => BackgroundMixpanel.trackCharge(args.amount, args.properties)
+            track: () => BackgroundMixpanel.doTrack(args.event_name, args.properties),
+            set: () => BackgroundMixpanel.doSet(args.properties),
+            setOnce: () => BackgroundMixpanel.doSetOnce(args.properties),
+            increment: () => BackgroundMixpanel.doIncrement(args.properties, args.by),
+            trackCharge: () => BackgroundMixpanel.doTrackCharge(args.amount, args.properties)
         };
 
         if (!functionName) {

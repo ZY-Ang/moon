@@ -65,7 +65,7 @@ class BrowserAction {
          * @see {@link https://developer.chrome.com/extensions/browserAction#event-onClicked}
          */
         chrome.browserAction.onClicked.addListener(() => {
-            BackgroundMixpanel.track('button_click_moon_toolbar');
+            BackgroundMixpanel.doTrack('button_click_moon_toolbar');
             return doInjectAppEvent(SOURCE_MANUAL);
         });
 
