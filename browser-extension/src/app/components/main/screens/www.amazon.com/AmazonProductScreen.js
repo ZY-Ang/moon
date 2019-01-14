@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {
+    QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE,
     QUERY_SELECTOR_PRODUCT_IMAGE,
     QUERY_SELECTOR_PRODUCT_OBSERVER,
     QUERY_SELECTOR_PRODUCT_PRICE,
@@ -13,11 +14,12 @@ import CurrencyIcon from "../../../misc/currencyicon/CurrencyIcon";
 import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../utils/exchangerates";
 import {QUICKVIEW_CURRENCIES} from "./AmazonCheckoutScreen";
 import AppRuntime from "../../../../browser/AppRuntime";
-import {REQUEST_GET_EXCHANGE_RATES} from "../../../../../constants/events/appEvents";
+import {REQUEST_GET_EXCHANGE_RATES, REQUEST_OPEN_POPUP} from "../../../../../constants/events/appEvents";
 import moment from "moment";
 import {ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS} from "../../../../redux/reducers/constants";
 import {observeDOM} from "../../../../utils/dom";
 import AppMixpanel from "../../../../services/AppMixpanel";
+import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";
 
@@ -97,6 +99,17 @@ class AmazonProductScreen extends React.Component {
         this.setState(state => ({isExchangeRatesSelectorOpen: !state.isExchangeRatesSelectorOpen}));
     };
 
+    isProductRestrictedItem = () => {
+        const restrictedWords = ["egift", "amazon.com"];
+        return Array.from(document.querySelectorAll(QUERY_SELECTOR_PRODUCT_TITLE))
+            .reduce((accItem, curItem) =>
+                restrictedWords.reduce((accRestrictedWord, curRestrictedWord) =>
+                    curItem.innerText.toLowerCase().includes(curRestrictedWord) || accRestrictedWord,
+                    false
+                ) || accItem, false
+            );
+    };
+
     render() {
         const {
             title,
@@ -111,6 +124,7 @@ class AmazonProductScreen extends React.Component {
         const {authUser} = this.props;
         const authUserHasWallets = this.authUserHasWallets();
         const selectedExchangeRateWallets = (authUserHasWallets && selectedExchangeRate && authUser.wallets.filter(({currency}) => (currency === selectedExchangeRate.quote))) || [];
+        const containsRestrictedItems = this.isProductRestrictedItem();
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
@@ -253,6 +267,20 @@ class AmazonProductScreen extends React.Component {
                         >
                             Connect One Now!
                         </button>
+                    </div>
+                }
+                {
+                    containsRestrictedItems &&
+                    <div className="text-center mt-2">
+                        <p className="text-error mb-0">
+                            Moon cannot facilitate the purchase of gift cards. We're sorry but you cannot purchase this item using crypto currency.
+                        </p>
+                        <p className="text-error mb-0">
+                            If you think this is a mistake, <a onClick={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
+                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
+                        }}>contact us</a>
+                        </p>
                     </div>
                 }
             </div>

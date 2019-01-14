@@ -529,7 +529,6 @@ class AmazonCheckoutScreen extends React.Component {
                                 AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
                         }}>contact us</a>
                         </p>
-
                     </div>
                 }
                 {
