@@ -2,6 +2,7 @@ import React from "react";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {QUERY_SELECTOR_PAYMENT_METHOD_SELECT} from "./constants/querySelectors";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 class AmazonPaymentMethodSelectScreen extends React.Component {
     constructor(props) {
@@ -16,6 +17,7 @@ class AmazonPaymentMethodSelectScreen extends React.Component {
     }
 
     componentDidMount() {
+        AppMixpanel.track('view_screen_amazon_payment_method_select');
         this.parseContinueButton();
     }
 
@@ -51,6 +53,7 @@ class AmazonPaymentMethodSelectScreen extends React.Component {
                         href="https://paywithmoon.com/FAQs"
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={AppMixpanel.track('button_click_amazon_payment_method_select_why')}
                     >
                         Why?
                     </a>
@@ -60,7 +63,10 @@ class AmazonPaymentMethodSelectScreen extends React.Component {
                 {
                     this.state.continueButton &&
                     <div className="w-100">
-                        <button className="btn btn-primary w-77" onClick={this.onContinueClick}>Continue</button>
+                        <button className="btn btn-primary w-77" onClick={() => {
+                            AppMixpanel.track('button_click_amazon_payment_method_select_continue');
+                            this.onContinueClick()
+                        }}>Continue</button>
                     </div>
                 }
             </div>

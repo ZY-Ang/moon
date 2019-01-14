@@ -17,6 +17,7 @@ import AppRuntime from "../../browser/AppRuntime";
 import moonLogo from "../../../../../assets/icons/logo_32_text_thick_infinity.png";
 import FaIcon from "../misc/fontawesome/FaIcon";
 import appLogger from "../../utils/AppLogger";
+import AppMixpanel from "../../services/AppMixpanel";
 
 const MESSAGE_ERROR_SIGN_IN = 'Oh no! We were unable to sign you in. Please wait a few moments and try again';
 
@@ -27,6 +28,10 @@ class AuthFlow extends Component {
             isLoading: false,
             error: ""
         };
+    }
+
+    componentDidMount() {
+        AppMixpanel.track('view_screen_signup');
     }
 
     launchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type})
@@ -68,7 +73,10 @@ class AuthFlow extends Component {
         return (
             <div className="moon-tab moon-authflow-tab py-5">
                 <div style={{width: '100%'}}>
-                    <button className="btn-auth" onClick={this.signIn}>
+                    <button className="btn-auth" onClick={() => {
+                        AppMixpanel.track('button_click_signup_screen_signin');
+                        this.signIn();
+                    }}>
                         <div className="btn-auth-icon">
                             <img src={AppRuntime.getURL(moonLogo)} alt="Sign In With Moon"/>
                         </div>
@@ -81,7 +89,10 @@ class AuthFlow extends Component {
                 >
                     Don't have an account? <a
                     style={{fontStyle: 'none', textDecoration: 'none'}}
-                    onClick={this.signUp}
+                    onClick={() => {
+                        AppMixpanel.track('button_click_signup_screen_signup');
+                        this.signUp();
+                    }}
                     >
                         Sign Up!
                     </a>
@@ -94,7 +105,10 @@ class AuthFlow extends Component {
                 <div className="text-center">
                     <button
                         className="btn-auth-social btn-login-facebook my-2"
-                        onClick={this.signInWithFacebook}
+                        onClick={() => {
+                            AppMixpanel.track('button_click_signup_screen_login_with_facebook');
+                            this.signInWithFacebook();
+                        }}
                     >
                         <div className="btn-auth-social-icon btn-auth-social-text btn-auth-social-icon-facebook">
                             {/*<FaIcon icon={['fab', 'facebook']}/>*/}
@@ -104,7 +118,10 @@ class AuthFlow extends Component {
                     <button
                         className="btn-auth-social btn-login-google"
 
-                        onClick={this.signInWithGoogle}
+                        onClick={() => {
+                            AppMixpanel.track('button_click_signup_screen_login_with_google');
+                            this.signInWithGoogle();
+                        }}
                     >
                         <div className="btn-auth-social-icon">
                             <FaIcon icon={['fab', 'google']}/>

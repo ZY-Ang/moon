@@ -6,6 +6,7 @@ import {REQUEST_LAUNCH_COINBASE_AUTH_FLOW} from "../../../../../constants/events
 import BackButton from "../../BackButton";
 import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../../../redux/reducers/constants";
 import appLogger from "../../../../utils/AppLogger";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 class AddWalletsScreen extends React.Component {
     launchCoinbaseAuthFlow = () => {
@@ -15,6 +16,10 @@ class AddWalletsScreen extends React.Component {
         this.props.delayAuthUserOnboarding();
     };
 
+    componentDidMount() {
+        AppMixpanel.track('view_screen_connect_wallets');
+    }
+
     render() {
         return (
             <div className="moon-mainflow-screen text-center">
@@ -22,7 +27,10 @@ class AddWalletsScreen extends React.Component {
                 <h2>Connect a Wallet</h2>
                 <p>Wallets are connected via API keys</p>
                 <div className="mb-2 w-100">
-                    <button className="btn w-80 btn-coinbase" onClick={this.launchCoinbaseAuthFlow}>
+                    <button className="btn w-80 btn-coinbase" onClick={() => {
+                        AppMixpanel.track('button_click_connect_wallets_connect_coinbase');
+                        this.launchCoinbaseAuthFlow();
+                    }}>
                         <div className="btn-brand-icon"><CoinbaseIcon/></div>
                         <div className="btn-brand-text">Connect Coinbase</div>
                     </button>

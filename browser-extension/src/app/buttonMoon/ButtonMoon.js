@@ -8,6 +8,7 @@ import AppRuntime from "../browser/AppRuntime";
 import whiteLogo from "../../../../assets/icons/logo_32_text_thick.png";
 import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
 import {toggleApp} from "../index";
+import AppMixpanel from "../services/AppMixpanel";
 
 const defaultStyle = {
     backgroundColor: '#0F62BD',
@@ -56,7 +57,10 @@ class ButtonMoon extends Component {
         return this.props.isAppActive ? null : (
             <div
                 style={this.state.style}
-                onClick={() => toggleApp(SOURCE_MANUAL).catch()}
+                onClick={() => {
+                    AppMixpanel.track('button_click_pay_with_moon_injected');
+                    toggleApp(SOURCE_MANUAL).catch();
+                }}
                 onMouseEnter={this.setHoverStyle}
                 onMouseLeave={this.setDefaultStyle}
                 onMouseDown={this.setActiveStyle}

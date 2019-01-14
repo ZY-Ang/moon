@@ -3,6 +3,7 @@ import "./TawkLiveChatScreen.css";
 import BackButton from "../../BackButton";
 import Throbber from "../../../misc/throbber/Throbber";
 import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 class TawkLiveChatScreen extends React.Component {
     constructor(props) {
@@ -10,6 +11,10 @@ class TawkLiveChatScreen extends React.Component {
         this.state = {
             loaded: false
         };
+    }
+
+    componentDidMount() {
+        AppMixpanel.track('view_screen_support');
     }
 
     render() {

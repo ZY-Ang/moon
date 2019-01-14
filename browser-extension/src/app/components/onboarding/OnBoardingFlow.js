@@ -9,6 +9,7 @@ import ONBOARDING_PAGES from "./pages";
 import AppRuntime from "../../browser/AppRuntime";
 import {REQUEST_UPDATE_ONBOARDING_SKIP} from "../../../constants/events/appEvents";
 import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../redux/reducers/constants";
+import AppMixpanel from "../../services/AppMixpanel";
 
 export const isOnBoardingFlowCompleteOrSkipped = (authUser) => {
     return !!authUser && (
@@ -35,6 +36,10 @@ class OnBoardingFlow extends React.Component {
         };
     }
 
+    componentDidMount() {
+        AppMixpanel.track('view_onboarding_flow');
+    }
+
     skip = () => {
         AppRuntime.sendMessage(REQUEST_UPDATE_ONBOARDING_SKIP, {delay: 168});
         // Redux is used to temporarily force user into skipped mode without waiting for dynamodb eventual consistency to take effect
@@ -59,7 +64,10 @@ class OnBoardingFlow extends React.Component {
                         marginBottom: "0.5rem",
                         overflowY: 'hidden !important'
                     }}
-                    onChangeIndex={currentTabIndex => this.setState(() => ({currentTabIndex}))}
+                    onChangeIndex={currentTabIndex => {
+                        AppMixpanel.track(`view_onboarding_flow_screen_${currentTabIndex}`);
+                        this.setState(() => ({currentTabIndex}));
+                    }}
                     index={this.state.currentTabIndex}
                 >
                     {
@@ -78,7 +86,10 @@ class OnBoardingFlow extends React.Component {
                     {
                         this.state.currentTabIndex < (ONBOARDING_PAGES.length - 1)
                             ? (
-                                <a onClick={this.skip}>Skip for now</a>
+                                <a onClick={() => {
+                                    AppMixpanel.track('button_click_onboarding_skip');
+                                    this.skip();
+                                }}>Skip for now</a>
                             ) : (
                                 <p className="my-0">{" "}</p>
                             )

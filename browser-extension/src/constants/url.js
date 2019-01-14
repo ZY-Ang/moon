@@ -7,7 +7,9 @@ import {ROUTE_BROWSER_EXTENSION, ROUTE_OAUTH_REDIRECT} from "../../../dashboard/
 
 export const DOMAIN = "paywithmoon.com";
 export const URL_LANDING_PAGE = `https://${DOMAIN}/`;
-export const URL_DASHBOARD = process.env.NODE_ENV === 'production' ? `https://app.${DOMAIN}` : "http://localhost:3000";
+export const URL_DASHBOARD = process.env.NODE_ENV === 'production'
+    ? `https://app.${DOMAIN}`
+    : `https://app.${DOMAIN}`; // TODO: Set up development dashboard URL (on auth0 :aud as well)
 export const URL_EXTENSION_INSTALLED = `${URL_LANDING_PAGE}extension-successfully-installed`;
 export const URL_EXTENSION_UNINSTALLED = `${URL_LANDING_PAGE}extension-successfully-uninstalled`;
 /**

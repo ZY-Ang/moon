@@ -2,7 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
-import "./services/BackgroundMixpanel";
+import "./services/mixpanel/backgroundMixpanel";
 import BrowserAction from "./browser/BrowserAction";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import Tabs from "./browser/Tabs";

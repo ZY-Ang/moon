@@ -10,6 +10,7 @@ import {
 } from "../../../../redux/reducers/constants";
 import moonFaceEmoji from "../../../../../../../assets/emoji/windows10/new-moon-with-face_1f31a.png";
 import appLogger from "../../../../utils/AppLogger";
+import AppMixpanel from "../../../../services/AppMixpanel";
 
 class UnsupportedScreen extends React.Component {
     constructor(props) {
@@ -17,6 +18,10 @@ class UnsupportedScreen extends React.Component {
         this.state = {
             isRequested: false
         };
+    }
+
+    componentDidMount(){
+        AppMixpanel.track('view_screen_unsupported_site');
     }
 
     requestSite = () => {

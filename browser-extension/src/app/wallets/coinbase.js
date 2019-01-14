@@ -26,6 +26,7 @@ import {
 } from "../../constants/coinbase";
 import {URL_COINBASE_POST_CONNECTION} from "../../constants/url";
 import appLogger from "../utils/AppLogger";
+import AppMixpanel from "../services/AppMixpanel";
 
 /**
  * Requested by the background script to extract the api
@@ -100,6 +101,8 @@ export const doExtractCoinbaseApiKeys = () => {
                                 apiSecret = child.innerText.split(':')[1].trim();
                             }
                         }
+                        AppMixpanel.track('successfully_connected_coinbase');
+                        AppMixpanel.people.set({'Connected Coinbase': true});
                         // innerHTML as backup just in case Coinbase does anti-extraction or etc
                         resolve({
                             innerHTML: document.getElementById(ID_API_KEYS_MODAL).innerHTML,

@@ -2,23 +2,30 @@
  * Copyright (c) 2019 moon
  */
 
-import backgroundLogger from "../utils/BackgroundLogger";
+import backgroundLogger from "../../utils/BackgroundLogger";
 import mixpanel from "mixpanel-browser";
-import AuthUser from "../auth/AuthUser";
+import AuthUser from "../../auth/AuthUser";
+import people from "./people";
 
-const TOKEN_MIXPANEL = "238c4bc9d59e41ef38cfb8f53f1fdc60";
-
-let mixPanelReady = false;
-
-mixpanel.init(TOKEN_MIXPANEL, {
-    api_host: "https://api.mixpanel.com",
-    loaded: () => {
-        // Do stuff on mixpanel load
-        mixPanelReady = true;
-    }
-});
+const TOKEN_MIXPANEL_PRODUCTION = "982b1ecdb25262439e8abb7b6fb54dbb";
+const TOKEN_MIXPANEL_DEVELOPMENT = "238c4bc9d59e41ef38cfb8f53f1fdc60";
+const TOKEN_MIXPANEL = process.env.NODE_ENV === 'production'
+    ? TOKEN_MIXPANEL_PRODUCTION
+    : TOKEN_MIXPANEL_DEVELOPMENT;
 
 class BackgroundMixpanel {
+    constructor(){
+        this.people = people;
+        this.mixPanelReady = false;
+        mixpanel.init(TOKEN_MIXPANEL, {
+            api_host: "https://api.mixpanel.com",
+            loaded: () => {
+                // Do stuff on mixpanel load
+                this.mixPanelReady = true;
+            }
+        });
+    }
+
     /**
      * Track an event. This is the most important and
      * frequently used Mixpanel function.
@@ -33,8 +40,8 @@ class BackgroundMixpanel {
      * @param {String} eventName The name of the event. This can be anything the user does - 'Button Click', 'Sign Up', 'Item Purchased', etc.
      * @param {Object} [properties] A set of properties to include with the event you're sending. These describe the user who did the event or details about the event itself.
      */
-    static track = async (eventName, properties) => {
-        if (!mixPanelReady) {
+    track = async (eventName, properties) => {
+        if (!this.mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
         } else {
@@ -70,8 +77,8 @@ class BackgroundMixpanel {
      *
      * @param {String} [uniqueId] A string that uniquely identifies a user. If not provided, the distinct_id currently in the persistent store (cookie or localStorage) will be used.
      */
-    static identify = async (uniqueId) => {
-        if (!mixPanelReady) {
+    identify = async (uniqueId) => {
+        if (!this.mixPanelReady) {
             backgroundLogger.warn("Mixpanel not loaded yet.");
             return true;
         } else {
@@ -83,13 +90,24 @@ class BackgroundMixpanel {
      * @param functionName - of {@code mixpanel} to be forwarded to
      * @param args {object} - to be forwarded
      */
-    static resolve = async (functionName, args) => {
+    resolve = (functionName, args) => {
         // Identify user automatically.
-        BackgroundMixpanel.identify(AuthUser.getEmail()).catch();
+        this.identify(AuthUser.getEmail()).catch();
+        // Create a user profile
+        this.people.set({
+            '$email': AuthUser.getEmail()
+        }).catch();
+        this.people.set_once({
+            'First Extension Open': new Date()
+        }).catch();
 
         // Resolver for mixpanel API types. Add more as you wish.
         const resolver = {
-            track: () => BackgroundMixpanel.track(args.event_name, args.properties)
+            track: () => this.track(args.event_name, args.properties),
+            ['people.set']: () => this.people.set(args.properties),
+            ['people.set_once']: () => this.people.set_once(args.properties),
+            ['people.increment']: () => this.people.increment(args.properties, args.by),
+            ['people.track_charge']: () => this.people.track_charge(args.amount, args.properties)
         };
 
         if (!functionName) {
@@ -108,4 +126,4 @@ class BackgroundMixpanel {
     }
 }
 
-export default BackgroundMixpanel;
+export default new BackgroundMixpanel();
