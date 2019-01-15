@@ -40,7 +40,7 @@ export const doUpdateTabEvent = async (tab) => {
         if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             return doInjectAppEvent(tab.url, tab);
         } else {
-            backgroundLogger.warn("doUpdateTabEvent failed with uncaught exception: ", err);
+            backgroundLogger.warn("doUpdateTabEvent failed with uncaught exception: ", JSON.stringify(err));
         }
     }
 };
@@ -55,6 +55,10 @@ export const doUpdateTabEvent = async (tab) => {
  * @param tab - Extension API tab object
  */
 export const doInjectAppEvent = async (source, tab) => {
+    if (!!tab && !!tab.url && !isValidWebUrl(tab.url)) {
+        backgroundLogger.info(`doInjectAppEvent Skipping ${tab.id} with ${tab.url}`);
+        return;
+    }
     try {
         if (!tab) {
             const activeTab = await Tabs.getActive();
@@ -63,18 +67,18 @@ export const doInjectAppEvent = async (source, tab) => {
             }
         }
         const authUser = await AuthUser.trim().catch(() => null);
-        return Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
+        return await Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
     } catch (err) {
         if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             const manifest = BackgroundRuntime.getManifest();
             const contentScripts = manifest.content_scripts[0].js;
             await Promise.all(contentScripts.map(file =>
                 Tabs.executeScript(tab.id, {file})
-                    .catch(() => backgroundLogger.warn(`Skipping ${tab.id} with ${tab.url}`))
+                    .then(() => doInjectAppEvent(source, tab))
+                    .catch(() => backgroundLogger.info(`doInjectAppEvent executeScript Skipping ${tab.id} with ${tab.url}`))
             ));
-            return doInjectAppEvent(source, tab);
         } else {
-            backgroundLogger.warn("doInjectAppEvent failed with uncaught exception: ", err);
+            backgroundLogger.warn("doInjectAppEvent failed with uncaught exception: ", JSON.stringify(err));
         }
     }
 };
@@ -86,29 +90,29 @@ export const tabDidUpdate = (tab) => {
     if (!tab || !tab.url || tab.status !== "complete") {
         // Tab/URL does not exist yet - ignore and let the next call deal with it.
         BrowserAction.setInvalidIcon()
-            .catch(err => backgroundLogger.error("tabDidUpdate (tab does not exist) setInvalidIcon exception: ", err));
+            .catch(err => backgroundLogger.error("tabDidUpdate (tab does not exist) setInvalidIcon exception: ", JSON.stringify(err)));
 
     } else if (isOAuthUrl(tab.url)) {
         // URL on the current tab is a OAuth redirect URL - retrieve tokens from code grant and store in storage
         doOnAuthFlowResponse(tab.url, tab.id)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isOAuthUrl) doOnAuthFlowResponse exception: ", err));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isOAuthUrl) doOnAuthFlowResponse exception: ", JSON.stringify(err)));
 
     } else if (isClearCacheUrl(tab.url)) {
         // URL on the current tab is the final redirect after an OAuth logout has been hit
         // DEPRECATED. An Ajax call via Axios replaced the need to manually open a new tab
         Tabs.remove(tab)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isClearCacheUrl) Tabs.remove exception: ", err));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isClearCacheUrl) Tabs.remove exception: ", JSON.stringify(err)));
 
     } else if (isSuccessfullyInstalledPage(tab.url)) {
         doInjectAppEvent(tab.url, tab)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isSuccessfullyInstalledPage) doInjectAppEvent exception: ", err));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isSuccessfullyInstalledPage) doInjectAppEvent exception: ", JSON.stringify(err)));
 
     } else if (isCoinbaseAuthFlow()) {
         // Coinbase Auth Flow is activated but not on the sign in page
         if (isCoinbaseUrl(tab.url) && isCoinbaseAuthenticatedUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
             // Reroute the user to the settings api page of the coinbase if not currently on it.
             Tabs.update(tab.id, {url: URL_COINBASE_SETTINGS_API})
-                .catch(err => backgroundLogger.error("tabDidUpdate (coinbase non-auth url) Tabs.update exception: ", err));
+                .catch(err => backgroundLogger.error("tabDidUpdate (coinbase non-auth url) Tabs.update exception: ", JSON.stringify(err)));
         } else if (isCoinbaseSettingsApiUrl(tab.url)) {
             // Let content script handle coinbase auth flow if on tab URL
             Tabs.sendMessageToActive(REQUEST_COINBASE_EXTRACT_API_KEYS)
@@ -119,12 +123,12 @@ export const tabDidUpdate = (tab) => {
         // URL is not of a valid web schema - e.g. chrome-extension://... or file:///...
         // We ignore and do nothing
         BrowserAction.setInvalidIcon()
-            .catch(err => backgroundLogger.error("tabDidUpdate (invalidWebUrl) setInvalidIcon exception: ", err));
+            .catch(err => backgroundLogger.error("tabDidUpdate (invalidWebUrl) setInvalidIcon exception: ", JSON.stringify(err)));
 
     } else if (isSupportedSite(tab.url)) {
         // URL on the current tab is a supported site - set to valid browser icon.
         BrowserAction.setValidIcon(tab.id)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) setInvalidIcon exception: ", err));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) setInvalidIcon exception: ", JSON.stringify(err)));
 
         // URL on the current tab is supported and is a checkout page - auto render the extension
         const injectAppConditionalPromise = isCheckoutPage(tab.url)
@@ -133,7 +137,7 @@ export const tabDidUpdate = (tab) => {
 
         injectAppConditionalPromise
             .then(() => doUpdateTabEvent(tab))
-            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) injectApp exception: ", err));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) injectApp exception: ", JSON.stringify(err)));
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
