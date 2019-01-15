@@ -6,7 +6,7 @@
 import {FontAwesomeIcon as FaIcon} from "@fortawesome/react-fontawesome";
 import {library} from "@fortawesome/fontawesome-svg-core";
 // Brands
-import {faFacebook} from "@fortawesome/free-brands-svg-icons/faFacebook";
+import {faFacebookF} from "@fortawesome/free-brands-svg-icons/faFacebookF";
 import {faGoogle} from "@fortawesome/free-brands-svg-icons/faGoogle";
 import {faAmazon} from "@fortawesome/free-brands-svg-icons/faAmazon";
 // Solid
@@ -32,7 +32,7 @@ import {faComments} from "@fortawesome/free-solid-svg-icons/faComments";
 // Regular
 // import {} from '@fortawesome/free-regular-svg-icons';
 
-library.add(faFacebook, faGoogle, faAmazon);
+library.add(faFacebookF, faGoogle, faAmazon);
 library.add(
     faComments,
     faHandsHelping,

@@ -110,8 +110,8 @@ class AuthFlow extends Component {
                             this.signInWithFacebook();
                         }}
                     >
-                        <div className="btn-auth-social-icon btn-auth-social-text btn-auth-social-icon-facebook">
-                            {/*<FaIcon icon={['fab', 'facebook']}/>*/}
+                        <div className="btn-auth-social-icon">
+                            <FaIcon icon={['fab', 'facebook-f']}/>
                         </div>
                         <div className=" btn-auth-text btn-auth-social-text">Sign in With Facebook</div>
                     </button>
