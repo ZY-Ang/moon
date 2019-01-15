@@ -4,7 +4,12 @@ import moment from "moment";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY, QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE} from "./constants/querySelectors";
+import {
+    QUERY_SELECTOR_CART_AMOUNT,
+    QUERY_SELECTOR_CART_CURRENCY,
+    QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE,
+    QUERY_SELECTOR_PRODUCT_TITLE
+} from "./constants/querySelectors";
 import Decimal from "decimal.js";
 import {REQUEST_OPEN_POPUP} from "../../../../../constants/events/appEvents";
 import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
@@ -72,7 +77,7 @@ class AmazonCheckoutScreen extends React.Component {
 
     isCartContainsRestrictedItems = () => {
         const restrictedWords = ["egift", "amazon.com"];
-        return Array.from(document.querySelectorAll(QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE))
+        return Array.from(document.querySelectorAll(QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE, QUERY_SELECTOR_PRODUCT_TITLE))
             .reduce((accItem, curItem) =>
                 restrictedWords.reduce((accRestrictedWord, curRestrictedWord) =>
                     curItem.innerText.toLowerCase().includes(curRestrictedWord) || accRestrictedWord,
