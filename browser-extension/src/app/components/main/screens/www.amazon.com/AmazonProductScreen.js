@@ -4,7 +4,6 @@ import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {
-    QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE,
     QUERY_SELECTOR_PRODUCT_IMAGE,
     QUERY_SELECTOR_PRODUCT_OBSERVER,
     QUERY_SELECTOR_PRODUCT_PRICE,
@@ -20,6 +19,7 @@ import {ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS} from "../../../../redux/reducers
 import {observeDOM} from "../../../../utils/dom";
 import AppMixpanel from "../../../../services/AppMixpanel";
 import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
+import containsRestrictedItems from "./AmazonCheckoutScreen.js";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";
 
@@ -99,17 +99,6 @@ class AmazonProductScreen extends React.Component {
         this.setState(state => ({isExchangeRatesSelectorOpen: !state.isExchangeRatesSelectorOpen}));
     };
 
-    isProductRestrictedItem = () => {
-        const restrictedWords = ["egift", "amazon.com"];
-        return Array.from(document.querySelectorAll(QUERY_SELECTOR_PRODUCT_TITLE))
-            .reduce((accItem, curItem) =>
-                restrictedWords.reduce((accRestrictedWord, curRestrictedWord) =>
-                    curItem.innerText.toLowerCase().includes(curRestrictedWord) || accRestrictedWord,
-                    false
-                ) || accItem, false
-            );
-    };
-
     render() {
         const {
             title,
@@ -124,7 +113,6 @@ class AmazonProductScreen extends React.Component {
         const {authUser} = this.props;
         const authUserHasWallets = this.authUserHasWallets();
         const selectedExchangeRateWallets = (authUserHasWallets && selectedExchangeRate && authUser.wallets.filter(({currency}) => (currency === selectedExchangeRate.quote))) || [];
-        const containsRestrictedItems = this.isProductRestrictedItem();
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
