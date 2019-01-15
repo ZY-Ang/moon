@@ -18,6 +18,7 @@ import moment from "moment";
 import {ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS} from "../../../../redux/reducers/constants";
 import {observeDOM} from "../../../../utils/dom";
 import AppMixpanel from "../../../../services/AppMixpanel";
+import FaIcon from "../../../misc/fontawesome/FaIcon";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";
 
@@ -171,7 +172,7 @@ class AmazonProductScreen extends React.Component {
                             />
                         </div>
                         <div
-                            className="product-section-currency-flag"
+                            className={`product-section-currency-flag${isExchangeRatesSelectorOpen ? " inverse" : ""}`}
                             onClick={() => {
                                 AppMixpanel.track('button_click_amazon_product_toggle_change_currency');
                                 this.onCurrencyClick();
@@ -181,6 +182,7 @@ class AmazonProductScreen extends React.Component {
                                 {selectedExchangeRate.quote}
                                 <CurrencyIcon currency={selectedExchangeRate.quote}/>
                             </div>
+                            <FaIcon icon="chevron-down"/>
                         </div>
                         <div className={`product-section-currency-selector${isExchangeRatesSelectorOpen ? "" : " collapsed"}`}>
                             {
@@ -200,7 +202,7 @@ class AmazonProductScreen extends React.Component {
                                             }}
                                         >
                                             <CurrencyIcon className="mx-auto mb-1" currency={quote}/>
-                                            <b className="text-white font-weight-bold">{quote}</b>
+                                            <b className="font-weight-bold">{quote}</b>
                                         </div>
                                     )
                             }
