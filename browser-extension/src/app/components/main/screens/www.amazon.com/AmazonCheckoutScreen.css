@@ -149,6 +149,7 @@ ul.sequence li:last-child {
 .checkout-section-currency-flag.disabled {
     cursor: default;
     background-color: #ffffff;
+    border: none;
 }
 
 .checkout-section-currency-flag:focus,
@@ -156,12 +157,25 @@ ul.sequence li:last-child {
     background-color: #ffffff;
 }
 
+.checkout-section-currency-flag.disabled:active {
+    background-color: #ffffff;
+    border: none;
+}
+
+.checkout-section-currency-flag.disabled:active * {
+    color: #000;
+}
+
 .checkout-section-currency-flag:hover {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(99, 158, 255, 0.26);
+}
+
+.checkout-section-currency-flag:active * {
+    color: white;
 }
 
 .checkout-section-currency-flag:active {
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0, 34, 255, 0.72);
     border-style: inset;
 }
 
