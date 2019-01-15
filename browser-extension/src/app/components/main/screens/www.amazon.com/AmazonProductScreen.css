@@ -92,7 +92,7 @@
     border-bottom-right-radius: 3px;
     border-top-right-radius: 3px;
     display: flex;
-    padding: 8px 10px;
+    padding: 8px 3px;
     box-shadow: 0 0 0 0 rgba(0,0,0,.5);
     border-style: outset;
     margin: 2px;
@@ -115,12 +115,16 @@
 }
 
 .product-section-currency-flag:hover {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(99, 158, 255, 0.26);
 }
 
 .product-section-currency-flag:active {
-    background-color: rgba(0,0,0,0.3);
+    background-color: rgba(0, 34, 255, 0.72);
     border-style: inset;
+}
+
+.product-section-currency-flag:active * {
+    color: white;
 }
 
 .product-section-currency-flag img {
@@ -132,14 +136,29 @@
     color: black;
     display: flex;
     align-items: center;
+    margin-right: 5px;
 }
+
+/*newline*/
+.product-section-currency-flag svg {
+    height: 16px;
+    -webkit-transition: transform 0.2s ease;
+    -moz-transition: transform 0.2s ease;
+    -ms-transition: transform 0.2s ease;
+    -o-transition: transform 0.2s ease;
+    transition: transform 0.2s ease;
+}
+.product-section-currency-flag.inverse svg {
+    transform: rotate(-180deg);
+}
+/*endl*/
 
 .product-section-currency-selector {
     display: flex;
     justify-content: start;
     width: 100%;
     cursor: pointer;
-    background-color: #2E2F33;
+    background-color: #ffffff;
     align-items: center;
     border-bottom-right-radius: 3px;
     border-bottom-left-radius: 3px;
@@ -150,6 +169,8 @@
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
+    border-top: solid #0000001c;
+    /*color: #black;*/
 }
 
 .product-section-currency-selector.collapsed {
@@ -159,9 +180,11 @@
 
 .product-section-currency-selector-currency {
     padding: 8px 10px;
-    width: 25%;
+    width: 33%;
     display: flex;
     flex-direction: column;
+    margin: auto;
+    border-right: solid #0000000d;
 }
 
 .product-section-currency-selector-currency img {
@@ -169,13 +192,15 @@
 }
 
 .product-section-currency-selector-currency:hover {
-    opacity: 0.9;
-    background-color: #1F3384;
+    background-color: rgba(99, 158, 255, 0.26);
 }
 
 .product-section-currency-selector-currency:active {
-    opacity: 1.0;
-    background-color: #0F62BD;
+    background-color: rgba(0, 34, 255, 0.72);
+}
+
+.product-section-currency-selector-currency:active * {
+    color: #ffffff;
 }
 
 .product-section-user-wallet {
