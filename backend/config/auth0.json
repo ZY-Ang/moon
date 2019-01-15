@@ -1,5 +1,14 @@
 {
-  "short_iss": "paywithmoon.auth0.com/",
-  "iss": "https://paywithmoon.auth0.com/",
-  "aud": "FsOYup3U7OUWml51A4HKPBEjYNsdIQJC"
+  "short_iss": {
+    "production": "paywithmoon.auth0.com/",
+    "development": "paywithmoon-development.auth0.com/"
+  },
+  "iss": {
+    "production": "https://paywithmoon.auth0.com/",
+    "development": "https://paywithmoon-development.auth0.com/"
+  },
+  "aud": {
+    "production": "FsOYup3U7OUWml51A4HKPBEjYNsdIQJC",
+    "development": "POuq1JjDrsIeVJnB5eQAem7Y0CJJbE5u"
+  }
 }
