@@ -14,6 +14,7 @@ class BackgroundLogger extends Logger {
         this.logEvents = [];
         this.cloudwatchLogClient = new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS});
         this.initialized = false;
+        this.putLogsPromise = Promise.resolve();
         this.initializeLogStream();
     }
 
@@ -35,35 +36,43 @@ class BackgroundLogger extends Logger {
         });
     };
 
+    doPutLogEvents = (logEvents, nextSequenceToken) => new Promise((resolve, reject) => {
+        if (!logEvents.length) {
+            resolve({nextSequenceToken: this.sequenceToken});
+        }
+        this.cloudwatchLogClient.putLogEvents({
+            logEvents: logEvents,
+            logGroupName: this.logGroupName,
+            logStreamName: this.logStreamName,
+            sequenceToken: nextSequenceToken
+        }, (err, data) => {
+            if (err) {
+                // Unable to log to cloudwatch. Ignore, log and reset token.
+                this.sequenceToken = null;
+                reject(err);
+
+            } else if (data && data.nextSequenceToken) {
+                this.sequenceToken = data.nextSequenceToken;
+                resolve(data);
+
+            }
+        });
+    });
+
     putLogEvents = () => {
         if (!this.initialized) {
             this.initializeLogStream();
 
         } else {
             // Try again later
-            try {
-                this.cloudwatchLogClient.putLogEvents({
-                    logEvents: this.logEvents,
-                    logGroupName: this.logGroupName,
-                    logStreamName: this.logStreamName,
-                    sequenceToken: this.sequenceToken
-                }, (err, data) => {
-                    if (err) {
-                        // Unable to log to cloudwatch. Ignore and just log.
-                        console.error("BackgroundLogger.putLogEvents if (err) exception: ", err);
-
-                    } else if (data && data.nextSequenceToken) {
-                        this.sequenceToken = data.nextSequenceToken;
-
-                    }
+            const logEvents = Array.from(this.logEvents);
+            this.logEvents = [];
+            this.putLogsPromise = this.putLogsPromise
+                .then(({nextSequenceToken}) => this.doPutLogEvents(logEvents, nextSequenceToken))
+                .catch(err => {
+                    console.error("BackgroundLogger.putLogEvents if (err) exception: ", JSON.stringify(err));
+                    return {nextSequenceToken: this.sequenceToken};
                 });
-
-                // Reset log events for the next batch
-                this.logEvents = [];
-
-            } catch (e) {
-                console.error("BackgroundLogger.putLogEvents catch (e) exception: ", e);
-            }
         }
     };
 

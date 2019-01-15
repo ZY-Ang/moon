@@ -65,8 +65,8 @@ custom:
     schema: schema.graphql
     authenticationType: OPENID_CONNECT
     openIdConnectConfig:
-      issuer: ${{file(../../config/auth0.json):iss}}
-      clientId: ${{file(../../config/auth0.json):aud}}
+      issuer: ${{file(../../config/auth0.json):iss.${{self:provider.stage}}}}
+      clientId: ${{file(../../config/auth0.json):aud.${{self:provider.stage}}}}
     dataSources:
     # ============== Dynamo DB Tables ==============
     # ============== Lambda Functions ==============
@@ -106,22 +106,11 @@ custom:
             - "lambda:invokeFunction"
             Resource:
             - ${{self:custom.lambdaFunctions.GetPaymentPayload.Arn}}
-    # ============== None ==============
-      # identity
-      - type: NONE
-        name: identityNone
-        description: 'Returns information about the callee'
 
     mappingTemplatesLocation: mapping-templates
 
     mappingTemplates:
     # ============== Query ==============
-      # Query/identity
-      - dataSource: identityNone
-        type: Query
-        field: identity
-        request: Query/identity/request.vtl
-        response: Query/identity/response.vtl
       # Query/user
       - dataSource: UserLambdaFunction
         type: Query

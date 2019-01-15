@@ -62,7 +62,7 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     const authCsrfState = parseUrl(url).query.state.split("#")[0];
     const localCsrfState = store.getState().sessionState.csrfState;
     if(localCsrfState !== authCsrfState){
-        return Promise.reject(new Error('Invalid CSRF state'));
+        return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${localCsrfState}`));
     }
 
     const body = getURLFlowParams(code);
