@@ -76,9 +76,7 @@ resources:
             Action:
             - "sts:AssumeRoleWithWebIdentity"
             Condition:
-              StringEquals:
-                "${{self:custom.userRolePrincipalDomain.${{self:provider.stage}}}}":
-                - ${{file(./config/auth0.json):aud.${{self:provider.stage}}}}
+              StringEquals: ${{self:custom.userRolePrincipalStringEqualsCondition.${{self:provider.stage}}}}
         Policies:
         - ${{self:custom.browserExtensionCloudWatchLogsPolicy}}
         - PolicyName: AppSync-policy
@@ -155,6 +153,10 @@ custom:
       Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
 
-  userRolePrincipalDomain:
-    production: paywithmoon.auth0.com/:aud
-    development: paywithmoon-development.auth0.com/:aud
+  userRolePrincipalStringEqualsCondition:
+    production:
+      paywithmoon.auth0.com/:aud:
+      - ${{file(./config/auth0.json):aud.${{self:provider.stage}}}}
+    development:
+      paywithmoon-development.auth0.com/:aud:
+      - ${{file(./config/auth0.json):aud.${{self:provider.stage}}}}
