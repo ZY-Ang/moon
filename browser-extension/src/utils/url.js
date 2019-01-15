@@ -13,10 +13,14 @@ import {
  * @return {boolean} {@code true} if
  * {@param urlString} matches a valid URL schema
  * where the extension can run. I.e. not
- * local files or extension background pages
+ * local files or extension background pages.
+ *
+ * Note an exception exists on chrome.google.com
+ * where browser extensions simply cannot be
+ * injected.
  */
 export const isValidWebUrl = (urlString) =>
-    (urlString.startsWith('http://') || urlString.startsWith('https://'));
+    (urlString.startsWith('http://') || urlString.startsWith('https://')) && ((new URL(urlString)).host !== "chrome.google.com");
 
 /**
  * @return {boolean} {@code true} if
