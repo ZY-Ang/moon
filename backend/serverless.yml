@@ -77,7 +77,7 @@ resources:
             - "sts:AssumeRoleWithWebIdentity"
             Condition:
               StringEquals:
-                ${{self:custom.userRolePrincipalDomain.${{self:provider.stage}}}}:
+                "${{self:custom.userRolePrincipalDomain.${{self:provider.stage}}}}":
                 - ${{file(./config/auth0.json):aud.${{self:provider.stage}}}}
         Policies:
         - ${{self:custom.browserExtensionCloudWatchLogsPolicy}}
