@@ -115,7 +115,7 @@
 }
 
 .product-section-currency-flag:hover {
-    background-color: rgba(99, 158, 255, 0.26);
+    background-color: rgba(191, 214, 253, 0.26);
 }
 
 .product-section-currency-flag:active {
@@ -139,7 +139,6 @@
     margin-right: 5px;
 }
 
-/*newline*/
 .product-section-currency-flag svg {
     height: 16px;
     -webkit-transition: transform 0.2s ease;
@@ -148,10 +147,10 @@
     -o-transition: transform 0.2s ease;
     transition: transform 0.2s ease;
 }
+
 .product-section-currency-flag.inverse svg {
     transform: rotate(-180deg);
 }
-/*endl*/
 
 .product-section-currency-selector {
     display: flex;
@@ -170,7 +169,6 @@
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
     border-top: solid #0000001c;
-    /*color: #black;*/
 }
 
 .product-section-currency-selector.collapsed {
@@ -192,7 +190,7 @@
 }
 
 .product-section-currency-selector-currency:hover {
-    background-color: rgba(99, 158, 255, 0.26);
+    background-color: rgba(191, 214, 253, 0.26);
 }
 
 .product-section-currency-selector-currency:active {
