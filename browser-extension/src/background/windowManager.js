@@ -19,6 +19,7 @@ import {isSuccessfullyInstalledPage} from "../utils/moon";
 import BackgroundRuntime from "./browser/BackgroundRuntime";
 import {MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER} from "./browser/constants";
 import backgroundLogger from "./utils/BackgroundLogger";
+import {replaceErrors} from "../utils/error";
 
 /**
  * Sends a tab update event to the content script
@@ -40,7 +41,7 @@ export const doUpdateTabEvent = async (tab) => {
         if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             return doInjectAppEvent(tab.url, tab);
         } else {
-            backgroundLogger.warn("doUpdateTabEvent failed with uncaught exception: ", JSON.stringify(err));
+            backgroundLogger.warn("doUpdateTabEvent failed with uncaught exception: ", JSON.stringify(err, replaceErrors));
         }
     }
 };
@@ -78,7 +79,7 @@ export const doInjectAppEvent = async (source, tab) => {
                     .catch(() => backgroundLogger.info(`doInjectAppEvent executeScript Skipping ${tab.id} with ${tab.url}`))
             ));
         } else {
-            backgroundLogger.warn("doInjectAppEvent failed with uncaught exception: ", JSON.stringify(err));
+            backgroundLogger.warn("doInjectAppEvent failed with uncaught exception: ", JSON.stringify(err, replaceErrors));
         }
     }
 };
@@ -90,45 +91,45 @@ export const tabDidUpdate = (tab) => {
     if (!tab || !tab.url || tab.status !== "complete") {
         // Tab/URL does not exist yet - ignore and let the next call deal with it.
         BrowserAction.setInvalidIcon()
-            .catch(err => backgroundLogger.error("tabDidUpdate (tab does not exist) setInvalidIcon exception: ", JSON.stringify(err)));
+            .catch(err => backgroundLogger.error("tabDidUpdate (tab does not exist) setInvalidIcon exception: ", JSON.stringify(err, replaceErrors)));
 
     } else if (isOAuthUrl(tab.url)) {
         // URL on the current tab is a OAuth redirect URL - retrieve tokens from code grant and store in storage
         doOnAuthFlowResponse(tab.url, tab.id)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isOAuthUrl) doOnAuthFlowResponse exception: ", JSON.stringify(err)));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isOAuthUrl) doOnAuthFlowResponse exception: ", JSON.stringify(err, replaceErrors)));
 
     } else if (isClearCacheUrl(tab.url)) {
         // URL on the current tab is the final redirect after an OAuth logout has been hit
         // DEPRECATED. An Ajax call via Axios replaced the need to manually open a new tab
         Tabs.remove(tab)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isClearCacheUrl) Tabs.remove exception: ", JSON.stringify(err)));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isClearCacheUrl) Tabs.remove exception: ", JSON.stringify(err, replaceErrors)));
 
     } else if (isSuccessfullyInstalledPage(tab.url)) {
         doInjectAppEvent(tab.url, tab)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isSuccessfullyInstalledPage) doInjectAppEvent exception: ", JSON.stringify(err)));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isSuccessfullyInstalledPage) doInjectAppEvent exception: ", JSON.stringify(err, replaceErrors)));
 
     } else if (isCoinbaseAuthFlow()) {
         // Coinbase Auth Flow is activated but not on the sign in page
         if (isCoinbaseUrl(tab.url) && isCoinbaseAuthenticatedUrl(tab.url) && !isCoinbaseSettingsApiUrl(tab.url)) {
             // Reroute the user to the settings api page of the coinbase if not currently on it.
             Tabs.update(tab.id, {url: URL_COINBASE_SETTINGS_API})
-                .catch(err => backgroundLogger.error("tabDidUpdate (coinbase non-auth url) Tabs.update exception: ", JSON.stringify(err)));
+                .catch(err => backgroundLogger.error("tabDidUpdate (coinbase non-auth url) Tabs.update exception: ", JSON.stringify(err, replaceErrors)));
         } else if (isCoinbaseSettingsApiUrl(tab.url)) {
             // Let content script handle coinbase auth flow if on tab URL
             Tabs.sendMessageToActive(REQUEST_COINBASE_EXTRACT_API_KEYS)
-                .catch(err => backgroundLogger.error("tabDidUpdate (coinbase settings/api url) Tabs.sendMessageToActive exception: ", err));
+                .catch(err => backgroundLogger.error("tabDidUpdate (coinbase settings/api url) Tabs.sendMessageToActive exception: ", JSON.stringify(err, replaceErrors)));
         }
 
     } else if (!isValidWebUrl(tab.url)) {
         // URL is not of a valid web schema - e.g. chrome-extension://... or file:///...
         // We ignore and do nothing
         BrowserAction.setInvalidIcon()
-            .catch(err => backgroundLogger.error("tabDidUpdate (invalidWebUrl) setInvalidIcon exception: ", JSON.stringify(err)));
+            .catch(err => backgroundLogger.error("tabDidUpdate (invalidWebUrl) setInvalidIcon exception: ", JSON.stringify(err, replaceErrors)));
 
     } else if (isSupportedSite(tab.url)) {
         // URL on the current tab is a supported site - set to valid browser icon.
         BrowserAction.setValidIcon(tab.id)
-            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) setInvalidIcon exception: ", JSON.stringify(err)));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) setInvalidIcon exception: ", JSON.stringify(err, replaceErrors)));
 
         // URL on the current tab is supported and is a checkout page - auto render the extension
         const injectAppConditionalPromise = isCheckoutPage(tab.url)
@@ -137,7 +138,7 @@ export const tabDidUpdate = (tab) => {
 
         injectAppConditionalPromise
             .then(() => doUpdateTabEvent(tab))
-            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) injectApp exception: ", JSON.stringify(err)));
+            .catch(err => backgroundLogger.error("tabDidUpdate (isSupportedSite) injectApp exception: ", JSON.stringify(err, replaceErrors)));
 
     } else {
         // URL that is on the current tab exists and is of a valid web schema but is not a supported site
