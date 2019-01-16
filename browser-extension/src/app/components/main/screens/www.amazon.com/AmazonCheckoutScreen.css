@@ -167,7 +167,7 @@ ul.sequence li:last-child {
 }
 
 .checkout-section-currency-flag:hover {
-    background-color: rgba(99, 158, 255, 0.26);
+    background-color: rgba(191, 214, 253, 0.26);
 }
 
 .checkout-section-currency-flag:active * {
