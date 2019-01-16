@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2019 moon
+ */
+
+.flex-container{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    padding: 10px;
+    margin: 5px;
+}
+.flex-container a {
+    background-color: rgb(245,245,245);
+    width: 100%;
+    border: rgb(235,235,235) 2px outset;
+    border-radius: 3px;
+    padding-top:15px;
+    margin: 2px;
+    text-align: center;
+    text-decoration: none;
+    height:35px;
+
+}
+.flex-container a:hover {
+    background-color: rgb(235,235,235);
+}
+.flex-container a:active {
+    border-style: inset;
+}

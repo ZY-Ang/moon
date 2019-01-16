@@ -1,5 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
+import "./UnsupportedScreen.css";
 import SettingsIcon from "../settings/SettingsIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_MOON_SITE_SUPPORT} from "../../../../../constants/events/appEvents";
@@ -8,7 +9,6 @@ import {
     ACTION_SET_APP_MODAL_LOADING_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE
 } from "../../../../redux/reducers/constants";
-import moonFaceEmoji from "../../../../../../../assets/emoji/windows10/new-moon-with-face_1f31a.png";
 import appLogger from "../../../../utils/AppLogger";
 import AppMixpanel from "../../../../services/AppMixpanel";
 
@@ -49,26 +49,29 @@ class UnsupportedScreen extends React.Component {
             <div className="moon-mainflow-screen text-center">
                 <div>
                     <div className="settings-icon-parent">
-                        <span
-                            className="site-logo unsupported"
-                            role="img"
-                            aria-label="Unsupported Site"
-                            style={{fontSize: 100}}
-                        >
-                            <img alt="Unsupported Site" src={AppRuntime.getURL(moonFaceEmoji)}/>
-                        </span>
                         <SettingsIcon/>
                     </div>
-                    <h2>Unsupported Site</h2>
                 </div>
-                <div>
-                    <p>We are working hard to make Moon available on your favourite shopping sites!</p>
-                    <p>If you really want us to support this shopping site, click the button below and we'll work as fast as we can!</p>
-                    {
-                        this.state.isRequested
-                            ? <button className="btn btn-primary" disabled>We're working on {window.location.host}!</button>
-                            : <button className="btn btn-primary-outline" onClick={this.requestSite}>I want to shop here with Moon!</button>
-                    }
+                <div className="mt-5">
+                    <h2>Pay with Moon on</h2>
+                    <div className="flex-container w-90 mt-5">
+                        <a href="http://www.amazon.com" >
+                            <img className="site-logo"
+                                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png"
+                                 alt="Amazon"
+                            />
+                        </a>
+                        <div className="mt-5">
+                            <h3><b>More coming soon...</b></h3>
+                        </div>
+                        <div className="mt-5 w-100">
+                            {
+                                this.state.isRequested
+                                    ? <button className="btn btn-primary w-100" disabled>We're working on {window.location.host}!</button>
+                                    : <button className="btn btn-primary-outline w-100" onClick={this.requestSite}>I want to pay with Moon!</button>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         );
