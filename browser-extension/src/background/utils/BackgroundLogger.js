@@ -7,6 +7,7 @@ import uuid from "uuid/v4";
 import moment from "moment";
 import AWS from "../config/aws/AWS";
 import {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
+import {replaceErrors} from "../../utils/error";
 
 class BackgroundLogger extends Logger {
     constructor(...args) {
@@ -70,7 +71,7 @@ class BackgroundLogger extends Logger {
             this.putLogsPromise = this.putLogsPromise
                 .then(({nextSequenceToken}) => this.doPutLogEvents(logEvents, nextSequenceToken))
                 .catch(err => {
-                    console.error("BackgroundLogger.putLogEvents if (err) exception: ", JSON.stringify(err));
+                    console.error("BackgroundLogger.putLogEvents if (err) exception: ", JSON.stringify(err, replaceErrors));
                     return {nextSequenceToken: this.sequenceToken};
                 });
         }
