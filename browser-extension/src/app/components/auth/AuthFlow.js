@@ -102,32 +102,36 @@ class AuthFlow extends Component {
                     data-content="or log in with"
                     style={{width: '100%'}}
                 />
-                <div className="text-center">
-                    <button
-                        className="btn-auth-social btn-login-facebook my-2"
-                        onClick={() => {
-                            AppMixpanel.track('button_click_signup_screen_login_with_facebook');
-                            this.signInWithFacebook();
-                        }}
-                    >
-                        <div className="btn-auth-social-icon">
-                            <FaIcon icon={['fab', 'facebook-f']}/>
-                        </div>
-                        <div className=" btn-auth-text btn-auth-social-text">Sign in With Facebook</div>
-                    </button>
-                    <button
-                        className="btn-auth-social btn-login-google"
+                <div className="text-center" style={{width:'100%'}}>
+                    <div className="btn-login-facebook">
+                        <button
+                            className="btn-auth-social btn-login-facebook"
+                            onClick={() => {
+                                AppMixpanel.track('button_click_signup_screen_login_with_facebook');
+                                this.signInWithFacebook();
+                            }}
+                        >
+                            <div className="btn-auth-social-icon">
+                                <FaIcon icon={['fab', 'facebook-f']}/>
+                            </div>
+                            <div className=" btn-auth-text btn-auth-social-text">Sign in With Facebook</div>
+                        </button>
+                    </div>
+                    <div className="btn-login-google">
+                        <button
+                            className="btn-auth-social btn-login-google"
 
-                        onClick={() => {
-                            AppMixpanel.track('button_click_signup_screen_login_with_google');
-                            this.signInWithGoogle();
-                        }}
-                    >
-                        <div className="btn-auth-social-icon">
-                            <FaIcon icon={['fab', 'google']}/>
-                        </div>
-                        <div className="btn-auth-text btn-auth-social-text">Sign in With Google</div>
-                    </button>
+                            onClick={() => {
+                                AppMixpanel.track('button_click_signup_screen_login_with_google');
+                                this.signInWithGoogle();
+                            }}
+                        >
+                            <div className="btn-auth-social-icon">
+                                <FaIcon icon={['fab', 'google']}/>
+                            </div>
+                            <div className="btn-auth-text btn-auth-social-text">Sign in With Google</div>
+                        </button>
+                    </div>
                 </div>
 
                 {!!this.state.error && <p className="text-center text-error">{this.state.error}</p>}
