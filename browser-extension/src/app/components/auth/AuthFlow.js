@@ -72,7 +72,7 @@ class AuthFlow extends Component {
     render() {
         return (
             <div className="moon-tab moon-authflow-tab py-5">
-                <div style={{width: '100%'}}>
+                <div className="w-100">
                     <button className="btn-auth" onClick={() => {
                         AppMixpanel.track('button_click_signup_screen_signin');
                         this.signIn();
@@ -102,7 +102,7 @@ class AuthFlow extends Component {
                     data-content="or log in with"
                     style={{width: '100%'}}
                 />
-                <div className="text-center" style={{width:'100%'}}>
+                <div className="text-center w-100">
                     <div className="btn-login-facebook">
                         <button
                             className="btn-auth-social btn-login-facebook"
