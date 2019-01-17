@@ -15,7 +15,8 @@ class BackgroundLogger extends Logger {
         this.logEvents = [];
         this.cloudwatchLogClient = new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS});
         this.initialized = false;
-        this.putLogsPromise = Promise.resolve();
+        this.sequenceToken = null;
+        this.putLogsPromise = Promise.resolve({nextSequenceToken: this.sequenceToken});
         this.initializeLogStream();
     }
 
@@ -39,10 +40,10 @@ class BackgroundLogger extends Logger {
 
     doPutLogEvents = (logEvents, nextSequenceToken) => new Promise((resolve, reject) => {
         if (!logEvents.length) {
-            resolve({nextSequenceToken: this.sequenceToken});
+            resolve({nextSequenceToken});
         }
         this.cloudwatchLogClient.putLogEvents({
-            logEvents: logEvents,
+            logEvents,
             logGroupName: this.logGroupName,
             logStreamName: this.logStreamName,
             sequenceToken: nextSequenceToken
