@@ -52,23 +52,24 @@ class UnsupportedScreen extends React.Component {
                         <SettingsIcon/>
                     </div>
                 </div>
-                <div className="mt-5">
-                    <h2>Pay with Moon on</h2>
-                    <div className="unsuportedScreen-body w-90 mt-5">
+                <div className=" mb-5">
+                    <h2>Shop With Crypto Now!</h2>
+                    <div className="unsuportedScreen-body w-90">
                         <a href="http://www.amazon.com" >
                             <img className="site-logo"
                                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png"
                                  alt="Amazon"
                             />
+                            <p>Amazon.com</p>
                         </a>
-                        <div className="mt-5">
-                            <h3><b>More coming soon...</b></h3>
+                        <div>
+                            <p>More coming soon...</p>
                         </div>
-                        <div className="mt-5 w-100">
+                        <div className=" mt-3 w-100">
                             {
                                 this.state.isRequested
                                     ? <button className="btn btn-primary w-100" disabled>We're working on {window.location.host}!</button>
-                                    : <button className="btn btn-primary-outline w-100" onClick={this.requestSite}>I want to pay with Moon!</button>
+                                    : <button className="btn btn-primary-outline w-100" onClick={this.requestSite}>I want to shop with crypto at {window.location.host}!</button>
                             }
                         </div>
                     </div>
