@@ -2,6 +2,7 @@
  * Copyright (c) 2019 moon
  */
 import React from "react"
+import axios from "axios";
 import {parse} from "query-string";
 import ErrorTicker from "../misc/tickers/error/ErrorTicker";
 
@@ -15,6 +16,8 @@ class BrowserExtensionErrorPage extends React.Component {
     componentDidMount() {
         const search = parse(this.props.location.search);
         this.setState({search});
+        axios.get("https://paywithmoon.auth0.com/v2/logout");
+        axios.get("https://paywithmoon-development.auth0.com/v2/logout");
     }
 
     render() {
