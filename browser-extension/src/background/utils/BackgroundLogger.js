@@ -23,13 +23,13 @@ class BackgroundLogger extends Logger {
 
     initializeLogStream = () => {
         // TODO: Add IP-GeoLocation service to Group or Stream
-        this.logGroupName = `browser.extension.${process.env.NODE_ENV}-v${BackgroundRuntime.getManifest().version}`;
-        if (!!process.env.CIRCLE_BUILD_NUM) {
-            this.logGroupName += `-circleci.build.${process.env.CIRCLE_BUILD_NUM}`;
+        this.logGroupName = `/browser.extension.${process.env.NODE_ENV}/v${BackgroundRuntime.getManifest().version}`;
+        if (process.env.CIRCLE_BUILD_NUM) {
+            this.logGroupName += `/circleci.build.${process.env.CIRCLE_BUILD_NUM}`;
         } else {
-            this.logGroupName += "-manual.build";
+            this.logGroupName += "/manual.build";
         }
-        this.logStreamName = `${moment().format("YYYY-MM-DD")}-${uuid()}`;
+        this.logStreamName = `${moment().format("YYYY-MM-DD")}/${uuid()}`;
         this.cloudwatchLogClient.createLogStream({
             logGroupName: this.logGroupName,
             logStreamName: this.logStreamName

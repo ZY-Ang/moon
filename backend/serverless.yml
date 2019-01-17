@@ -126,7 +126,7 @@ custom:
     authenticated:
       Arn: ${{cf:moon-backend-appsync-authenticated-${{self:provider.stage}}.ApiArn}}
 
-  browserExtensionCloudWatchLogGroupName: browser-extension-${{self:provider.stage}}
+  browserExtensionCloudWatchLogGroupName: /browser.extension.${{self:provider.stage}}/*
 
   browserExtensionCloudWatchLogsPolicy:
     PolicyName: BrowserExtensionCloudWatchlogs-policy
