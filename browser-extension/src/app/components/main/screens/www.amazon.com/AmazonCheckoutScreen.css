@@ -176,7 +176,6 @@ ul.sequence li:last-child {
 
 .checkout-section-currency-flag:active {
     background-color: rgba(0, 34, 255, 0.72);
-    border-style: inset;
 }
 
 .checkout-section-currency-flag img {
