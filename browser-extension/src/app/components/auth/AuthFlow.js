@@ -105,7 +105,7 @@ class AuthFlow extends Component {
                 <div className="text-center w-100">
                     <div className="btn-login-facebook">
                         <button
-                            className="btn-auth-social btn-login-facebook"
+                            className="btn-auth-social"
                             onClick={() => {
                                 AppMixpanel.track('button_click_signup_screen_login_with_facebook');
                                 this.signInWithFacebook();
@@ -119,7 +119,7 @@ class AuthFlow extends Component {
                     </div>
                     <div className="btn-login-google">
                         <button
-                            className="btn-auth-social btn-login-google"
+                            className="btn-auth-social"
 
                             onClick={() => {
                                 AppMixpanel.track('button_click_signup_screen_login_with_google');
