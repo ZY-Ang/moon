@@ -25,9 +25,8 @@ import axios from "axios";
 import {parseUrl, stringify} from "query-string";
 import Tabs from "../browser/Tabs";
 import Windows from "../browser/Windows";
-import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
+import {REQUEST_UPDATE_IS_LOGGING_IN, REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
 import AuthUser from "./AuthUser";
-import store from "../redux/store";
 import backgroundLogger from "../utils/BackgroundLogger";
 
 /**
@@ -65,7 +64,8 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     }
 
     const body = getURLFlowParams(code);
-    return axios.post(URL_TOKEN_FLOW, body)
+    return Tabs.sendMessageToAll(REQUEST_UPDATE_IS_LOGGING_IN, {isLoggingIn: true})
+        .then(() => axios.post(URL_TOKEN_FLOW, body))
         .then(({data}) => {
             backgroundLogger.log("Retrieved tokens");
             return doSignIn(data);
@@ -76,6 +76,7 @@ export const doOnAuthFlowResponse = (url, tabId) => {
             doSignOut();
         })
         .finally(() => {
+            Tabs.sendMessageToAll(REQUEST_UPDATE_IS_LOGGING_IN, {isLoggingIn: false});
             backgroundLogger.log(`Closing tab ${tabId}`);
             Tabs.removeById(tabId);
         });
