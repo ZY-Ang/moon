@@ -2,6 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
+import CSRF from "./CSRF";
 import {
     TYPE_FACEBOOK,
     TYPE_GOOGLE,
@@ -10,7 +11,6 @@ import {
     TYPE_STANDARD_SIGN_UP
 } from "../../constants/events/appEvents";
 import {
-    csrfState,
     FACEBOOK_AUTH_PARAMS,
     getCsrfStateAppendedParams,
     getURLFlowParams,
@@ -59,8 +59,9 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     const code = parseUrl(url).query.code.split("#")[0];
 
     const authCsrfState = parseUrl(url).query.state.split("#")[0];
-    if(csrfState !== authCsrfState) {
-        return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${csrfState}`));
+    const localStoreState = CSRF.getState();
+    if(localStoreState !== authCsrfState) {
+        return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${localStoreState}`));
     }
 
     const body = getURLFlowParams(code);

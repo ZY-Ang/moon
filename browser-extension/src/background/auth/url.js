@@ -2,11 +2,11 @@
  * Copyright (c) 2018 moon
  */
 
+import CSRF from "./CSRF";
 import {stringify} from "query-string";
 import {AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET} from "../config/Auth0/client";
 import {AUTH0_API_AUDIENCE} from "../config/Auth0/api";
 import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../../constants/url";
-import {generate as randomstring} from "randomstring";
 
 /**
  * The unqualified domain URL where the OAuth Server/hosted UI is located
@@ -25,17 +25,15 @@ export const URL_OAUTH_SERVER = `https://${DOMAIN_OAUTH_SERVER}/`;
  */
 export const URL_OAUTH_SERVER_ISS = `${URL_OAUTH_SERVER}.well-known/jwks.json`;
 
-export let csrfState = null;
 /**
  * Appends the CSRF state to the params
  * @param params
  * @returns {*}
  */
 export const getCsrfStateAppendedParams = (params) => {
-    csrfState = randomstring(8);
     return {
         ...params,
-        state: csrfState
+        state: CSRF.generateNewState()
     };
 };
 
