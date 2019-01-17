@@ -10,7 +10,7 @@ import {
     TYPE_STANDARD_SIGN_UP
 } from "../../constants/events/appEvents";
 import {
-    AMAZON_AUTH_PARAMS,
+    csrfState,
     FACEBOOK_AUTH_PARAMS,
     getCsrfStateAppendedParams,
     getURLFlowParams,
@@ -60,9 +60,8 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     const code = parseUrl(url).query.code.split("#")[0];
 
     const authCsrfState = parseUrl(url).query.state.split("#")[0];
-    const localCsrfState = store.getState().sessionState.csrfState;
-    if(localCsrfState !== authCsrfState){
-        return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${localCsrfState}`));
+    if(csrfState !== authCsrfState) {
+        return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${csrfState}`));
     }
 
     const body = getURLFlowParams(code);
