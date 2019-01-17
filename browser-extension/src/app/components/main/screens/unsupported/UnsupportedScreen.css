@@ -2,14 +2,14 @@
  * Copyright (c) 2019 moon
  */
 
-.flex-container{
+.unsuportedScreen-body {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
     padding: 10px;
     margin: 5px;
 }
-.flex-container a {
+.unsuportedScreen-body a {
     background-color: rgb(245,245,245);
     width: 100%;
     border: rgb(235,235,235) 2px outset;
@@ -21,9 +21,9 @@
     height:35px;
 
 }
-.flex-container a:hover {
+.unsuportedScreen-body a:hover {
     background-color: rgb(235,235,235);
 }
-.flex-container a:active {
+.unsuportedScreen-body a:active {
     border-style: inset;
 }
