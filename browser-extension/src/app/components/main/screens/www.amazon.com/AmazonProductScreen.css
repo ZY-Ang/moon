@@ -93,7 +93,7 @@
     border-top-right-radius: 3px;
     display: flex;
     padding: 8px 3px;
-    margin: 0 0 -3px 0;
+    margin-bottom: -1px;
     -webkit-transition: background-color 0.2s ease;
     -moz-transition: background-color 0.2s ease;
     -ms-transition: background-color 0.2s ease;
@@ -167,7 +167,7 @@
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
-    border-top: solid #0000001c;
+    border-top: solid rgba(0,0,0,0.1) 1px;
 }
 
 .product-section-currency-selector.collapsed {
