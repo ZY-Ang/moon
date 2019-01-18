@@ -71,8 +71,6 @@
     padding: 8px 10px;
     transition: background-color .2s ease;
     box-shadow: 0 0 0 0 rgba(0,0,0,.5);
-    border-style: outset;
-    margin: 2px;
     -webkit-transition: background-color 0.2s ease;
     -moz-transition: background-color 0.2s ease;
     -ms-transition: background-color 0.2s ease;
@@ -101,15 +99,17 @@
 }
 
 .checkout-section-currency-flag:hover {
-    background-color: rgba(191, 214, 253, 0.26);
+    background-color: rgba(191,214,253,.26);
+    background-image: linear-gradient(rgba(187, 205, 236, 0.26),rgba(57, 83, 255, 0.72));
+}
+
+.checkout-section-currency-flag:active {
+    background-color: rgba(191,214,253,.26);
+    background-image: linear-gradient(rgba(57, 83, 255, 0.72),rgba(187, 205, 236, 0.26));
 }
 
 .checkout-section-currency-flag:active * {
     color: white;
-}
-
-.checkout-section-currency-flag:active {
-    background-color: rgba(0, 34, 255, 0.72);
 }
 
 .checkout-section-currency-flag img {
