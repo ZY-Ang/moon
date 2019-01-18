@@ -30,18 +30,30 @@ class BackgroundLogger extends Logger {
             this.logGroupName += "/manual.build";
         }
         this.logStreamName = `${moment().format("YYYY-MM-DD")}/${uuid()}`;
-        this.cloudwatchLogClient.createLogStream({
-            logGroupName: this.logGroupName,
-            logStreamName: this.logStreamName
-        }, (err) => {
-            if (err) {
-                console.error("Unable to initialize log stream");
 
-            } else {
+        // 1. Create Log Group (throws error if exist)
+        this.cloudwatchLogClient.createLogGroup({
+            logGroupName: this.logGroupName
+        })
+            .promise()
+            .catch(err => console.info("Unable to initialize log group", err.message))
+            // 2. Put retention policy on log group to 7 days
+            .then(() => this.cloudwatchLogClient.putRetentionPolicy({
+                logGroupName: this.logGroupName,
+                retentionInDays: 7
+            }).promise())
+            .catch(err => console.info("Unable to put retention policy on log group", err.message))
+            // 3. Create Log Stream (Does not throw error if exist)
+            .then(() => this.cloudwatchLogClient.createLogStream({
+                logGroupName: this.logGroupName,
+                logStreamName: this.logStreamName
+            }).promise())
+            .then(() => {
                 this.initialized = true;
-
-            }
-        });
+            })
+            .catch(err => {
+                console.error("Unable to initialize log stream", err);
+            });
     };
 
     doPutLogEvents = (logEvents, nextSequenceToken) => new Promise((resolve, reject) => {
