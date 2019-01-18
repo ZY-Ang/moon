@@ -169,7 +169,7 @@ commands:
 
 jobs:
   ################################### Jobs: Production ###################################
-  dashboard_build_deploy:
+  dashboard_build_deploy_production:
     <<: *config_project_defaults
     steps:
       - install_dashboard
@@ -355,6 +355,20 @@ jobs:
           destination: browser-extension-build
 
   ################################### Jobs: Development ###################################
+  dashboard_build_deploy_development:
+    <<: *config_project_defaults
+    steps:
+      - install_dashboard
+      - run:
+          working_directory: ~/repo/dashboard
+          command: npm test
+      - run:
+          working_directory: ~/repo/dashboard
+          command: npm run build
+      - run:
+          working_directory: ~/repo/dashboard
+          name: Firebase Deploy (With Token)
+          command: ./node_modules/.bin/firebase deploy -P development --token=$FIREBASE_TOKEN
   database_nonCheckoutReports_deploy_development:
     <<: *config_project_defaults
     steps:
@@ -444,6 +458,13 @@ workflows:
   version: 2
   deploy_then_build_development_full_workflow:
     jobs:
+      - dashboard_build_deploy_development:
+          filters:
+            branches:
+              only:
+                - dev
+                - /^feature.*/
+                - /^fix.*/
       - database_nonCheckoutReports_deploy_development:
           filters:
             branches:
@@ -522,6 +543,7 @@ workflows:
                 - /^fix.*/
       - browser_extension_build_development:
           requires:
+            - dashboard_build_deploy_development
             - backend_deploy_development
           filters:
             branches:
@@ -532,6 +554,7 @@ workflows:
 
   deploy_then_build_staging_full_workflow:
     jobs:
+      # TODO: Add staging dashboard
       - database_nonCheckoutReports_deploy_staging:
           filters:
             branches:
@@ -600,7 +623,7 @@ workflows:
 
   deploy_then_build_production_full_workflow:
     jobs:
-      - dashboard_build_deploy:
+      - dashboard_build_deploy_production:
           filters:
             branches:
               only:
@@ -665,7 +688,7 @@ workflows:
                 - master
       - browser_extension_build_production:
           requires:
-            - dashboard_build_deploy
+            - dashboard_build_deploy_production
             - backend_deploy_production
           filters:
             branches:
