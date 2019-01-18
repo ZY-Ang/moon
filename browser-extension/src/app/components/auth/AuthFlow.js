@@ -114,13 +114,12 @@ class AuthFlow extends Component {
                             <div className="btn-auth-social-icon">
                                 <FaIcon icon={['fab', 'facebook-f']}/>
                             </div>
-                            <div className=" btn-auth-text btn-auth-social-text">Sign in With Facebook</div>
+                            <div className="btn-auth-text btn-auth-social-text">Sign in With Facebook</div>
                         </button>
                     </div>
                     <div className="btn-login-google">
                         <button
                             className="btn-auth-social"
-
                             onClick={() => {
                                 AppMixpanel.track('button_click_signup_screen_login_with_google');
                                 this.signInWithGoogle();
