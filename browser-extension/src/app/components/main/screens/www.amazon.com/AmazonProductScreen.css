@@ -93,8 +93,7 @@
     border-top-right-radius: 3px;
     display: flex;
     padding: 8px 3px;
-    border-style: outset;
-    margin: 1px 1px 0 0;
+    margin: 0 0 -3px 0;
     -webkit-transition: background-color 0.2s ease;
     -moz-transition: background-color 0.2s ease;
     -ms-transition: background-color 0.2s ease;
@@ -114,11 +113,13 @@
 }
 
 .product-section-currency-flag:hover {
-    background-color: rgba(191, 214, 253, 0.26);
+    background-color: rgba(191,214,253,.26);
+    background-image: linear-gradient(rgba(187, 205, 236, 0.26),rgba(57, 83, 255, 0.72));
 }
 
 .product-section-currency-flag:active {
-    background-color: rgba(0, 34, 255, 0.72);
+    background-color: rgba(191,214,253,.26);
+    background-image: linear-gradient(rgba(57, 83, 255, 0.72),rgba(187, 205, 236, 0.26));
 }
 
 .product-section-currency-flag:active * {
@@ -190,11 +191,13 @@
 }
 
 .product-section-currency-selector-currency:hover {
-    background-color: rgba(191, 214, 253, 0.26);
+    background-color: rgba(191,214,253,.26);
+    background-image: linear-gradient(rgba(187, 205, 236, 0.26),rgba(57, 83, 255, 0.72));
 }
 
 .product-section-currency-selector-currency:active {
-    background-color: rgba(0, 34, 255, 0.72);
+    background-color: rgba(191,214,253,.26);
+    background-image: linear-gradient(rgba(57, 83, 255, 0.72),rgba(187, 205, 236, 0.26));
 }
 
 .product-section-currency-selector-currency:active * {
