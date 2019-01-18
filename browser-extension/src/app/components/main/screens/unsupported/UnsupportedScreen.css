@@ -3,18 +3,12 @@
  */
 
 .unsupported-screen-body {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-around;
-    padding: 10px;
-    margin: 5px;
 }
 .unsupported-screen-body .site-link {
     display: flex;
     align-items: center;
     background-color: rgb(255,255,255);
     box-shadow: rgba(0, 0, 0, 0.3) 0 2px 16px 0;
-    width: 100%;
     border-radius: 5px;
     text-align: center;
     text-decoration: none;
@@ -36,6 +30,7 @@
 }
 .unsupported-screen-body .site-link.disabled,
 .unsupported-screen-body .site-link.disabled * {
+    cursor: default;
     background: #5f6066;
     color: white;
 }
