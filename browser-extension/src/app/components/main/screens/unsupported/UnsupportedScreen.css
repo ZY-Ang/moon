@@ -2,29 +2,52 @@
  * Copyright (c) 2019 moon
  */
 
-.unsuported-screen-body {
+.unsupported-screen-body {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
     padding: 10px;
     margin: 5px;
 }
-.unsuported-screen-body a {
+.unsupported-screen-body .site-link {
+    display: flex;
+    align-items: center;
     background-color: rgb(255,255,255);
-    box-shadow: rgba(0,0,0,0.3) 0px 2px 16px 0px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 2px 16px 0;
     width: 100%;
-    border: rgb(235,235,235) 2px solid;
-    border-radius: 3px;
-    margin: 2px;
+    border-radius: 5px;
     text-align: center;
     text-decoration: none;
     height:35px;
-    padding: 30px 0px 50px 0px;
+    padding: 12px 22px;
 }
-.unsuported-screen-body a:hover {
-
-    box-shadow: rgba(0,0,0,0.5) 0px 2px 12px 0px;
+.unsupported-screen-body .site-link:hover {
+    box-shadow: rgba(0, 0, 0, 0.5) 0 2px 12px 0;
+    background: #0F62BD;
+    color: white;
 }
-.unsuported-screen-body a:active {
-    box-shadow: -2px -2px 12px 0px rgba(0,0,0,.5);
+.unsupported-screen-body .site-link:hover *,
+.unsupported-screen-body .site-link:active * {
+    color: white;
+}
+.unsupported-screen-body .site-link:active {
+    background: #1B264F;
+    box-shadow: -2px -2px 12px 0 rgba(0, 0, 0, .5);
+}
+.unsupported-screen-body .site-link.disabled,
+.unsupported-screen-body .site-link.disabled * {
+    background: #5f6066;
+    color: white;
+}
+.unsupported-screen-body .site-link.disabled:active,
+.unsupported-screen-body .site-link.disabled:hover,
+.unsupported-screen-body .site-link.disabled:focus {
+    background: #5f6066;
+    color: white;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 2px 16px 0;
+}
+.unsupported-screen-body .site-link.disabled:active *,
+.unsupported-screen-body .site-link.disabled:hover *,
+.unsupported-screen-body .site-link.disabled:focus * {
+    color: white;
 }

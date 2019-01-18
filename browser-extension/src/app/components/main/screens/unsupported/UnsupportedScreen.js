@@ -11,6 +11,8 @@ import {
 } from "../../../../redux/reducers/constants";
 import appLogger from "../../../../utils/AppLogger";
 import AppMixpanel from "../../../../services/AppMixpanel";
+import AmazonSiteLogo from "../www.amazon.com/AmazonSiteLogo";
+import DominosSiteLogo from "../www.dominos.com/DominosSiteLogo";
 
 class UnsupportedScreen extends React.Component {
     constructor(props) {
@@ -54,18 +56,28 @@ class UnsupportedScreen extends React.Component {
                 </div>
                 <div className=" mb-5">
                     <h2>Shop With Crypto Now!</h2>
-                    <div className="unsuported-screen-body w-90">
-                        <a href="http://www.amazon.com" >
-                            <img className="site-logo"
-                                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png"
-                                 alt="Amazon"
-                            />
-                            <p>Amazon.com</p>
+                    <div className="unsupported-screen-body w-90">
+                        <a
+                            className="site-link"
+                            href="http://www.amazon.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <AmazonSiteLogo/>
+                            <h3 className="ml-auto my-0">Amazon.com</h3>
+                        </a>
+                        <a
+                            className="site-link mt-2 disabled"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <DominosSiteLogo/>
+                            <h3 className="ml-auto my-0">Coming Soon...</h3>
                         </a>
                         <div>
                             <p>More coming soon...</p>
                         </div>
-                        <div className=" mt-3 w-100">
+                        <div className="mt-3 w-100">
                             {
                                 this.state.isRequested
                                     ? <button className="btn btn-primary w-100" disabled>We're working on {window.location.host}!</button>
