@@ -54,7 +54,7 @@ class UnsupportedScreen extends React.Component {
                 </div>
                 <div className=" mb-5">
                     <h2>Shop With Crypto Now!</h2>
-                    <div className="unsuportedScreen-body w-90">
+                    <div className="unsuported-screen-body w-90">
                         <a href="http://www.amazon.com" >
                             <img className="site-logo"
                                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png"

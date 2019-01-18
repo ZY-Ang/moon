@@ -2,14 +2,14 @@
  * Copyright (c) 2019 moon
  */
 
-.unsuportedScreen-body {
+.unsuported-screen-body {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-around;
     padding: 10px;
     margin: 5px;
 }
-.unsuportedScreen-body a {
+.unsuported-screen-body a {
     background-color: rgb(255,255,255);
     box-shadow: rgba(0,0,0,0.3) 0px 2px 16px 0px;
     width: 100%;
@@ -21,10 +21,10 @@
     height:35px;
     padding: 30px 0px 50px 0px;
 }
-.unsuportedScreen-body a:hover {
+.unsuported-screen-body a:hover {
 
     box-shadow: rgba(0,0,0,0.5) 0px 2px 12px 0px;
 }
-.unsuportedScreen-body a:active {
+.unsuported-screen-body a:active {
     box-shadow: -2px -2px 12px 0px rgba(0,0,0,.5);
 }
