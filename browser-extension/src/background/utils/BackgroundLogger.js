@@ -8,6 +8,7 @@ import moment from "moment";
 import AWS from "../config/aws/AWS";
 import {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
 import {replaceErrors} from "../../utils/error";
+import BackgroundRuntime from "../browser/BackgroundRuntime";
 
 class BackgroundLogger extends Logger {
     constructor(...args) {
@@ -15,34 +16,52 @@ class BackgroundLogger extends Logger {
         this.logEvents = [];
         this.cloudwatchLogClient = new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS});
         this.initialized = false;
-        this.putLogsPromise = Promise.resolve();
+        this.sequenceToken = null;
+        this.putLogsPromise = Promise.resolve({nextSequenceToken: this.sequenceToken});
         this.initializeLogStream();
     }
 
     initializeLogStream = () => {
         // TODO: Add IP-GeoLocation service to Group or Stream
-        this.logGroupName = `browser-extension-${process.env.NODE_ENV}`;
-        this.logStreamName = `${moment().format("YYYY-MM-DD")}-${uuid()}`;
-        this.cloudwatchLogClient.createLogStream({
-            logGroupName: this.logGroupName,
-            logStreamName: this.logStreamName
-        }, (err) => {
-            if (err) {
-                console.error("Unable to initialize log stream");
+        this.logGroupName = `/browser.extension.${process.env.NODE_ENV}/v${BackgroundRuntime.getManifest().version}`;
+        if (process.env.CIRCLE_BUILD_NUM) {
+            this.logGroupName += `/circleci.build.${process.env.CIRCLE_BUILD_NUM}`;
+        } else {
+            this.logGroupName += "/manual.build";
+        }
+        this.logStreamName = `${moment().format("YYYY-MM-DD")}/${uuid()}`;
 
-            } else {
+        // 1. Create Log Group (throws error if exist)
+        this.cloudwatchLogClient.createLogGroup({
+            logGroupName: this.logGroupName
+        })
+            .promise()
+            .catch(err => console.info("Unable to initialize log group", err.message))
+            // 2. Put retention policy on log group to 7 days
+            .then(() => this.cloudwatchLogClient.putRetentionPolicy({
+                logGroupName: this.logGroupName,
+                retentionInDays: 7
+            }).promise())
+            .catch(err => console.info("Unable to put retention policy on log group", err.message))
+            // 3. Create Log Stream (Does not throw error if exist)
+            .then(() => this.cloudwatchLogClient.createLogStream({
+                logGroupName: this.logGroupName,
+                logStreamName: this.logStreamName
+            }).promise())
+            .then(() => {
                 this.initialized = true;
-
-            }
-        });
+            })
+            .catch(err => {
+                console.error("Unable to initialize log stream", err);
+            });
     };
 
     doPutLogEvents = (logEvents, nextSequenceToken) => new Promise((resolve, reject) => {
         if (!logEvents.length) {
-            resolve({nextSequenceToken: this.sequenceToken});
+            resolve({nextSequenceToken});
         }
         this.cloudwatchLogClient.putLogEvents({
-            logEvents: logEvents,
+            logEvents,
             logGroupName: this.logGroupName,
             logStreamName: this.logStreamName,
             sequenceToken: nextSequenceToken
