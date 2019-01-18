@@ -6,19 +6,6 @@ defaults: &config_project_defaults
   docker:
     - image: node:8.11.3
 
-config_env_development: &config_env_development
-  environment:
-    NODE_ENV: development
-    SLS_DEBUG: "*"
-config_env_staging: &config_env_staging
-  environment:
-    NODE_ENV: production
-    SLS_DEBUG: "*"
-config_env_production: &config_env_production
-  environment:
-    NODE_ENV: production
-    SLS_DEBUG: "*"
-
 # See https://circleci.com/docs/2.0/reusing-config/ for more info
 commands:
   configure_aws_development:
@@ -90,7 +77,8 @@ commands:
       - restore_cache:
           name: Restore latest node_modules from cache
           keys:
-            - database-v1-{{ .Branch }}-{{ .Revision }}
+            - database-v1-{{ .Branch }}-{{ checksum "database/package-lock.json" }}-{{ .Revision }}
+            - database-v1-{{ .Branch }}-{{ checksum "database/package-lock.json" }}
             - database-v1-{{ .Branch }}
             - database-v1
       - run:
@@ -98,17 +86,19 @@ commands:
           command: npm install
       - save_cache:
           name: Save post-install node_modules into cache
-          key: database-v1-{{ .Branch }}-{{ .Revision }}
+          key: database-v1-{{ .Branch }}-{{ checksum "database/package-lock.json" }}-{{ .Revision }}
           paths:
             - ~/repo/database/node_modules
   install_dashboard:
     description: "Installs dependencies in preparation to build and deploy dashboard"
     steps:
+      - install_npm_latest
       - checkout
       - restore_cache:
           name: Restore latest node_modules from cache
           keys:
-            - dashboard-v1-{{ .Branch }}-{{ .Revision }}
+            - dashboard-v1-{{ .Branch }}-{{ checksum "dashboard/package-lock.json" }}-{{ .Revision }}
+            - dashboard-v1-{{ .Branch }}-{{ checksum "dashboard/package-lock.json" }}
             - dashboard-v1-{{ .Branch }}
             - dashboard-v1
       - run:
@@ -116,7 +106,7 @@ commands:
           command: npm install
       - save_cache:
           name: Save post-install node_modules into cache
-          key: dashboard-v1-{{ .Branch }}-{{ .Revision }}
+          key: dashboard-v1-{{ .Branch }}-{{ checksum "dashboard/package-lock.json" }}-{{ .Revision }}
           paths:
             - ~/repo/dashboard/node_modules
   install_backend:
@@ -126,7 +116,8 @@ commands:
       - restore_cache:
           name: Restore latest node_modules from cache
           keys:
-            - backend-v1-{{ .Branch }}-{{ .Revision }}
+            - backend-v1-{{ .Branch }}-{{ checksum "backend/package-lock.json" }}-{{ .Revision }}
+            - backend-v1-{{ .Branch }}-{{ checksum "backend/package-lock.json" }}
             - backend-v1-{{ .Branch }}
             - backend-v1
       - run:
@@ -134,7 +125,7 @@ commands:
           command: npm install
       - save_cache:
           name: Save post-install node_modules into cache
-          key: backend-v1-{{ .Branch }}-{{ .Revision }}
+          key: backend-v1-{{ .Branch }}-{{ checksum "backend/package-lock.json" }}-{{ .Revision }}
           paths:
             - ~/repo/backend/node_modules
   install_backend_lambda:
@@ -144,7 +135,8 @@ commands:
       - restore_cache:
           name: Restore latest node_modules from cache
           keys:
-            - backend-lambda-v1-{{ .Branch }}-{{ .Revision }}
+            - backend-lambda-v1-{{ .Branch }}-{{ checksum "backend/Lambda/package-lock.json" }}-{{ .Revision }}
+            - backend-lambda-v1-{{ .Branch }}-{{ checksum "backend/Lambda/package-lock.json" }}
             - backend-lambda-v1-{{ .Branch }}
             - backend-lambda-v1
       - run:
@@ -152,7 +144,7 @@ commands:
           command: npm install
       - save_cache:
           name: Save post-install node_modules into cache
-          key: backend-lambda-v1-{{ .Branch }}-{{ .Revision }}
+          key: backend-lambda-v1-{{ .Branch }}-{{ checksum "backend/Lambda/package-lock.json" }}-{{ .Revision }}
           paths:
             - ~/repo/backend/Lambda/node_modules
   install_browser_extension:
@@ -162,7 +154,8 @@ commands:
       - restore_cache:
           name: Restore latest node_modules from cache
           keys:
-            - browser-extension-v1-{{ .Branch }}-{{ .Revision }}
+            - browser-extension-v1-{{ .Branch }}-{{ checksum "browser-extension/package-lock.json" }}-{{ .Revision }}
+            - browser-extension-v1-{{ .Branch }}-{{ checksum "browser-extension/package-lock.json" }}
             - browser-extension-v1-{{ .Branch }}
             - browser-extension-v1
       - run:
@@ -170,7 +163,7 @@ commands:
           command: npm install
       - save_cache:
           name: Save post-install node_modules into cache
-          key: browser-extension-v1-{{ .Branch }}-{{ .Revision }}
+          key: browser-extension-v1-{{ .Branch }}-{{ checksum "browser-extension/package-lock.json" }}-{{ .Revision }}
           paths:
             - ~/repo/browser-extension/node_modules
 
@@ -178,7 +171,6 @@ jobs:
   ################################### Jobs: Production ###################################
   dashboard_build_deploy:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - install_dashboard
       - run:
@@ -187,14 +179,12 @@ jobs:
       - run:
           working_directory: ~/repo/dashboard
           command: npm run build
-      - install_firebase_global
       - run:
           working_directory: ~/repo/dashboard
           name: Firebase Deploy (With Token)
-          command: firebase deploy --token=$FIREBASE_TOKEN
+          command: ./node_modules/.bin/firebase deploy -P production --token=$FIREBASE_TOKEN
   database_nonCheckoutReports_deploy_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_database
@@ -203,7 +193,6 @@ jobs:
           command: npm run deploy-nonCheckoutReports-production-force
   database_paymentPayloadRecords_deploy_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_database
@@ -212,7 +201,6 @@ jobs:
           command: npm run deploy-paymentPayloadRecords-production-force
   database_siteSupportRequests_deploy_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_database
@@ -221,7 +209,6 @@ jobs:
           command: npm run deploy-siteSupportRequests-production-force
   database_userInformation_deploy_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_database
@@ -230,7 +217,6 @@ jobs:
           command: npm run deploy-userInformation-production-force
   database_userSecrets_deploy_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_database
@@ -239,7 +225,6 @@ jobs:
           command: npm run deploy-userSecrets-production-force
   backend_deploy_lambda_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_backend
@@ -249,7 +234,6 @@ jobs:
           command: npm run deploy-lambda-production-force
   backend_deploy_appsync_authenticated_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_backend
@@ -258,7 +242,6 @@ jobs:
           command: npm run deploy-appsync-authenticated-production-force
   backend_deploy_appsync_public_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_backend
@@ -267,7 +250,6 @@ jobs:
           command: npm run deploy-appsync-public-production-force
   backend_deploy_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_backend
@@ -276,7 +258,6 @@ jobs:
           command: npm run deploy-backend-production-force
   browser_extension_build_production:
     <<: *config_project_defaults
-    <<: *config_env_production
     steps:
       - configure_aws_production
       - install_browser_extension
@@ -290,7 +271,6 @@ jobs:
   ################################### Jobs: Staging ###################################
   database_nonCheckoutReports_deploy_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_database
@@ -299,7 +279,6 @@ jobs:
           command: npm run deploy-nonCheckoutReports-production-force
   database_paymentPayloadRecords_deploy_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_database
@@ -308,7 +287,6 @@ jobs:
           command: npm run deploy-paymentPayloadRecords-production-force
   database_siteSupportRequests_deploy_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_database
@@ -317,7 +295,6 @@ jobs:
           command: npm run deploy-siteSupportRequests-production-force
   database_userInformation_deploy_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_database
@@ -326,7 +303,6 @@ jobs:
           command: npm run deploy-userInformation-production-force
   database_userSecrets_deploy_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_database
@@ -335,7 +311,6 @@ jobs:
           command: npm run deploy-userSecrets-production-force
   backend_deploy_lambda_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_backend
@@ -345,7 +320,6 @@ jobs:
           command: npm run deploy-lambda-production-force
   backend_deploy_appsync_authenticated_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_backend
@@ -354,7 +328,6 @@ jobs:
           command: npm run deploy-appsync-authenticated-production-force
   backend_deploy_appsync_public_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_backend
@@ -363,7 +336,6 @@ jobs:
           command: npm run deploy-appsync-public-production-force
   backend_deploy_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_backend
@@ -372,7 +344,6 @@ jobs:
           command: npm run deploy-backend-production-force
   browser_extension_build_staging:
     <<: *config_project_defaults
-    <<: *config_env_staging
     steps:
       - configure_aws_staging
       - install_browser_extension
@@ -386,7 +357,6 @@ jobs:
   ################################### Jobs: Development ###################################
   database_nonCheckoutReports_deploy_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_database
@@ -395,7 +365,6 @@ jobs:
           command: npm run deploy-nonCheckoutReports
   database_paymentPayloadRecords_deploy_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_database
@@ -404,7 +373,6 @@ jobs:
           command: npm run deploy-paymentPayloadRecords
   database_siteSupportRequests_deploy_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_database
@@ -413,7 +381,6 @@ jobs:
           command: npm run deploy-siteSupportRequests
   database_userInformation_deploy_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_database
@@ -422,7 +389,6 @@ jobs:
           command: npm run deploy-userInformation
   database_userSecrets_deploy_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_database
@@ -431,7 +397,6 @@ jobs:
           command: npm run deploy-userSecrets
   backend_deploy_lambda_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_backend
@@ -441,7 +406,6 @@ jobs:
           command: npm run deploy-lambda
   backend_deploy_appsync_authenticated_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_backend
@@ -450,7 +414,6 @@ jobs:
           command: npm run deploy-appsync-authenticated
   backend_deploy_appsync_public_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_backend
@@ -459,7 +422,6 @@ jobs:
           command: npm run deploy-appsync-public
   backend_deploy_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_backend
@@ -468,7 +430,6 @@ jobs:
           command: npm run deploy-backend
   browser_extension_build_development:
     <<: *config_project_defaults
-    <<: *config_env_development
     steps:
       - configure_aws_development
       - install_browser_extension

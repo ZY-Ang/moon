@@ -5,6 +5,8 @@
   "dependencies": {
     "bootstrap": "^4.2.1",
     "detect-browser": "^4.0.3",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.6",
     "query-string": "^6.1.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
@@ -25,5 +27,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "firebase-tools": "^6.3.0"
+  }
 }
