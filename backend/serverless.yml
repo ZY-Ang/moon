@@ -104,12 +104,6 @@ resources:
                   dynamodb:LeadingKeys:
                     - "${${{file(./config/auth0.json):short_iss.${{self:provider.stage}}}}:sub}"
 
-    BrowserExtensionLogGroup:
-      Type: AWS::Logs::LogGroup
-      Properties:
-        LogGroupName: ${{self:custom.browserExtensionCloudWatchLogGroupName}}
-        RetentionInDays: 7
-
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
   # See link for credentials documentation:
@@ -126,8 +120,6 @@ custom:
     authenticated:
       Arn: ${{cf:moon-backend-appsync-authenticated-${{self:provider.stage}}.ApiArn}}
 
-  browserExtensionCloudWatchLogGroupName: browser-extension-${{self:provider.stage}}
-
   browserExtensionCloudWatchLogsPolicy:
     PolicyName: BrowserExtensionCloudWatchlogs-policy
     PolicyDocument:
@@ -135,12 +127,13 @@ custom:
       Statement:
       - Effect: 'Allow'
         Action:
-        - 'logs:PutLogEvents'
         - 'logs:createLogGroup'
+        - 'logs:PutRetentionPolicy'
         - 'logs:createLogStream'
+        - 'logs:PutLogEvents'
         Resource:
-        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:${{self:custom.browserExtensionCloudWatchLogGroupName}}:*']] }
-        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:${{self:custom.browserExtensionCloudWatchLogGroupName}}']] }
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension.${{self:provider.stage}}/*:*']] }
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension.${{self:provider.stage}}/*']] }
 
   dynamoDBTables:
     UserSecrets:

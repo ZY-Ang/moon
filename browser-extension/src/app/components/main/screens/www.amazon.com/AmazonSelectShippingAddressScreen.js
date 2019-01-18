@@ -1,5 +1,4 @@
 import React from "react";
-import "./AmazonSelectShippingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {QUERY_SELECTOR_SHIPPING_ADDRESS_SELECT} from "./constants/querySelectors";
