@@ -54,9 +54,9 @@ class UnsupportedScreen extends React.Component {
                         <SettingsIcon/>
                     </div>
                 </div>
-                <div className=" mb-5">
+                <div>
                     <h2>Shop With Crypto Now!</h2>
-                    <div className="unsupported-screen-body w-90">
+                    <div className="unsupported-screen-body">
                         <a
                             className="site-link"
                             href="http://www.amazon.com"
