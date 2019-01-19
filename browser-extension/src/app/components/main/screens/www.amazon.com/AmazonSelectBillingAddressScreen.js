@@ -4,7 +4,6 @@
 
 // creates a sequence UI for the select billing address page
 import React from "react";
-import "./AmazonSelectBillingAddressScreen.css";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {QUERY_SELECTOR_BILLING_ADDRESS_SELECT} from "./constants/querySelectors";

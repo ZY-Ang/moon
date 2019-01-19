@@ -1,10 +1,12 @@
 import React from "react";
 import "./AmazonSiteLogo.css";
+import amazonLogo from "../../../../../../../assets/icons/amazon.png";
+import AppRuntime from "../../../../browser/AppRuntime";
 
 const AmazonSiteLogo = () => (
     <img
         className="site-logo"
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Amazon_logo_plain.svg/200px-Amazon_logo_plain.svg.png"
+        src={AppRuntime.getURL(amazonLogo)}
         alt="Amazon"
     />
 );

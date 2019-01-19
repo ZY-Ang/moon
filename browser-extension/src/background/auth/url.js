@@ -2,18 +2,18 @@
  * Copyright (c) 2018 moon
  */
 
+import CSRF from "./CSRF";
 import {stringify} from "query-string";
 import {AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET} from "../config/Auth0/client";
-import {AUTH0_AUDIENCE} from "../config/Auth0/api";
+import {AUTH0_API_AUDIENCE} from "../config/Auth0/api";
 import {URL_OAUTH_REDIRECT, URL_SIGN_OUT_REDIRECT} from "../../constants/url";
-import store from "../redux/store";
-import {ACTION_SET_CSRF_STATE} from "../redux/reducers/session";
-import {generate as randomstring} from "randomstring";
 
 /**
  * The unqualified domain URL where the OAuth Server/hosted UI is located
  */
-export const DOMAIN_OAUTH_SERVER = 'paywithmoon.auth0.com';
+export const DOMAIN_OAUTH_SERVER = process.env.NODE_ENV === "production"
+    ? "paywithmoon.auth0.com"
+    : "paywithmoon-development.auth0.com";
 
 /**
  * The fully qualified URL where the OAuth Server/hosted UI is located
@@ -31,14 +31,9 @@ export const URL_OAUTH_SERVER_ISS = `${URL_OAUTH_SERVER}.well-known/jwks.json`;
  * @returns {*}
  */
 export const getCsrfStateAppendedParams = (params) => {
-    const csrfState = randomstring(8);
-    store.dispatch({
-        type: ACTION_SET_CSRF_STATE,
-        csrfState
-    });
     return {
         ...params,
-        state: csrfState
+        state: CSRF.generateNewState()
     };
 };
 
@@ -48,7 +43,7 @@ export const getCsrfStateAppendedParams = (params) => {
  */
 const DEFAULT_PARAMS = {
     response_type: 'code',
-    audience: AUTH0_AUDIENCE,
+    audience: AUTH0_API_AUDIENCE,
     scope: 'email profile openid offline_access',
     client_id: AUTH0_CLIENT_ID,
     redirect_uri: URL_OAUTH_REDIRECT

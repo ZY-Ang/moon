@@ -294,6 +294,163 @@ a {
     font-weight: bold !important;
 }
 
+ol.sequence {
+    border-color: #2E2F33;
+    counter-reset: li;
+    font-size: 14px;
+    margin-bottom: 0;
+    margin-left: 25px;
+    margin-top: 0;
+    padding-left: 24px;
+    position: relative;
+}
+
+ol.sequence:empty {
+    padding: 8px 0;
+}
+
+ol.sequence li {
+    list-style: none;
+    position:relative;
+}
+
+ol.sequence li:first-child {
+    /*padding-top: 12px;*/
+}
+
+ol.sequence li::before {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background-color: #2E2F33;
+    border-radius: 50%;
+    box-sizing: border-box;
+    color: #fff;
+    content: counter(li);
+    counter-increment: li;
+    display: block;
+    font-weight: 700;
+    font-size: 15px;
+    height: 28px;
+    left: -33px;
+    margin-top: -4px;
+    outline: 0;
+    padding: 4px;
+    position: absolute;
+    text-align: center;
+    width: 28px;
+    z-index: 2;
+}
+
+ol.sequence li::after {
+    background: #2E2F33 0 0;
+    background-size: 200% 200%;
+    content: "";
+    height: calc(95% - 38px);
+    left: -20px;
+    outline: 0;
+    position: absolute;
+    top: 31px;
+    width: 2px;
+}
+
+ol.sequence li.current {
+    color: #0f62bd;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+ol.sequence li.current::before {
+    content: "\279C";
+    background-color: #0f62bd !important;
+}
+
+ol.sequence li.current::after {
+    background: #0f62bd 0 0 !important;
+}
+
+ol.sequence li.done {
+    color: #23821D;
+}
+
+ol.sequence li.done::before {
+    content: "\2713";
+    background-color: #23821D !important;
+}
+
+ol.sequence li.done::after {
+    background: #23821D 0 0 !important;
+}
+
+ol.sequence li:last-child::after {
+    display: none;
+}
+
+ul.sequence {
+    border-color: #5f6066;
+    font-size: 14px;
+    margin-bottom: 0;
+    margin-left: 25px;
+    margin-top: 0;
+    padding-left: 24px;
+    position: relative;
+}
+
+ul.sequence:empty {
+    padding: 8px 0;
+}
+
+ul.sequence:empty::before {
+    background: #5f6066 0 0;
+    background-size: 200% 200%;
+    border: 0 solid inherit;
+    content: "";
+    height: 100%;
+    outline: 0;
+    position: absolute;
+    width: 2px;
+    left: 5px;
+    top: 0;
+}
+
+ul.sequence li {
+    list-style: none;
+}
+
+ul.sequence li:first-child {
+    padding-top: 12px;
+}
+
+ul.sequence li::before {
+    border: 2px solid #5f6066;
+    border-radius: 50%;
+    background-color: #5f6066;
+    content: "";
+    display: block;
+    height: 8px;
+    outline: 0;
+    position: absolute;
+    width: 8px;
+    z-index: 2;
+    left: 0;
+}
+
+ul.sequence li::after {
+    background: #5f6066 0 0;
+    background-size: 200% 200%;
+    border: 0 solid inherit;
+    content: "";
+    height: 100%;
+    outline: 0;
+    position: absolute;
+    width: 2px;
+    left: 5px;
+    top: 0;
+}
+
+ul.sequence li:last-child {
+    padding-bottom: 12px;
+}
+
 #moon-body {
     display: flex;
     align-items: start;

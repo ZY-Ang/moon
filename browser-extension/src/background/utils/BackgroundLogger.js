@@ -7,6 +7,8 @@ import uuid from "uuid/v4";
 import moment from "moment";
 import AWS from "../config/aws/AWS";
 import {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
+import {replaceErrors} from "../../utils/error";
+import BackgroundRuntime from "../browser/BackgroundRuntime";
 
 class BackgroundLogger extends Logger {
     constructor(...args) {
@@ -14,26 +16,68 @@ class BackgroundLogger extends Logger {
         this.logEvents = [];
         this.cloudwatchLogClient = new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS});
         this.initialized = false;
+        this.sequenceToken = null;
+        this.putLogsPromise = Promise.resolve({nextSequenceToken: this.sequenceToken});
         this.initializeLogStream();
     }
 
     initializeLogStream = () => {
         // TODO: Add IP-GeoLocation service to Group or Stream
-        this.logGroupName = `browser-extension-${process.env.NODE_ENV}`;
-        this.logStreamName = `${moment().format("YYYY-MM-DD")}-${uuid()}`;
-        this.cloudwatchLogClient.createLogStream({
-            logGroupName: this.logGroupName,
-            logStreamName: this.logStreamName
-        }, (err) => {
-            if (err) {
-                console.error("Unable to initialize log stream");
+        this.logGroupName = `/browser.extension.${process.env.NODE_ENV}/v${BackgroundRuntime.getManifest().version}`;
+        if (process.env.CIRCLE_BUILD_NUM) {
+            this.logGroupName += `/circleci.build.${process.env.CIRCLE_BUILD_NUM}`;
+        } else {
+            this.logGroupName += "/manual.build";
+        }
+        this.logStreamName = `${moment().format("YYYY-MM-DD")}/${uuid()}`;
 
-            } else {
+        // 1. Create Log Group (throws error if exist)
+        this.cloudwatchLogClient.createLogGroup({
+            logGroupName: this.logGroupName
+        })
+            .promise()
+            .catch(err => console.info("Unable to initialize log group", err.message))
+            // 2. Put retention policy on log group to 7 days
+            .then(() => this.cloudwatchLogClient.putRetentionPolicy({
+                logGroupName: this.logGroupName,
+                retentionInDays: 7
+            }).promise())
+            .catch(err => console.info("Unable to put retention policy on log group", err.message))
+            // 3. Create Log Stream (Does not throw error if exist)
+            .then(() => this.cloudwatchLogClient.createLogStream({
+                logGroupName: this.logGroupName,
+                logStreamName: this.logStreamName
+            }).promise())
+            .then(() => {
                 this.initialized = true;
+            })
+            .catch(err => {
+                console.error("Unable to initialize log stream", err);
+            });
+    };
+
+    doPutLogEvents = (logEvents, nextSequenceToken) => new Promise((resolve, reject) => {
+        if (!logEvents.length) {
+            resolve({nextSequenceToken});
+        }
+        this.cloudwatchLogClient.putLogEvents({
+            logEvents,
+            logGroupName: this.logGroupName,
+            logStreamName: this.logStreamName,
+            sequenceToken: nextSequenceToken
+        }, (err, data) => {
+            if (err) {
+                // Unable to log to cloudwatch. Ignore, log and reset token.
+                this.sequenceToken = null;
+                reject(err);
+
+            } else if (data && data.nextSequenceToken) {
+                this.sequenceToken = data.nextSequenceToken;
+                resolve(data);
 
             }
         });
-    };
+    });
 
     putLogEvents = () => {
         if (!this.initialized) {
@@ -41,29 +85,14 @@ class BackgroundLogger extends Logger {
 
         } else {
             // Try again later
-            try {
-                this.cloudwatchLogClient.putLogEvents({
-                    logEvents: this.logEvents,
-                    logGroupName: this.logGroupName,
-                    logStreamName: this.logStreamName,
-                    sequenceToken: this.sequenceToken
-                }, (err, data) => {
-                    if (err) {
-                        // Unable to log to cloudwatch. Ignore and just log.
-                        console.error("BackgroundLogger.putLogEvents if (err) exception: ", err);
-
-                    } else if (data && data.nextSequenceToken) {
-                        this.sequenceToken = data.nextSequenceToken;
-
-                    }
+            const logEvents = Array.from(this.logEvents);
+            this.logEvents = [];
+            this.putLogsPromise = this.putLogsPromise
+                .then(({nextSequenceToken}) => this.doPutLogEvents(logEvents, nextSequenceToken))
+                .catch(err => {
+                    console.error("BackgroundLogger.putLogEvents if (err) exception: ", JSON.stringify(err, replaceErrors));
+                    return {nextSequenceToken: this.sequenceToken};
                 });
-
-                // Reset log events for the next batch
-                this.logEvents = [];
-
-            } catch (e) {
-                console.error("BackgroundLogger.putLogEvents catch (e) exception: ", e);
-            }
         }
     };
 

@@ -134,8 +134,6 @@ type PaymentPayload {
 
 # Queries (static). Naming convention: NOUNS
 type Query {
-    # Returns information about the callee's JWT. TODO: Remove after v1.0 safely deploys
-    identity: OIDCIdentity
     # Returns user information belonging to the callee
     user: User
 }

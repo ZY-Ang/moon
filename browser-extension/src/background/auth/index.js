@@ -2,6 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
+import CSRF from "./CSRF";
 import {
     TYPE_FACEBOOK,
     TYPE_GOOGLE,
@@ -10,7 +11,6 @@ import {
     TYPE_STANDARD_SIGN_UP
 } from "../../constants/events/appEvents";
 import {
-    AMAZON_AUTH_PARAMS,
     FACEBOOK_AUTH_PARAMS,
     getCsrfStateAppendedParams,
     getURLFlowParams,
@@ -25,9 +25,8 @@ import axios from "axios";
 import {parseUrl, stringify} from "query-string";
 import Tabs from "../browser/Tabs";
 import Windows from "../browser/Windows";
-import {REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
+import {REQUEST_UPDATE_IS_LOGGING_IN, REQUEST_UPDATE_AUTH_USER} from "../../constants/events/backgroundEvents";
 import AuthUser from "./AuthUser";
-import store from "../redux/store";
 import backgroundLogger from "../utils/BackgroundLogger";
 
 /**
@@ -60,13 +59,14 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     const code = parseUrl(url).query.code.split("#")[0];
 
     const authCsrfState = parseUrl(url).query.state.split("#")[0];
-    const localCsrfState = store.getState().sessionState.csrfState;
-    if(localCsrfState !== authCsrfState){
-        return Promise.reject(new Error('Invalid CSRF state'));
+    const localStoreState = CSRF.getState();
+    if(localStoreState !== authCsrfState) {
+        return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${localStoreState}`));
     }
 
     const body = getURLFlowParams(code);
-    return axios.post(URL_TOKEN_FLOW, body)
+    return Tabs.sendMessageToAll(REQUEST_UPDATE_IS_LOGGING_IN, {isLoggingIn: true})
+        .then(() => axios.post(URL_TOKEN_FLOW, body))
         .then(({data}) => {
             backgroundLogger.log("Retrieved tokens");
             return doSignIn(data);
@@ -77,6 +77,7 @@ export const doOnAuthFlowResponse = (url, tabId) => {
             doSignOut();
         })
         .finally(() => {
+            Tabs.sendMessageToAll(REQUEST_UPDATE_IS_LOGGING_IN, {isLoggingIn: false});
             backgroundLogger.log(`Closing tab ${tabId}`);
             Tabs.removeById(tabId);
         });

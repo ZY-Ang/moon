@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "moon-dashboard-app"
+    "default": "moon-dashboard-app",
+    "production": "moon-dashboard-app",
+    "development": "moon-dashboard-app-dev"
   }
 }

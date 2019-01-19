@@ -9,7 +9,7 @@ export const DOMAIN = "paywithmoon.com";
 export const URL_LANDING_PAGE = `https://${DOMAIN}/`;
 export const URL_DASHBOARD = process.env.NODE_ENV === 'production'
     ? `https://app.${DOMAIN}`
-    : `https://app.${DOMAIN}`; // TODO: Set up development dashboard URL (on auth0 :aud as well)
+    : `https://moon-dashboard-app-dev.firebaseapp.com`; // TODO: Set up development dashboard URL (on auth0 :aud as well)
 export const URL_EXTENSION_INSTALLED = `${URL_LANDING_PAGE}extension-successfully-installed`;
 export const URL_EXTENSION_UNINSTALLED = `${URL_LANDING_PAGE}extension-successfully-uninstalled`;
 /**
