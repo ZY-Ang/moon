@@ -72,13 +72,11 @@ resources:
             Principal:
               # TODO: Add OIDC manual setup in developer README. There is no AWS CloudFormation resource to generate OIDC provider
               Federated:
-              - { Fn::Sub: "arn:aws:iam::${{self:custom.accountId}}:oidc-provider/${{file(./config/auth0.json):short_iss}}" }
+              - { Fn::Sub: "arn:aws:iam::${{self:custom.accountId}}:oidc-provider/${{file(./config/auth0.json):short_iss.${{self:provider.stage}}}}" }
             Action:
             - "sts:AssumeRoleWithWebIdentity"
             Condition:
-              StringEquals:
-                paywithmoon.auth0.com/:aud:
-                - ${{file(./config/auth0.json):aud}}
+              StringEquals: ${{self:custom.userRolePrincipalStringEqualsCondition.${{self:provider.stage}}}}
         Policies:
         - ${{self:custom.browserExtensionCloudWatchLogsPolicy}}
         - PolicyName: AppSync-policy
@@ -104,13 +102,7 @@ resources:
               Condition:
                 ForAllValues:StringEquals:
                   dynamodb:LeadingKeys:
-                    - "${${{file(./config/auth0.json):short_iss}}:sub}"
-
-    BrowserExtensionLogGroup:
-      Type: AWS::Logs::LogGroup
-      Properties:
-        LogGroupName: ${{self:custom.browserExtensionCloudWatchLogGroupName}}
-        RetentionInDays: 7
+                    - "${${{file(./config/auth0.json):short_iss.${{self:provider.stage}}}}:sub}"
 
 custom:
   # Custom staging profiles. You may access or modify these credentials in ~/.aws/credentials
@@ -128,8 +120,6 @@ custom:
     authenticated:
       Arn: ${{cf:moon-backend-appsync-authenticated-${{self:provider.stage}}.ApiArn}}
 
-  browserExtensionCloudWatchLogGroupName: browser-extension-${{self:provider.stage}}
-
   browserExtensionCloudWatchLogsPolicy:
     PolicyName: BrowserExtensionCloudWatchlogs-policy
     PolicyDocument:
@@ -137,12 +127,13 @@ custom:
       Statement:
       - Effect: 'Allow'
         Action:
-        - 'logs:PutLogEvents'
         - 'logs:createLogGroup'
+        - 'logs:PutRetentionPolicy'
         - 'logs:createLogStream'
+        - 'logs:PutLogEvents'
         Resource:
-        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:${{self:custom.browserExtensionCloudWatchLogGroupName}}:*']] }
-        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:${{self:custom.browserExtensionCloudWatchLogGroupName}}']] }
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension.${{self:provider.stage}}/*:*']] }
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension.${{self:provider.stage}}/*']] }
 
   dynamoDBTables:
     UserSecrets:
@@ -154,3 +145,11 @@ custom:
     NonCheckoutReports:
       Name: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableName}}
       Arn: ${{cf:moon-database-non-checkout-reports-${{self:provider.stage}}.TableArn}}
+
+  userRolePrincipalStringEqualsCondition:
+    production:
+      paywithmoon.auth0.com/:aud:
+      - ${{file(./config/auth0.json):aud.${{self:provider.stage}}}}
+    development:
+      paywithmoon-development.auth0.com/:aud:
+      - ${{file(./config/auth0.json):aud.${{self:provider.stage}}}}

@@ -4,7 +4,7 @@
 
 import {
     REQUEST_COINBASE_EXTRACT_API_KEYS,
-    REQUEST_INJECT_APP,
+    REQUEST_INJECT_APP, REQUEST_UPDATE_IS_LOGGING_IN,
     REQUEST_PAYMENT_COMPLETED_OFF_MODAL,
     REQUEST_UPDATE_AUTH_USER,
     REQUEST_UPDATE_TAB
@@ -17,7 +17,7 @@ import {doExtractCoinbaseApiKeys} from "./wallets/coinbase";
 import {updateAuthUser} from "./utils/auth";
 import {injectButton} from "./buttonMoon";
 import {
-    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_ERROR_STATE, ACTION_SET_APP_MODAL_LOADING_STATE,
     ACTION_SET_APP_MODAL_SUCCESS_STATE,
     ACTION_SET_TAB,
     ACTION_SET_UI_BLOCKER_STATE
@@ -63,6 +63,14 @@ const messageCenter = (request, sender, sendResponse) => {
                     sendFailure(`updateAuthUser(${JSON.stringify(request.authUser)}) failed`);
                 });
             return true;
+        },
+        [REQUEST_UPDATE_IS_LOGGING_IN]() {
+            store.dispatch({
+                type: ACTION_SET_APP_MODAL_LOADING_STATE,
+                isActive: request.isLoggingIn,
+                text: "Logging you in..."
+            });
+            sendSuccess(true);
         },
         [REQUEST_PAYMENT_COMPLETED_OFF_MODAL]() {
             if (!request.isSuccess) {

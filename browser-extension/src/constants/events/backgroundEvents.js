@@ -17,6 +17,10 @@ export const SOURCE_NONE = "MOON_SOURCE_NONE";
 /** Used to request an update of the tab information which does not exist on the content script */
 export const REQUEST_UPDATE_TAB = "MOON_REQUEST_TAB_UPDATE";
 
+// --------------------- Logging In Information ---------------------
+/** Used to request an update of the authUser state to a temporary state while obtaining tokens and serializing the authUser */
+export const REQUEST_UPDATE_IS_LOGGING_IN = "MOON_REQUEST_LOGGING_IN";
+
 // --------------------- Notify Payment Completion ---------------------
 /** Used to notify a completion of the payment payload script and shut off UI blocker */
 export const REQUEST_PAYMENT_COMPLETED_OFF_MODAL = "MOON_REQUEST_PAYMENT_COMPLETED_OFF_MODAL";

@@ -60,6 +60,7 @@ class DevelopersScreen extends React.Component {
             <div className="moon-mainflow-screen" style={{display: 'flex', flexDirection: 'column'}}>
                 <BackButton/>
                 <h1 style={{textAlign: 'center'}}>Developers</h1>
+                <button className="btn btn-primary my-3" onClick={() => appLogger.error("I am an error")}>Log an error</button>
                 <div>
                     <input
                         type="text"
