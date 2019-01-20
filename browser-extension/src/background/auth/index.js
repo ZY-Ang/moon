@@ -2,7 +2,6 @@
  * Copyright (c) 2018 moon
  */
 
-import CSRF from "./CSRF";
 import {
     TYPE_FACEBOOK,
     TYPE_GOOGLE,
@@ -58,11 +57,12 @@ export const doOnAuthFlowResponse = (url, tabId) => {
     backgroundLogger.log(`Obtaining tokens from OAuth server with response url: ${url}`);
     const code = parseUrl(url).query.code.split("#")[0];
 
-    const authCsrfState = parseUrl(url).query.state.split("#")[0];
-    const localStoreState = CSRF.getState();
-    if(localStoreState !== authCsrfState) {
-        return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${localStoreState}`));
-    }
+    // TODO: Fix CSRF
+    // const authCsrfState = parseUrl(url).query.state.split("#")[0];
+    // const localStoreState = CSRF.getState();
+    // if (localStoreState !== authCsrfState) {
+    //     return Promise.reject(new Error(`URL CSRF state ${authCsrfState} does not match ${localStoreState}`));
+    // }
 
     const body = getURLFlowParams(code);
     return Tabs.sendMessageToAll(REQUEST_UPDATE_IS_LOGGING_IN, {isLoggingIn: true})
