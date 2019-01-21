@@ -38,6 +38,8 @@ resources:
           AttributeType: S
         - AttributeName: sub
           AttributeType: S
+        - AttributeName: email
+          AttributeType: S
         - AttributeName: createdOn
           AttributeType: S
         - AttributeName: id
@@ -53,6 +55,17 @@ resources:
           KeySchema:
           - AttributeName: awsRequestId
             KeyType: HASH
+          Projection:
+            ProjectionType: KEYS_ONLY
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+        - IndexName: emailByCreatedOnGSI
+          KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+          - AttributeName: createdOn
+            KeyType: RANGE
           Projection:
             ProjectionType: KEYS_ONLY
           ProvisionedThroughput:
