@@ -181,7 +181,7 @@
     -o-transition: all .2s ease;
     -webkit-transition: all .2s ease;
     padding: 8px 10px;
-    width: 33%;
+    width: 100%;
     display: flex;
     flex-direction: column;
 }
