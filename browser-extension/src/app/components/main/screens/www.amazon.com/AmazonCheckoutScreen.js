@@ -509,11 +509,11 @@ class AmazonCheckoutScreen extends React.Component {
                             AppMixpanel.track('button_click_amazon_checkout_cycle_wallets');
                             this.onQuickViewCurrencyClick();
                         }}
-                        className="checkout-section-currency-flag"
+                        className="checkout-section-currency-flag ripple"
                     >
                         <div>
                             {paymentCurrency}
-                            <CurrencyIcon currency={paymentCurrency}/>
+                            <CurrencyIcon currency={paymentCurrency} className={"ml-1/2"}/>
                         </div>
                     </div>
                 </div>
