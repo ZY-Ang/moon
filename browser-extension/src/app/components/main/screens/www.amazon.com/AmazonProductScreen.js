@@ -172,7 +172,7 @@ class AmazonProductScreen extends React.Component {
                             />
                         </div>
                         <div
-                            className={`product-section-currency-flag${isExchangeRatesSelectorOpen ? " inverse" : ""}`}
+                            className={`ripple product-section-currency-flag${isExchangeRatesSelectorOpen ? " inverse" : ""}`}
                             onClick={() => {
                                 AppMixpanel.track('button_click_amazon_product_toggle_change_currency');
                                 this.onCurrencyClick();
@@ -180,9 +180,9 @@ class AmazonProductScreen extends React.Component {
                         >
                             <div>
                                 {selectedExchangeRate.quote}
-                                <CurrencyIcon currency={selectedExchangeRate.quote}/>
+                                <CurrencyIcon currency={selectedExchangeRate.quote} className={"ml-1/2"}/>
                             </div>
-                            <FaIcon icon="chevron-down"/>
+                            <FaIcon icon="chevron-down" className={"text-white ml-1/2"}/>
                         </div>
                         <div className={`product-section-currency-selector${isExchangeRatesSelectorOpen ? "" : " collapsed"}`}>
                             {
@@ -191,7 +191,7 @@ class AmazonProductScreen extends React.Component {
                                     .map(({quote, base}) =>
                                         <div
                                             key={`${quote}${base}`}
-                                            className="product-section-currency-selector-currency"
+                                            className="product-section-currency-selector-currency text-white"
                                             onClick={() => {
                                                 AppMixpanel.track('button_click_amazon_product_change_currency',
                                                     {'change_to_currency': quote});
