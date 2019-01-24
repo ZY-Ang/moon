@@ -16,6 +16,6 @@ const isRestrictedItem = () => {
                     false
                 ) || accItem, false
             );
-}
+};
 
 export default isRestrictedItem;
