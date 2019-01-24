@@ -97,7 +97,7 @@
     /*-ms-transition: background-color 0.2s ease;*/
     /*-o-transition: background-color 0.2s ease;*/
     /*transition: background-color 0.2s ease;*/
-    background: linear-gradient(to top, #1F3384 48%, #2e2f33 10%, #1B264F 49%);
+    background: linear-gradient(to top, #1B264F 48%, #2e2f33 10%, #1F3384 49%);
 }
 
 .product-section-currency-flag.disabled {
@@ -116,7 +116,7 @@
 }
 
 .product-section-currency-flag:active {
-    background: linear-gradient(to top, #0F62BD 48%, #2e2f33 10%, #576CA8  49%);
+    background: linear-gradient(to top, #1F3384 48%, #2e2f33 10%, #1B264F 49%);
 }
 
 .product-section-currency-flag:active * {
@@ -164,7 +164,7 @@
     -ms-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
-    background: linear-gradient(to top, #1F3384 48%, #2e2f33 10%, #1B264F 49%);
+    background: linear-gradient(to top, #1B264F 48%, #2e2f33 10%, #1F3384 49%);
 }
 
 .product-section-currency-selector.collapsed {
@@ -192,7 +192,7 @@
 }
 
 .product-section-currency-selector-currency:active {
-    background: linear-gradient(to top, #0F62BD 48%, #2e2f33 10%, #576CA8  49%);
+    background: linear-gradient(to top, #1F3384 48%, #2e2f33 10%, #1B264F 49%);
 }
 
 .product-section-currency-selector-currency:active * {
