@@ -63,7 +63,7 @@
 
 .checkout-section-currency-flag {
     align-items: center;
-    background: linear-gradient(to top, #1F3384 48%, #2e2f33 10%, #1B264F 49%);
+    background: linear-gradient(to top, #1B264F 48%, #2e2f33 10%, #1F3384 49%);
     border-bottom-right-radius: 3px;
     border-top-right-radius: 3px;
     cursor: pointer;
@@ -98,7 +98,7 @@
 }
 
 .checkout-section-currency-flag:active {
-    background: linear-gradient(to top, #0F62BD 48%, #2e2f33 10%, #576CA8  49%);
+    background: linear-gradient(to top, #1F3384 48%, #2e2f33 10%, #1B264F 49%);
 }
 
 .checkout-section-currency-flag img {
