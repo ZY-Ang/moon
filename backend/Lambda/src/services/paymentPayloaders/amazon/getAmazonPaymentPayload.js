@@ -118,7 +118,6 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
                 const browserMessage = {
                     paymentPayloadId: "${paymentPayloadId}",
                     message: "MOON_NOTIFY_PAYMENT_COMPLETION",
-                    amazonGiftCards: giftCards,
                     amazonSuccessfulGiftCards: successfulGiftCards,
                     amazonFailedGiftCards: failedGiftCards
                 };
