@@ -31,7 +31,7 @@ import moonTestFunction from "./moonTestFunction";
 import store from "./redux/store";
 import {doLaunchCoinbaseAuthFlow, doUpdateCoinbaseApiKeyEvent} from "./services/coinbase";
 import AuthUser from "./auth/AuthUser";
-import {doGetPaymentPayload, updateOnboardingSkipExpiry} from "./api/user";
+import {doGetPaymentPayload, doNotifyPaymentCompletion, updateOnboardingSkipExpiry} from "./api/user";
 import {doPasswordReset} from "./auth";
 import Tabs from "./browser/Tabs";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
@@ -148,10 +148,18 @@ const messageCenter = (request, sender, sendResponse) => {
             return true;
         },
         [REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION]() {
-            // FIXME: FIXME: FIXME: FIXME: FIXME: FIXME IMPLEMENT IMPLEMENT - Log to db, pageinfo, etc
-            backgroundLogger.log("Notify payment payload completion request: ", request);
-            Tabs.sendMessage(sender.tab.id, REQUEST_PAYMENT_COMPLETED_OFF_MODAL, {isSuccess: true}) // TODO: Only send success if all success or something
-                .finally(() => sendSuccess(true));
+            doNotifyPaymentCompletion(request)
+                .then(() => {
+                    return Tabs.sendMessage(sender.tab.id, REQUEST_PAYMENT_COMPLETED_OFF_MODAL, {isSuccess: true})
+                        .then(({data}) => sendSuccess(data))
+                        .catch(err => backgroundLogger.warn("messageCenter.REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION.REQUEST_PAYMENT_COMPLETED_OFF_MODAL exception: ", err))
+                        .then(() => sendSuccess(true))
+                })
+                .catch(err => {
+                    backgroundLogger.error("messageCenter.REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION exception: ", err);
+                    sendFailure(`doNotifyPaymentCompletion(${request}) failed`);
+                });
+
             return true;
         },
         [REQUEST_GET_SITE_INFORMATION]() {
