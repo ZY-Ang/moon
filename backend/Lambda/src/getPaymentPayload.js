@@ -59,7 +59,11 @@ const validatePageInfo = (pageInfo) => {
 const getPaymentPayload = async (event, context) => {
     logHead("getPaymentPayload", {event, context});
 
-    const {awsRequestId, logGroupName, logStreamName} = context;
+    const {
+        awsRequestId,
+        logGroupName: getPaymentPayloadLogGroupName,
+        logStreamName: getPaymentPayloadLogStreamName
+    } = context;
     const {arguments: args, identity, createdOn} = event;
     validateInput(args.input);
     const {cartInfo, wallet, pageInfo} = args.input;
@@ -71,8 +75,8 @@ const getPaymentPayload = async (event, context) => {
         sub,
         createdOn,
         awsRequestId,
-        logGroupName,
-        logStreamName,
+        getPaymentPayloadLogGroupName,
+        getPaymentPayloadLogStreamName,
         baseCurrency: cartInfo.currency,
         baseAmount: cartInfo.amount,
         walletProvider: wallet.provider,
