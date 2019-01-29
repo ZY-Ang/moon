@@ -81,8 +81,34 @@ type Mutation {
 input NotifyPaymentCompletionInput {
     # ID associated with the transaction
     id: ID!
-    success: Boolean!
-    pageInfo: PageInfo!
+    # Data that represents the completed transaction
+    notifyPaymentCompletionPayloadInput: NotifyPaymentCompletionPayloadInput
+}
+
+input NotifyPaymentCompletionPayloadInput {
+    amazonSuccessfulGiftCards: [AmazonGiftCardInput]
+    amazonFailedGiftCards: [AmazonGiftCardInput]
+}
+
+input AmazonGiftCardInput {
+    cardInfo: AmazonGiftCardInfoInput
+    creationRequestId: String
+    gcClaimCode: String
+    gcExpirationDate: String
+    gcId: String
+    status: String
+}
+
+input AmazonGiftCardInfoInput {
+    cardNumber: String
+    cardStatus: String
+    expirationDate: String
+    value: AmazonGiftCardInfoValueInput
+}
+
+input AmazonGiftCardInfoValueInput {
+    amount: Float
+    currencyCode: String
 }
 
 type OIDCClaims {
@@ -114,14 +140,18 @@ input PageInfo {
     content: String!
 }
 
+# The response after the client successfully notifies the backend of the execution of the payment payload
 type PaymentCompletionPayload {
-    emailSent: Boolean!
+    # ID associated with the transaction
+    id: ID!
+    # Returns true if notification was successful, false otherwise.
+    notified: Boolean!
 }
 
 # the response after a user clicks "pay with moon", which includes all the information needed to complete the purchase
 type PaymentPayload {
     # ID associated with the transaction
-    id: ID
+    id: ID!
     # The magical data that makes it all happen
     data: [String!]
     # Balance of said magical data
