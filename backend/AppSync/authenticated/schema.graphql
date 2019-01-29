@@ -97,6 +97,7 @@ input AmazonGiftCardInput {
     gcExpirationDate: String
     gcId: String
     status: String
+    applyResult: result
 }
 
 input AmazonGiftCardInfoInput {

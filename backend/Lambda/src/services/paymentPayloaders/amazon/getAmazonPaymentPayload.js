@@ -101,15 +101,13 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
                     });
                 })
                 .then(function(result){
-                    return successfulGiftCards.push({
-                        giftCard: giftCard,
-                        result: result
+                    return successfulGiftCards.push(Object.assign(giftCard, {
+                        applyResult: result
                     });
                 })
                 .catch(function(errorResult){
-                    return failedGiftCards.push({
-                        giftCard: giftCard,
-                        result: errorResult
+                    return failedGiftCards.push(Object.assign(giftCard, {
+                        applyResult: result
                     });
                 });
         }, Promise.resolve())
