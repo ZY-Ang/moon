@@ -116,10 +116,11 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
         .then(function(){
             return new Promise(function(resolve, reject){
                 const browserMessage = {
+                    paymentPayloadId: "${paymentPayloadId}",
                     message: "MOON_NOTIFY_PAYMENT_COMPLETION",
-                    giftCards: giftCards,
-                    successfulGiftCards: successfulGiftCards,
-                    failedGiftCards: failedGiftCards
+                    amazonGiftCards: giftCards,
+                    amazonSuccessfulGiftCards: successfulGiftCards,
+                    amazonFailedGiftCards: failedGiftCards
                 };
                 if (environment !== 'production') {
                     console.log("browserMessage: ", browserMessage);
