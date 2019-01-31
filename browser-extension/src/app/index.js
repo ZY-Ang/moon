@@ -5,7 +5,6 @@
 import appLogger from "./utils/AppLogger";
 import AppRuntime from "./browser/AppRuntime";
 import './index.css';
-import WebFont from 'webfontloader';
 import App from "./components/App";
 import {MOON_DIV_ID} from "./constants/dom";
 import {SOURCE_MANUAL, SOURCE_NONE} from "../constants/events/backgroundEvents";
@@ -89,15 +88,6 @@ export const toggleApp = async (source, tabInfo) => {
 
 // TODO: handle orphaned content script @see {@link https://stackoverflow.com/questions/7792552/how-to-detect-chrome-extension-uninstall}
 
-/**
- * Load required font families from the appropriate libraries.
- * For more information, @see {@link https://www.npmjs.com/package/webfontloader}
- */
-WebFont.load({
-    google: {
-        families: ['Quicksand', 'Raleway']
-    }
-});
 AppRuntime.run();
 initializeApp();
 injectButton();
