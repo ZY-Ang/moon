@@ -19,7 +19,7 @@ import {ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS} from "../../../../redux/reducers
 import {observeDOM} from "../../../../utils/dom";
 import AppMixpanel from "../../../../services/AppMixpanel";
 import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
-import isRestrictedItem from "./constants/restrictedItem";
+import isRestrictedItem from "../../../../utils/restrictedItem";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";
 
