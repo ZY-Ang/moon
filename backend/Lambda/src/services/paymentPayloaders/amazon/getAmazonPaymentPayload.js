@@ -101,14 +101,16 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
                     });
                 })
                 .then(function(result){
-                    return successfulGiftCards.push(Object.assign(giftCard, {
-                        applyResult: result
+                    const gcSuccess = Object.assign(giftCard, {
+                        applyResult: result;
                     });
+                    return successfulGiftCards.push(gcSuccess);
                 })
                 .catch(function(errorResult){
-                    return failedGiftCards.push(Object.assign(giftCard, {
-                        applyResult: result
+                    const gcFailed = Object.assign(giftCard, {
+                        applyResult: errorResult;
                     });
+                    return failedGiftCards.push(gcFailed);
                 });
         }, Promise.resolve())
         .then(function(){
