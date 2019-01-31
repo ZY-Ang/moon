@@ -4,6 +4,8 @@
 
 import appLogger from "./utils/AppLogger";
 import AppRuntime from "./browser/AppRuntime";
+import '../../../assets/fonts/Quicksand/modernBrowsers.css';
+import '../../../assets/fonts/Raleway/modernBrowsers.css';
 import './index.css';
 import App from "./components/App";
 import {MOON_DIV_ID} from "./constants/dom";
