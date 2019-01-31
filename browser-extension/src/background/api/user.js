@@ -6,6 +6,8 @@ import gql from "graphql-tag";
 import MoonGraphQL from "./MoonGraphQL";
 import {getDelayedHours} from "../../utils/datetime";
 import {ACTION_SET_USER_CACHE} from "../redux/reducers/api";
+import backgroundLogger from "../utils/BackgroundLogger";
+import {replaceErrors} from "../../utils/error";
 
 const HOURS_TTL_DURATION = 2;
 
@@ -167,6 +169,44 @@ export const doGetPaymentPayload = async (variables) => {
     });
 
     return response;
+};
+
+const mutationNotifyPaymentCompletion = gql`
+    mutation notifyPaymentCompletion(
+        $paymentPayloadId: ID!,
+        $notifyPaymentCompletionPayloadInput: NotifyPaymentCompletionPayloadInput!
+    ) {
+        notifyPaymentCompletion(input: {
+            id: $paymentPayloadId,
+            notifyPaymentCompletionPayloadInput: $notifyPaymentCompletionPayloadInput
+        }) {
+            id
+            notified
+        }
+    }
+`;
+export const doNotifyPaymentCompletion = async (variables) => {
+    const paymentPayloadId = variables.paymentPayloadId;
+    delete variables.paymentPayloadId;
+    delete variables.message;
+
+    try {
+        const response = await (await MoonGraphQL.authClient)
+            .mutate({
+                mutation: mutationNotifyPaymentCompletion,
+                variables: {
+                    paymentPayloadId,
+                    notifyPaymentCompletionPayloadInput: variables
+                }
+            });
+
+        backgroundLogger.log("doNotifyPaymentCompletion succeeded with response: ", response);
+        return response;
+
+    } catch (err) {
+        backgroundLogger.error("doNotifyPaymentCompletion exception: ", JSON.stringify(err, replaceErrors));
+        return err;
+    }
 };
 
 const mutationUpdateCoinbaseApiKey = gql`
