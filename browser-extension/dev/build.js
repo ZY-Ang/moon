@@ -118,7 +118,7 @@ const build = async () => {
     console.log(`AWS_APPSYNC_API_KEY_PUBLIC:\t\t${(shell.env.AWS_APPSYNC_API_KEY_PUBLIC)}`);
 
     // BROWSER
-    const DEFAULT_BROWSER = 'chrome';
+    const DEFAULT_BROWSER = 'firefox';
     console.log(`BROWSER:\t\t\t\t\t\t${shell.env.BROWSER}${!shell.env.BROWSER?` => ${DEFAULT_BROWSER}`:''}`);
     shell.env.BROWSER = process.env.BROWSER || DEFAULT_BROWSER;
     console.log("===========================================================\n");
