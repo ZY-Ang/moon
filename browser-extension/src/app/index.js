@@ -4,8 +4,12 @@
 
 import appLogger from "./utils/AppLogger";
 import AppRuntime from "./browser/AppRuntime";
-import '../../../assets/fonts/Quicksand/modernBrowsers.css';
-import '../../../assets/fonts/Raleway/modernBrowsers.css';
+import quicksandEot from '../../../assets/fonts/Quicksand/fonts/quicksand-v8-latin-regular.eot';
+import quicksandWoff from '../../../assets/fonts/Quicksand/fonts/quicksand-v8-latin-regular.woff';
+import quicksandWoff2 from '../../../assets/fonts/Quicksand/fonts/quicksand-v8-latin-regular.woff2';
+import ralewayEot from '../../../assets/fonts/Raleway/fonts/raleway-v12-latin-regular.eot';
+import ralewayWoff from '../../../assets/fonts/Raleway/fonts/raleway-v12-latin-regular.woff';
+import ralewayWoff2 from '../../../assets/fonts/Raleway/fonts/raleway-v12-latin-regular.woff2';
 import './index.css';
 import App from "./components/App";
 import {MOON_DIV_ID} from "./constants/dom";
@@ -67,9 +71,20 @@ export const toggleApp = async (source, tabInfo) => {
         const moonShadow = moonDiv.attachShadow({mode: 'open'});
 
         // Create Styles of Moon Shadow
-        appLogger.log("Creating a new moon style element");
-        const moonStyles = document.createElement('style');
-        moonStyles.innerHTML = (await axios.get(AppRuntime.getURL('app.css'))).data;
+        appLogger.log("Adding styles");
+        const fontStyles = document.createElement("style");
+        fontStyles.type = "text/css";
+        fontStyles.textContent =
+            `@font-face{font-family:Quicksand;font-style:normal;font-weight:400;src:url('${AppRuntime.getURL(quicksandEot)}');` +
+            `src:url('${AppRuntime.getURL(quicksandWoff2)}') format("woff2"),` +
+            `url('${AppRuntime.getURL(quicksandWoff)}') format("woff")}` +
+            `@font-face{font-family:Raleway;font-style:normal;font-weight:400;src:url('${AppRuntime.getURL(ralewayEot)}');` +
+            `src:url('${AppRuntime.getURL(ralewayWoff2)}') format("woff2"),` +
+            `url('${AppRuntime.getURL(ralewayWoff)}') format("woff")}`;
+
+        const moonStyles = document.createElement("style");
+        moonStyles.type = "text/css";
+        moonStyles.textContent = (await axios.get(AppRuntime.getURL('app.css'))).data;
 
         // Render React Application onto shadow child
         appLogger.log("Rendering App");
@@ -80,6 +95,7 @@ export const toggleApp = async (source, tabInfo) => {
         ), moonShadow);
 
         // Append styles after rendering application (has to be done after the application render)
+        moonShadow.appendChild(fontStyles);
         moonShadow.appendChild(moonStyles);
 
         // Dispatch application active action
