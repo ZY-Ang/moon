@@ -3,9 +3,7 @@
  */
 
 import React from "react";
-import {
-    QUERY_SELECTOR_PRODUCT_TITLE
-} from "./querySelectors";
+import {QUERY_SELECTOR_PRODUCT_TITLE} from "../components/main/screens/www.amazon.com/constants/querySelectors";
 
 const isRestrictedItem = () => {
         const restrictedWords = ["egift", "amazon.com"];
