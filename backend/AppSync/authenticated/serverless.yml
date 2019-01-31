@@ -59,6 +59,9 @@ custom:
     GetPaymentPayload:
       Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.GetPaymentPayloadArn}}
       Description: ${{file(../../Lambda/serverless.yml):functions.getPaymentPayload.description}}
+    NotifyPaymentCompletion:
+      Arn: ${{cf:moon-backend-lambda-${{self:provider.stage}}.NotifyPaymentCompletionArn}}
+      Description: ${{file(../../Lambda/serverless.yml):functions.notifyPaymentCompletion.description}}
 
   appSync:
     name: ${{self:service}}-${{self:provider.stage}}
@@ -106,6 +109,18 @@ custom:
             - "lambda:invokeFunction"
             Resource:
             - ${{self:custom.lambdaFunctions.GetPaymentPayload.Arn}}
+      # notifyPaymentCompletion
+      - type: AWS_LAMBDA
+        name: NotifyPaymentCompletionLambdaFunction
+        description: "TODO: Reference lambda output description"
+        config:
+          lambdaFunctionArn: ${{self:custom.lambdaFunctions.NotifyPaymentCompletion.Arn}}
+          iamRoleStatements:
+          - Effect: "Allow"
+            Action:
+            - "lambda:invokeFunction"
+            Resource:
+            - ${{self:custom.lambdaFunctions.NotifyPaymentCompletion.Arn}}
 
     mappingTemplatesLocation: mapping-templates
 
@@ -130,3 +145,9 @@ custom:
         field: getPaymentPayload
         request: Mutation/getPaymentPayload/request.vtl
         response: Mutation/getPaymentPayload/response.vtl
+      # Mutation/notifyPaymentCompletion
+      - dataSource: NotifyPaymentCompletionLambdaFunction
+        type: Mutation
+        field: notifyPaymentCompletion
+        request: Mutation/notifyPaymentCompletion/request.vtl
+        response: Mutation/notifyPaymentCompletion/response.vtl

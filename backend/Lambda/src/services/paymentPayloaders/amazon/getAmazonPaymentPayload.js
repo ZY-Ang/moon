@@ -101,25 +101,25 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
                     });
                 })
                 .then(function(result){
-                    return successfulGiftCards.push({
-                        giftCard: giftCard,
-                        result: result
+                    const gcSuccess = Object.assign(giftCard, {
+                        applyResult: result;
                     });
+                    return successfulGiftCards.push(gcSuccess);
                 })
                 .catch(function(errorResult){
-                    return failedGiftCards.push({
-                        giftCard: giftCard,
-                        result: errorResult
+                    const gcFailed = Object.assign(giftCard, {
+                        applyResult: errorResult;
                     });
+                    return failedGiftCards.push(gcFailed);
                 });
         }, Promise.resolve())
         .then(function(){
             return new Promise(function(resolve, reject){
                 const browserMessage = {
+                    paymentPayloadId: "${paymentPayloadId}",
                     message: "MOON_NOTIFY_PAYMENT_COMPLETION",
-                    giftCards: giftCards,
-                    successfulGiftCards: successfulGiftCards,
-                    failedGiftCards: failedGiftCards
+                    amazonSuccessfulGiftCards: successfulGiftCards,
+                    amazonFailedGiftCards: failedGiftCards
                 };
                 if (environment !== 'production') {
                     console.log("browserMessage: ", browserMessage);
