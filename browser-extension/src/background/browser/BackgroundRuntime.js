@@ -45,6 +45,19 @@ class BackgroundRuntime extends Runtime {
                 backgroundLogger.log(`Moon extension has been updated to v${version}!`);
 
             }
+            console.log(
+                `%cSTOP!
+%cThis is a browser feature intended for developers. If someone told you to copy and paste something here to enable a feature or hack, it is a scam and will give them access to your Moon account, and more importantly, your wallet information!!!
+%cTo learn more, visit https://en.wikipedia.org/wiki/Self-XSS
+
+
+
+%cIf you're doing this on purpose, why not join our team instead? Send us your CV at careers@paywithmoon.com`,
+                "font-size:500%;font-weight:bold;color:red;",
+                "font-size:200%;color:red;",
+                "color:red;",
+                "color:green;"
+            );
             // Update of the currently installed extension
             //  Reboot all content scripts in all tabs in all windows
             const manifest = BackgroundRuntime.getManifest();
