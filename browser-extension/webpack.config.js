@@ -27,7 +27,7 @@ const RULE_BABEL_LOADER = {
  * @see {@link https://github.com/webpack-contrib/file-loader}
  */
 const RULE_STATIC_FILE_LOADER = {
-    test: /\.(jpe?g|gif|png|svg|woff|ttf|wav|mp3)$/,
+    test: /\.(jpe?g|gif|png|svg|woff(2)?|ttf|eot|wav|mp3)$/,
     use: {
         loader: 'file-loader',
         options: {
