@@ -70,7 +70,7 @@ export const doInjectAppEvent = async (source, tab) => {
         const authUser = await AuthUser.trim().catch(() => null);
         return await Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
     } catch (err) {
-        if (!!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
+        if (tab.status === "complete" && !!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             const manifest = BackgroundRuntime.getManifest();
             const contentScripts = manifest.content_scripts[0].js;
             await Promise.all(contentScripts.map(file =>
