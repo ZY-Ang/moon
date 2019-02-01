@@ -19,7 +19,7 @@ import {ACTION_PUSH_SCREEN, SCREEN_ADD_WALLETS} from "../../../../redux/reducers
 import {observeDOM} from "../../../../utils/dom";
 import AppMixpanel from "../../../../services/AppMixpanel";
 import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
-import isRestrictedItem from "../../../../utils/restrictedItem";
+import {isProductRestrictedItem} from "./utils/restrictedItems";
 
 export const AMAZON_DEFAULT_CURRENCY = "USD";
 
@@ -113,7 +113,7 @@ class AmazonProductScreen extends React.Component {
         const {authUser} = this.props;
         const authUserHasWallets = this.authUserHasWallets();
         const selectedExchangeRateWallets = (authUserHasWallets && selectedExchangeRate && authUser.wallets.filter(({currency}) => (currency === selectedExchangeRate.quote))) || [];
-        const restrictedItem = isRestrictedItem();
+        const restrictedItem = isProductRestrictedItem();
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
@@ -261,8 +261,9 @@ class AmazonProductScreen extends React.Component {
                 {
                     restrictedItem &&
                     <div className="text-center mt-2">
+                        <h3 className="text-error mb-0">Whoops!</h3>
                         <p className="text-error mb-0">
-                            Moon cannot facilitate the purchase of gift cards. We're sorry but you cannot purchase this item using crypto currency.
+                            Moon cannot facilitate the purchase of gift cards. We're sorry but you cannot purchase this item using cryptocurrency! 😢
                         </p>
                         <p className="text-error mb-0">
                             If you think this is a mistake, <a onClick={() => {
