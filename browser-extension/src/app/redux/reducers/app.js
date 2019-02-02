@@ -67,7 +67,7 @@ const applySetIsAppActive = (state, action) => {
     return {
         ...state,
         isAppActive: !!action.isAppActive
-    }
+    };
 };
 
 /**
