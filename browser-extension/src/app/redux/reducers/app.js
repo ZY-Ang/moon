@@ -11,13 +11,14 @@ import {
     ACTION_SET_IS_APP_ACTIVE,
     ACTION_SET_SCREEN,
     ACTION_SET_UI_BLOCKER_STATE,
-    ACTION_TOGGLE_IS_APP_ACTIVE,
-    POSSIBLE_SCREENS,
+    ACTION_TOGGLE_IS_APP_ACTIVE, POSSIBLE_SCREENS,
     SCREEN_MAIN,
     SCREEN_UNSUPPORTED
 } from "./constants";
 import store from "../store";
 import appLogger from "../../utils/AppLogger";
+import {MOON_DIV_ID} from "../../constants/dom";
+import {APP_STATE_ACTIVE, APP_STATE_HIDDEN, ATTRIBUTE_APP_STATE} from "../../index";
 
 /* -----------------     Initial State     ------------------ */
 
@@ -55,10 +56,19 @@ const INITIAL_STATE = {
 /**
  * Action to set {@code isAppActive} in the store based on the specified action
  */
-const applySetIsAppActive = (state, action) => ({
-    ...state,
-    isAppActive: !!action.isAppActive
-});
+const applySetIsAppActive = (state, action) => {
+    const moonDiv = document.getElementById(MOON_DIV_ID);
+    if (moonDiv && !action.isAppActive) {
+        moonDiv.setAttribute(ATTRIBUTE_APP_STATE, APP_STATE_HIDDEN);
+    } else if (moonDiv && !!action.isAppActive) {
+        moonDiv.setAttribute(ATTRIBUTE_APP_STATE, APP_STATE_ACTIVE);
+    }
+
+    return {
+        ...state,
+        isAppActive: !!action.isAppActive
+    }
+};
 
 /**
  * Action to set {@code appModalLoadingState} in the store based on the specified action
