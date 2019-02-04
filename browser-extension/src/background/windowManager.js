@@ -65,6 +65,7 @@ export const doInjectAppEvent = async (source, tab) => {
                 .then(() => doUpdateAuthUserEvent(tab));
         }
     } catch (err) {
+        // TODO: ASSERT THAT THIS ENTIRE RECURSIVE CATCH BLOCK IS NOT AUTO-RENDERING EVEN WHEN NOT REQUESTED
         if (tab.status === "complete" && !!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             const manifest = BackgroundRuntime.getManifest();
             const contentScripts = manifest.content_scripts[0].js;
