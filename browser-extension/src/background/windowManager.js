@@ -4,7 +4,6 @@
 
 import BrowserAction from './browser/BrowserAction';
 import Tabs from './browser/Tabs';
-import AuthUser from "./auth/AuthUser";
 import {isCheckoutPage, isClearCacheUrl, isOAuthUrl, isSupportedSite, isValidWebUrl} from "../utils/url";
 import {doOnAuthFlowResponse, doUpdateAuthUserEvent} from "./auth/index";
 import {
@@ -61,14 +60,10 @@ export const doInjectAppEvent = async (source, tab) => {
         return;
     }
     try {
-        if (!tab) {
-            const activeTab = await Tabs.getActive();
-            if (!!activeTab) {
-                return doInjectAppEvent(source, activeTab);
-            }
+        if (!!tab) {
+            return await Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser: null, source, tab})
+                .then(() => doUpdateAuthUserEvent(tab));
         }
-        const authUser = await AuthUser.trim().catch(() => null);
-        return await Tabs.sendMessage(tab.id, REQUEST_INJECT_APP, {authUser, source, tab});
     } catch (err) {
         if (tab.status === "complete" && !!err.message && err.message.includes(MESSAGE_ERROR_ENDS_WITH_NO_RECEIVER)) {
             const manifest = BackgroundRuntime.getManifest();
