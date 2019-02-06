@@ -16,7 +16,7 @@ import {removeSecrets} from "../../utils/sanitization";
  * @returns {void | *}
  */
 const updatePaymentPayloadRecord = async (id, transactionData) => {
-    logHead("updatePaymentPayloadRecord", transactionData);
+    logHead("updatePaymentPayloadRecord", {id, transactionData});
 
     let dynamodb = new AWS.DynamoDB.DocumentClient();
 
