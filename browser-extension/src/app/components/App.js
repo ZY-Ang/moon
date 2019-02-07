@@ -19,6 +19,7 @@ import {REQUEST_OPEN_POPUP} from "../../constants/events/appEvents";
 import {URL_MOON_TAWK_SUPPORT} from "../../../src/constants/url";
 import appLogger from "../utils/AppLogger";
 import AppMixpanel from "../services/AppMixpanel";
+import Notification from "./notifications/Notifications";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -79,6 +80,7 @@ class App extends Component {
                 {
                     this.props.isAppActive &&
                     <div id="moon-wrapper">
+                            <Notification/>
                         <div id="moon-header">
                             <img id="moon-header-img" src={AppRuntime.getURL(logo)} alt="Moon"/>
                             <div
