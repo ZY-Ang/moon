@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2019 moon
+ */
+
+#notification-box{
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.2);
+    box-shadow: 1px 2px 2px 1px rgba(0,0,0,0.3);
+    margin: 2px;
+    display: flex;
+    justify-content: center;
+    width:98%;
+}
+
+.notification-body{
+    width:100%;
+}
+
+.btn-box{
+    display:flex;
+    flex-direction: row-reverse;
+}
+
+.btn-close{
+    height:15px;
+    width:15px;
+    background-color: rgba(200,0,0,0.9);
+    border-radius:50%;
+    margin: 1px;
+    cursor: pointer;
+}
+
+.btn-close:hover
+.btn-close:focus {
+    background-color: rgba(220,0,0,0.7);
+}
