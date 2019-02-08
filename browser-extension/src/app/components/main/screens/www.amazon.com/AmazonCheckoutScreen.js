@@ -6,8 +6,7 @@ import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
 import {
     QUERY_SELECTOR_CART_AMOUNT,
-    QUERY_SELECTOR_CART_CURRENCY,
-    QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE
+    QUERY_SELECTOR_CART_CURRENCY
 } from "./constants/querySelectors";
 import Decimal from "decimal.js";
 import {REQUEST_OPEN_POPUP} from "../../../../../constants/events/appEvents";
@@ -314,6 +313,7 @@ class AmazonCheckoutScreen extends React.Component {
         const isZero = !paymentAmount || Number(paymentAmount) === 0 || !requiredAmountInQuote || Number(requiredAmountInQuote) === 0;
         const isInsufficient = !cartAmount || !walletBalanceInBase || Number(cartAmount) > Number(walletBalanceInBase);
         const authUserHasWallets = this.authUserHasWallets();
+        const isEmailVerified = !!authUser && authUser.email_verified;
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
         const containsRestrictedItems = isCartContainsRestrictedItems();
         return (
@@ -512,22 +512,8 @@ class AmazonCheckoutScreen extends React.Component {
                     </div>
                 </div>
                 {
-                    containsRestrictedItems &&
-                    <div className="text-center mt-2">
-                        <h3 className="text-error mb-0">Whoops!</h3>
-                        <p className="text-error mb-0">
-                            Moon cannot facilitate the purchase of gift cards. Please remove any gift cards from your cart before proceeding. 😢
-                        </p>
-                        <p className="text-error mb-0">
-                            If you think this is a mistake, <a onClick={() => {
-                                AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
-                                AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
-                        }}>contact us</a>
-                        </p>
-                    </div>
-                }
-                {
                     authUserHasWallets &&
+                    isEmailVerified &&
                     !containsRestrictedItems &&
                     !!selectedWallet &&
                     !isInsufficient &&
@@ -586,6 +572,30 @@ class AmazonCheckoutScreen extends React.Component {
                         >
                             Connect One Now!
                         </button>
+                    </div>
+                }
+                {
+                    containsRestrictedItems &&
+                    <div className="text-center mt-2">
+                        <h3 className="text-error mb-0">Whoops!</h3>
+                        <p className="text-error mb-0">
+                            Moon cannot facilitate the purchase of gift cards. Please remove any gift cards from your cart before proceeding. 😢
+                        </p>
+                        <p className="text-error mb-0">
+                            If you think this is a mistake, <a onClick={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
+                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
+                        }}>contact us</a>
+                        </p>
+                    </div>
+                }
+                {
+                    !isEmailVerified &&
+                    <div className="text-center mt-2">
+                        <h3 className="text-error mb-0">Whoops!</h3>
+                        <p className="text-error mb-0">
+                            You need to verify your email address before proceeding. 😢
+                        </p>
                     </div>
                 }
             </div>
