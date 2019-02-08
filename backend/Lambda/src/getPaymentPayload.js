@@ -88,6 +88,7 @@ const getPaymentPayload = async (event, context) => {
     // generate a unique id for this transaction
     const {sub} = identity;
     const paymentPayloadId = `${sub}_${createdOn}_${awsRequestId}`;
+    // TODO: Create direct link to getPaymentPayloadLogURL via URL parameters in the AWS console to make debugging life easier
     await updatePaymentPayloadRecord(paymentPayloadId, {
         sub,
         email: identity.claims.email,

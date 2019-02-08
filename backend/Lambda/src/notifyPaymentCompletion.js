@@ -15,7 +15,8 @@ const notifyPaymentCompletion = async (event, context) => {
     } = context;
     const {arguments: args} = event;
 
-    const {id: paymentPayloadId, notifyPaymentCompletionPayloadInput} = args;
+    const {id: paymentPayloadId, notifyPaymentCompletionPayloadInput} = args.input;
+    // TODO: Create direct link to notifyPaymentCompletionLogURL via URL parameters in the AWS console to make debugging life easier
     await updatePaymentPayloadRecord(paymentPayloadId, Object.assign({
         notifyPaymentCompletionLogGroupName,
         notifyPaymentCompletionLogStreamName

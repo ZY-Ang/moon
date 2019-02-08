@@ -19,6 +19,7 @@ import {REQUEST_OPEN_POPUP} from "../../constants/events/appEvents";
 import {URL_MOON_TAWK_SUPPORT} from "../../../src/constants/url";
 import appLogger from "../utils/AppLogger";
 import AppMixpanel from "../services/AppMixpanel";
+import InitialLoadingBody from "./auth/InitialLoadingBody";
 
 const INITIAL_STATE = {
     isMaximized: true,
@@ -131,20 +132,23 @@ class App extends Component {
                             </div>
                         </div>
                         <div id="moon-body" className={CLASS_MOON_BODY}>
+                            <InitialLoadingBody/>
                             <ErrorBody/>
                             <SuccessBody/>
                             <LoadingBody/>
                             {
                                 !!this.props.authUser &&
+                                !!this.props.authUser.isAuthenticated &&
                                 isOnBoardingFlowCompleteOrSkipped(this.props.authUser) &&
                                 <MainFlow/>
                             }
                             {
                                 !!this.props.authUser &&
+                                !!this.props.authUser.isAuthenticated &&
                                 !isOnBoardingFlowCompleteOrSkipped(this.props.authUser) &&
                                 <OnBoardingFlow/>
                             }
-                            {!this.props.authUser && <AuthFlow/>}
+                            {(!this.props.authUser || !this.props.authUser.isAuthenticated) && <AuthFlow/>}
                         </div>
                     </div>
                 }

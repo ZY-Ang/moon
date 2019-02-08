@@ -17,6 +17,10 @@ import {injectButton} from "./buttonMoon";
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+export const ATTRIBUTE_APP_STATE = "data-app-state";
+export const APP_STATE_ACTIVE = "active";
+export const APP_STATE_HIDDEN = "hidden";
+
 /**
  * Re-renders app if div already exists.
  * This function should be executed on install or update.
@@ -24,11 +28,16 @@ import ReactDOM from 'react-dom';
  * NOTE: This is not the same as {@code toggleApp} where the render is toggled.
  */
 const initializeApp = () => {
-    const moonDiv = document.getElementById(MOON_DIV_ID);
-    if (!!moonDiv) {
-        appLogger.log("moonDiv found, re-rendering app");
+    let moonDiv = document.getElementById(MOON_DIV_ID);
+    if (!!moonDiv && moonDiv.getAttribute(ATTRIBUTE_APP_STATE) === APP_STATE_ACTIVE) {
+        appLogger.log("moonDiv found, re-rendering app in active state");
         moonDiv.remove();
         toggleApp(SOURCE_MANUAL).catch();
+    } else if (!!moonDiv) {
+        appLogger.log("moonDiv found in sleep state, resetting div");
+        moonDiv.remove();
+        moonDiv = document.createElement("div");
+        moonDiv.setAttribute("id", MOON_DIV_ID);
     }
 };
 
