@@ -584,7 +584,12 @@ class AmazonCheckoutScreen extends React.Component {
                         <p className="text-error mb-0">
                             If you think this is a mistake, <a onClick={() => {
                             AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
-                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
+                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {
+                                url: URL_MOON_TAWK_SUPPORT,
+                                height: 600,
+                                width: 400,
+                                type: "popup"
+                            });
                         }}>contact us</a>
                         </p>
                     </div>
@@ -592,9 +597,19 @@ class AmazonCheckoutScreen extends React.Component {
                 {
                     !isEmailVerified &&
                     <div className="text-center mt-2">
-                        <h3 className="text-error mb-0">Whoops!</h3>
                         <p className="text-error mb-0">
-                            You need to verify your email address before proceeding. 😢
+                            Please verify your email address before proceeding!
+                        </p>
+                        <p className="text-error mb-0">
+                            If you did not receive a verification email, please <a onClick={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_is_email_verified_support');
+                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {
+                                url: URL_MOON_TAWK_SUPPORT,
+                                height: 600,
+                                width: 400,
+                                type: "popup"
+                            });
+                        }}>contact us</a> to get another one sent
                         </p>
                     </div>
                 }
