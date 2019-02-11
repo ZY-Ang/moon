@@ -189,7 +189,7 @@ export const doUpdateAuthUserEvent = async (tab) => {
         }
     } catch (error) {
         backgroundLogger.warn("doUpdateAuthUserEvent exception: ", error);
-        Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null}).then(() => false);
+        Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: {isAuthenticated: false}}).then(() => false);
         throw error;
     }
 };

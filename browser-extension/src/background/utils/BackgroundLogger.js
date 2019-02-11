@@ -52,7 +52,7 @@ class BackgroundLogger extends Logger {
                 this.initialized = true;
             })
             .catch(err => {
-                console.error("Unable to initialize log stream", err);
+                console.info("Unable to initialize log stream", err);
             });
     };
 

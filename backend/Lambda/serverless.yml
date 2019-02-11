@@ -40,6 +40,8 @@ resources:
       Value: { Fn::GetAtt: [ExchangeRatesLambdaFunction, Arn] }
     GetPaymentPayloadArn:
       Value: { Fn::GetAtt: [GetPaymentPayloadLambdaFunction, Arn] }
+    NotifyPaymentCompletionArn:
+      Value: { Fn::GetAtt: [NotifyPaymentCompletionLambdaFunction, Arn] }
     UpdateUserArn:
       Value: { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
     UserArn:
@@ -54,6 +56,10 @@ resources:
       Properties:
         RetentionInDays: 1
     GetPaymentPayloadLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        RetentionInDays: 3653
+    NotifyPaymentCompletionLogGroup:
       Type: AWS::Logs::LogGroup
       Properties:
         RetentionInDays: 3653
@@ -106,6 +112,20 @@ functions:
       Resource:
       - ${{self:custom.dynamoDBTables.UserSecrets.Arn}}
       - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.UserSecrets.Arn}}", '/*']] }
+    - Effect: "Allow"
+      Action:
+      - "dynamodb:UpdateItem"
+      Resource:
+      - ${{self:custom.dynamoDBTables.PaymentPayloadRecords.Arn}}
+      - { Fn::Join: ['', ["${{self:custom.dynamoDBTables.PaymentPayloadRecords.Arn}}", '/*']] }
+  notifyPaymentCompletion:
+    name: ${{self:service}}-${{self:provider.stage}}-notifyPaymentCompletion
+    description: 'Updates the database with payment completion records'
+    handler: src/notifyPaymentCompletion.default
+    timeout: 180
+    iamRoleStatementsInherit: true
+    iamRoleStatementsName: ${{self:service}}-${{self:provider.stage}}-NPC-role
+    iamRoleStatements:
     - Effect: "Allow"
       Action:
       - "dynamodb:UpdateItem"
