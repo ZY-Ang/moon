@@ -59,7 +59,7 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
 
     // TODO: FIGURE OUT WHAT HONEY is doing with 'applyCodesClick'
     const executable = require("harp-minify").js(`
-(function(giftCards, environment) {
+(function(giftCards, environment, paymentPayloadId) {
     var applyButton = document.querySelectorAll(".a-button.a-spacing-micro .a-button-inner input,#gcApplyButtonId,.PromoEntryButton input[type='submit']")[0];
     var txtGc = document.querySelectorAll("#spc-gcpromoinput,input[name='code'].PromoEntryField")[0];
     var successfulGiftCards = [];
@@ -101,25 +101,25 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
                     });
                 })
                 .then(function(result){
-                    return successfulGiftCards.push({
-                        giftCard: giftCard,
-                        result: result
+                    var gcSuccess = Object.assign(giftCard, {
+                        applyResult: result
                     });
+                    return successfulGiftCards.push(gcSuccess);
                 })
                 .catch(function(errorResult){
-                    return failedGiftCards.push({
-                        giftCard: giftCard,
-                        result: errorResult
+                    var gcFailed = Object.assign(giftCard, {
+                        applyResult: errorResult
                     });
+                    return failedGiftCards.push(gcFailed);
                 });
         }, Promise.resolve())
         .then(function(){
             return new Promise(function(resolve, reject){
-                const browserMessage = {
+                var browserMessage = {
+                    paymentPayloadId: paymentPayloadId,
                     message: "MOON_NOTIFY_PAYMENT_COMPLETION",
-                    giftCards: giftCards,
-                    successfulGiftCards: successfulGiftCards,
-                    failedGiftCards: failedGiftCards
+                    amazonSuccessfulGiftCards: successfulGiftCards,
+                    amazonFailedGiftCards: failedGiftCards
                 };
                 if (environment !== 'production') {
                     console.log("browserMessage: ", browserMessage);
@@ -150,7 +150,7 @@ const getAmazonPaymentPayload = async (paymentPayloadId, cartInfo, pageInfo) => 
         .catch(function(err){
             console.error("Something seriously bad happened: ", err);
         });
-})(${JSON.stringify(amazonGiftCards)}, '${process.env.NODE_ENV}');
+})(${JSON.stringify(amazonGiftCards)}, '${process.env.NODE_ENV}', "${paymentPayloadId}");
 `, {compress: true, mangle: true});
 
     const amazonPaymentPayload = {

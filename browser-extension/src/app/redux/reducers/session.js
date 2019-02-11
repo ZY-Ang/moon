@@ -32,13 +32,13 @@ const applySetAuthUser = (state, action) => {
         return {
             ...state,
             authUser: action.authUser,
-            selectedWallet: state.selectedWallet || action.authUser.wallets[0]
+            selectedWallet: state.selectedWallet || (action.authUser.wallets && action.authUser.wallets[0])
         };
     } else {
         return {
             ...state,
             authUser: null
-        }
+        };
     }
 };
 

@@ -4,7 +4,10 @@ import moment from "moment";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY, QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE} from "./constants/querySelectors";
+import {
+    QUERY_SELECTOR_CART_AMOUNT,
+    QUERY_SELECTOR_CART_CURRENCY
+} from "./constants/querySelectors";
 import Decimal from "decimal.js";
 import {REQUEST_OPEN_POPUP} from "../../../../../constants/events/appEvents";
 import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
@@ -25,6 +28,7 @@ import ConfirmSlider from "../../../misc/confirmslider/ConfirmSlider";
 import {AMAZON_DEFAULT_CURRENCY} from "./AmazonProductScreen";
 import appLogger from "../../../../utils/AppLogger";
 import AppMixpanel from "../../../../services/AppMixpanel";
+import {isCartContainsRestrictedItems} from "./utils/restrictedItems";
 
 export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH"];
 const INITIAL_STATE = {
@@ -69,17 +73,6 @@ class AmazonCheckoutScreen extends React.Component {
                 .then(() => this.setPaymentAmount(this.state.cartAmount));
         }
     }
-
-    isCartContainsRestrictedItems = () => {
-        const restrictedWords = ["egift", "amazon.com"];
-        return Array.from(document.querySelectorAll(QUERY_SELECTOR_CHECKOUT_CART_ITEM_TITLE))
-            .reduce((accItem, curItem) =>
-                restrictedWords.reduce((accRestrictedWord, curRestrictedWord) =>
-                    curItem.innerText.toLowerCase().includes(curRestrictedWord) || accRestrictedWord,
-                    false
-                ) || accItem, false
-            );
-    };
 
     getCartAmountFromElements = (cartAmountElements) => {
         if (!cartAmountElements || !cartAmountElements.length) {
@@ -320,8 +313,9 @@ class AmazonCheckoutScreen extends React.Component {
         const isZero = !paymentAmount || Number(paymentAmount) === 0 || !requiredAmountInQuote || Number(requiredAmountInQuote) === 0;
         const isInsufficient = !cartAmount || !walletBalanceInBase || Number(cartAmount) > Number(walletBalanceInBase);
         const authUserHasWallets = this.authUserHasWallets();
+        const isEmailVerified = !!authUser && authUser.email_verified;
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
-        const containsRestrictedItems = this.isCartContainsRestrictedItems();
+        const containsRestrictedItems = isCartContainsRestrictedItems();
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
@@ -518,22 +512,8 @@ class AmazonCheckoutScreen extends React.Component {
                     </div>
                 </div>
                 {
-                    containsRestrictedItems &&
-                    <div className="text-center mt-2">
-                        <p className="text-error mb-0">
-                            Moon cannot facilitate the purchase of gift cards. Please remove any gift cards from your cart before proceeding.
-                        </p>
-                        <p className="text-error mb-0">
-                            If you think this is a mistake, <a onClick={() => {
-                                AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
-                                AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {url: URL_MOON_TAWK_SUPPORT})
-                        }}>contact us</a>
-                        </p>
-
-                    </div>
-                }
-                {
                     authUserHasWallets &&
+                    isEmailVerified &&
                     !containsRestrictedItems &&
                     !!selectedWallet &&
                     !isInsufficient &&
@@ -592,6 +572,45 @@ class AmazonCheckoutScreen extends React.Component {
                         >
                             Connect One Now!
                         </button>
+                    </div>
+                }
+                {
+                    containsRestrictedItems &&
+                    <div className="text-center mt-2">
+                        <h3 className="text-error mb-0">Whoops!</h3>
+                        <p className="text-error mb-0">
+                            Moon cannot facilitate the purchase of gift cards. Please remove any gift cards from your cart before proceeding. 😢
+                        </p>
+                        <p className="text-error mb-0">
+                            If you think this is a mistake, <a onClick={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_restricted_item_support');
+                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {
+                                url: URL_MOON_TAWK_SUPPORT,
+                                height: 600,
+                                width: 400,
+                                type: "popup"
+                            });
+                        }}>contact us</a>
+                        </p>
+                    </div>
+                }
+                {
+                    !isEmailVerified &&
+                    <div className="text-center mt-2">
+                        <p className="text-error mb-0">
+                            Please verify your email address before proceeding!
+                        </p>
+                        <p className="text-error mb-0">
+                            If you did not receive a verification email, please <a onClick={() => {
+                            AppMixpanel.track('button_click_amazon_checkout_is_email_verified_support');
+                            AppRuntime.sendMessage(REQUEST_OPEN_POPUP, {
+                                url: URL_MOON_TAWK_SUPPORT,
+                                height: 600,
+                                width: 400,
+                                type: "popup"
+                            });
+                        }}>contact us</a> to get another one sent
+                        </p>
                     </div>
                 }
             </div>

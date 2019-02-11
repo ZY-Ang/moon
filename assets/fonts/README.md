@@ -1,0 +1,1 @@
+Fonts are taken from [google-webfonts-helper.herokuapp.com](https://google-webfonts-helper.herokuapp.com) with references from [this stackoverflow question](https://stackoverflow.com/questions/8966740/how-to-host-google-web-fonts-on-my-own-server/31801634#31801634)
