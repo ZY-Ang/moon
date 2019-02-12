@@ -38,7 +38,7 @@ class SettingsScreen extends React.Component {
     };
 
     signOut = () => {
-        this.props.onSetAuthUser(null);
+        this.props.onSetAuthUser({isAuthenticated: false});
     };
 
     onSignOutClick = (event) => {

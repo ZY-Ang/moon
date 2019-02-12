@@ -12,7 +12,8 @@ import {ACTION_SET_AUTH_USER_TEMPORARY_ONBOARD_SKIP} from "../../redux/reducers/
 import AppMixpanel from "../../services/AppMixpanel";
 
 export const isOnBoardingFlowCompleteOrSkipped = (authUser) => {
-    return !!authUser && (
+    return !!authUser &&
+        !!authUser.isAuthenticated && (
         (
             !!authUser.onboardingSkipExpiry &&
             !!(new Date(authUser.onboardingSkipExpiry)) &&

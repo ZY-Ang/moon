@@ -13,6 +13,22 @@ import isSupportedSite from "./services/paymentPayloaders/isSupportedSite";
 import getAmazonPaymentPayload from "./services/paymentPayloaders/amazon/getAmazonPaymentPayload";
 
 /**
+ * Validate {@param identity} for
+ * {@function getPaymentPayload}
+ */
+const validateIdentity = (identity) => {
+    if (!identity) {
+        throw new Error("Invalid identity: No identity supplied");
+    }
+    if (!identity.claims) {
+        throw new Error("Invalid identity: No claims supplied");
+    }
+    if (!identity.claims.email || !identity.claims.email_verified) {
+        throw new Error("Email invalid or not verified");
+    }
+};
+
+/**
  * Validates {@param getPaymentPayloadInput} for
  * {@function getPaymentPayload}
  */
@@ -59,20 +75,27 @@ const validatePageInfo = (pageInfo) => {
 const getPaymentPayload = async (event, context) => {
     logHead("getPaymentPayload", {event, context});
 
-    const {awsRequestId, logGroupName, logStreamName} = context;
+    const {
+        awsRequestId,
+        logGroupName: getPaymentPayloadLogGroupName,
+        logStreamName: getPaymentPayloadLogStreamName
+    } = context;
     const {arguments: args, identity, createdOn} = event;
+    validateIdentity(identity);
     validateInput(args.input);
     const {cartInfo, wallet, pageInfo} = args.input;
 
     // generate a unique id for this transaction
     const {sub} = identity;
     const paymentPayloadId = `${sub}_${createdOn}_${awsRequestId}`;
+    // TODO: Create direct link to getPaymentPayloadLogURL via URL parameters in the AWS console to make debugging life easier
     await updatePaymentPayloadRecord(paymentPayloadId, {
         sub,
+        email: identity.claims.email,
         createdOn,
         awsRequestId,
-        logGroupName,
-        logStreamName,
+        getPaymentPayloadLogGroupName,
+        getPaymentPayloadLogStreamName,
         baseCurrency: cartInfo.currency,
         baseAmount: cartInfo.amount,
         walletProvider: wallet.provider,

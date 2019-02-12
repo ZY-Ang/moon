@@ -37,7 +37,7 @@ class AuthFlow extends Component {
     launchWebAuthFlow = (type) => AppRuntime.sendMessage(REQUEST_LAUNCH_WEB_AUTH_FLOW, {type})
         .catch(err => {
             appLogger.error(err);
-            this.props.onSetAuthUser(null);
+            this.props.onSetAuthUser({isAuthenticated: false});
             this.setState(() => ({error: MESSAGE_ERROR_SIGN_IN}));
         });
 

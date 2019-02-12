@@ -225,13 +225,16 @@ class AuthUser {
     static trim = async () => {
         const authUser = await AuthUser.getCurrent();
         if (!authUser) {
-            return null;
+            return {
+                isAuthenticated: false
+            };
         }
         const {data} = await getUser();
         const coinbaseWallets = (data.user.coinbaseInfo && data.user.coinbaseInfo.wallets && !!data.user.coinbaseInfo.wallets.length)
             ? data.user.coinbaseInfo.wallets
             : [];
         return {
+            isAuthenticated: true,
             name: data.user.identity.claims.nickname || data.user.identity.claims.name || data.user.identity.claims.email,
             email: data.user.identity.claims.email,
             email_verified: data.user.identity.claims.email_verified,

@@ -2,6 +2,7 @@
  * Copyright (c) 2018 moon
  */
 
+import Tabs from "./Tabs";
 import logoDisabled from "../../../../assets/icons/logo_disabled_128.png";
 import logo from "../../../../assets/icons/logo_128.png";
 import {SOURCE_MANUAL} from "../../constants/events/backgroundEvents";
@@ -66,7 +67,8 @@ class BrowserAction {
          */
         chrome.browserAction.onClicked.addListener(() => {
             backgroundMixpanel.track('button_click_moon_toolbar');
-            return doInjectAppEvent(SOURCE_MANUAL);
+            return Tabs.getActive()
+                .then(activeTab => doInjectAppEvent(SOURCE_MANUAL, activeTab));
         });
 
         /**
