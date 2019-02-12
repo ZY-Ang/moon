@@ -45,8 +45,9 @@ const manifest = {
     },
 
     background: {
-        scripts: ["background.js"],
-        persistent: false
+        scripts: ["background.js"]
+        // persistent: false
+        // Only persistent pages are supported?
     },
 
     content_scripts: [
@@ -58,10 +59,9 @@ const manifest = {
     // explicitly mark your add-on as compatible with Firefox by adding an applications key to your manifest.json
     "browser_specific_settings": {
         "gecko": {
-            "id": "ext@paywithmoon.com"
+            "id": "ext@paywithmoon.com"//made up string for loading temporary add-ons
         }
     }
-    //Since Firefox uses random UUIDs for web_accessible_resources, this key property is unsupported.
     // key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAibGrYHLq3cruPQW/vkQxnHeZ+LHcE+UomNUO9QTjjdACnfpt08cBwJ52PwqBflzSre1piBUu4CB//ecW8l5zYUVPLInoGiJSsZJHA2wo2WQ9PVtRw4gJNlBQbE5AiFXTTP0DC57QGIxyfKc1E7B0pi4y3xPueVIRuhRl7cRMVAiNU2OjSKpLuNat/IpG6QTg0P1kS8QMaz9nQM83izi6k4pntisyqUthBUdvzKmP7yhJjZE8FvIozqDHtD/PPsjYA6rt1M5Gzg0a5QYgQ2NLMsKfEAWmYYnaULwtb8jwKzViflIuvnFfsQrcKjq1fqzhLICHkN+3Mb9HSOFwLaSbiwIDAQAB"
 };
 
