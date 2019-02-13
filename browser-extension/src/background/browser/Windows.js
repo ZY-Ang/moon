@@ -21,7 +21,7 @@ class Windows {
     static create = ({url, height, width, type}) => new Promise((resolve, reject) => {
         if (process.env.BROWSER === "firefox") {
             backgroundLogger.log("4");
-            let creating = browser.windows.create({
+            const creating = browser.windows.create({
                 url,
                 // focused: true,
                 type,
