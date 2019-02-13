@@ -232,7 +232,7 @@ class Tabs {
         if (process.env.BROWSER === 'firefox') {
             /**
              * Fired when a tab is updated.
-             * @see {@link https://developer.chrome.com/extensions/tabs#event-onUpdated}
+             * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onUpdated}
              */
             browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 if (changeInfo.status === "complete") {
@@ -242,7 +242,7 @@ class Tabs {
 
             /**
              * Fired when the active tab is changed in a window.
-             * @see {@link https://developer.chrome.com/extensions/tabs#event-onActivated}
+             * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onActivated}
              */
             browser.tabs.onActivated.addListener(activeInfo =>
                 browser.tabs.get(activeInfo.tabId, (tab) => tabDidUpdate(tab))
