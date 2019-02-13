@@ -19,21 +19,41 @@ class Windows {
      * @see {@link https://developer.chrome.com/extensions/windows#method-create}
      */
     static create = ({url, height, width, type}) => new Promise((resolve, reject) => {
-        chrome.windows.create({
-            url,
-            focused: true,
-            type,
-            height,
-            width
-        }, window => {
-            const lastError = chrome.runtime.lastError;
-            if (!!lastError) {
-                backgroundLogger.error(lastError);
-                reject(lastError);
-            } else {
-                resolve(window);
-            }
-        });
+        if (process.env.BROWSER === "firefox") {
+            backgroundLogger.log("4");
+            let creating = browser.windows.create({
+                url,
+                // focused: true,
+                type,
+                height,
+                width
+            });
+            backgroundLogger.log("5");
+            creating.then(data=>{
+                backgroundLogger.log("6i");
+                resolve(data);
+            }, err => {
+                backgroundLogger.error("6ii", err);
+                reject(err);
+            });
+
+        } else {
+            chrome.windows.create({
+                url,
+                focused: true,
+                type,
+                height,
+                width
+            }, window => {
+                const lastError = chrome.runtime.lastError;
+                if (!!lastError) {
+                    backgroundLogger.error(lastError);
+                    reject(lastError);
+                } else {
+                    resolve(window);
+                }
+            });
+        }
     });
 
     /**
@@ -44,12 +64,21 @@ class Windows {
          * Fired when the currently focused window changes.
          * @see {@link https://developer.chrome.com/extensions/windows#event-onFocusChanged}
          */
-        chrome.windows.onFocusChanged.addListener(() =>
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true
-            }, tabs => tabDidUpdate(tabs[0]))
-        );
+        if (process.env.BROWSER === "firefox") {
+            browser.windows.onFocusChanged.addListener(() =>
+                browser.tabs.query({
+                    active: true,
+                    currentWindow: true
+                }, tabs => tabDidUpdate(tabs[0]))
+            );
+        } else {
+            chrome.windows.onFocusChanged.addListener(() =>
+                chrome.tabs.query({
+                    active: true,
+                    currentWindow: true
+                }, tabs => tabDidUpdate(tabs[0]))
+            );
+        }
     }
 }
 
