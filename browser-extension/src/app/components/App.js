@@ -80,7 +80,6 @@ class App extends Component {
                 {
                     this.props.isAppActive &&
                     <div id="moon-wrapper">
-                            <Notification/>
                         <div id="moon-header">
                             <img id="moon-header-img" src={AppRuntime.getURL(logo)} alt="Moon"/>
                             <div
@@ -132,6 +131,7 @@ class App extends Component {
                                 </div>
                             </div>
                         </div>
+                        <Notification/>
                         <div id="moon-body" className={CLASS_MOON_BODY}>
                             <ErrorBody/>
                             <SuccessBody/>
