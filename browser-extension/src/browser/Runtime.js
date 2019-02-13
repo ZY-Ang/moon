@@ -29,9 +29,14 @@ class Runtime {
      * @returns {object}
      *
      * @see {@link https://developer.chrome.com/extensions/runtime#method-getManifest}
+     * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/getManifest}
      */
     static getManifest = () => {
-        return chrome.runtime.getManifest();
+        if (process.env.BROWSER === "firefox") {
+            return browser.runtime.getManifest();
+        } else {
+            return chrome.runtime.getManifest();
+        }
     };
 
     /**
@@ -39,9 +44,14 @@ class Runtime {
      * install directory to a fully-qualified URL.
      *
      * @return {string}
+     * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/getURL}
      */
     static getURL = (relativePath) => {
-        return chrome.runtime.getURL(relativePath);
+        if (process.env.BROWSER === "firefox") {
+            return browser.runtime.getURL(relativePath);
+        } else {
+            return chrome.runtime.getURL(relativePath);
+        }
     };
 }
 
