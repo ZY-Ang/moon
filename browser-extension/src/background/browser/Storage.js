@@ -46,11 +46,9 @@ const Storage = {
                 if (process.env.BROWSER === "firefox") {
                     const settingItem = browser.storage.local.set(obj);
                     settingItem.then(() => {
-                        if (chrome.runtime.lastError) {
-                            reject(chrome.runtime.lastError);
-                        } else {
-                            resolve(obj);
-                        }
+                        resolve(obj);
+                    }, err => {
+                        reject(err);
                     });
                 } else {
                     chrome.storage.local.set(obj, () => {
@@ -73,7 +71,7 @@ const Storage = {
          */
         remove: (keys) => new Promise((resolve, reject) => {
                 if (process.env.BROWSER === "firefox") {
-                    const removingItem = chrome.storage.local.remove(keys);
+                    const removingItem = browser.storage.local.remove(keys);
                     removingItem.then(() => {
                         resolve(`Removed ${JSON.stringify(keys)} from storage.local successfully`);
                     }, err => {
