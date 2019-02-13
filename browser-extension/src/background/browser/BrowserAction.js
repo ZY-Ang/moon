@@ -17,65 +17,110 @@ class BrowserAction {
      * Sets the browser action icon to the active {@code logo}
      * for a particular {@param tabId}
      * @see {@link https://developer.chrome.com/extensions/browserAction#method-setIcon}
+     * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setIcon}
      */
     static setValidIcon = (tabId) => new Promise((resolve, reject) => {
-        chrome.browserAction.setIcon({path: chrome.runtime.getURL(logo), tabId}, () => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
+        if (process.env.BROWSER === "firefox") {
+            browser.browserAction.setIcon({path: browser.runtime.getURL(logo), tabId}).then(() => {
                 resolve(`Successfully set VALID icon for tab ${tabId}.`);
-            }
-        });
+            }, err => {
+                reject(err);
+            });
+        } else {
+            chrome.browserAction.setIcon({path: chrome.runtime.getURL(logo), tabId}, () => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(`Successfully set VALID icon for tab ${tabId}.`);
+                }
+            });
+        }
     });
     /**
      * Sets the browser action icon to {@code logoDisabled}
      * for a particular {@param tabId}
      * @see {@link https://developer.chrome.com/extensions/browserAction#method-setIcon}
+     * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setIcon}
      */
     static setInvalidIcon = (tabId) => new Promise((resolve, reject) => {
-        chrome.browserAction.setIcon({path: chrome.runtime.getURL(logoDisabled), tabId}, () => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
+        if (process.env.BROWSER === "firefox") {
+            browser.browserAction.setIcon({path: browser.runtime.getURL(logoDisabled), tabId}).then(() => {
                 resolve(`Successfully set INVALID icon for tab ${tabId}.`);
-            }
-        });
+            }, err => {
+                reject(err);
+            });
+        } else {
+            chrome.browserAction.setIcon({path: chrome.runtime.getURL(logoDisabled), tabId}, () => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(`Successfully set INVALID icon for tab ${tabId}.`);
+                }
+            });
+        }
     });
     /**
      * Sets the browser action badge text to
      * {@param text} on an optional {@param tabId}
      * @see {@link https://developer.chrome.com/extensions/browserAction#method-setBadgeText}
+     * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setBadgeText}
      */
     static setBadgeText = (text, tabId) => new Promise((resolve, reject) => {
         const details = {text, tabId};
-        chrome.browserAction.setBadgeText(details, () => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(`Successfully set badge text "${text}" for tab ${tabId}.`);
-            }
-        });
+        if (process.env.BROWSER === "firefox") {
+            browser.browserAction.setBadgeText(details).then(() => {
+                    resolve(`Successfully set badge text "${text}" for tab ${tabId}.`);
+                },  err => {
+                reject(err);
+            });
+        } else {
+            chrome.browserAction.setBadgeText(details, () => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(`Successfully set badge text "${text}" for tab ${tabId}.`);
+                }
+            });
+        }
     });
 
     /**
      * Initializer script to be "run" when the script starts
      */
     static run() {
-        /**
-         * Fired when a browser action icon is clicked.
-         * @see {@link https://developer.chrome.com/extensions/browserAction#event-onClicked}
-         */
-        chrome.browserAction.onClicked.addListener(() => {
-            backgroundMixpanel.track('button_click_moon_toolbar');
-            return Tabs.getActive()
-                .then(activeTab => doInjectAppEvent(SOURCE_MANUAL, activeTab));
-        });
+        if (process.env.BROWSER === "firefox") {
+            /**
+             * Fired when a browser action icon is clicked.
+             * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/onClicked}
+             */
+            browser.browserAction.onClicked.addListener(() => {
+                backgroundMixpanel.track('button_click_moon_toolbar');
+                return Tabs.getActive()
+                    .then(activeTab => doInjectAppEvent(SOURCE_MANUAL, activeTab));
+            });
 
-        /**
-         * Sets the background color for the badge (notification).
-         * @see {@link https://developer.chrome.com/extensions/browserAction#method-setBadgeBackgroundColor}
-         */
-        chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+            /**
+             * Sets the background color for the badge (notification).
+             * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setBadgeBackgroundColor}
+             */
+            browser.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+        } else {
+            /**
+             * Fired when a browser action icon is clicked.
+             * @see {@link https://developer.chrome.com/extensions/browserAction#event-onClicked}
+             */
+            chrome.browserAction.onClicked.addListener(() => {
+                backgroundMixpanel.track('button_click_moon_toolbar');
+                return Tabs.getActive()
+                    .then(activeTab => doInjectAppEvent(SOURCE_MANUAL, activeTab));
+            });
+
+            /**
+             * Sets the background color for the badge (notification).
+             * @see {@link https://developer.chrome.com/extensions/browserAction#method-setBadgeBackgroundColor}
+             */
+            chrome.browserAction.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+        }
     }
 }
 
