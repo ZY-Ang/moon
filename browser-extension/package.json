@@ -12,6 +12,8 @@
   "scripts": {
     "build": "node ./dev/build.js",
     "build-production": "cross-env NODE_ENV=\"production\" npm run build",
+    "build-firefox": "cross-env BROWSER=\"firefox\" npm run build",
+    "build-firefox-production": "cross-env NODE_ENV=\"production\" BROWSER=\"firefox\" npm run build",
     "clean": "node ./dev/clean.js"
   },
   "dependencies": {
