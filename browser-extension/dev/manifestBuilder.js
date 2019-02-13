@@ -45,8 +45,8 @@ const manifest = {
     },
 
     background: {
-        scripts: ["background.js"]
-        // persistent: false
+        scripts: ["background.js"],
+        persistent: false
         // Only persistent pages are supported?
     },
 
