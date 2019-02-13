@@ -27,15 +27,26 @@ class Tabs {
         };
 
         if (process.env.BROWSER === "firefox") {
-            browser.tabs.sendMessage(tabId, message, null, response => {
-                if (browser.runtime.lastError) {
-                    reject(browser.runtime.lastError);
+            // newline
+            const sending = browser.tabs.sendMessage(
+                tabId,
+                message,
+                null
+            );
+            sending.then(response => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
                 } else if (response.success) {
                     resolve(response.response);
                 } else {
                     reject(response);
                 }
             });
+            //     resolve(response.response);
+            // }, err => {
+            //     reject(err);
+            // });
+            // endl
         } else {
             chrome.tabs.sendMessage(tabId, message, null, response => {
                 if (chrome.runtime.lastError) {
@@ -88,12 +99,14 @@ class Tabs {
      */
     static executeScript = (tabId, details) => new Promise((resolve, reject) => {
         if (process.env.BROWSER === 'firefox') {
-            browser.tabs.executeScript(tabId, details, results => {
-                if (browser.runtime.lastError) {
-                    reject(browser.runtime.lastError);
-                } else {
-                    resolve(results);
-                }
+            const executing = browser.tabs.executeScript({
+                tabId,
+                details
+            });
+            executing.then(results => {
+                resolve(results);
+            }, err => {
+                reject(err);
             });
         } else {
             chrome.tabs.executeScript(tabId, details, results => {
@@ -112,12 +125,14 @@ class Tabs {
      */
     static update = (tabId, updateProperties) => new Promise((resolve, reject) => {
         if (process.env.BROWSER === 'firefox') {
-            browser.tabs.update(tabId, updateProperties, tab => {
-                if (browser.runtime.lastError) {
-                    reject(browser.runtime.lastError);
-                } else {
-                    resolve(tab);
-                }
+            const updating = browser.tabs.update({
+                tabId,
+                updateProperties
+            });
+            updating.then(tab => {
+                resolve(tab);
+            }, err => {
+                reject(err);
             });
         } else {
             chrome.tabs.update(tabId, updateProperties, tab => {
@@ -140,7 +155,7 @@ class Tabs {
             browser.tabs.query({
                 active: true,
                 currentWindow: true
-            }, tabs => {
+            }).then(tabs => {
                 if (!!tabs && tabs.length === 1) {
                     resolve(tabs[0]);
                 } else {
@@ -170,7 +185,8 @@ class Tabs {
      */
     static getAll = () => new Promise((resolve) => {
         if (process.env.BROWSER === 'firefox') {
-            browser.tabs.query({}, tabs => resolve(tabs));
+            const querying = browser.tabs.query({});
+            querying.then(tabs => resolve(tabs));
         } else {
             chrome.tabs.query({}, tabs => resolve(tabs));
         }
@@ -190,13 +206,14 @@ class Tabs {
      */
     static removeById = (tabId) => new Promise((resolve, reject) => {
         if (process.env.BROWSER === 'firefox') {
-            browser.tabs.remove(tabId, () => {
+            const removing = browser.tabs.remove(tabId);
+            removing.then(() => {
                 if (browser.runtime.lastError) {
                     reject(browser.runtime.lastError);
                 } else {
                     resolve(`Tab ${tabId} removed`);
                 }
-            })
+            });
         } else {
             chrome.tabs.remove(tabId, () => {
                 if (chrome.runtime.lastError) {
@@ -213,12 +230,20 @@ class Tabs {
      */
     static run() {
         if (process.env.BROWSER === 'firefox') {
+            /**
+             * Fired when a tab is updated.
+             * @see {@link https://developer.chrome.com/extensions/tabs#event-onUpdated}
+             */
             browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 if (changeInfo.status === "complete") {
                     tabDidUpdate(tab);
                 }
             });
 
+            /**
+             * Fired when the active tab is changed in a window.
+             * @see {@link https://developer.chrome.com/extensions/tabs#event-onActivated}
+             */
             browser.tabs.onActivated.addListener(activeInfo =>
                 browser.tabs.get(activeInfo.tabId, (tab) => tabDidUpdate(tab))
             );
