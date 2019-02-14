@@ -34,8 +34,8 @@ class Tabs {
                 null
             );
             sending.then(response => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
+                if (browser.runtime.lastError) {
+                    reject(browser.runtime.lastError);
                 } else if (response.success) {
                     resolve(response.response);
                 } else {
