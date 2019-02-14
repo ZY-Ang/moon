@@ -28,6 +28,7 @@ import {faCaretUp} from '@fortawesome/free-solid-svg-icons/faCaretUp';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons/faChevronRight';
 import {faComments} from "@fortawesome/free-solid-svg-icons/faComments";
+import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
 
 // Regular
 // import {} from '@fortawesome/free-regular-svg-icons';
@@ -51,7 +52,9 @@ library.add(
     faWrench,
     faCaretUp,
     faChevronDown,
-    faChevronRight
+    faChevronRight,
+    faTimesCircle
+
 );
 
 export default FaIcon;
