@@ -6,21 +6,17 @@ import React from "react";
 import "./Notifications.css";
 import AppMixpanel from "../../services/AppMixpanel";
 import {connect} from "react-redux";
-
-
-
+import FaIcon from "../misc/fontawesome/FaIcon";
 
 class Notification extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             isVerified: true,
-            isCloseable: false,
+            isCloseable: true,
             isDisplay: true
         };
     }
-
-
 
     componentDidMount(prevProps, prevState) {
                 const authUserInfo = this.props.authUser;
@@ -30,18 +26,13 @@ class Notification extends React.Component {
                             isVerified: verifiedUser
                         }))
                     }
-
     }
-
 
     onBtnClick = () => {
         this.setState( () => ({
             isDisplay: false
         }))
-
     };
-
-
 
     render() {
 
@@ -62,7 +53,7 @@ class Notification extends React.Component {
                                     AppMixpanel.track('button_click_close');
                                     this.onBtnClick();
                                 }}
-                            > x
+                            > <FaIcon icon="times-circle"/>
                             </div>
                         }
                     </div>
@@ -74,13 +65,10 @@ class Notification extends React.Component {
         </div>
 
             }
-
             </div>
         )
     }
 }
-
-
 
 const mapStateToProps = (state) => ({
     authUser: state.sessionState.authUser
