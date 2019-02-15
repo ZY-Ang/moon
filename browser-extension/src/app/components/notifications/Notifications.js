@@ -13,7 +13,7 @@ class Notification extends React.Component {
         super(props);
         this.state = {
             isVerified: true,
-            isCloseable: true,
+            isCloseable: false,
             isDisplay: true
         };
     }
@@ -42,13 +42,13 @@ class Notification extends React.Component {
                 !!this.state.isDisplay &&
                 !this.state.isVerified &&
         <div>
-            <div id="notification-box">
+            <div id="notification-mainflow">
                 <div className="notification-body">
-                    <div className="btn-box">
+                    <div className="notification-btn-container">
                         {
                             !!this.state.isCloseable &&
                             <div
-                                className="btn-close"
+                                className="notification-close-btn"
                                 onClick={() => {
                                     AppMixpanel.track('button_click_close');
                                     this.onBtnClick();
@@ -58,7 +58,17 @@ class Notification extends React.Component {
                         }
                     </div>
                     <div>
-                        <p>Your email address is not verified</p>
+                        <p>Your email address is not verified, Please click
+                            <a onClick={() =>{
+                                const userEmail = this.props.authUser.email;
+                                const userAddress = userEmail.substr(userEmail.indexOf("@") +1);
+                                window.open(userAddress, '_blank');
+                            }}
+                            >
+                                <span> here </span>
+                            </a>
+                            to verify your email
+                        </p>
                     </div>
                 </div>
             </div>
