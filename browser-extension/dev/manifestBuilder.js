@@ -39,7 +39,6 @@ const manifest = {
     ],
 
     // content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
-
     browser_action: {
         default_title: "Moon"
     },
@@ -55,17 +54,17 @@ const manifest = {
             matches: ["<all_urls>"],
             js: ["app.js"]
         }
-    ],
+    ]
+ };
 
-    // explicitly mark your add-on as compatible with Firefox by adding an applications key to your manifest.json
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "ext@paywithmoon.com"//made up string for loading temporary add-ons
-        }
-    },
-
-    key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAibGrYHLq3cruPQW/vkQxnHeZ+LHcE+UomNUO9QTjjdACnfpt08cBwJ52PwqBflzSre1piBUu4CB//ecW8l5zYUVPLInoGiJSsZJHA2wo2WQ9PVtRw4gJNlBQbE5AiFXTTP0DC57QGIxyfKc1E7B0pi4y3xPueVIRuhRl7cRMVAiNU2OjSKpLuNat/IpG6QTg0P1kS8QMaz9nQM83izi6k4pntisyqUthBUdvzKmP7yhJjZE8FvIozqDHtD/PPsjYA6rt1M5Gzg0a5QYgQ2NLMsKfEAWmYYnaULwtb8jwKzViflIuvnFfsQrcKjq1fqzhLICHkN+3Mb9HSOFwLaSbiwIDAQAB"
-};
+const generateManifest = () => {
+    if (process.env.BROWSER === "chrome") {
+        manifest.key = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAibGrYHLq3cruPQW/vkQxnHeZ+LHcE+UomNUO9QTjjdACnfpt08cBwJ52PwqBflzSre1piBUu4CB//ecW8l5zYUVPLInoGiJSsZJHA2wo2WQ9PVtRw4gJNlBQbE5AiFXTTP0DC57QGIxyfKc1E7B0pi4y3xPueVIRuhRl7cRMVAiNU2OjSKpLuNat/IpG6QTg0P1kS8QMaz9nQM83izi6k4pntisyqUthBUdvzKmP7yhJjZE8FvIozqDHtD/PPsjYA6rt1M5Gzg0a5QYgQ2NLMsKfEAWmYYnaULwtb8jwKzViflIuvnFfsQrcKjq1fqzhLICHkN+3Mb9HSOFwLaSbiwIDAQAB";
+    } else {
+        manifest.browser_specific_settings = {"gecko": { "id": "ext@paywithmoon.com"}}
+    }
+}
 
 // Note: You will need to destroy the compiled version of this module in the build process.
+module.exports = generateManifest();
 module.exports = manifest;
