@@ -2,7 +2,7 @@
  * Copyright (c) 2019 moon
  */
 
-#notification-box{
+#notification-mainflow{
     text-align: center;
     border: 1px solid rgba(0,0,0,0.2);
     margin: 2px;
@@ -11,7 +11,15 @@
     width:98%;
     background-color: #F31431;
 }
-#notification-box p{
+#notification-mainflow p{
+    color:white;
+}
+
+#notification-mainflow a{
+    text-decoration: none;
+}
+
+#notification-mainflow span{
     color:white;
 }
 
@@ -19,12 +27,12 @@
     width:100%;
 }
 
-.btn-box{
+.notification-btn-container{
     display:flex;
     flex-direction: row-reverse;
 }
 
-.btn-close{
+.notification-close-btn{
     height:15px;
     width:15px;
     border-radius:50%;
@@ -34,7 +42,11 @@
     justify-content: center;
 }
 
-.btn-close:hover
-.btn-close:focus {
+.notification-close-btn path{
+    fill:white;
+}
+
+.notification-close-btn:hover
+.notification-close-btn:focus {
     background-color: rgba(220,0,0,0.7);
 }
