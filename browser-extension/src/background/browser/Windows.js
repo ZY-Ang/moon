@@ -69,7 +69,7 @@ class Windows {
                 browser.tabs.query({
                     active: true,
                     currentWindow: true
-                }, tabs => tabDidUpdate(tabs[0]))
+                }).then(tabs => tabDidUpdate(tabs[0]))
             );
         } else {
             chrome.windows.onFocusChanged.addListener(() =>
