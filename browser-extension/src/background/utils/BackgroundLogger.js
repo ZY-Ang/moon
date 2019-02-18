@@ -18,7 +18,6 @@ class BackgroundLogger extends Logger {
         this.initialized = false;
         this.sequenceToken = null;
         this.putLogsPromise = Promise.resolve({nextSequenceToken: this.sequenceToken});
-        this.initializeLogStream();
     }
 
     initializeLogStream = () => {
@@ -32,7 +31,7 @@ class BackgroundLogger extends Logger {
         this.logStreamName = `${moment().format("YYYY-MM-DD")}/${uuid()}`;
 
         // 1. Create Log Group (throws error if exist)
-        this.cloudwatchLogClient.createLogGroup({
+        return this.cloudwatchLogClient.createLogGroup({
             logGroupName: this.logGroupName
         })
             .promise()
@@ -81,7 +80,9 @@ class BackgroundLogger extends Logger {
 
     putLogEvents = () => {
         if (!this.initialized) {
-            this.initializeLogStream();
+            this.initializeLogStream()
+                .then(() => this.putLogEvents)
+                .catch(err => console.error("BackgroundLogger Initialization failure: ", err));
 
         } else {
             // Try again later
