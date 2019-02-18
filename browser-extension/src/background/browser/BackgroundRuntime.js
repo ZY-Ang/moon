@@ -18,53 +18,134 @@ class BackgroundRuntime extends Runtime {
      * Initializer script to be "run" when the script starts
      */
     static run() {
-        /**
-         * Fired when the background script receives a new message.
-         *
-         * Note: Code looks the same for both content and background scripts.
-         *
-         * @see {@link https://developer.chrome.com/extensions/runtime#event-onMessage}
-         */
-        chrome.runtime.onMessage.addListener(messageCenter);
+        if (process.env.BROWSER === "firefox") {
+            /**
+             * Fired when the background script receives a new message.
+             *
+             * Note: Code looks the same for both content and background scripts.
+             *
+             * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage}
+             */
+            browser.runtime.onMessage.addListener(messageCenter);
 
-        /**
-         * Fired when the extension is installed, updated, or when chrome is updated.
-         *
-         * @see {@link https://developer.chrome.com/apps/runtime#event-onInstalled}
-         */
-        chrome.runtime.onInstalled.addListener(details => {
-            const version = Runtime.getManifest().version;
-            if (details.reason === 'install') {
-                backgroundLogger.log(`Moon extension v${version} has been installed!`);
-                // First time installing
-                chrome.tabs.create({url: URL_EXTENSION_INSTALLED}, (tab) => {
-                    // TODO: Referral code
-                });
+            /**
+             * Fired when the extension is installed, updated, or when chrome is updated.
+             *
+             * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onInstalled}
+             * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/create}
+             */
+            browser.runtime.onInstalled.addListener(details => {
+                const version = Runtime.getManifest().version;
+                if (details.reason === 'install') {
+                    backgroundLogger.log(`Moon extension v${version} has been installed!`);
+                    // First time installing
+                    browser.tabs.create({url: URL_EXTENSION_INSTALLED}, (tab) => {
+                        // TODO: Referral code
+                    });
 
-            } else if (details.reason === 'update') {
-                backgroundLogger.log(`Moon extension has been updated to v${version}!`);
+                } else if (details.reason === 'update') {
+                    backgroundLogger.log(`Moon extension has been updated to v${version}!`);
 
-            }
-            // Update of the currently installed extension
-            //  Reboot all content scripts in all tabs in all windows
-            const manifest = BackgroundRuntime.getManifest();
-            const contentScripts = manifest.content_scripts[0].js;
-            Tabs.getAll()
-                .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url) && tab.status === 'complete')))
-                .then(tabs => tabs.forEach(tab =>
-                    contentScripts.forEach(file =>
-                        Tabs.executeScript(tab.id, {file})
-                            .catch(() => backgroundLogger.log(`Skipping ${tab.id} with ${tab.url}`))
-                    )
-                ));
-        });
+                }
+                if (process.env.NODE_ENV === "production") {
+                    console.log(
+                        `%cSTOP!
+%cThis is a browser feature intended for developers. If someone told you to copy and paste something here to enable a feature or hack, it is a scam and will give them access to your Moon account, and more importantly, your wallet information!!!
+%cTo learn more, visit https://en.wikipedia.org/wiki/Self-XSS
 
-        /**
-         * Set the URL to be opened when the extension is uninstalled
-         *
-         * @see {@link https://developer.chrome.com/extensions/runtime#method-setUninstallURL}
-         */
-        chrome.runtime.setUninstallURL(URL_EXTENSION_UNINSTALLED);
+
+
+%cIf you're doing this on purpose, why not join our team instead? Send us your CV at careers@paywithmoon.com`,
+                        "font-size:500%;font-weight:bold;color:red;",
+                        "font-size:200%;color:red;",
+                        "color:red;",
+                        "font-size:138%;color:green;"
+                    );
+                }
+                // Update of the currently installed extension
+                //  Reboot all content scripts in all tabs in all windows
+                const manifest = BackgroundRuntime.getManifest();
+                const contentScripts = manifest.content_scripts[0].js;
+                Tabs.getAll()
+                    .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url) && tab.status === 'complete')))
+                    .then(tabs => tabs.forEach(tab =>
+                        contentScripts.forEach(file =>
+                            Tabs.executeScript(tab.id, {file})
+                                .catch(() => backgroundLogger.log(`Skipping ${tab.id} with ${tab.url}`))
+                        )
+                    ));
+            });
+
+            /**
+             * Set the URL to be opened when the extension is uninstalled
+             *
+             * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/setUninstallURL}
+             */
+            browser.runtime.setUninstallURL(URL_EXTENSION_UNINSTALLED);
+        } else if (process.env.BROWSER === "chrome") {
+            /**
+             * Fired when the background script receives a new message.
+             *
+             * Note: Code looks the same for both content and background scripts.
+             *
+             * @see {@link https://developer.chrome.com/extensions/runtime#event-onMessage}
+             */
+            chrome.runtime.onMessage.addListener(messageCenter);
+
+            /**
+             * Fired when the extension is installed, updated, or when chrome is updated.
+             *
+             * @see {@link https://developer.chrome.com/apps/runtime#event-onInstalled}
+             */
+            chrome.runtime.onInstalled.addListener(details => {
+                const version = Runtime.getManifest().version;
+                if (details.reason === 'install') {
+                    backgroundLogger.log(`Moon extension v${version} has been installed!`);
+                    // First time installing
+                    chrome.tabs.create({url: URL_EXTENSION_INSTALLED}, (tab) => {
+                        // TODO: Referral code
+                    });
+
+                } else if (details.reason === 'update') {
+                    backgroundLogger.log(`Moon extension has been updated to v${version}!`);
+
+                }
+                if (process.env.NODE_ENV === "production") {
+                    console.log(
+                        `%cSTOP!
+%cThis is a browser feature intended for developers. If someone told you to copy and paste something here to enable a feature or hack, it is a scam and will give them access to your Moon account, and more importantly, your wallet information!!!
+%cTo learn more, visit https://en.wikipedia.org/wiki/Self-XSS
+
+
+
+%cIf you're doing this on purpose, why not join our team instead? Send us your CV at careers@paywithmoon.com`,
+                        "font-size:500%;font-weight:bold;color:red;",
+                        "font-size:200%;color:red;",
+                        "color:red;",
+                        "font-size:138%;color:green;"
+                    );
+                }
+                // Update of the currently installed extension
+                //  Reboot all content scripts in all tabs in all windows
+                const manifest = BackgroundRuntime.getManifest();
+                const contentScripts = manifest.content_scripts[0].js;
+                Tabs.getAll()
+                    .then(tabs => tabs.filter(tab => (!!tab && !!tab.id && !!tab.url && isValidWebUrl(tab.url) && tab.status === 'complete')))
+                    .then(tabs => tabs.forEach(tab =>
+                        contentScripts.forEach(file =>
+                            Tabs.executeScript(tab.id, {file})
+                                .catch(() => backgroundLogger.log(`Skipping ${tab.id} with ${tab.url}`))
+                        )
+                    ));
+            });
+
+            /**
+             * Set the URL to be opened when the extension is uninstalled
+             *
+             * @see {@link https://developer.chrome.com/extensions/runtime#method-setUninstallURL}
+             */
+            chrome.runtime.setUninstallURL(URL_EXTENSION_UNINSTALLED);
+        }
     }
 }
 
