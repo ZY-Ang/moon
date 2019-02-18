@@ -62,6 +62,9 @@ class UnsupportedScreen extends React.Component {
                             href="http://www.amazon.com"
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => {
+                                AppMixpanel.track('button_click_unsupported_screen_amazon');
+                            }}
                         >
                             <AmazonSiteLogo/>
                             <h3 className="ml-auto my-0">Amazon.com</h3>
@@ -81,7 +84,11 @@ class UnsupportedScreen extends React.Component {
                             {
                                 this.state.isRequested
                                     ? <button className="btn btn-primary w-100" disabled>We're working on {window.location.host}!</button>
-                                    : <button className="btn btn-primary-outline w-100" onClick={this.requestSite}>I want to shop with crypto at {window.location.host}!</button>
+                                    : <button className="btn btn-primary-outline w-100" onClick={() => {
+                                        AppMixpanel.track('button_click_unsupported_screen_i_want_to_shop_here',
+                                            {'Host': window.location.host});
+                                        this.requestSite();
+                                    }}>I want to shop with crypto at {window.location.host}!</button>
                             }
                         </div>
                     </div>
