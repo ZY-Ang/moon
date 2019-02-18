@@ -98,6 +98,14 @@ class AuthUser {
         }
     };
 
+    static getName = () => {
+        try {
+            return AuthUser.getInstance().getIdToken().getName();
+        } catch (error) {
+            return null;
+        }
+    };
+
     /**
      * Gets the current auth user and refreshes the session if necessary.
      */

@@ -61,6 +61,13 @@ class JwtToken {
     }
 
     /**
+     * @returns {string} the token's name (name member).
+     */
+    getName() {
+        return this.payload.name;
+    }
+
+    /**
      * @returns {int} the token's expiration (exp member).
      */
     getExpiration() {

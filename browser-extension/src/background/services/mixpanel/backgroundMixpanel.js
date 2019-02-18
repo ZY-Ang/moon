@@ -97,6 +97,9 @@ class BackgroundMixpanel {
         this.people.set({
             '$email': AuthUser.getEmail()
         }).catch();
+        this.people.set({
+            '$first_name': AuthUser.getName()
+        }).catch();
         this.people.set_once({
             'First Extension Open': new Date()
         }).catch();
