@@ -23,7 +23,7 @@ const Storage = {
                 }).catch(err => {
                     reject(err);
                 })
-            } else {
+            } else if (process.env.BROWSER === "chrome") {
                     chrome.storage.local.get(keys, obj => {
                         if (chrome.runtime.lastError) {
                             reject(chrome.runtime.lastError);
