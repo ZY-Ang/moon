@@ -26,15 +26,33 @@ class Tabs {
             message: request
         };
 
-        chrome.tabs.sendMessage(tabId, message, null, response => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else if (response.success) {
-                resolve(response.response);
-            } else {
-                reject(response);
-            }
-        });
+        if (process.env.BROWSER === "firefox") {
+            // newline
+            const sending = browser.tabs.sendMessage(
+                tabId,
+                message,
+                null
+            );
+            sending.then(response => {
+                if (browser.runtime.lastError) {
+                    reject(browser.runtime.lastError);
+                } else if (response.success) {
+                    resolve(response.response);
+                } else {
+                    reject(response);
+                }
+            });
+        } else {
+            chrome.tabs.sendMessage(tabId, message, null, response => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else if (response.success) {
+                    resolve(response.response);
+                } else {
+                    reject(response);
+                }
+            });
+        }
     });
 
     /**
@@ -75,13 +93,25 @@ class Tabs {
      * @see {@link https://developer.chrome.com/extensions/tabs#method-executeScript}
      */
     static executeScript = (tabId, details) => new Promise((resolve, reject) => {
-        chrome.tabs.executeScript(tabId, details, results => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
+        if (process.env.BROWSER === 'firefox') {
+            const executing = browser.tabs.executeScript({
+                tabId,
+                details
+            });
+            executing.then(results => {
                 resolve(results);
-            }
-        });
+            }).catch(err => {
+                reject(err);
+            });
+        } else if (process.env.BROWSER === "chrome") {
+            chrome.tabs.executeScript(tabId, details, results => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(results);
+                }
+            });
+        }
     });
 
     /**
@@ -89,13 +119,25 @@ class Tabs {
      * with new {@param updateProperties}
      */
     static update = (tabId, updateProperties) => new Promise((resolve, reject) => {
-        chrome.tabs.update(tabId, updateProperties, tab => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
+        if (process.env.BROWSER === 'firefox') {
+            const updating = browser.tabs.update({
+                tabId,
+                updateProperties
+            });
+            updating.then(tab => {
                 resolve(tab);
-            }
-        });
+            }).catch(err => {
+                reject(err);
+            });
+        } else if (process.env.BROWSER === "chrome"){
+            chrome.tabs.update(tabId, updateProperties, tab => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(tab);
+                }
+            });
+        }
     });
 
     /**
@@ -104,17 +146,31 @@ class Tabs {
      * @see {@link https://developer.chrome.com/extensions/tabs#method-query}
      */
     static getActive = () => new Promise(resolve => {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, tabs => {
-            if (!!tabs && tabs.length === 1) {
-                resolve(tabs[0]);
-            } else {
-                backgroundLogger.log("Unable to get active tab");
-                resolve(null);
-            }
-        });
+        if (process.env.BROWSER === 'firefox') {
+            browser.tabs.query({
+                active: true,
+                currentWindow: true
+            }).then(tabs => {
+                if (!!tabs && tabs.length === 1) {
+                    resolve(tabs[0]);
+                } else {
+                    backgroundLogger.log("Unable to get active tab");
+                    resolve(null);
+                }
+            });
+        } else if (process.env.BROWSER === "chrome"){
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, tabs => {
+                if (!!tabs && tabs.length === 1) {
+                    resolve(tabs[0]);
+                } else {
+                    backgroundLogger.log("Unable to get active tab");
+                    resolve(null);
+                }
+            });
+        }
     });
 
     /**
@@ -123,7 +179,12 @@ class Tabs {
      * @see {@link https://developer.chrome.com/extensions/tabs#method-query}
      */
     static getAll = () => new Promise((resolve) => {
-        chrome.tabs.query({}, tabs => resolve(tabs));
+        if (process.env.BROWSER === 'firefox') {
+            const querying = browser.tabs.query({});
+            querying.then(tabs => resolve(tabs));
+        } else if (process.env.BROWSER === "chrome"){
+            chrome.tabs.query({}, tabs => resolve(tabs));
+        }
     });
 
     /**
@@ -139,36 +200,67 @@ class Tabs {
      * @see {@link https://developer.chrome.com/extensions/tabs#method-remove}
      */
     static removeById = (tabId) => new Promise((resolve, reject) => {
-        chrome.tabs.remove(tabId, () => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(`Tab ${tabId} removed`);
-            }
-        })
+        if (process.env.BROWSER === 'firefox') {
+            const removing = browser.tabs.remove(tabId);
+            removing.then(() => {
+                if (browser.runtime.lastError) {
+                    reject(browser.runtime.lastError);
+                } else {
+                    resolve(`Tab ${tabId} removed`);
+                }
+            });
+        } else {
+            chrome.tabs.remove(tabId, () => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError);
+                } else {
+                    resolve(`Tab ${tabId} removed`);
+                }
+            })
+        }
     });
 
     /**
      * Initializer script to be "run" when the script starts
      */
     static run() {
-        /**
-         * Fired when a tab is updated.
-         * @see {@link https://developer.chrome.com/extensions/tabs#event-onUpdated}
-         */
-        chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-            if (changeInfo.status === "complete") {
-                tabDidUpdate(tab);
-            }
-        });
+        if (process.env.BROWSER === 'firefox') {
+            /**
+             * Fired when a tab is updated.
+             * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onUpdated}
+             */
+            browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+                if (changeInfo.status === "complete") {
+                    tabDidUpdate(tab);
+                }
+            });
 
-        /**
-         * Fired when the active tab is changed in a window.
-         * @see {@link https://developer.chrome.com/extensions/tabs#event-onActivated}
-         */
-        chrome.tabs.onActivated.addListener(activeInfo =>
-            chrome.tabs.get(activeInfo.tabId, (tab) => tabDidUpdate(tab))
-        );
+            /**
+             * Fired when the active tab is changed in a window.
+             * @see {@link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onActivated}
+             */
+            browser.tabs.onActivated.addListener(activeInfo =>
+                browser.tabs.get(activeInfo.tabId, (tab) => tabDidUpdate(tab))
+            );
+        } else if (process.env.BROWSER === "chrome"){
+            /**
+             * Fired when a tab is updated.
+             * @see {@link https://developer.chrome.com/extensions/tabs#event-onUpdated}
+             */
+            chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+                if (changeInfo.status === "complete") {
+                    tabDidUpdate(tab);
+                }
+            });
+
+            /**
+             * Fired when the active tab is changed in a window.
+             * @see {@link https://developer.chrome.com/extensions/tabs#event-onActivated}
+             */
+            chrome.tabs.onActivated.addListener(activeInfo =>
+                chrome.tabs.get(activeInfo.tabId, (tab) => tabDidUpdate(tab))
+            );
+        }
     }
 }
 
