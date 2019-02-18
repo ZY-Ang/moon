@@ -13,15 +13,25 @@ const Storage = {
          * from the browser's storage.local api
          *
          * @see {@link https://developer.chrome.com/extensions/storage#type-StorageArea}
+         * @see {Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/get}
          */
         get: (keys) => new Promise((resolve, reject) => {
-            chrome.storage.local.get(keys, obj => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
-                } else {
+            if (process.env.BROWSER === "firefox") {
+                const gettingItem = browser.storage.local.get(keys);
+                gettingItem.then(obj => {
                     resolve(obj);
+                }).catch(err => {
+                    reject(err);
+                })
+            } else {
+                    chrome.storage.local.get(keys, obj => {
+                        if (chrome.runtime.lastError) {
+                            reject(chrome.runtime.lastError);
+                        } else {
+                            resolve(obj);
+                        }
+                    });
                 }
-            });
         }),
 
         /**
@@ -30,15 +40,25 @@ const Storage = {
          * storage.local api
          *
          * @see {@link https://developer.chrome.com/extensions/storage#type-StorageArea}
+         * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/set}
          */
         set: (obj) => new Promise((resolve, reject) => {
-            chrome.storage.local.set(obj, () => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
+                if (process.env.BROWSER === "firefox") {
+                    const settingItem = browser.storage.local.set(obj);
+                    settingItem.then(() => {
+                        resolve(obj);
+                    }).catch(err => {
+                        reject(err);
+                    });
                 } else {
-                    resolve(obj);
+                    chrome.storage.local.set(obj, () => {
+                        if (chrome.runtime.lastError) {
+                            reject(chrome.runtime.lastError);
+                        } else {
+                            resolve(obj);
+                        }
+                    });
                 }
-            });
         }),
 
         /**
@@ -47,15 +67,25 @@ const Storage = {
          * storage.local api
          *
          * @see {@link https://developer.chrome.com/extensions/storage#type-StorageArea}
+         * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/remove}
          */
         remove: (keys) => new Promise((resolve, reject) => {
-            chrome.storage.local.remove(keys, () => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
+                if (process.env.BROWSER === "firefox") {
+                    const removingItem = browser.storage.local.remove(keys);
+                    removingItem.then(() => {
+                        resolve(`Removed ${JSON.stringify(keys)} from storage.local successfully`);
+                    }).catch(err => {
+                        reject(err);
+                    });
                 } else {
-                    resolve(`Removed ${JSON.stringify(keys)} from storage.local successfully`);
+                    chrome.storage.local.remove(keys, () => {
+                        if (chrome.runtime.lastError) {
+                            reject(chrome.runtime.lastError);
+                        } else {
+                            resolve(`Removed ${JSON.stringify(keys)} from storage.local successfully`);
+                        }
+                    });
                 }
-            });
         }),
 
         /**
@@ -63,15 +93,25 @@ const Storage = {
          * storage.local api
          *
          * @see {@link https://developer.chrome.com/extensions/storage#type-StorageArea}
+         * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/clear}
          */
         clear: () => new Promise((resolve, reject) => {
-            chrome.storage.local.clear(() => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError);
-                } else {
+            if (process.env.BROWSER === "firefox") {
+                const clearing = browser.storage.local.clear();
+                clearing.then(() => {
                     resolve("Storage.local cleared.");
-                }
-            });
+                }).catch(err => {
+                    reject(err);
+                });
+            } else {
+                chrome.storage.local.clear(() => {
+                    if (chrome.runtime.lastError) {
+                        reject(chrome.runtime.lastError);
+                    } else {
+                        resolve("Storage.local cleared.");
+                    }
+                });
+            }
         })
     }
 };
