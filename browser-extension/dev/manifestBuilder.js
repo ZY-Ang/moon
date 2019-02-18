@@ -8,7 +8,7 @@ import {description, homepage, version} from "../package.json";
 const manifest = {
     manifest_version: 2,
 
-    name: "Moon",
+    name: "Moon: Shop Amazon with Bitcoin and Other Crypto",
     short_name: "Moon",
     description: description,
     version: version,
