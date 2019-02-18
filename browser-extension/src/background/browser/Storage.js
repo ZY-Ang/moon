@@ -50,7 +50,7 @@ const Storage = {
                     }).catch(err => {
                         reject(err);
                     });
-                } else {
+                } else if (process.env.BROWSER === "chrome") {
                     chrome.storage.local.set(obj, () => {
                         if (chrome.runtime.lastError) {
                             reject(chrome.runtime.lastError);
@@ -77,7 +77,7 @@ const Storage = {
                     }).catch(err => {
                         reject(err);
                     });
-                } else {
+                } else if (process.env.BROWSER === "chrome") {
                     chrome.storage.local.remove(keys, () => {
                         if (chrome.runtime.lastError) {
                             reject(chrome.runtime.lastError);
@@ -103,7 +103,7 @@ const Storage = {
                 }).catch(err => {
                     reject(err);
                 });
-            } else {
+            } else if (process.env.BROWSER === "chrome") {
                 chrome.storage.local.clear(() => {
                     if (chrome.runtime.lastError) {
                         reject(chrome.runtime.lastError);
