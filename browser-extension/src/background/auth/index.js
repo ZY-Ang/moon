@@ -107,6 +107,7 @@ const getOAuthParamsForType = (type) => {
  * provider {@param type}
  */
 const getOAuthUrlForType = async (type) => {
+    backgroundLogger.log("1");
     const oauthMap = {
         [TYPE_STANDARD_SIGN_IN]: true,
         [TYPE_STANDARD_SIGN_UP]: true,
@@ -114,9 +115,12 @@ const getOAuthUrlForType = async (type) => {
         [TYPE_FACEBOOK]: true,
         [TYPE_GOOGLE]: true
     };
+    backgroundLogger.log("2");
     if (oauthMap[type]) {
+        backgroundLogger.log("3i");
         return `${URL_OAUTH_SERVER}authorize?${stringify(getOAuthParamsForType(type))}`;
     } else {
+        backgroundLogger.log("3ii");
         throw new Error(`${type} is not a recognized sign in type.`);
     }
 };
@@ -189,7 +193,7 @@ export const doUpdateAuthUserEvent = async (tab) => {
         }
     } catch (error) {
         backgroundLogger.warn("doUpdateAuthUserEvent exception: ", error);
-        Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: null}).then(() => false);
+        Tabs.sendMessageToActive(REQUEST_UPDATE_AUTH_USER, {authUser: {isAuthenticated: false}}).then(() => false);
         throw error;
     }
 };
