@@ -5,6 +5,7 @@
 import logHead from "./utils/logHead";
 import logTail from "./utils/logTail";
 import updatePaymentPayloadRecord from "./services/paymentPayloaders/updatePaymentPayloadRecord";
+import {URL_CLOUDWATCH_HOME} from "./constants/aws/CloudWatchLogs";
 
 const notifyPaymentCompletion = async (event, context) => {
     logHead("notifyPaymentCompletion", event);
@@ -16,10 +17,14 @@ const notifyPaymentCompletion = async (event, context) => {
     const {arguments: args} = event;
 
     const {id: paymentPayloadId, notifyPaymentCompletionPayloadInput} = args.input;
-    // TODO: Create direct link to notifyPaymentCompletionLogURL via URL parameters in the AWS console to make debugging life easier
+    const notifyPaymentCompletionLogEventViewerURL = URL_CLOUDWATCH_HOME +
+        "?region=" + process.env.AWS_REGION + "#logEventViewer;" +
+        "group=" + notifyPaymentCompletionLogGroupName + ";" +
+        "stream=" + notifyPaymentCompletionLogStreamName;
     await updatePaymentPayloadRecord(paymentPayloadId, Object.assign({
         notifyPaymentCompletionLogGroupName,
-        notifyPaymentCompletionLogStreamName
+        notifyPaymentCompletionLogStreamName,
+        notifyPaymentCompletionLogEventViewerURL
     }, notifyPaymentCompletionPayloadInput));
 
     const paymentCompletionPayload = {
