@@ -176,6 +176,9 @@ const build = async () => {
         if (!!version) {
             PATH_ZIP_EXIT += `.v${version}`;
         }
+        if (!!shell.env.BROWSER) {
+            PATH_ZIP_EXIT += '.${shell.env.BROWSER}';
+        }
         if (!!shell.env.NODE_ENV) {
             PATH_ZIP_EXIT += `.${shell.env.NODE_ENV}`;
         }
