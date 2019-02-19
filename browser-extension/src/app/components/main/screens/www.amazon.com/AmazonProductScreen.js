@@ -31,6 +31,7 @@ class AmazonProductScreen extends React.Component {
         super(props);
         this.state = {
             initialized: false,
+            isRestrictedItem: false,
             title: null,
             imageURL: null,
             imageAlt: null,
@@ -73,7 +74,9 @@ class AmazonProductScreen extends React.Component {
         const productTitleElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_TITLE);
         const productImageElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_IMAGE);
         const productPriceElements = document.querySelectorAll(QUERY_SELECTOR_PRODUCT_PRICE);
+        const isRestrictedItem = isProductRestrictedItem();
         this.setState(() => ({
+            isRestrictedItem,
             title: productTitleElements && productTitleElements[0] && productTitleElements[0].innerText,
             imageURL: productImageElements && productImageElements[0] && productImageElements[0].src,
             imageAlt: productImageElements && productImageElements[0] && productImageElements[0].alt,
@@ -113,7 +116,7 @@ class AmazonProductScreen extends React.Component {
         const {authUser} = this.props;
         const authUserHasWallets = this.authUserHasWallets();
         const selectedExchangeRateWallets = (authUserHasWallets && selectedExchangeRate && authUser.wallets.filter(({currency}) => (currency === selectedExchangeRate.quote))) || [];
-        const restrictedItem = isProductRestrictedItem();
+        const {isRestrictedItem} = this.state;
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
@@ -259,7 +262,7 @@ class AmazonProductScreen extends React.Component {
                     </div>
                 }
                 {
-                    restrictedItem &&
+                    isRestrictedItem &&
                     <div className="text-center mt-2">
                         <h3 className="text-error mb-0">Whoops!</h3>
                         <p className="text-error mb-0">
