@@ -9,6 +9,7 @@ import {
     ACTION_SET_APP_MODAL_ERROR_STATE,
     SCREEN_HELP_TAWK
 } from "../../../../redux/reducers/constants";
+import {copyToClipboard} from "../../../../utils/dom";
 
 const ErrorBody = ({isActive, text, onSetAppModalErrorState, onPushScreen}) => !!isActive && !!onSetAppModalErrorState && !!onPushScreen ? (
     <div className="app-modal">
@@ -20,8 +21,8 @@ const ErrorBody = ({isActive, text, onSetAppModalErrorState, onPushScreen}) => !
                 <span style={{position: 'absolute', height: 5, width: 47, backgroundColor: 'rgb(217, 83, 79)', display: 'block', top: 37, borderRadius: 2, transform: 'rotate(-45deg)', right: 16}}/>
             </span>
         </div>
-        <div className="text-center" style={{padding:'0 30px'}}>
-            <p>{text}</p>
+        <div className="text-center" style={{padding:'0 30px', maxHeight: 160}}>
+            <p className="app-modal-text" onClick={() => copyToClipboard(text)}>{text}</p>
             <p>If the error persists, <a style={{cursor: 'pointer'}} onClick={() => {onSetAppModalErrorState({isActive: false});onPushScreen(SCREEN_HELP_TAWK);}}><u><i>contact us</i></u></a> for support.</p>
         </div>
         <button

@@ -140,7 +140,7 @@ const build = async () => {
 // 2. Build browser-extension
     console.log("Building browser-extension...");
 
-    await  new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         if (shell.exec(`webpack --config webpack.config.js`).code !== 0) {
             reject(new Error('Error: build failed - unable to build browser-extension.'));
         } else {
