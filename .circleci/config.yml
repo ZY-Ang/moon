@@ -267,6 +267,9 @@ jobs:
       - run:
           working_directory: ~/repo/browser-extension
           command: npm run build-production
+      - run:
+          working_directory: ~/repo/browser-extension
+          command: npm run build-firefox
       - store_artifacts:
           path: ~/repo/browser-extension/build/zipped
           destination: browser-extension-build
@@ -356,6 +359,9 @@ jobs:
       - run:
           working_directory: ~/repo/browser-extension
           command: npm run build-production
+      - run:
+          working_directory: ~/repo/browser-extension
+          command: npm run build-firefox
       - store_artifacts:
           path: ~/repo/browser-extension/build/zipped
           destination: browser-extension-build
