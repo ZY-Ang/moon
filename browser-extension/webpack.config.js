@@ -11,7 +11,7 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
  * Rules for the babel-loader for javascript modules.
  *
  * @see {@link https://github.com/babel/babel-loader}
- * and {@file ../../.babelrc} for configuration.
+ * and {@file ../../babel.config.js} for configuration.
  */
 const RULE_BABEL_LOADER = {
     test: /\.js$/,
