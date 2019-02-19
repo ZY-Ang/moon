@@ -10,7 +10,7 @@ const nodeExternals = require("webpack-node-externals");
  * Rules for the babel-loader for javascript modules.
  *
  * @see {@link https://github.com/babel/babel-loader}
- * and {@file ../../.babelrc} for configuration.
+ * and {@file ../../babel.config.js} for configuration.
  */
 const RULE_BABEL_LOADER = {
     test: /\.js$/,

@@ -230,6 +230,9 @@ jobs:
       - install_backend
       - install_backend_lambda
       - run:
+          working_directory: ~/repo/backend/Lambda
+          command: npm test
+      - run:
           working_directory: ~/repo/backend
           command: npm run deploy-lambda-production-force
   backend_deploy_appsync_authenticated_production:
@@ -315,6 +318,9 @@ jobs:
       - configure_aws_staging
       - install_backend
       - install_backend_lambda
+      - run:
+          working_directory: ~/repo/backend/Lambda
+          command: npm test
       - run:
           working_directory: ~/repo/backend
           command: npm run deploy-lambda-production-force
@@ -415,6 +421,9 @@ jobs:
       - configure_aws_development
       - install_backend
       - install_backend_lambda
+      - run:
+          working_directory: ~/repo/backend/Lambda
+          command: npm test
       - run:
           working_directory: ~/repo/backend
           command: npm run deploy-lambda

@@ -34,6 +34,7 @@ export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH"];
 const INITIAL_STATE = {
     isShowingWallets: false,
     selectedQuickViewCurrency: QUICKVIEW_CURRENCIES[0],
+    containsRestrictedItems: false,
     cartAmount: null,
     paymentAmount: null,
     cartCurrency: null,
@@ -100,6 +101,7 @@ class AmazonCheckoutScreen extends React.Component {
     parse = (triesRemaining = 5) => {
         const cartAmountElements = document.querySelectorAll(QUERY_SELECTOR_CART_AMOUNT);
         const cartCurrencyElements = document.querySelectorAll(QUERY_SELECTOR_CART_CURRENCY);
+        const containsRestrictedItems = isCartContainsRestrictedItems();
 
         if (!cartAmountElements || !cartAmountElements.length) {
             this.props.onSetAppModalLoadingState({isActive: true, text: "Loading..."});
@@ -121,6 +123,7 @@ class AmazonCheckoutScreen extends React.Component {
         const cartAmount = this.getCartAmountFromElements(cartAmountElements);
         const paymentAmount = cartAmount ? cartAmount : "0.00";
         return new Promise((resolve) => this.setState(state => ({
+            containsRestrictedItems,
             cartAmount,
             paymentAmount: state.paymentAmount || paymentAmount,
             cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || AMAZON_DEFAULT_CURRENCY
@@ -315,7 +318,7 @@ class AmazonCheckoutScreen extends React.Component {
         const authUserHasWallets = this.authUserHasWallets();
         const isEmailVerified = !!authUser && authUser.email_verified;
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
-        const containsRestrictedItems = isCartContainsRestrictedItems();
+        const {containsRestrictedItems} = this.state;
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
