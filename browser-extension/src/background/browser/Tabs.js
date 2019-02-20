@@ -91,13 +91,15 @@ class Tabs {
      * @return {Promise<array<results>>}
      *
      * @see {@link https://developer.chrome.com/extensions/tabs#method-executeScript}
+     * @see {@Link https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/executeScript}
+     *
      */
     static executeScript = (tabId, details) => new Promise((resolve, reject) => {
         if (process.env.BROWSER === 'firefox') {
-            const executing = browser.tabs.executeScript({
+            const executing = browser.tabs.executeScript(
                 tabId,
                 details
-            });
+            );
             executing.then(results => {
                 resolve(results);
             }).catch(err => {
