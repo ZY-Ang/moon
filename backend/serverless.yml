@@ -132,8 +132,8 @@ custom:
         - 'logs:createLogStream'
         - 'logs:PutLogEvents'
         Resource:
-        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension.${{self:provider.stage}}/*:*']] }
-        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension.${{self:provider.stage}}/*']] }
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension/*:*']] }
+        - { Fn::Join: ["", [ 'arn:aws:logs:${{self:provider.region}}:', { Ref: "AWS::AccountId" }, ':log-group:/browser.extension/*']] }
 
   dynamoDBTables:
     UserSecrets:

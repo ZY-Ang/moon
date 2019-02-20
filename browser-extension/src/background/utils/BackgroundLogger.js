@@ -9,6 +9,11 @@ import AWS from "../config/aws/AWS";
 import {PUBLIC_CREDENTIALS} from "../config/aws/AWS";
 import {replaceErrors} from "../../utils/error";
 import BackgroundRuntime from "../browser/BackgroundRuntime";
+import AuthUser from "../auth/AuthUser";
+
+const INITIAL_STATE = {
+    uuid: "unauthenticated"
+};
 
 class BackgroundLogger extends Logger {
     constructor(...args) {
@@ -16,19 +21,30 @@ class BackgroundLogger extends Logger {
         this.logEvents = [];
         this.cloudwatchLogClient = new AWS.CloudWatchLogs({credentials: PUBLIC_CREDENTIALS});
         this.initialized = false;
+        this.uuid = INITIAL_STATE.uuid;
         this.sequenceToken = null;
         this.putLogsPromise = Promise.resolve({nextSequenceToken: this.sequenceToken});
     }
 
     initializeLogStream = () => {
         // TODO: Add IP-GeoLocation service to Group or Stream
-        this.logGroupName = `/browser.extension.${process.env.NODE_ENV}/v${BackgroundRuntime.getManifest().version}`;
+        this.logGroupName = `/browser.extension/v${BackgroundRuntime.getManifest().version}/${process.env.BROWSER}/${process.env.NODE_ENV}`;
         if (process.env.CIRCLE_BUILD_NUM) {
-            this.logGroupName += `/circleci.build.${process.env.CIRCLE_BUILD_NUM}`;
+            this.logGroupName += `/circleci.${process.env.CIRCLE_BUILD_NUM}`;
         } else {
-            this.logGroupName += "/manual.build";
+            this.logGroupName += "/ci.manual";
         }
-        this.logStreamName = `${moment().format("YYYY-MM-DD")}/${uuid()}`;
+        this.logStreamName = `${moment().format("YYYY-MM-DD")}`;
+        const authUserUuid = AuthUser.getUuid();
+        if (authUserUuid) {
+            this.uuid = authUserUuid;
+            this.logStreamName += `/${AuthUser.getEmail()}/${this.uuid}`;
+        } else {
+            this.uuid = INITIAL_STATE.uuid;
+            this.logStreamName += `/${INITIAL_STATE.uuid}`;
+        }
+
+        this.logStreamName += `/${uuid()}`;
 
         // 1. Create Log Group (throws error if exist)
         return this.cloudwatchLogClient.createLogGroup({
@@ -79,7 +95,7 @@ class BackgroundLogger extends Logger {
     });
 
     putLogEvents = () => {
-        if (!this.initialized) {
+        if (!this.initialized || this.uuid !== AuthUser.getUuid()) {
             this.initializeLogStream()
                 .then(() => this.putLogEvents)
                 .catch(err => console.error("BackgroundLogger Initialization failure: ", err));

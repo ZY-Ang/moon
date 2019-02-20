@@ -27,8 +27,8 @@ test("Payment payload can compile", () => {
         getRandomCard(),
         getRandomCard()
     ];
-    expect(() => generateAmazonPaymentPayload(amazonGiftCards, "development", randomId)).toEqual(expect.anything());
-    expect(() => generateAmazonPaymentPayload(amazonGiftCards, "production", randomId)).toEqual(expect.anything());
+    expect(generateAmazonPaymentPayload(amazonGiftCards, "development", randomId)).toEqual(expect.anything());
+    expect(generateAmazonPaymentPayload(amazonGiftCards, "production", randomId)).toEqual(expect.anything());
 });
 
 test("Payment payload matches snapshot", () => {
