@@ -230,6 +230,9 @@ jobs:
       - install_backend
       - install_backend_lambda
       - run:
+          working_directory: ~/repo/backend/Lambda
+          command: npm test
+      - run:
           working_directory: ~/repo/backend
           command: npm run deploy-lambda-production-force
   backend_deploy_appsync_authenticated_production:
@@ -264,6 +267,9 @@ jobs:
       - run:
           working_directory: ~/repo/browser-extension
           command: npm run build-production
+      - run:
+          working_directory: ~/repo/browser-extension
+          command: npm run build-firefox
       - store_artifacts:
           path: ~/repo/browser-extension/build/zipped
           destination: browser-extension-build
@@ -316,6 +322,9 @@ jobs:
       - install_backend
       - install_backend_lambda
       - run:
+          working_directory: ~/repo/backend/Lambda
+          command: npm test
+      - run:
           working_directory: ~/repo/backend
           command: npm run deploy-lambda-production-force
   backend_deploy_appsync_authenticated_staging:
@@ -350,6 +359,9 @@ jobs:
       - run:
           working_directory: ~/repo/browser-extension
           command: npm run build-production
+      - run:
+          working_directory: ~/repo/browser-extension
+          command: npm run build-firefox
       - store_artifacts:
           path: ~/repo/browser-extension/build/zipped
           destination: browser-extension-build
@@ -415,6 +427,9 @@ jobs:
       - configure_aws_development
       - install_backend
       - install_backend_lambda
+      - run:
+          working_directory: ~/repo/backend/Lambda
+          command: npm test
       - run:
           working_directory: ~/repo/backend
           command: npm run deploy-lambda

@@ -7,6 +7,7 @@ import thumbsUpEmoji from "../../../../../../../assets/emoji/windows10/thumbs-up
 import {connect} from "react-redux";
 import {ACTION_SET_APP_MODAL_SUCCESS_STATE} from "../../../../redux/reducers/constants";
 import AppRuntime from "../../../../browser/AppRuntime";
+import {copyToClipboard} from "../../../../utils/dom";
 
 const SuccessBody = ({isActive, text, onSetAppModalSuccessState}) => !!isActive && !!onSetAppModalSuccessState ? (
     <div className="app-modal">
@@ -20,8 +21,8 @@ const SuccessBody = ({isActive, text, onSetAppModalSuccessState}) => !!isActive 
             <div style={{width: 5, height: 90, backgroundColor: 'rgb(255, 255, 255)', position: 'absolute', left: 28, top: 8, zIndex: 1, transform: 'rotate(-45deg)'}}/>
             <div style={{borderRadius: '0px 120px 120px 0px', position: 'absolute', width: 60, height: 120, background: 'white', transform: 'rotate(-45deg)', top: -11, left: 30, transformOrigin: '0px 60px 0px', animation: 'rotatePlaceholder 4.25s ease-in'}}/>
         </div>
-        <div className="text-center" style={{padding:'0 30px'}}>
-            <p>{text}</p>
+        <div className="text-center" style={{padding:'0 30px', maxHeight: 160}}>
+            <p className="app-modal-text" onClick={() => copyToClipboard(text)}>{text}</p>
         </div>
         <button
             className="btn btn-primary-outline"

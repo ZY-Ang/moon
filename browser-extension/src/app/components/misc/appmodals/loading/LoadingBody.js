@@ -8,7 +8,7 @@ import {connect} from "react-redux";
 const LoadingBody = ({isActive, text}) => !!isActive ? (
     <div className="app-modal">
         <Throbber style={{height: 100}}/>
-        <div className="text-center" style={{padding:'0 30px'}}>
+        <div className="text-center" style={{padding:'0 30px', maxHeight: 160}}>
             <p>{text}</p>
         </div>
     </div>

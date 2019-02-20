@@ -140,7 +140,7 @@ const build = async () => {
 // 2. Build browser-extension
     console.log("Building browser-extension...");
 
-    await  new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
         if (shell.exec(`webpack --config webpack.config.js`).code !== 0) {
             reject(new Error('Error: build failed - unable to build browser-extension.'));
         } else {
@@ -175,6 +175,9 @@ const build = async () => {
         let PATH_ZIP_EXIT = `${DIR_BUILD}zipped/moon-extension`;
         if (!!version) {
             PATH_ZIP_EXIT += `.v${version}`;
+        }
+        if (!!shell.env.BROWSER) {
+            PATH_ZIP_EXIT += `.${shell.env.BROWSER}`;
         }
         if (!!shell.env.NODE_ENV) {
             PATH_ZIP_EXIT += `.${shell.env.NODE_ENV}`;

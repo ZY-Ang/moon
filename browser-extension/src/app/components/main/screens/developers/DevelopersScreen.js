@@ -1,10 +1,15 @@
 import React from "react";
+import {connect} from "react-redux";
 import BackButton from "../../BackButton";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_GET_ID_JWTOKEN, REQUEST_TEST_FUNCTION} from "../../../../../constants/events/appEvents";
 import {copyToClipboard} from "../../../../utils/dom";
 import appLogger from "../../../../utils/AppLogger";
 import AppMixpanel from "../../../../services/AppMixpanel";
+import {
+    ACTION_SET_APP_MODAL_ERROR_STATE,
+    ACTION_SET_APP_MODAL_LOADING_STATE, ACTION_SET_APP_MODAL_SUCCESS_STATE
+} from "../../../../redux/reducers/constants";
 
 class DevelopersScreen extends React.Component {
     constructor(props) {
@@ -61,6 +66,17 @@ class DevelopersScreen extends React.Component {
                 <BackButton/>
                 <h1 style={{textAlign: 'center'}}>Developers</h1>
                 <button className="btn btn-primary my-3" onClick={() => appLogger.error("I am an error")}>Log an error</button>
+                <button
+                    className="btn btn-primary my-3"
+                    onClick={() =>
+                        this.props.onSetAppModalErrorState({
+                            isActive: true,
+                            text: Array(100).fill("").reduce(prev => Math.random().toString().replace('0.', ' ') + prev, "")
+                        })
+                    }
+                >
+                    Open error appModal
+                </button>
                 <div>
                     <input
                         type="text"
@@ -92,4 +108,12 @@ class DevelopersScreen extends React.Component {
     }
 }
 
-export default DevelopersScreen;
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = (dispatch) => ({
+    onSetAppModalLoadingState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_LOADING_STATE}),
+    onSetAppModalSuccessState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_SUCCESS_STATE}),
+    onSetAppModalErrorState: (state) => dispatch({...state, type: ACTION_SET_APP_MODAL_ERROR_STATE})
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DevelopersScreen);

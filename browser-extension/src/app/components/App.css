@@ -62,6 +62,19 @@
     border-bottom-left-radius: 3px;
 }
 
+.app-modal-text {
+    cursor: pointer;
+    max-height: 90px;
+    overflow: hidden;
+    /*This value has to be max-height/no. of lines to be shown*/
+    line-height: 18px;
+}
+
+.app-modal-text:hover {
+    overflow: visible;
+    opacity: .9;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
