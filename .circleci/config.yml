@@ -465,7 +465,7 @@ jobs:
       - run:
           working_directory: ~/repo/browser-extension
           command: npm run build
-      -run:
+      - run:
           working_directory: ~/repo/browser-extension
           command: npm run build-firefox
       - store_artifacts:
