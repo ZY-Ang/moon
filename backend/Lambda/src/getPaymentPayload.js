@@ -11,6 +11,7 @@ import validateWallet from "./services/walletProviders/validateWallet";
 import doTransferToMoon from "./services/walletProviders/doTransferToMoon";
 import isSupportedSite from "./services/paymentPayloaders/isSupportedSite";
 import getAmazonPaymentPayload from "./services/paymentPayloaders/amazon/getAmazonPaymentPayload";
+import {URL_CLOUDWATCH_HOME} from "./constants/aws/CloudWatchLogs";
 
 /**
  * Validate {@param identity} for
@@ -88,7 +89,10 @@ const getPaymentPayload = async (event, context) => {
     // generate a unique id for this transaction
     const {sub} = identity;
     const paymentPayloadId = `${sub}_${createdOn}_${awsRequestId}`;
-    // TODO: Create direct link to getPaymentPayloadLogURL via URL parameters in the AWS console to make debugging life easier
+    const getPaymentPayloadLogEventViewerURL = URL_CLOUDWATCH_HOME +
+        "?region=" + process.env.AWS_REGION + "#logEventViewer;" +
+        "group=" + getPaymentPayloadLogGroupName + ";" +
+        "stream=" + getPaymentPayloadLogStreamName;
     await updatePaymentPayloadRecord(paymentPayloadId, {
         sub,
         email: identity.claims.email,
@@ -96,6 +100,7 @@ const getPaymentPayload = async (event, context) => {
         awsRequestId,
         getPaymentPayloadLogGroupName,
         getPaymentPayloadLogStreamName,
+        getPaymentPayloadLogEventViewerURL,
         baseCurrency: cartInfo.currency,
         baseAmount: cartInfo.amount,
         walletProvider: wallet.provider,
