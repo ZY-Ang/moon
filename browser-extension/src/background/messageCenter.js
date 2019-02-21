@@ -9,7 +9,6 @@ import {
     REQUEST_GET_EXCHANGE_RATES,
     REQUEST_GET_ID_JWTOKEN,
     REQUEST_GET_PAYMENT_PAYLOAD,
-    REQUEST_GET_SITE_INFORMATION,
     REQUEST_GLOBAL_SIGN_OUT,
     REQUEST_LAUNCH_COINBASE_AUTH_FLOW,
     REQUEST_LAUNCH_WEB_AUTH_FLOW, REQUEST_MIXPANEL,
@@ -36,7 +35,7 @@ import {doPasswordReset} from "./auth";
 import Tabs from "./browser/Tabs";
 import {REQUEST_PAYMENT_COMPLETED_OFF_MODAL} from "../constants/events/backgroundEvents";
 import {getExchangeRate, getExchangeRates} from "./api/exchangeRates";
-import {doAddNonCheckoutReport, doAddSiteSupportRequest, getSiteInformation} from "./api/siteInformation";
+import {doAddNonCheckoutReport, doAddSiteSupportRequest} from "./api/siteInformation";
 import Windows from "../background/browser/Windows";
 import backgroundMixpanel from "./services/mixpanel/backgroundMixpanel";
 
@@ -160,15 +159,6 @@ const messageCenter = (request, sender, sendResponse) => {
                     sendFailure(`doNotifyPaymentCompletion(${request}) failed`);
                 });
 
-            return true;
-        },
-        [REQUEST_GET_SITE_INFORMATION]() {
-            getSiteInformation(request.host)
-                .then(({data}) => sendSuccess(data.siteInformation))
-                .catch(err => {
-                    backgroundLogger.error("messageCenter.REQUEST_GET_SITE_INFORMATION exception: ", err);
-                    sendFailure(`getSiteInformation(${request.host}) failed`);
-                });
             return true;
         },
         [REQUEST_MOON_SITE_SUPPORT]() {

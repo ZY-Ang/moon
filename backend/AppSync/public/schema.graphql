@@ -70,36 +70,6 @@ input PageInfo {
 type Query {
     # Returns the latest exchange rate object for multiple pairs of quote currencies and base currencies at once
     exchangeRates(pairs: [ExchangeRateInput]!): [ExchangeRate]
-    # Returns information about the URL of the current site.
-    siteInformation(host: String!): SiteInformation
-}
-
-# Information about a specific site
-type SiteInformation {
-    # The name of the site
-    name: String
-    # The URL of the logo for the site
-    logoURL: AWSURL
-    # Whether the site is supported
-    isSupported: Boolean
-    # The checkout pathname of the site
-    pathnameCheckout: [String]
-    # Query selector for DOMs to observe that will require the re-parsing of data
-    querySelectorParseObserver: String
-    # Query selector for where a moon button should be inserted into
-    querySelectorMoonButton: String
-    # Query selector for cart amount, to be resolved via attribute 'value' or innerText
-    querySelectorCartAmount: String
-    # Query selector for cart currency, to be resolved via attribute 'value'
-    querySelectorCartCurrency: String
-    # Query selector for any arbitrary product's title,  to be resolved via innerText
-    querySelectorProductTitle: String
-    # Query selector for any arbitrary product's product <img/>, with standard html attributes
-    querySelectorProductImage: String
-    # Query selector for any arbitrary add to cart button, to be resolved via click()
-    querySelectorAddToCart: String
-    # Query selector for any arbitrary product's price indicator, to be resolved via innerText
-    querySelectorProductPrice: String
 }
 
 type Subscription {

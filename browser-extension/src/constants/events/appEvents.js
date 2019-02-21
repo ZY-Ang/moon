@@ -58,9 +58,6 @@ export const REQUEST_GET_EXCHANGE_RATES = "MOON_GET_MULTI_EXCHANGE_RATES";
 export const REQUEST_NOTIFY_PAYMENT_PAYLOAD_COMPLETION = "MOON_NOTIFY_PAYMENT_COMPLETION";
 
 // --------------------- Supported Sites ---------------------
-/** Used to get information about the current site by passing in {@code window.location.host} as key */
-export const REQUEST_GET_SITE_INFORMATION = "MOON_GET_SITE_INFORMATION";
-
 /** Used to request for support for the current host that the user is on */
 export const REQUEST_MOON_SITE_SUPPORT = "MOON_I_WANT_TO_SHOP_ON_THIS_SITE";
 
