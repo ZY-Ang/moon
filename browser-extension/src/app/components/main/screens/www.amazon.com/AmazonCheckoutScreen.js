@@ -4,12 +4,13 @@ import moment from "moment";
 import {connect} from "react-redux";
 import AmazonSiteLogo from "./AmazonSiteLogo";
 import SettingsIcon from "../settings/SettingsIcon";
-import {
-    QUERY_SELECTOR_CART_AMOUNT,
-    QUERY_SELECTOR_CART_CURRENCY
-} from "./constants/querySelectors";
+import {QUERY_SELECTOR_CART_AMOUNT, QUERY_SELECTOR_CART_CURRENCY} from "./constants/querySelectors";
 import Decimal from "decimal.js";
-import {REQUEST_OPEN_POPUP} from "../../../../../constants/events/appEvents";
+import {
+    REQUEST_GET_EXCHANGE_RATE,
+    REQUEST_GET_PAYMENT_PAYLOAD,
+    REQUEST_OPEN_POPUP
+} from "../../../../../constants/events/appEvents";
 import {URL_MOON_TAWK_SUPPORT} from "../../../../../constants/url";
 import {
     ACTION_PUSH_SCREEN,
@@ -21,7 +22,6 @@ import {
 } from "../../../../redux/reducers/constants";
 import CurrencyIcon from "../../../misc/currencyicon/CurrencyIcon";
 import AppRuntime from "../../../../browser/AppRuntime";
-import {REQUEST_GET_EXCHANGE_RATE, REQUEST_GET_PAYMENT_PAYLOAD} from "../../../../../constants/events/appEvents";
 import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../utils/exchangerates";
 import FaIcon from "../../../misc/fontawesome/FaIcon";
 import ConfirmSlider from "../../../misc/confirmslider/ConfirmSlider";
