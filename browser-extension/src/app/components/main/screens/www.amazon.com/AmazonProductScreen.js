@@ -11,7 +11,7 @@ import {
 } from "./constants/querySelectors";
 import CurrencyIcon from "../../../misc/currencyicon/CurrencyIcon";
 import {getRequiredAmountInQuote, getWalletBalanceInBase} from "../../../../utils/exchangerates";
-import {QUICKVIEW_CURRENCIES} from "./AmazonCheckoutScreen";
+import {QUICKVIEW_CURRENCIES} from "../../../../constants/currencies";
 import AppRuntime from "../../../../browser/AppRuntime";
 import {REQUEST_GET_EXCHANGE_RATES, REQUEST_OPEN_POPUP} from "../../../../../constants/events/appEvents";
 import moment from "moment";

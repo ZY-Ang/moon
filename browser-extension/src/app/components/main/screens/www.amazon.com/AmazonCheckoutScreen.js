@@ -29,8 +29,8 @@ import {AMAZON_DEFAULT_CURRENCY} from "./AmazonProductScreen";
 import appLogger from "../../../../utils/AppLogger";
 import AppMixpanel from "../../../../services/AppMixpanel";
 import {isCartContainsRestrictedItems} from "./utils/restrictedItems";
+import {QUICKVIEW_CURRENCIES} from "../../../../constants/currencies";
 
-export const QUICKVIEW_CURRENCIES = ["BTC", "ETH", "LTC", "BCH"];
 const INITIAL_STATE = {
     isShowingWallets: false,
     selectedQuickViewCurrency: QUICKVIEW_CURRENCIES[0],
