@@ -107,14 +107,14 @@ class AmazonCheckoutScreen extends React.Component {
             this.props.onSetAppModalLoadingState({isActive: true, text: "Loading..."});
             return new Promise((resolve, reject) => {
                 if (triesRemaining > 0) {
-                    setTimeout(() => resolve(this.parse(triesRemaining - 1)), 200);
+                    setTimeout(() => resolve(this.parse(triesRemaining - 1)), 1000);
                 } else {
                     this.setState(() => ({
                         cartAmount: "0.00",
                         paymentAmount: "0.00",
                         cartCurrency: (cartCurrencyElements && cartCurrencyElements.length && cartCurrencyElements[0].value) || AMAZON_DEFAULT_CURRENCY
                     }));
-                    reject(new Error("Unable to read cart information! Please refresh to try again."))
+                    reject(new Error("Unable to read cart information! Please refresh the page to try again."));
                 }
             })
                 .catch(err => this.props.onSetAppModalErrorState({isActive: true, text: err.message}))
