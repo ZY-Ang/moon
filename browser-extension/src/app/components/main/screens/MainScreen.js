@@ -33,7 +33,6 @@ class MainScreen extends React.Component {
     render() {
         const {host, pathname} = this.parseURL();
         const componentMap = {
-            // TODO: Use regex in an array like Google's manifest.json to figure out which component to parse
             "www.amazon.com": [
                 {
                     path: ROUTE_AMAZON_CHECKOUT_DEFAULT,

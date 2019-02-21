@@ -73,3 +73,11 @@ export const isCheckoutPage = (urlString, pathnameCheckout) => {
         );
     }
 };
+
+/**
+ * Matches strings for routes without using standard REGEX patterns for wildcards
+ *
+ * @author {@link https://stackoverflow.com/questions/26246601/wildcard-string-comparison-in-javascript}
+ */
+export const isRouteMatching = (str, rule) =>
+    new RegExp("^" + rule.split("*").join(".*") + "$").test(str);
