@@ -16,6 +16,7 @@ import AppMixpanel from "../../../../services/AppMixpanel";
 
 class AmazonNotAtCheckoutScreen extends React.Component {
     reportIsCheckout = () => {
+        AppMixpanel.track('button_click_amazon_checkout_report_is_checkout');
         this.props.onSetAppModalLoadingState({isActive: true, text: "✈ Sending us a bug report..."});
         AppRuntime.sendMessage(REQUEST_MOON_VALID_CHECKOUT_REPORT, {
             url: window.location.href,
@@ -33,7 +34,7 @@ class AmazonNotAtCheckoutScreen extends React.Component {
                 appLogger.error("AmazonNotAtCheckoutScreen.reportIsCheckout REQUEST_MOON_VALID_CHECKOUT_REPORT exception: ", err);
                 this.props.onSetAppModalErrorState({
                     isActive: true,
-                    text: "Hmmm... Something went wrong, try again! If that doesn't work either, you can always call to tell us ❤!"
+                    text: "Hmmm... Something went wrong, try again! If that doesn't work either, you can always contact us ❤!"
                 });
             })
             .finally(() => this.props.onSetAppModalLoadingState({isActive: false}));
@@ -63,12 +64,7 @@ class AmazonNotAtCheckoutScreen extends React.Component {
                     </div>
                     <h2>Not at Checkout Page</h2>
                     <p>When you're about to checkout, you'll have the option to pay with cryptocurrency.</p>
-                    <a
-                        onClick={() => {
-                            AppMixpanel.track('button_click_amazon_checkout_report_is_checkout');
-                            this.reportIsCheckout();
-                        }}
-                    >
+                    <a onClick={this.reportIsCheckout}>
                         Click here if you think this is a mistake
                     </a>
                 </div>
