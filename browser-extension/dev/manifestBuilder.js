@@ -61,7 +61,14 @@ const generateManifest = () => {
     if (process.env.BROWSER === "chrome") {
         manifest.key = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAibGrYHLq3cruPQW/vkQxnHeZ+LHcE+UomNUO9QTjjdACnfpt08cBwJ52PwqBflzSre1piBUu4CB//ecW8l5zYUVPLInoGiJSsZJHA2wo2WQ9PVtRw4gJNlBQbE5AiFXTTP0DC57QGIxyfKc1E7B0pi4y3xPueVIRuhRl7cRMVAiNU2OjSKpLuNat/IpG6QTg0P1kS8QMaz9nQM83izi6k4pntisyqUthBUdvzKmP7yhJjZE8FvIozqDHtD/PPsjYA6rt1M5Gzg0a5QYgQ2NLMsKfEAWmYYnaULwtb8jwKzViflIuvnFfsQrcKjq1fqzhLICHkN+3Mb9HSOFwLaSbiwIDAQAB";
     } else if (process.env.BROWSER === "firefox") {
-        manifest.browser_specific_settings = {"gecko": { "id": "ext@paywithmoon.com"}}
+        manifest.browser_specific_settings = {
+            "gecko":
+                {
+                    "id": "ext@paywithmoon.com",
+                    //If your extension is not hosted on AMO, you must specify the location of your update manifest in your extension.
+                    "update_url": "https://paywithmoon.com/updates.json"
+                }
+        }
     }
     return manifest;
 }
