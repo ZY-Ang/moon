@@ -298,6 +298,7 @@ class AmazonCheckoutScreen extends React.Component {
     render() {
         const {
             isShowingWallets,
+            containsRestrictedItems,
             selectedQuickViewCurrency,
             cartAmount,
             paymentAmount,
@@ -318,7 +319,6 @@ class AmazonCheckoutScreen extends React.Component {
         const authUserHasWallets = this.authUserHasWallets();
         const isEmailVerified = !!authUser && authUser.email_verified;
         const paymentCurrency = (selectedWallet && selectedWallet.currency) || selectedQuickViewCurrency;
-        const {containsRestrictedItems} = this.state;
         return (
             <div className="moon-mainflow-screen text-center">
                 <div className="settings-icon-parent mb-2">
