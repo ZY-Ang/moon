@@ -1,6 +1,6 @@
 import React from "react";
 import AppRuntime from "../../../browser/AppRuntime";
-import shoppingBagsEmoji from "../../../../../../assets/emoji/windows10/shopping-bags_1f6cd.png";
+import shoppingBagsEmoji from "../../../../../../assets/emoji/windows10/shopping-bags.png";
 
 const OnboardingShopOnline = ({next}) => (
     <div className="onboarding-tab">

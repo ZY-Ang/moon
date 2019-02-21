@@ -10,7 +10,7 @@ import {
     ACTION_SET_APP_MODAL_SUCCESS_STATE
 } from "../../../../redux/reducers/constants";
 import smilingFaceEmoji
-    from "../../../../../../../assets/emoji/windows10/smiling-face-with-open-mouth-and-smiling-eyes_1f604.png";
+    from "../../../../../../../assets/emoji/windows10/smiling-face-with-open-mouth-and-smiling-eyes.png";
 import appLogger from "../../../../utils/AppLogger";
 import AppMixpanel from "../../../../services/AppMixpanel";
 

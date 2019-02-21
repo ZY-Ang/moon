@@ -3,7 +3,7 @@
  */
 import React from "react";
 import './SuccessBody.css';
-import thumbsUpEmoji from "../../../../../../../assets/emoji/windows10/thumbs-up-sign_1f44d.png";
+import thumbsUpEmoji from "../../../../../../../assets/emoji/windows10/thumbs-up-sign.png";
 import {connect} from "react-redux";
 import {ACTION_SET_APP_MODAL_SUCCESS_STATE} from "../../../../redux/reducers/constants";
 import AppRuntime from "../../../../browser/AppRuntime";
