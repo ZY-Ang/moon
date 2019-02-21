@@ -8,6 +8,7 @@ import {
     ROUTE_AMAZON_CHECKOUT_DEFAULT,
     ROUTE_AMAZON_CHECKOUT_MUSIC
 } from "../app/components/main/screens/www.amazon.com/constants/routes";
+import {ROUTE_DOMINOS_ORDER_PAYMENT} from "../app/components/main/screens/www.dominos.com/constants/routes";
 
 /**
  * @return {boolean} {@code true} if
@@ -61,15 +62,16 @@ export const isCheckoutPage = (urlString, pathnameCheckout) => {
             isSupportedSite(urlString) &&
             !!pathnameCheckout &&
             !!pathnameCheckout.length &&
-            pathnameCheckout.reduce((prev, curPathname) => (pathname.startsWith(curPathname) || prev), false)
+            pathnameCheckout.reduce((prev, curPathname) => (isRouteMatching(pathname, curPathname) || prev), false)
         );
     } else {
         return (
             isSupportedSite(urlString) &&
             [
                 ROUTE_AMAZON_CHECKOUT_DEFAULT,
-                ROUTE_AMAZON_CHECKOUT_MUSIC
-            ].reduce((prev, curPathname) => (!!pathname.match(curPathname) || prev), false)
+                ROUTE_AMAZON_CHECKOUT_MUSIC,
+                ROUTE_DOMINOS_ORDER_PAYMENT
+            ].reduce((prev, curPathname) => (isRouteMatching(pathname, curPathname) || prev), false)
         );
     }
 };

@@ -16,6 +16,16 @@ import {
     ROUTE_AMAZON_CHECKOUT_DEFAULT_SHIPPING_ADDRESS_SELECT,
     ROUTE_AMAZON_CHECKOUT_MUSIC
 } from "./www.amazon.com/constants/routes";
+import {
+    ROUTE_DOMINOS_ORDER_ADDONS,
+    ROUTE_DOMINOS_ORDER_LOCATION_SEARCH,
+    ROUTE_DOMINOS_ORDER_PAYMENT
+} from "./www.dominos.com/constants/routes";
+import DominosOrderPaymentScreen from "./www.dominos.com/DominosOrderPaymentScreen";
+import {isRouteMatching} from "../../../../utils/url";
+import DominosOrderCheckoutScreen from "./www.dominos.com/DominosOrderCheckoutScreen";
+import DominosCatchAllScreen from "./www.dominos.com/DominosCatchAllScreen";
+import DominosOrderLocationSearchScreen from "./www.dominos.com/DominosOrderLocationSearchScreen";
 
 /**
  *
@@ -50,7 +60,6 @@ class MainScreen extends React.Component {
                     path: ROUTE_AMAZON_CHECKOUT_DEFAULT_PAYMENT_SELECT,
                     component: AmazonPaymentMethodSelectScreen
                 },
-                // select billing address(new line)
                 {
                     path: ROUTE_AMAZON_CHECKOUT_DEFAULT_BILLING_ADDRESS_SELECT,
                     component: AmazonSelectBillingAddressScreen
@@ -63,15 +72,31 @@ class MainScreen extends React.Component {
                     path: "*",
                     component: AmazonCatchAllScreen
                 }
+            ],
+            "www.dominos.com": [
+                {
+                    path: ROUTE_DOMINOS_ORDER_PAYMENT,
+                    component: DominosOrderPaymentScreen
+                },
+                {
+                    path: ROUTE_DOMINOS_ORDER_ADDONS,
+                    component: DominosOrderCheckoutScreen
+                },
+                {
+                    path: ROUTE_DOMINOS_ORDER_LOCATION_SEARCH,
+                    component: DominosOrderLocationSearchScreen
+                },
+                {
+                    pathname: "*",
+                    component: DominosCatchAllScreen
+                }
             ]
         };
         if (!!componentMap[host]) {
             for (let i = 0; i < componentMap[host].length; i++) {
                 const Component = componentMap[host][i].component;
-                if (componentMap[host][i].path === "*") {
-                    return <Component/>
-                } else if (!!pathname.match(componentMap[host][i].path)) {
-                    return <Component/>
+                if (isRouteMatching(pathname, componentMap[host][i].path)) {
+                    return <Component/>;
                 }
             }
         }
