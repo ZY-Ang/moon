@@ -38,28 +38,13 @@ const validateInput = (getPaymentPayloadInput) => {
         throw new Error("Invalid getPaymentPayloadInput: No input supplied");
     }
     const {cartInfo, pageInfo, wallet} = getPaymentPayloadInput;
-    validateCartInfo(cartInfo);
-    validateWallet(wallet);
     validatePageInfo(pageInfo);
+    validateWallet(wallet);
+    validateCartInfo(cartInfo);
 };
 
 /**
- * Validates {@param cartInfo}
- */
-const validateCartInfo = (cartInfo) => {
-    if (!cartInfo) {
-        throw new Error("Invalid cartInfo: No cart info supplied");
-    } else if (!cartInfo.amount) {
-        throw new Error("Invalid cartInfo: Cart amount is not supplied");
-    } else if (!cartInfo.currency) {
-        throw new Error("Invalid cartInfo: Cart currency is not supplied");
-    } else if (!supportedCartCurrencies[cartInfo.currency]) {
-        throw new Error(`Invalid cartInfo: ${cartInfo.currency} is not a valid cart currency`);
-    }
-};
-
-/**
- * Validates {@param pageInfo}
+ * Validates {@param pageInfo}. Comes first as a precedent to check if is a supported site
  */
 const validatePageInfo = (pageInfo) => {
     if (!pageInfo) {
@@ -70,6 +55,21 @@ const validatePageInfo = (pageInfo) => {
         throw new Error(`${pageInfo.url} is not a supported site.`);
     } else if (!pageInfo.content) {
         throw new Error("Invalid pageInfo: No content supplied");
+    }
+};
+
+/**
+ * Validates {@param cartInfo} to check if cart amounts are valid
+ */
+const validateCartInfo = (cartInfo) => {
+    if (!cartInfo) {
+        throw new Error("Invalid cartInfo: No cart info supplied");
+    } else if (!cartInfo.amount) {
+        throw new Error("Invalid cartInfo: Cart amount is not supplied");
+    } else if (!cartInfo.currency) {
+        throw new Error("Invalid cartInfo: Cart currency is not supplied");
+    } else if (!supportedCartCurrencies[cartInfo.currency]) {
+        throw new Error(`Invalid cartInfo: ${cartInfo.currency} is not a valid cart currency`);
     }
 };
 
